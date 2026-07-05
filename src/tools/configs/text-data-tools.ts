@@ -24,9 +24,9 @@ export const tools: ToolConfig[] = [
     compute: computeWordCount,
     autoCompute: true,
     about: [
-      "Whether you're writing a blog post with a target length, a meta description with a character limit, or a speech with a time slot, you need live counts while you write. Paste your text above and every metric updates instantly — nothing is uploaded or stored, the counting happens entirely in your browser.",
-      "Word count is based on whitespace-separated words, the standard used by most editors and content platforms. Reading time assumes an average silent reading speed of 225 words per minute, and speaking time assumes 130 words per minute — the pace of a typical presentation.",
-      "Common targets: SEO blog posts usually run 1,000–2,000 words, meta descriptions up to 160 characters, tweets 280 characters, and LinkedIn posts around 1,300 characters before truncation.",
+      "Whether you're writing a blog post with a target length, a meta description with a character limit, a college essay with a word requirement, or a speech that has to fit a time slot, you need live counts while you write. Paste or type your text above and every metric updates instantly as you edit — words, characters with and without spaces, sentences, paragraphs, reading time and speaking time. Nothing is uploaded or stored; the counting happens entirely in your browser, so it's safe for confidential drafts and works even on a flaky connection.",
+      "Word count is based on whitespace-separated words, the same standard used by Google Docs, Microsoft Word and most content platforms, so the number you see here will match what your editor reports. Sentence count looks for terminal punctuation, and paragraph count treats blank lines as separators. Reading time assumes an average silent reading speed of 225 words per minute, and speaking time assumes 130 words per minute — the comfortable pace of a typical presentation, which is useful when you're preparing a talk, a webinar script or a wedding speech.",
+      "Some common targets to write against: SEO blog posts usually run 1,000–2,000 words, meta descriptions should stay under 160 characters, tweets cap at 280 characters, LinkedIn posts truncate around 1,300 characters, and a 5-minute talk is roughly 650 spoken words. Keep this page open in a tab and paste as you go.",
     ],
     faq: [
       {

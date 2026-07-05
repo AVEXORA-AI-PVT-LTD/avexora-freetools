@@ -50,7 +50,8 @@ export const tools: ToolConfig[] = [
     about: [
       "GST (Goods and Services Tax) is India's unified indirect tax levied on the supply of goods and services. Businesses need to add GST to their base price when billing customers, and often need to work backwards from an all-inclusive price to find the taxable value. This calculator does both: choose whether your amount excludes or includes GST, pick the applicable rate, and the tax breakup appears instantly.",
       "For sales within the same state, GST is split equally between the Centre and the State as CGST and SGST — a 18% rate becomes 9% CGST + 9% SGST. For inter-state sales, the full amount is charged as IGST. The calculator shows all three so you can pick the split that applies to your invoice.",
-      "The formula is simple: to add GST, tax = amount × rate ÷ 100. To remove GST from an inclusive price, base = amount ÷ (1 + rate ÷ 100). Use this before raising invoices, checking supplier bills, or estimating tax liability for a quote.",
+      "The formula is simple: to add GST, tax = amount × rate ÷ 100. To remove GST from an inclusive price, base = amount ÷ (1 + rate ÷ 100). The second case trips up a lot of people — subtracting 18% from an inclusive price gives the wrong answer, because the 18% was charged on the base, not on the total. The calculator applies the correct reverse formula for you.",
+      "Use it before raising invoices to double-check the tax line, when verifying supplier bills against the rate their goods should carry, while preparing quotes so you can show customers a clean with-tax and without-tax price, or when estimating your GST liability for the month. Every calculation runs instantly in your browser and nothing you enter is stored.",
     ],
     faq: [
       {

@@ -39,7 +39,8 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate outline",
     about: [
       "Staring at a blank page is the slowest part of writing. This generator gives you a working skeleton in seconds: enter your topic (and optionally who you're writing for), and the AI produces a structured outline with an H1, logical H2 sections, supporting H3 points, and suggestions for the introduction and conclusion.",
-      "A good outline is the difference between a rambling post and one that ranks. Search engines reward content that covers a topic thoroughly and is organised under clear headings — exactly what an outline enforces. Use the generated structure as-is or rearrange sections to fit your angle, then write section by section.",
+      "A good outline is the difference between a rambling post and one that ranks. Search engines reward content that covers a topic thoroughly and is organised under clear headings — exactly what an outline enforces. Readers benefit too: most people scan a post's headings before deciding whether to read it, so a logical heading structure keeps them on the page. Use the generated structure as-is or rearrange sections to fit your angle, then write section by section — filling in a skeleton is far faster than composing from nothing, and it keeps every section focused on answering one question.",
+      "A practical workflow: generate the outline, delete any section you don't have something original to say about, add one section from your own experience that the AI couldn't know, and then draft. That combination — solid structure plus first-hand insight — is what separates content that ranks from content that reads like everyone else's.",
       "The tool is free and requires no account. For end-to-end content workflows — briefs, AI drafting, scheduling and performance tracking — the EBOS Marketing module includes a full AI writing assistant.",
     ],
     faq: [

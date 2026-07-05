@@ -154,7 +154,7 @@ Template-based document assembly from form fields. Every output carries a "not l
 
 ## 5. SEO Engine
 
-- Per-tool `generateMetadata` from config: `<title>` = "{Tool Name} — Free Online Tool | Avexora", meta description, canonical `https://freetools.avexora.in/{category}/{slug}`, OpenGraph + Twitter cards.
+- Per-tool `generateMetadata` from config: `<title>` = "{Tool Name} — Free Online Tool | Avexora Free Tools" (brand suffix applied via the root layout title template), meta description, canonical `https://freetools.avexora.in/{category}/{slug}`, OpenGraph + Twitter cards.
 - JSON-LD on every tool page: `SoftwareApplication` (free, web) + `FAQPage` (from config FAQ) + `BreadcrumbList`.
 - `sitemap.xml` (all tools + category hubs + home), `robots.txt`.
 - Internal linking: breadcrumbs, related tools (config), category hub pages listing all tools, footer category links.
