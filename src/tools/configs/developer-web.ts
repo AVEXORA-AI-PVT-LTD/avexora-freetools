@@ -493,7 +493,7 @@ export const tools: ToolConfig[] = [
         name: "input",
         label: "Timestamp or date",
         type: "text",
-        placeholder: "1751712000  ·  1751712000000  ·  2026-07-05T10:30:00Z  ·  now",
+        placeholder: "1783247400  ·  1783247400000  ·  2026-07-05T10:30:00Z  ·  now",
         optional: true,
         help: "Leave empty (or type \"now\") for the current time.",
       },
@@ -501,7 +501,7 @@ export const tools: ToolConfig[] = [
     compute: convertTimestamp,
     autoCompute: true,
     about: [
-      "Computers timestamp everything as seconds (or milliseconds) since 1 January 1970 UTC — the unix epoch. It's a wonderfully unambiguous format for machines and a completely opaque one for humans: nobody reads 1751712000 and thinks \"early July 2026\". Whenever you're staring at a log line, an API response, a database row or a JWT claim, this converter translates in both directions instantly.",
+      "Computers timestamp everything as seconds (or milliseconds) since 1 January 1970 UTC — the unix epoch. It's a wonderfully unambiguous format for machines and a completely opaque one for humans: nobody reads 1783247400 and thinks \"early July 2026\". Whenever you're staring at a log line, an API response, a database row or a JWT claim, this converter translates in both directions instantly.",
       "Paste a number and it becomes a date, shown simultaneously as an ISO 8601 UTC string, Indian Standard Time in full, the equivalent in both seconds and milliseconds, and a relative description like \"3 days ago\". The seconds-vs-milliseconds trap is handled automatically by length — a 10-digit number is seconds, 13 digits is milliseconds — which matters because confusing them puts your date in 1970 or in the year 57,000. Paste an ISO date string instead and you get its timestamps; type nothing (or \"now\") for the current moment.",
       "The dual UTC/IST display earns its place in Indian engineering work: servers, databases and APIs conventionally run on UTC while your users, logs dashboards and stand-up conversations run on IST, five and a half hours ahead. That half-hour offset (UTC+5:30) breaks the mental arithmetic that works for whole-hour zones, so having both printed side by side prevents the classic off-by-a-timezone bug in cron schedules, report boundaries and expiry checks.",
     ],
