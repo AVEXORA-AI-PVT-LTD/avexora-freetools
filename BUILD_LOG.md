@@ -46,3 +46,24 @@ Read this first at the start of every session. Spec: `20_Free_Tools_Growth_Engin
 - `ANTHROPIC_API_KEY` — AI writer tools render with a disabled notice until this is set.
 - Production `DATABASE_URL` if Postgres is wanted instead of the current SQLite dev database.
 - Confirmation of EBOS module URLs (`NEXT_PUBLIC_EBOS_URL`, currently defaults to `https://ebos.avexora.in`).
+
+## Session 3 — 2026-07-07 — Launch prep: SQLite → MongoDB
+
+### Deviations / decisions
+- **Switched the Lead datastore from SQLite to MongoDB** at the owner's direction for go-live. SQLite writes to a local file, which is fine on a persistent-disk host but **silently loses data on serverless platforms** (Vercel, etc.) whose filesystem is ephemeral/read-only in production — flagged to the owner before making the change.
+- `prisma/schema.prisma`: `datasource db` provider changed `sqlite` → `mongodb`; `Lead.id` changed from `String @id @default(cuid())` to `String @id @default(auto()) @map("_id") @db.ObjectId` (Mongo's native id shape via Prisma). The `id` is never surfaced to clients (checked `src/app/api/leads/route.ts` and all callers), so this is a safe internal change.
+- Removed `prisma/migrations/` — Prisma's Mongo connector doesn't use SQL-style migrations; schema changes are applied with `prisma db push` instead.
+- Added `.env.example` (git-tracked; `.gitignore` updated to exclude it from the blanket `.env*` ignore) documenting the required `DATABASE_URL` format and noting Prisma's Mongo connector requires a replica set (single-node is fine — Atlas and other managed hosts already run as one).
+- **Not tested end-to-end this session**: no Docker daemon was available in this sandbox to run a local MongoDB replica set, so `prisma db push` and a live `/api/leads` round-trip could not be exercised against real Mongo. `npx prisma generate` succeeded (schema is valid), and `tsc`/`vitest`/`npm run build` are all green — but **run `npx prisma db push` and a curl smoke test against the real `DATABASE_URL` before launch** to confirm writes actually land.
+
+### Verification (this session)
+- `npx prisma generate`: succeeds against the Mongo schema.
+- `npx tsc --noEmit`: clean.
+- `npx vitest run tests/compute`: 191/191 passing (unaffected — compute functions don't touch the DB).
+- `npm run build`: 138/138 static pages, unchanged (Lead DB is only touched by the dynamic `/api/leads` and `/api/ai` routes, not the static tool pages).
+
+### Pending (owner inputs, updated)
+- `DATABASE_URL` — a real MongoDB connection string (Atlas or self-hosted replica set). **Run `npx prisma db push` once set, then smoke-test `/api/leads` before launch** — this was not exercised against a live database in this session.
+- `ANTHROPIC_API_KEY` — AI writer tools render with a disabled notice until this is set.
+- Confirmation of EBOS module URLs (`NEXT_PUBLIC_EBOS_URL`, currently defaults to `https://ebos.avexora.in`).
+- Hosting/deployment target and domain DNS for `freetools.avexora.in` — undecided as of this session.
