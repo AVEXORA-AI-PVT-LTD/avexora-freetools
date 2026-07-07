@@ -56,6 +56,7 @@ export const tools: ToolConfig[] = [
       "Sometimes a single PDF is really two documents stuck together — a contract and its annexures, a report and its appendix, a scanned bundle that should have been two separate files. This tool splits any PDF into two parts at whichever page you choose: everything up to and including that page becomes part one, everything after becomes part two, both downloaded automatically.",
       "Choose your file, see the total page count, and enter the page where the split should happen — page 5 of a 12-page document, for instance, produces a 5-page part one and a 7-page part two. There's no limit on how large the source file can be beyond what your browser's memory allows, and because splitting happens entirely client-side, confidential documents never leave your device.",
       "This is the simplest of the page-management tools here; for more control — pulling out a specific non-contiguous set of pages, or removing particular pages rather than splitting at one point — use the extract or remove-pages tools instead. All three share the same private, in-browser processing.",
+      "Splitting is often the first step before two documents go their separate ways — one half to accounting, the other to legal, or one part filed and the other emailed on. Because both output files are generated locally and downloaded straight to your device, there's no server copy of either half sitting around afterward, and no waiting on an upload before you can download anything back.",
     ],
     faq: [
       {
@@ -122,6 +123,7 @@ export const tools: ToolConfig[] = [
       "Scanned receipts, photographed documents, ID cards, whiteboard photos — a lot of paperwork enters your phone as a JPG and needs to leave as a PDF, the format banks, government portals and most businesses actually accept. This tool takes one or more JPG images and combines them into a single PDF, one image per page, in whatever order you arrange them.",
       "Add images, reorder with the up/down arrows so the pages come out in the right sequence, and convert — each image becomes a full page sized to match its own dimensions, so nothing is stretched or cropped. This is the quickest path from \"I have five photos of receipts\" to \"I have one PDF to email my accountant,\" without opening a scanner app or a desktop editor.",
       "Everything happens locally: your images are never uploaded, which matters when the photos are of ID documents, medical records, or anything else you'd rather not send to a stranger's server. For PNG images (screenshots, graphics with transparency), use the PNG to PDF tool instead — JPG and PNG need slightly different embedding, handled correctly by each dedicated tool.",
+      "There's no limit on how many images you can combine, no compression applied to the photos beyond what your camera already did, and no watermark added to the result. If you later need to combine the resulting PDF with other documents, or trim it down to just a few pages, the Merge PDF and Extract PDF Pages tools in this same suite pick up right where this one leaves off.",
     ],
     faq: [
       {
@@ -155,6 +157,7 @@ export const tools: ToolConfig[] = [
       "Screenshots, exported graphics, transparent logos, and diagrams saved as PNG often need to become part of a PDF report or submission. This tool combines one or more PNG images into a single PDF, one image per page, sized exactly to each image's own dimensions.",
       "PNG's defining feature — lossless compression with optional transparency — is preserved through the conversion in the sense that image quality never degrades; transparent areas are rendered against a white PDF page background, since PDF pages don't support transparent backgrounds themselves. Add your images, arrange them with the up/down controls so the final PDF reads in the right order, and convert.",
       "As with every tool in this PDF suite, processing is entirely local to your browser — your screenshots and graphics are never uploaded anywhere. If your source images are JPGs instead (common for photos and scans), use the JPG to PDF tool, which embeds that format correctly.",
+      "This is a common step when assembling a report or submission from a mix of exported charts, UI screenshots and diagrams that started life as separate PNG files. Once combined, the same suite offers page reordering, watermarking and page numbering if the assembled document needs further polish before it goes out.",
     ],
     faq: [
       {
@@ -188,6 +191,7 @@ export const tools: ToolConfig[] = [
       "Sometimes a PDF has a page or two you need gone — a blank scanned page, a cover sheet that doesn't belong in the final version, an outdated appendix, or duplicate pages from a rushed scan. This tool removes exactly the pages you specify, leaving everything else untouched and correctly renumbered in the output.",
       "Enter the pages to remove as a comma-separated list of numbers and ranges — \"3\" removes just page 3, \"3, 7-9\" removes page 3 and pages 7 through 9. The tool shows your document's total page count so you know your numbering is right before running it, and it refuses to remove every single page (you'd be left with nothing), catching that mistake before it happens.",
       "This is the mirror image of Extract PDF Pages: removal keeps everything except what you list, while extraction keeps only what you list. Pick whichever framing is more natural for your task — removing 2 pages from a 50-page document is easier to specify than extracting the other 48. Processing is entirely local to your browser, so sensitive documents never leave your device.",
+      "The remaining pages keep their original content and quality exactly as they were — nothing is re-rendered or recompressed in the process, only removed. Once you're happy with the trimmed result, it can be fed straight into the merge, reorder or watermark tools in this same suite if the document needs further assembly before it's final.",
     ],
     faq: [
       {
@@ -221,6 +225,7 @@ export const tools: ToolConfig[] = [
       "Often you don't need a whole PDF — just the three pages of a contract that matter, the chapter you're referencing, or the single invoice buried in a long statement. This tool extracts exactly the pages you specify into a new, standalone PDF, leaving the source file untouched.",
       "Enter the pages you want as a comma-separated list of numbers and ranges — \"2, 5-7\" pulls out page 2 plus pages 5 through 7 into the new document, in that order. This is the inverse of the page remover: here you list what to keep, there you list what to discard. Choose whichever framing needs less typing for your case.",
       "A common use: extracting a signature page or a specific clause from a long contract to send separately, pulling one chapter out of a large report, or isolating a single invoice from a multi-page statement PDF. As with every tool here, extraction happens entirely in your browser — nothing is uploaded.",
+      "Because the source file is never modified — only read to build the new, smaller document — you can extract the same pages more than once with different selections without worrying about losing anything from the original. Combine the result with Merge PDF afterward if the pages you pulled out need to sit alongside content from another file.",
     ],
     faq: [
       {
@@ -254,6 +259,7 @@ export const tools: ToolConfig[] = [
       "Pages sometimes end up in the wrong order — a scanner that fed sheets out of sequence, a report where a section should come before another, a contract where the signature page needs to move to the end. This tool lets you rearrange every page of a PDF into whatever order you need, without retyping or rescanning anything.",
       "Once you choose your file, every page appears as a numbered slot you can move up or down; the underlying page content never changes, only its position in the final document. Rearrange until the sequence is right, then apply — the output PDF has your exact new order, with page content, formatting and quality fully preserved.",
       "This pairs naturally with the other page tools here: extract the pages you need, reorder them into the right sequence, then merge with other documents if the final assembly needs more than one source file. Everything runs locally in your browser, so reordering a confidential document never means uploading it anywhere.",
+      "There's no limit to how many times you can rearrange before applying the change, so it's easy to try a sequence, step back, and try again until the flow reads correctly. The output preserves every page's original quality and formatting — only the order changes, nothing about the content itself.",
     ],
     faq: [
       {
@@ -287,6 +293,7 @@ export const tools: ToolConfig[] = [
       "Scanned documents come out sideways or upside-down more often than anyone would like — a phone held the wrong way, a scanner fed a page in landscape when the document is portrait. This tool rotates a PDF's pages by 90°, 180° or 270°, fixing the orientation without needing to rescan anything.",
       "Apply the rotation to every page at once, or, when only some pages came in sideways (common with mixed-orientation scans), specify exactly which pages need it using the same page-range syntax as the other tools here — \"2, 5-7\" rotates just those pages, leaving the rest as they are. Each rotation is applied on top of whatever orientation a page already has, so you can nudge a page further if the first rotation wasn't quite enough.",
       "The rotation is a page-level property recognised by every PDF viewer, not a re-render of the content, so text stays sharp and selectable, and file size is essentially unaffected. As always, this runs entirely in your browser — scanned IDs, contracts and reports never leave your device to get straightened out.",
+      "This is a quick fix for a problem that otherwise sends people back to a scanner or a phone camera: a handful of sideways pages in an otherwise fine document. Fix the orientation here, then move straight into merging, reordering or numbering if the corrected file needs further assembly.",
     ],
     faq: [
       {
@@ -320,6 +327,7 @@ export const tools: ToolConfig[] = [
       "A watermark communicates a document's status at a glance — DRAFT before it's final, CONFIDENTIAL before it's shared widely, SAMPLE on a preview you're not ready to hand over as the finished product. This tool stamps your chosen text diagonally across every page of a PDF, sized and angled the way professional watermarks conventionally are.",
       "Type your text (CONFIDENTIAL, DRAFT, and your own company name are all common choices), set the opacity, and apply — the watermark appears in light grey at 45 degrees across the centre of every page, visible enough to communicate status without making the underlying content unreadable. Lower opacity for a subtle mark, higher for one that's impossible to miss.",
       "This is a deterrent and a status marker, not a security measure — a determined recipient can remove a text watermark from a PDF with the right tools, so don't rely on it to protect genuinely sensitive content; use it to communicate intent (this is a draft, this isn't for redistribution) to a good-faith reader. Everything runs locally in your browser, so the document you're watermarking is never uploaded.",
+      "Watermarking pairs naturally with page numbering when a document is circulating for review — CONFIDENTIAL across the page and a page number in the corner give reviewers both the status and a way to reference a specific spot in comments. Both tools apply cleanly to a file you've already merged, reordered or trimmed with the other tools in this suite.",
     ],
     faq: [
       {
@@ -353,6 +361,7 @@ export const tools: ToolConfig[] = [
       "A multi-page report, contract or manual without page numbers is harder to navigate, harder to reference in a meeting (\"see page 12\" only works if pages are numbered), and looks unfinished. This tool adds numbers to every page of a PDF in one pass, with the position and starting number you choose.",
       "Pick bottom-centre (the most common convention for formal documents), bottom-right, or top-right, and set the starting number if the first page shouldn't be \"1\" — useful when a cover page or table of contents precedes the numbered content and you want numbering to begin at the first real page, or when this PDF is a continuation of another document.",
       "Numbers are added as new text on each page without altering any existing content underneath, so nothing already on the page is affected. As with the rest of this toolset, the whole operation happens in your browser — the document is never uploaded to add something as simple as page numbers.",
+      "This is usually one of the last steps before a document ships — after pages are merged, reordered and trimmed to their final sequence, numbering makes the result easy to navigate and reference. Run it right before you send the file, since renumbering after adding or removing pages later would shift everything that follows.",
     ],
     faq: [
       {
@@ -386,6 +395,7 @@ export const tools: ToolConfig[] = [
       "Every PDF carries a small set of metadata fields — title, author, subject, keywords — that don't appear on the page itself but show up in file browsers, PDF reader \"document properties\" panels, and search indexes. Left unedited, these often default to whatever a scanner or export tool auto-filled: a generic \"Untitled,\" the wrong author name, or nothing at all.",
       "This tool loads your PDF's current metadata, lets you view and edit each field, and saves an updated copy. Correct metadata matters more than it seems: a properly titled and authored PDF is easier to find later in a folder of similarly-named scans, search engines can index it more usefully if it's ever published online, and a professional document with the right author name looks more polished when a recipient checks its properties.",
       "It's also useful defensively — removing metadata that leaked from an internal template (an old company name, a previous author who's since left) before sending a document externally. As with every tool in this suite, your file is read and edited entirely in your browser; the metadata you're viewing is never transmitted anywhere.",
+      "A quick pass with this tool before publishing or sharing a PDF externally takes seconds and closes off a small but real source of accidental information leakage. Pair it with Compress PDF, which also strips redundant metadata as part of its structural cleanup, if file size is a concern too.",
     ],
     faq: [
       {

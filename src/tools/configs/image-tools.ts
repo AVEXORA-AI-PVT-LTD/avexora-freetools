@@ -22,6 +22,7 @@ export const tools: ToolConfig[] = [
       "A photo straight off a phone camera can easily run 3-5 MB — far more than any website, email attachment or WhatsApp share actually needs, and often the reason a page loads slowly or an email bounces for being too large. This tool re-encodes your image at an adjustable quality level, cutting file size while keeping the picture visually indistinguishable at any reasonable quality setting.",
       "Drag the quality slider and compress — higher settings (80-95%) preserve near-original detail with modest savings, useful for photography you'll print or zoom into; lower settings (40-70%) shrink file size dramatically with a barely noticeable quality trade-off, ideal for web images and email attachments. The tool reports the before-and-after size so you can see exactly what you gained before committing to the download.",
       "Compression happens entirely in your browser using the canvas API — your photos are never uploaded to a server, which matters for anything personal or sensitive. For website images specifically, pairing a compressed JPEG with the right dimensions (via the image resizer) typically cuts page weight far more than compression alone, since an oversized image wastes bytes regardless of compression level.",
+      "A quick way to judge the right setting: compress at 80%, look closely at fine detail like text or hair strands, and only drop further if the size still isn't small enough for your purpose. Photos with lots of flat colour (product shots on white, screenshots) compress far more forgivingly than busy, high-detail photography, so don't assume one quality number suits every image in a batch.",
     ],
     faq: [
       {
@@ -55,6 +56,7 @@ export const tools: ToolConfig[] = [
       "Every platform has its own required dimensions — a 1200×630 social share image, a 500×500 product thumbnail, a 1920×1080 banner — and a source photo rarely arrives in exactly the size needed. This tool resizes any image to precise pixel dimensions, with an aspect-ratio lock so you don't accidentally stretch or squash the picture while adjusting one dimension.",
       "Enter a width and the height updates automatically to preserve proportions (or uncheck the lock to set both independently, useful for deliberately cropping-by-stretching in rare cases). The resize uses the browser's canvas scaling, which handles both upscaling and downscaling smoothly for typical photo content.",
       "Resizing before uploading is one of the single biggest performance wins for a website — a 4000-pixel-wide photo displayed at 800 pixels wastes most of its data on detail the browser throws away anyway. Resize to the actual display size first, then compress if you need to shrink further. Everything runs locally in your browser, so your images are never uploaded to resize them.",
+      "A practical habit worth building: check the exact pixel dimensions your layout actually displays an image at (browser dev tools show this in a click) before uploading anything, rather than uploading camera-resolution originals and letting the browser scale them down on every visitor's device. That single step often halves a page's total image weight with zero visible quality change.",
     ],
     faq: [
       {
@@ -88,6 +90,7 @@ export const tools: ToolConfig[] = [
       "Sometimes the problem with a photo isn't its size but its content — a great subject surrounded by clutter, an ID photo with too much background, a screenshot that includes browser chrome you don't want in the final image. This tool lets you drag a selection box directly on your image and crop to exactly that area.",
       "Click and drag anywhere on the preview to draw your crop selection; the highlighted box shows exactly what will be kept. Release, then crop — the tool maps your on-screen selection back to the image's real pixel dimensions, so the output is precise regardless of how large or small the preview appears in your browser window.",
       "This is often the fastest fix for a photo that's almost right — cropping out a distracting edge, isolating a product from its background context, or trimming a screenshot down to just the relevant part. Everything happens locally in your browser; the image you're cropping is never uploaded anywhere.",
+      "A framing tip: crop a little tighter than feels natural for social media thumbnails and profile pictures, since platforms often apply their own circular or square mask on top of your crop, and content near the edges gets clipped unpredictably. For product photos, leave slightly more breathing room so the subject doesn't feel cramped against the frame once it's placed into a page layout.",
     ],
     faq: [
       {
@@ -121,6 +124,7 @@ export const tools: ToolConfig[] = [
       "PNG and JPG solve different problems — PNG for lossless quality and transparency, JPG for smaller file sizes on photographic content — and converting between them is a routine need whenever a form, upload widget, or print service insists on one format over the other. This tool converts your PNG to JPG in one click.",
       "Because JPG has no concept of transparency, any transparent areas in your PNG are flattened onto a white background before conversion — the standard, expected behaviour for this conversion. If your PNG has no transparency (most photos and flattened graphics don't), the conversion changes nothing but the file format and typically shrinks the file noticeably, since JPG's compression is usually far more efficient than PNG's for photographic content.",
       "Common reasons to convert: a website or ad platform that only accepts JPG uploads, an email attachment size limit that a losslessly-compressed PNG blows past, or simply wanting a smaller file for a photo where perfect pixel fidelity doesn't matter. Conversion runs entirely in your browser — your image is never uploaded.",
+      "One thing to check before converting: if your PNG has meaningful transparent regions (a logo meant to sit over a coloured background, an icon with rounded corners), converting to JPG will bake in a solid white background permanently — there's no getting the transparency back afterward. Keep the original PNG safely stored if you might need the transparent version again later.",
     ],
     faq: [
       {
@@ -148,12 +152,13 @@ export const tools: ToolConfig[] = [
     name: "JPG to PNG Converter",
     tagline: "Convert JPG images to lossless PNG format, in your browser.",
     seoDescription:
-      "Free JPG to PNG converter. Convert JPG images to PNG format instantly — entirely in your browser, no upload required.",
+      "Free JPG to PNG converter. Convert JPG images to lossless PNG format instantly, ready for further editing — entirely in your browser, no upload required.",
     component: JpgToPng,
     about: [
       "PNG's lossless compression and support for transparency make it the format of choice for logos, icons, screenshots and any graphic that needs to be edited further without accumulating compression artifacts. This tool converts a JPG to PNG in one click — useful when a design tool, upload form, or workflow specifically requires PNG.",
       "The conversion itself is straightforward: your JPG's pixels are preserved exactly and re-encoded losslessly as PNG. Because the source JPG was already lossy-compressed, converting to PNG doesn't recover any detail that compression already discarded — it locks in the current quality without further loss going forward, which matters if you plan to edit the image multiple times (each JPG re-save degrades quality further, while PNG re-saves don't).",
       "Expect the resulting PNG file to be larger than the source JPG, sometimes considerably — this is normal and expected, since PNG's lossless approach trades file size for perfect fidelity. If file size matters more than lossless quality for your use case, you likely want to stay with JPG. Conversion runs entirely in your browser; nothing is uploaded.",
+      "This conversion is commonly used before importing a photo into design software that expects a lossless format, before applying repeated edits and re-saves in an image editor (to stop each save from compounding JPG artifacts), or simply when a specific tool or workflow flatly requires a .png file extension regardless of the original format's suitability.",
     ],
     faq: [
       {
@@ -187,6 +192,7 @@ export const tools: ToolConfig[] = [
       "WebP is a modern image format built specifically for the web: it typically produces 25-35% smaller files than JPEG at equivalent visual quality, and unlike JPEG it also supports transparency — giving PNG-like flexibility with JPEG-like compression efficiency. Every major browser has supported it for years, making it a safe default for web images today.",
       "This tool converts any image you upload — JPG, PNG, or others your browser can decode — into WebP format using the browser's own encoder, the same one used when you save an image as WebP from any web app. The result is typically noticeably smaller than your source file while looking essentially identical at normal viewing sizes.",
       "The main reason to convert: page speed. Image weight is usually the largest contributor to a slow-loading page, and switching a site's images to WebP is one of the highest-leverage, lowest-effort performance improvements available — search engines also factor page speed into ranking, so smaller images can indirectly help SEO too. Conversion happens entirely in your browser, so your source images are never uploaded.",
+      "A sensible rollout approach for an existing website: convert your largest, most-viewed images first (hero banners, product photography) since those deliver the biggest page-weight savings for the least effort, then work through the rest of your image library as time allows rather than trying to convert everything in one sitting.",
     ],
     faq: [
       {
@@ -220,6 +226,7 @@ export const tools: ToolConfig[] = [
       "Embedding a small image directly in your HTML or CSS as a base64-encoded data URL avoids an extra network request — useful for tiny icons, inline SVG-style graphics, or email templates where linking to external images is unreliable (many email clients block remote image loading by default). This tool converts any image file into that data URL format, ready to paste directly into your code.",
       "Choose your image and the tool immediately produces the full data:image/…;base64,… string, copy-ready with one click. Paste it directly as an `<img src=\"...\">` value, a CSS `background-image: url(...)`, or a JSON field — anywhere a string is expected instead of a file reference.",
       "Use this sparingly for genuinely small images: base64 encoding inflates the data by roughly 33% compared to the raw file, and large embedded images bloat your HTML/CSS in ways that hurt caching (the browser can't cache an inline image separately from the page it's embedded in). For anything beyond small icons or logos, a regular linked image file, ideally in WebP, usually performs better. Conversion runs entirely in your browser.",
+      "Developers also reach for this when building a component library or design system that needs to ship a handful of tiny icons with zero extra HTTP requests, or when embedding a small logo inside a generated PDF or email template where linking to an externally-hosted file risks being blocked or broken.",
     ],
     faq: [
       {
@@ -253,6 +260,7 @@ export const tools: ToolConfig[] = [
       "The reverse of embedding: sometimes you have a base64 string — pulled from an API response, a database export, or someone else's code — and need to actually see what image it represents, or save it as a real file. This tool decodes any base64 image data, whether it's a full data URL (data:image/png;base64,…) or just the raw base64 characters, and shows you the resulting image with a download button.",
       "Paste the string and decode: if it's a valid image, you'll see it rendered immediately, along with a button to save it as a proper image file (with the correct extension inferred from the format). If the data isn't valid image content, you'll get a clear error rather than a blank result.",
       "This is a common debugging step when working with APIs that return images as base64 (common in some backend responses, PDF-embedded images, or webhook payloads) — decoding here lets you quickly verify the image is what you expect before writing code to handle it. Decoding happens entirely in your browser; the string you paste is never sent anywhere.",
+      "It's also useful for recovering an image buried inside a JSON export, a saved chat log, or a config file where someone stored an icon as an inline string instead of a separate asset — paste the relevant field's value here rather than writing a one-off script just to look at a single picture.",
     ],
     faq: [
       {
@@ -286,6 +294,7 @@ export const tools: ToolConfig[] = [
       "A favicon is the small icon that appears in browser tabs, bookmarks, and mobile home-screen shortcuts — a detail easy to overlook but one that makes a site look unfinished when missing or blurry. Different contexts want different sizes: browser tabs use tiny 16×16 and 32×32 icons, Apple's home-screen shortcuts want a crisper 180×180, and Android/PWA manifests often request 192×192 or 512×512. This tool generates the full set from a single source image.",
       "Upload a square logo or icon — ideally already close to square, since the generator resizes to each target dimension without cropping — and it produces PNG files at every standard size: 16, 32, 48, 180, 192 and 512 pixels. Each downloads individually, ready to drop into your site's root or assets folder, along with the HTML `<link>` tags needed to reference them correctly in your page's `<head>`.",
       "For best results, start with a simple, high-contrast source image — intricate detail disappears at 16×16, so a bold letterform or simple icon reads far better than a busy logo at favicon scale. Processing happens entirely in your browser; your logo is never uploaded to generate these variants.",
+      "Once generated, test the result across a few contexts before considering the job done — open the site in a browser tab, add it to a phone's home screen, and check a bookmark bar. It only takes a minute, and it's the easiest way to catch a favicon that looked fine on a large canvas but turns into an unrecognisable blur at 16×16.",
     ],
     faq: [
       {
@@ -319,6 +328,7 @@ export const tools: ToolConfig[] = [
       "Matching a specific colour from a photo, screenshot or design mockup — a brand's exact blue, the background colour behind a logo, a shade you liked in someone else's design — usually means eyeballing it and guessing, which never quite matches. This tool removes the guesswork: click anywhere on your uploaded image and get the exact hex and RGB value at that pixel.",
       "Upload your image, click the point whose colour you need, and the tool reads the actual pixel data at that position — not an approximation, the real value the browser sees. Both hex (for CSS, design tools) and RGB (for canvas code, some design software) formats are shown, with a one-click copy for the hex value.",
       "Practical uses: extracting a brand colour from a logo image someone sent you, matching a background colour from a screenshot, or building a colour palette by sampling several points across a photo or mockup. Once you have a hex value, the color converter tool can translate it to HSL for further palette work. Everything runs locally in your browser — the image never leaves your device.",
+      "For the cleanest sample, zoom your browser in first if the area you're targeting is small — clicking on a tiny detail in a shrunk-down preview risks landing a pixel or two off from the colour you actually meant, especially near an edge where two colours blend together.",
     ],
     faq: [
       {
@@ -352,6 +362,7 @@ export const tools: ToolConfig[] = [
       "Photos taken sideways, screenshots captured upside-down, or a graphic that needs to be mirrored for a specific layout — these small orientation fixes shouldn't require opening a full editor. This tool rotates any image by 90°, 180° or 270°, and independently flips it horizontally or vertically, all combinable in one pass.",
       "Choose your rotation angle and toggle the flip options you need — both can be applied together, so you can rotate 90° and flip horizontally in a single operation rather than doing it in two separate steps. The output preserves your image's original quality and format (PNG stays PNG with transparency intact, everything else exports as JPEG).",
       "Common uses: fixing a phone photo that came out sideways due to how the phone was held, mirroring a logo for a design that needs it facing the other direction, or correcting a scanned document's orientation. Processing happens entirely via your browser's canvas API — the image is never uploaded to a server.",
+      "A quick tip if you're not sure which way is \"correct\": rotate 90° and check the preview mentally against how the subject should sit before downloading — text is the easiest guide, since it should read left-to-right and upright once the orientation is fixed. If one rotation overshoots, running the tool again on the output nudges it a further 90° until it's right.",
     ],
     faq: [
       {

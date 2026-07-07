@@ -77,6 +77,8 @@ export const tools: ToolConfig[] = [
       "A quotation is the first document a prospective customer sees before committing to buy — it needs to look professional enough to build confidence while making the price and scope unambiguous. This generator produces a clean, itemised quotation from your business details, customer name, and a simple line-item list, ready to send or print.",
       "Enter each item as a single line — description, quantity, rate — and the generator computes line totals and the grand total automatically, formatted as a clean aligned table. Add a validity date so the customer knows the quoted prices aren't open-ended, which protects you if your costs change before they decide.",
       "A quotation is explicitly not a tax invoice — it's an estimate, and the generated document says so clearly to avoid any confusion with your GST records. Once the customer accepts, convert it to a proper invoice using the invoice generator linked below.",
+      "Number your quotations sequentially just as you would invoices (QUOT-001, QUOT-002…) so you can track how many convert to actual sales over time — that conversion rate is a useful, easy-to-track business metric that most small businesses never bother measuring even though it's sitting right there in their sent-quotes folder.",
+      "Keep a copy of every quotation you send, even the ones that don't convert — a customer who declines this time may come back months later referencing the price you quoted, and having it on hand avoids an awkward renegotiation from scratch.",
     ],
     faq: [
       {
@@ -119,6 +121,7 @@ export const tools: ToolConfig[] = [
       "A proforma invoice sits between a quotation and a final tax invoice — used when a customer needs a formal-looking document to arrange payment (an advance, a letter of credit, an import declaration) before the actual sale and tax invoice are finalised. It looks like an invoice but explicitly isn't one for accounting or GST purposes.",
       "This generator produces exactly that: your business and customer details, line items with computed totals, and a clear statement that this is a proforma document, not a tax invoice or a demand for payment under GST law. It's commonly requested by customers making advance payments, and by customs authorities for cross-border shipments where the actual tax invoice will follow later.",
       "Once the customer pays the advance or the transaction proceeds, issue a proper tax invoice using the invoice generator — never record a proforma invoice as a sale in your books, since doing so can create GST filing mismatches.",
+      "Exporters in particular rely on proforma invoices constantly: overseas buyers frequently need one to open a letter of credit or arrange currency remittance before goods ship, and customs authorities on both ends may request it as part of the shipment paperwork. Keep the format simple and consistent across your business so buyers and banks recognise it immediately.",
     ],
     faq: [
       {
@@ -175,6 +178,7 @@ export const tools: ToolConfig[] = [
       "A receipt is simple but important — it's the customer's proof that a specific payment was made and accepted, and it's what they'll ask for when reconciling their own books or resolving any later dispute about whether they paid. This generator produces a clean receipt with the amount, method, purpose and date, ready to hand over or email immediately after receiving payment.",
       "Fill in who paid, how much, by what method, and what it was for (referencing the original invoice number keeps your paper trail connected), and the receipt is ready. It's deliberately simple — no line items or tax breakdown, since that detail belongs on the invoice being paid, not the receipt confirming payment.",
       "Issue a receipt for every payment you accept, even informal or cash payments — it protects both you and the customer, and for cash transactions particularly, a receipt is often the only record either side has. Keep a copy for your own records alongside the invoice it settles.",
+      "A receipt is also the fastest way to close out a payment dispute before it becomes one — a customer who has your signed receipt in hand has no room to later claim they never paid, and you have equally clean proof of exactly what you received and when, which matters at tax time and during any bank reconciliation.",
     ],
     faq: [
       {
@@ -219,6 +223,7 @@ export const tools: ToolConfig[] = [
       "A credit note reduces the amount a customer owes you against a previous invoice — issued when goods are returned, an invoice was overbilled, or you're granting a post-sale discount. It's a formal accounting document, not just an apology email, and it keeps both your books and your customer's straight on what's actually still owed.",
       "This generator references the original invoice number (so the correction is traceable), states the reason clearly, and lists the specific items or amounts being credited with computed totals. That reason field matters more than it might seem — under GST, credit notes need a documented reason, and auditors or your accountant will want it on record.",
       "Once issued, both parties should adjust their accounting records accordingly — the customer's payable reduces, your receivable and revenue recognition may need adjustment depending on your accounting method. If this relates to a GST-registered sale, check current e-invoicing and credit note reporting requirements with your accountant.",
+      "Send the credit note promptly once the underlying issue is confirmed (a return received, an error verified) rather than letting it sit unissued — a customer waiting on a documented credit for a return they've already sent back is a common, avoidable source of friction that a same-day credit note resolves immediately.",
     ],
     faq: [
       {
@@ -263,6 +268,8 @@ export const tools: ToolConfig[] = [
       "A debit note is the mirror image of a credit note, issued from the buyer's side: when you return goods to a supplier, receive a short shipment, or need to correct an undercharge on their invoice, a debit note formally records that you're claiming back money or adjusting what you owe them.",
       "This generator references the supplier's original invoice number, records the reason for the adjustment, and lists the specific items or amounts involved with computed totals. As with credit notes, keeping a clear, documented reason matters for both your internal records and GST compliance.",
       "Send the debit note to your supplier as formal notice of the adjustment, and follow up to confirm they've processed a corresponding credit note or refund on their end — the two documents should reconcile with each other for both parties' books to stay accurate.",
+      "Keeping a numbered, dated record of every debit note you issue also makes supplier performance visible over time — if the same supplier keeps generating debit notes for shortages or quality issues, that pattern is worth raising directly with them, or worth factoring into your next sourcing decision.",
+      "Attach the debit note alongside the original purchase order and delivery documentation when you send it, so the supplier can verify your claim quickly without a back-and-forth over which shipment or invoice it refers to.",
     ],
     faq: [
       {
@@ -307,6 +314,7 @@ export const tools: ToolConfig[] = [
       "A purchase order is your formal, documented commitment to buy specific goods at specific terms — sending one instead of a verbal or email agreement protects you if a supplier later disputes quantities, prices, or delivery expectations, and it gives your own accounts team a clean record to match against the eventual supplier invoice.",
       "This generator produces a complete PO: supplier details, order and required delivery dates, the delivery address, and itemised quantities and rates with computed totals. Any established supplier relationship should run on POs rather than ad-hoc ordering — it's the paper trail that makes three-way matching (PO, delivery receipt, invoice) possible before you pay a supplier invoice.",
       "Send the PO to your supplier and ask for confirmation of receipt and the expected delivery date before goods ship — catching a pricing or quantity mismatch before dispatch is far easier than after. When goods arrive, check them against this PO before accepting the corresponding invoice for payment.",
+      "Keeping every PO numbered and filed also gives you a clean audit trail if a supplier dispute ever escalates, and makes year-end reconciliation of your purchases against supplier statements far faster than reconstructing what was ordered from scattered emails and phone calls.",
     ],
     faq: [
       {
@@ -352,6 +360,7 @@ export const tools: ToolConfig[] = [
       "A delivery challan travels with goods, not with the sale — it's the document a transporter or delivery vehicle carries to prove what's being moved, where it's going, and (under GST e-way bill rules) is often required alongside or in place of an invoice for certain movement types like job work, returns, or goods sent for approval before a sale is finalised.",
       "This generator produces exactly that: consignee details, vehicle number, delivery address, and an itemised list of what's being transported with quantities (deliberately without pricing detail the way an invoice has, since a challan documents movement, not a sale). An optional approximate value field supports e-way bill and transport documentation needs without turning the challan into a priced commercial document.",
       "Keep a signed copy from the receiving party as proof of delivery, and match it against your dispatch records. If the movement is also a taxable supply, a proper tax invoice should accompany or follow the challan — check current e-way bill thresholds and requirements for your specific goods and distance.",
+      "This is especially useful for job-work movements (sending raw material to a contractor for processing and receiving finished goods back), stock transfers between your own branches or warehouses, and goods sent on approval, where issuing a full tax invoice for a movement that isn't yet a completed sale would create an unnecessary and incorrect GST entry.",
     ],
     faq: [
       {
@@ -404,6 +413,7 @@ export const tools: ToolConfig[] = [
       "Chasing late payments is uncomfortable, and that discomfort is exactly why so many small businesses let overdue invoices sit far longer than they should. Having a ready-made message for each stage of the conversation removes the awkward blank-page moment and makes it easy to actually send the reminder promptly — which is the single biggest factor in getting paid faster.",
       "The tone escalates deliberately across three stages: friendly for the first, gentle nudge (assumes it might simply be an oversight), firm for a second reminder after the friendly one is ignored (states a clear 7-day deadline and mentions late charges), and final notice for a last attempt before considering suspension of services or collections (a clear 3-day deadline and explicit consequences). Escalating tone this way, rather than staying friendly forever or going straight to threats, is both more professional and more effective.",
       "Send the first reminder promptly once an invoice is even a few days overdue — waiting weeks before the first nudge signals that your payment terms aren't really enforced, which invites slower payment across your whole customer base. Pair persistent, professional reminders with the late fee calculator to show customers exactly what continued delay will cost them.",
+      "Keep a copy of each reminder you send along with its date — a documented, escalating trail is useful if the matter ever needs to go further, and it also shows a genuinely good-faith customer exactly how much notice they were given before things got firm.",
     ],
     faq: [
       {
@@ -443,6 +453,7 @@ export const tools: ToolConfig[] = [
       "Most invoices and contracts specify a late payment charge — commonly 1.5-2% per month — but almost nobody actually calculates what that amounts to on a specific overdue amount for a specific number of days late. This calculator does that arithmetic instantly: enter the invoice amount, the agreed monthly rate, and days overdue, and get the exact late fee and total now due.",
       "The calculation converts your monthly rate to a daily rate (monthly rate ÷ 30) and applies it per day overdue — a simple, defensible method that matches how most late-fee clauses are actually worded. This makes the number concrete rather than abstract when you're following up on late payment, which strengthens a payment reminder considerably: \"the late fee is currently ₹1,167 and grows daily\" lands harder than a vague mention of penalties.",
       "Before charging a late fee, confirm your invoice or contract actually specifies one — charging a fee that wasn't agreed upfront is legally shaky and damages the relationship. If you haven't been including a late-fee clause, add one to future invoices and contracts so this calculator has real teeth going forward.",
+      "Recalculate as the overdue period grows rather than quoting a stale figure from the first reminder — the fee compounds daily under most clause wordings, so a number quoted three weeks ago understates what's actually owed today. Keeping the figure current also signals to the customer that you're tracking the account closely.",
     ],
     faq: [
       {
@@ -482,6 +493,7 @@ export const tools: ToolConfig[] = [
       "A single discount is easy to compute in your head; stacked discounts (\"20% off, plus an extra 10%\") are where most people get the arithmetic wrong — the second discount applies to the already-discounted price, not the original, so 20% + 10% is not a flat 30% off. This calculator gets the sequencing right and shows you the true effective discount.",
       "Enter the original price and your first discount, and optionally a second discount that stacks on top of the first. The calculator applies them in sequence — first discount off the original price, second discount off that reduced price — and reports both the final price and the true effective discount percentage, which is always slightly less than simply adding the two percentages together.",
       "This matters for retailers designing promotions (know exactly what margin you're giving away before advertising \"up to 30% off\"), and for shoppers evaluating whether a stacked coupon deal is actually as good as it sounds. A 20% + 10% stack, for instance, works out to a 28% effective discount, not 30% — a difference worth knowing on a large purchase.",
+      "If you're pricing a sale, check the final margin left after the discount against your product cost, not just against the original price — a generous-looking discount can quietly erase your entire profit on a low-margin item, something the margin calculator makes easy to check once you know the discounted selling price.",
     ],
     faq: [
       {
@@ -534,6 +546,7 @@ export const tools: ToolConfig[] = [
       "\"Net 30\" and similar payment terms are everywhere on invoices, but the actual due date they imply isn't always obvious at a glance, especially when you're juggling many invoices with different terms. This calculator takes the invoice date and payment term and gives you the exact due date, plus a live status showing whether it's still upcoming, due today, or already overdue.",
       "Standard net terms (15, 30, 45, 60 or 90 days from the invoice date) cover most business arrangements; select custom for anything non-standard your contract specifies. The calculation is a straightforward date addition, but doing it correctly and consistently across dozens of invoices — rather than eyeballing a calendar each time — avoids the easy mistake of chasing payment too early or too late.",
       "Use this when setting up a new customer relationship (agreeing terms upfront and knowing exactly what date that implies), when building a collections follow-up schedule (know precisely when an invoice crosses into overdue territory), or simply to double-check your own or a supplier's stated due date on an invoice.",
+      "The status line updates against today's date, so bookmarking this tool and re-checking it periodically for your open invoices is a quick, low-effort way to spot which accounts have quietly slipped into overdue territory before they've been chased — pairing that with the payment reminder generator turns the check into an actual follow-up in under a minute.",
     ],
     faq: [
       {
