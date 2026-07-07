@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  event       String // email_gate | newsletter | cta_click
+  email       String?
+  name        String?
+  toolSlug    String
+  category    String
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  createdAt   DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([toolSlug])
+}
