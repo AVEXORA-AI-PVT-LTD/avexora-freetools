@@ -41,7 +41,7 @@ export function letterheadSpec(
   const footerTop = h - MARGIN - footerHeight;
 
   let contentLeft = MARGIN;
-  let contentRight = w - MARGIN;
+  const contentRight = w - MARGIN;
   let headerBottom: number;
 
   if (variant === "band") {

@@ -51,7 +51,7 @@ export function idCardSpec(
 ): DocSpec {
   const orientation = content.orientation ?? "portrait";
   const side = content.side ?? "front";
-  const { palette, ramp } = tokens;
+  const { palette } = tokens;
   const st = styles(tokens, "mm");
 
   const w = orientation === "portrait" ? PAGE_SIZES.cr80.h : PAGE_SIZES.cr80.w;

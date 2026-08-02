@@ -67,3 +67,110 @@ Read this first at the start of every session. Spec: `20_Free_Tools_Growth_Engin
 - `ANTHROPIC_API_KEY` — AI writer tools render with a disabled notice until this is set.
 - Confirmation of EBOS module URLs (`NEXT_PUBLIC_EBOS_URL`, currently defaults to `https://ebos.avexora.in`).
 - Hosting/deployment target and domain DNS for `freetools.avexora.in` — undecided as of this session.
+
+## Session 4 — 2026-08-02 — Brand Studio: research, spec and MVP
+
+New product, same codebase: a paid subscription tier at `/studio` that generates
+business stationery. Specs: `21_Brand_Studio_Research_and_GTM.md` (market, ICP,
+offers, GTM) and `22_Brand_Studio_Spec.md` (build spec). Read those first.
+
+### Decisions taken with the owner
+- Lives in **this** Next app under `/studio`, not a separate app or repo — the
+  120 free tools are already the top of the funnel for this exact ICP.
+- **Deterministic design engine**, not diffusion. Curated palettes, OFL font
+  pairings and parametric SVG marks drawn from a seed.
+- **Razorpay** subscriptions in INR (India-first ICP).
+- **India-first, compliance-aware** positioning.
+- **Auth.js v5** + Prisma Mongo adapter.
+
+### Positioning (the reason this is not another logo maker)
+Companies Act 2013 s.12(3)(c) requires name, registered office address and CIN
+on all business letters and billheads; penalty ₹1,000/day capped at ₹1,00,000.
+LLPs carry the parallel LLPIN duty. No incumbent design tool knows this rule
+exists. Second gap: Indian HR platforms track that an employee ID card is due
+but none of them produce it, while design tools have templates and none of the
+employee data.
+
+### Built
+- **Data model**: `User`/`Account`/`Session`/`VerificationToken` (Auth.js Mongo
+  shapes) plus `Brand`, `BrandKit`, `Asset`, `Employee`, `Subscription`,
+  `UsageCounter`. `Lead` is untouched.
+- **Design engine** (`src/studio/engine/`): one `DocSpec` intermediate, three
+  renderers — SVG (preview/download), print PDF via pdf-lib (true vector,
+  bleed, crop marks), client-side Canvas raster. Layouts for letterhead,
+  envelope (DL/C5/C4), visiting card (89×54mm India standard), CR80 ID cards
+  with vCard QR, 8 social/ad formats, and an HTML email signature.
+- **Compliance engine** (`src/studio/compliance/`): rule table by entity type ×
+  document type with statutory citations and penalty exposure on every finding;
+  CIN / GSTIN (mod-36 checksum) / PAN / LLPIN / PIN validators.
+- **AI layer**: Claude curates by id from the registries and writes copy, never
+  invents colours or fonts; structured outputs + zod validation; deterministic
+  fallback when `ANTHROPIC_API_KEY` is unset.
+- **Plans & entitlements**: `src/studio/plans.ts` is the single source of truth;
+  `assertCapability` / `consumeQuota` / `assertBrandLimit` gate every export and
+  AI route **server-side**. Free tier watermarks and blocks print PDFs.
+- **Billing**: Razorpay subscriptions + webhook with HMAC-SHA256 signature
+  verification over the raw body.
+- **UI**: static marketing + pricing pages, magic-link/Google sign-in,
+  dashboard, two-step onboarding wizard, and a seven-tab brand workspace with
+  live previews and exports.
+- **Funnel**: new free tool `letterhead-compliance-checker` in `business-legal`
+  runs the same rule table and hands off to Studio; `Lead` rows are matched by
+  email on signup for free-tool → paid attribution.
+
+### Deviations / decisions (technical)
+- **`middleware.ts` does not exist in Next 16** — it is `proxy.ts` at `src/`.
+  Confirmed against `node_modules/next/dist/docs/01-app/01-getting-started/16-proxy.md`.
+  Used for optimistic redirects only; every Studio page and route re-checks the
+  real session, per the Next docs' explicit warning.
+- **The Studio layout deliberately does not call `auth()`.** Reading the session
+  there made `/studio` and `/studio/pricing` dynamic, which would cost us static
+  rendering on the primary SEO surface. The header links to `/studio/app`, which
+  redirects when signed out. Both pages are `○ (Static)` in the build output.
+- **PDF fonts**: pdf-lib embeds the standard-14 faces, mapped per curated family
+  (sans→Helvetica, serif→Times, mono→Courier). Print output is always correct
+  and needs no network, but a Playfair heading prints as Times Bold. Dropping
+  matching TTFs into `public/studio/fonts/` is the upgrade path — see
+  `engine/render/fonts-pdf.ts`, which documents the tradeoff rather than hiding it.
+- **PDF gradients** are approximated by their midpoint colour (pdf-lib has no
+  cheap gradient primitive). Layouts use gradients only for decorative bands,
+  never for anything carrying information.
+- The PDF renderer includes a **parser for the SVG subset the engine itself
+  emits** (`engine/render/svg-subset.ts`) so logos stay vector in print rather
+  than being rasterised. It is deliberately not a general SVG parser.
+
+### Defects found and fixed this session
+- A failing test exposed a real inconsistency: an LLPIN typed without a hyphen
+  printed unhyphenated on stationery, while MCA's canonical form is `AAB-1234`.
+  Fixed in `statutoryLines` — the code was wrong, not the test.
+- The GSTIN checksum was initially tested only against self-consistent fixtures,
+  which would pass even if the algorithm were wrong. Re-pinned to two real
+  published GSTINs (`27AAPFU0939F1ZV`, `29AAGCB7383J1Z4`).
+
+### Verification (this session)
+- `npx tsc --noEmit`: clean.
+- `npx vitest run`: **312/312 passing** (191 pre-existing + 121 new).
+- `npm run build`: compiled clean; **121 tool pages + 10 category hubs** still
+  generated, `/studio` and `/studio/pricing` static, Studio app routes dynamic.
+- `npx eslint`: clean across all new files. (Pre-existing warnings in
+  `src/tools/ui/image/*` and one error in `pdf-metadata-editor.tsx` are
+  untouched by this session.)
+
+### Not exercised — do before launch
+- **No live database was available in this sandbox.** `npx prisma db push` has
+  not been run against the new models, and no sign-in, brand creation, or
+  export has been round-tripped against real Mongo. Run `npx prisma db push`
+  and walk the flow in §11 of `22_Brand_Studio_Spec.md` before going live.
+- **Razorpay was not exercised.** No merchant account, so checkout and the
+  webhook are untested against the live API. Create the six plan ids, set the
+  env vars, and replay a `subscription.activated` webhook in test mode.
+- **No AI key was present**, so brand curation ran only through the
+  deterministic fallback path. The structured-output path typechecks and is
+  zod-guarded but has not been run against the live API.
+
+### Pending (owner inputs)
+- `AUTH_SECRET` plus either Resend or Google credentials — sign-in is disabled
+  without them and the sign-in page says so.
+- `ANTHROPIC_API_KEY` — AI curation and copy fall back to heuristics without it.
+- Razorpay keys, webhook secret, and the six plan ids.
+- Production `DATABASE_URL`, and `npx prisma db push` against it.

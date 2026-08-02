@@ -37,7 +37,7 @@ export function businessCardSpec(
   const { w, h } = PAGE_SIZES.businessCard;
   const side = content.side ?? "front";
   const variant = content.variant ?? "classic";
-  const { palette, ramp } = tokens;
+  const { palette } = tokens;
   const st = styles(tokens, "mm");
   const elements: Element[] = [];
   const margin = PRINT_SAFE + 2;
