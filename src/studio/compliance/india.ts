@@ -373,7 +373,11 @@ export function statutoryLines(brand: ComplianceInput): string[] {
 
   const ids: string[] = [];
   if (isCompany && brand.cin?.trim()) ids.push(`CIN: ${brand.cin.trim().toUpperCase()}`);
-  if (isLlp && brand.llpin?.trim()) ids.push(`LLPIN: ${brand.llpin.trim().toUpperCase()}`);
+  if (isLlp && brand.llpin?.trim()) {
+    // Always print the canonical hyphenated MCA form, however it was typed.
+    const parsed = validateLlpin(brand.llpin);
+    ids.push(`LLPIN: ${parsed.parsed?.formatted ?? brand.llpin.trim().toUpperCase()}`);
+  }
   if (brand.gstin?.trim()) ids.push(`GSTIN: ${brand.gstin.trim().toUpperCase()}`);
   if (ids.length) lines.push(ids.join("  ·  "));
 
