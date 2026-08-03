@@ -300,3 +300,28 @@ the app.
 - `npx vitest run`: **383 passing, 11 skipped** (the skips are the two opt-in
   suites — the sample renderer and the live-database suite).
 - `npm run build`: clean, 150 static pages, Studio marketing pages still static.
+
+### Update — all three integrations closed
+The MongoDB blocker was solved: **conda-forge ships a real mongod**
+(`mongodb-8.0.23-h8ca7601_0.conda`, linux-64), and `conda.anaconda.org` is
+reachable where every MongoDB-owned host is blocked. Extracted it, ran it as a
+single-node replica set, and the whole picture changed:
+
+- `prisma db push` — 9 collections, 12 indexes, against real mongod 8.0.23.
+- `tests/studio/db-integration.test.ts` — **10/10 passing** on first run.
+  Tightened afterwards: the concurrency test now asserts four simultaneous
+  exports against two remaining units grant *exactly* two, not merely "at most"
+  two, since a gate that granted nothing would also never exceed.
+- **Full stack over HTTP** — production server against real Mongo, a real
+  Auth.js database session, `/studio/app` 200 signed in, export 402 on free,
+  activation by signed webhook, then all five asset types returned as real PDFs.
+  Database showed 5 `Asset` rows, `UsageCounter.count = 5`, active `growth`
+  subscription. Cancellation webhook → 402 again; tampered webhook → 400;
+  unauthenticated export → 401.
+- Mutation-tested against real Mongo too: removing the quota rollback failed 2,
+  unscoping the brand lookup from `userId` failed 1.
+
+Final: `npx vitest run` with the database attached is **393 passing, 1 skipped**
+(the skip is the opt-in sample renderer). tsc and eslint clean, build clean.
+Nothing in the product is now unexercised; what a production account adds is the
+vendor's own behaviour, not a new code path.

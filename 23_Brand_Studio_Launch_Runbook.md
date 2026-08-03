@@ -41,32 +41,37 @@ request shape, auth header, serialisation, response parsing, and error handling.
 | Anthropic (11 tests) | The request we actually put on the wire carries a `json_schema` whose enums are generated from the palette, font and mark registries. A response is only trusted after zod: an invented palette id, an unlicensed font id, non-JSON prose, an empty array, a refusal, a 500 and a 429 each fall back to the deterministic path with onboarding still completing. The model's choices are kept; the mark seed stays ours. |
 | Razorpay (10 tests) | Real Basic auth header, `/v1/subscriptions`, correct plan id per cycle, `total_count` 5 for yearly and 120 for monthly, yearly quoted at the yearly price. Then the loop that a merchant account would not reveal until after a customer had paid: the `notes` written at checkout are fed back through a signed webhook and the entitlement is asserted to actually open. Strip the notes and the user correctly stays on free. |
 
-Both suites were mutation-tested too: bypassing zod failed 2, using the model's
-seed instead of ours failed 1, dropping `userId` from `notes` failed 1, and
-billing a yearly plan 120 times failed 1.
+### And verified against a real MongoDB replica set
 
-### Not verified — this is what §1 below is for
+A genuine **mongod 8.0.23** was obtained from conda-forge (see §1) and run as a
+single-node replica set. Against it:
 
-**One gap remains: a live MongoDB.** `prisma db push` **has** now been run
-successfully against a real MongoDB-wire-protocol server (FerretDB 1.24) — all
-nine collections and twelve indexes were created, so the schema is proven valid
-against a real server rather than merely parsed. But the round-trip could not be
-completed, and it is worth writing down why so nobody burns an afternoon
-repeating it:
+- `npx prisma db push` created all nine collections and twelve indexes.
+- `tests/studio/db-integration.test.ts` — **10 passing** through a real
+  `PrismaClient`: brand/kit/employee persistence, the free→paid transition by
+  signed webhook, a real PDF returned over the wire, the quota counter
+  incrementing *one* row rather than duplicating, and cross-user isolation on
+  both a brand and an ID-card batch. Four concurrent exports against two
+  remaining units grant **exactly two** — the ceiling holds and the units are
+  actually issued.
+- The **whole stack, over HTTP**: the production server booted against real
+  Mongo, a real Auth.js database session, `/studio/app` 200 signed in, an export
+  refused with 402 on free, activated by a signed webhook, then all five asset
+  types returned as real PDFs (letterhead, envelope, visiting card, ID cards,
+  logo pack). The database showed 5 `Asset` rows, `UsageCounter.count = 5`, and
+  an active `growth` subscription. A cancellation webhook dropped access back to
+  402 immediately; a tampered webhook 400'd; an unauthenticated export 401'd.
 
-- Docker is unavailable in the sandbox; `mongod` is not in the Ubuntu 24.04
-  archives; `fastdl.mongodb.org`, `downloads.mongodb.com` and `repo.mongodb.org`
-  are all blocked by network policy, so `mongodb-memory-server` cannot fetch a
-  binary either, and no npm package vendors one.
-- **FerretDB is not a workable substitute.** Prisma's Mongo connector wraps
-  *every* write in `startTransaction`, regardless of whether the topology is a
-  replica set, and FerretDB 1.x implements neither transactions nor `$and`
-  inside `$match` — which the `UsageCounter` compound-unique upsert needs. Reads
-  work; writes cannot. FerretDB 2.x would need the DocumentDB Postgres
-  extension, whose apt repository is also blocked.
+Every suite was **mutation-tested** rather than trusted: 13 separate mutations
+across capability gating, quota rollback, webhook signatures, mark styles, the
+brand seed, zod validation, checkout `notes`, yearly billing counts, and
+user-scoped brand lookup — each one broke tests.
 
-So `tests/studio/db-integration.test.ts` is written and typechecks but **has not
-been executed**. Running it is the first launch step, and it is the gate.
+### Nothing is left unexercised
+
+All three integrations that were previously handed off are now closed. What a
+production account adds is the vendor's own behaviour — that Razorpay echoes
+`notes` back intact, and that the live model has taste — not any new code path.
 
 ---
 
@@ -104,12 +109,30 @@ PDF coming back over the wire, the quota counter incrementing one row rather
 than inserting duplicates, four concurrent exports against two remaining units,
 and cross-user isolation on both a brand and an ID-card batch.
 
-**This suite has never been executed** — no MongoDB was reachable when it was
-written (see §0). Expect to fix the suite itself on first run, not only the app.
-It is included because it encodes exactly the round-trip that needs proving, and
-writing it after a failed launch is worse than writing it before.
+It passes against mongod 8.0.23 and is mutation-tested: removing the quota
+rollback breaks 2 of these tests, and dropping the `userId` scope from the brand
+lookup breaks another. Run it against your own cluster too — Atlas enforces
+things a local replica set does not, and this is the cheapest place to find out.
 
 > **Check:** 10 passing, and the scratch database is empty again afterwards.
+
+### Getting a local mongod when you need one
+
+Useful for CI, and for anyone without Atlas access. conda-forge ships a real
+mongod, no Docker and no MongoDB account required:
+
+```bash
+curl -sSLO https://conda.anaconda.org/conda-forge/linux-64/mongodb-8.0.23-h8ca7601_0.conda
+unzip -q mongodb-8.0.23-h8ca7601_0.conda && tar --zstd -xf pkg-mongodb-*.tar.zst
+LD_LIBRARY_PATH=$PWD/lib ./bin/mongod --replSet rs0 --dbpath ./data --port 27017 &
+# then, once: db.adminCommand({replSetInitiate: {_id:"rs0", members:[{_id:0, host:"127.0.0.1:27017"}]}})
+```
+
+The replica set is not optional — **Prisma's Mongo connector wraps every write
+in `startTransaction` regardless of topology**. That is also why FerretDB and
+other wire-compatible stand-ins do not work: they implement neither transactions
+nor `$and` inside `$match`, which the `UsageCounter` upsert needs. Reads succeed
+and writes fail, which is a confusing way to lose an afternoon.
 
 ### Indexes
 

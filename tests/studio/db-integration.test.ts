@@ -268,8 +268,10 @@ describe.runIf(TEST_URL)("live database", async () => {
     );
     const granted = results.filter((r) => r.status === "fulfilled").length;
 
-    expect(granted).toBeLessThanOrEqual(2);
-    expect(await usageCount(userId, "exports")).toBeLessThanOrEqual(50);
+    // Both halves matter: the ceiling must hold, and the remaining units must
+    // actually be issued — a gate that grants nothing would also "never exceed".
+    expect(granted).toBe(2);
+    expect(await usageCount(userId, "exports")).toBe(50);
   });
 
   // --- isolation -----------------------------------------------------------
