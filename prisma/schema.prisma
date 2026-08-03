@@ -120,7 +120,10 @@ model Brand {
   assets    Asset[]
   employees Employee[]
 
-  @@index([userId])
+  // Compound rather than [userId] alone: the dashboard and the brands API both
+  // filter by user and sort by updatedAt desc, and a userId-only index leaves
+  // the sort to be done in memory. The prefix still serves userId lookups.
+  @@index([userId, updatedAt])
 }
 
 /// The generated design system. `palette`, `typography` and `logoSpec` are
@@ -177,7 +180,8 @@ model Employee {
 
   brand Brand @relation(fields: [brandId], references: [id], onDelete: Cascade)
 
-  @@index([brandId])
+  // Every read of this collection is "one brand's roster, in joining order".
+  @@index([brandId, createdAt])
 }
 
 // ---------------------------------------------------------------------------

@@ -174,3 +174,54 @@ employee data.
 - `ANTHROPIC_API_KEY` — AI curation and copy fall back to heuristics without it.
 - Razorpay keys, webhook secret, and the six plan ids.
 - Production `DATABASE_URL`, and `npx prisma db push` against it.
+
+## Session 5 — 2026-08-03 — Brand Studio: launch verification
+
+Goal for the session was narrow: make the thing launchable, and check it
+actually works rather than asserting that it does. No feature work.
+
+### Added
+- `23_Brand_Studio_Launch_Runbook.md` — go-live steps in order, each with the
+  observable that proves the step worked, plus an honest split of what is
+  verified versus what still needs a live service.
+- `tests/studio/export-pipeline.test.ts` (14 tests) — renders every sellable
+  asset and asserts on the **produced PDF bytes**, not the `DocSpec`: page
+  geometry in points, bleed on all four edges, statutory particulars present as
+  real selectable text, logos still vector. Catches a class of defect the
+  spec-level tests structurally cannot.
+- `tests/studio/routes.test.ts` (23 tests) — drives the real route handlers over
+  an in-memory Prisma double: capability gating, quota exhaustion with rollback,
+  lapsed and halted subscriptions, cross-user brand isolation, and the full
+  Razorpay webhook matrix (valid, tampered, wrong secret, missing signature,
+  cancel, halt, renewal, unhandled, unattributable).
+- `tests/studio/samples.test.ts` — opt-in review tool, skipped unless
+  `SAMPLE_OUT` is set. Renders one of everything into a contact sheet plus the
+  print-ready PDFs, for eyeballing output before a release.
+
+### Verified this session
+- `npx tsc --noEmit`: clean. `npx eslint`: clean across all new files.
+- `npx vitest run`: **349 passing, 1 skipped** (312 prior + 37 new; the skip is
+  the opt-in sample renderer).
+- `npm run build`: clean; 121 tool pages + 10 category hubs still generated,
+  `/studio` and `/studio/pricing` still `○ (Static)`.
+- **Production server booted and smoked.** All public surfaces 200;
+  `/studio/app` 307s to `/studio/signin?next=…`; export and checkout 401
+  unauthenticated; the webhook 400s on a bad signature. Sitemap carries 134 URLs
+  including both Studio pages; robots disallows `/api/`.
+- **Mutation-tested the new gating suite** rather than trusting a green run:
+  disabling the capability check failed 4 tests, removing the quota rollback
+  failed 1, and making the webhook signature always valid failed 2. The tests
+  bite.
+- Rendered a full sample set and checked it for `NaN`, `undefined` and
+  `[object Object]` in the SVG output — none. Compliance behaves as designed on
+  a real brand: complete → `pass`; CIN and registered office removed → `fail` on
+  letterhead and invoice, `warn` on envelope, `pass` on visiting card (a card is
+  not a business letter).
+
+### Still not exercised — unchanged from session 4, and why
+No MongoDB was reachable in this sandbox: Docker is unavailable, `mongod` is not
+in the Ubuntu 24.04 archives, and `fastdl.mongodb.org` is blocked by the network
+policy, so `mongodb-memory-server` cannot fetch a binary either. `prisma db push`
+and a live round-trip therefore remain a pre-launch step (runbook §1). Razorpay
+and Anthropic likewise still need real credentials (runbook §3, §4). The route
+tests narrow this gap but do not close it — they prove our logic, not the driver.
