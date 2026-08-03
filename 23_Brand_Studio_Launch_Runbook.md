@@ -29,15 +29,44 @@ The gating tests were **mutation-tested**: disabling the capability check, the
 quota rollback, and the webhook signature check each made the suite fail. They
 are not passing vacuously.
 
-### Not verified — this is what §1–§4 below are for
+### Also verified — the SDK integrations, against local stand-ins
 
-1. **Mongo.** No database was reachable in the build sandbox, so `prisma db push`
-   has never run against the new models and no request has round-tripped through
-   real Prisma. The route tests use an in-memory double: they prove *our* logic,
-   not the driver, the indexes, or the connection.
-2. **Razorpay live API.** Signature handling and state mapping are proven;
-   `subscriptions.create` against the real API is not.
-3. **Anthropic.** Curation has only run through its deterministic fallback.
+Both third-party integrations were exercised with their **real client libraries
+over real HTTP**, pointed at a local server instead of the vendor. That does not
+prove the vendor behaves as documented, but it proves every line of our side:
+request shape, auth header, serialisation, response parsing, and error handling.
+
+| Area | How |
+|---|---|
+| Anthropic (11 tests) | The request we actually put on the wire carries a `json_schema` whose enums are generated from the palette, font and mark registries. A response is only trusted after zod: an invented palette id, an unlicensed font id, non-JSON prose, an empty array, a refusal, a 500 and a 429 each fall back to the deterministic path with onboarding still completing. The model's choices are kept; the mark seed stays ours. |
+| Razorpay (10 tests) | Real Basic auth header, `/v1/subscriptions`, correct plan id per cycle, `total_count` 5 for yearly and 120 for monthly, yearly quoted at the yearly price. Then the loop that a merchant account would not reveal until after a customer had paid: the `notes` written at checkout are fed back through a signed webhook and the entitlement is asserted to actually open. Strip the notes and the user correctly stays on free. |
+
+Both suites were mutation-tested too: bypassing zod failed 2, using the model's
+seed instead of ours failed 1, dropping `userId` from `notes` failed 1, and
+billing a yearly plan 120 times failed 1.
+
+### Not verified — this is what §1 below is for
+
+**One gap remains: a live MongoDB.** `prisma db push` **has** now been run
+successfully against a real MongoDB-wire-protocol server (FerretDB 1.24) — all
+nine collections and twelve indexes were created, so the schema is proven valid
+against a real server rather than merely parsed. But the round-trip could not be
+completed, and it is worth writing down why so nobody burns an afternoon
+repeating it:
+
+- Docker is unavailable in the sandbox; `mongod` is not in the Ubuntu 24.04
+  archives; `fastdl.mongodb.org`, `downloads.mongodb.com` and `repo.mongodb.org`
+  are all blocked by network policy, so `mongodb-memory-server` cannot fetch a
+  binary either, and no npm package vendors one.
+- **FerretDB is not a workable substitute.** Prisma's Mongo connector wraps
+  *every* write in `startTransaction`, regardless of whether the topology is a
+  replica set, and FerretDB 1.x implements neither transactions nor `$and`
+  inside `$match` — which the `UsageCounter` compound-unique upsert needs. Reads
+  work; writes cannot. FerretDB 2.x would need the DocumentDB Postgres
+  extension, whose apt repository is also blocked.
+
+So `tests/studio/db-integration.test.ts` is written and typechecks but **has not
+been executed**. Running it is the first launch step, and it is the gate.
 
 ---
 
@@ -57,6 +86,30 @@ additive against the existing `Lead` collection, which is untouched.
 > **Check:** `npx prisma studio` lists `Brand`, `BrandKit`, `Asset`, `Employee`,
 > `Subscription`, `UsageCounter`, `User`, `Account`, `Session` alongside the
 > existing `Lead`, and `Lead` still holds its rows.
+
+### Then run the integration suite — this is the launch gate
+
+Point it at a **scratch database**, never production. It creates and deletes its
+own users and brands, and is gated on its own env var precisely so a shell that
+happens to have `DATABASE_URL` set at production cannot trigger it.
+
+```bash
+STUDIO_TEST_DATABASE_URL="mongodb+srv://…/studio_scratch" \
+  npx vitest run tests/studio/db-integration.test.ts
+```
+
+It drives the real route handlers through a real `PrismaClient`: brand and kit
+and employee persistence, the free→paid transition via a signed webhook, a real
+PDF coming back over the wire, the quota counter incrementing one row rather
+than inserting duplicates, four concurrent exports against two remaining units,
+and cross-user isolation on both a brand and an ID-card batch.
+
+**This suite has never been executed** — no MongoDB was reachable when it was
+written (see §0). Expect to fix the suite itself on first run, not only the app.
+It is included because it encodes exactly the round-trip that needs proving, and
+writing it after a failed launch is worse than writing it before.
+
+> **Check:** 10 passing, and the scratch database is empty again afterwards.
 
 ### Indexes
 
@@ -116,6 +169,11 @@ export RAZORPAY_PLAN_GROWTH_MONTHLY=plan_... RAZORPAY_PLAN_GROWTH_YEARLY=plan_..
 export RAZORPAY_PLAN_AGENCY_MONTHLY=plan_... RAZORPAY_PLAN_AGENCY_YEARLY=plan_...
 ```
 
+`tests/studio/billing-contract.test.ts` already proves our side of this against
+the real SDK, including that the `notes` written at checkout are what the webhook
+later reads to attribute the payment. What a live account adds is confirmation
+that Razorpay behaves as documented — chiefly that it echoes `notes` back intact.
+
 Register the webhook at `https://freetools.avexora.in/api/studio/webhooks/razorpay`
 subscribed to `subscription.activated`, `.charged`, `.halted`, `.cancelled`,
 `.completed`, `.paused`, `.resumed`, `.pending`.
@@ -141,7 +199,9 @@ export STUDIO_AI_MODEL=claude-opus-5   # optional
 Unset, curation silently uses deterministic ranking — the product still works,
 it just stops being surprising. Claude only ever picks a palette, font pairing
 and mark style **by id** from the curated registries, so a bad response is
-rejected by zod rather than rendered.
+rejected by zod rather than rendered. Both of those claims are asserted in
+`tests/studio/ai-contract.test.ts` against the real SDK; what setting the key
+adds is the live model's judgement, not a new code path.
 
 > **Check:** run the onboarding wizard twice with the same inputs. With the key
 > set you get three distinct, reasoned directions; the rationale text is not

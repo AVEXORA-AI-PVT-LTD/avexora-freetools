@@ -242,3 +242,61 @@ a deliberate line, not an oversight: the paid artifact is the print PDF, which i
 rendered server-side behind `assertCapability("printPdf")`. Written up in
 runbook §7 so nobody later assumes it was enforced.
 
+
+## Session 6 — 2026-08-03 — Closing the unverified paths
+
+Session 5 handed off three unexercised integrations. This session closed two of
+them properly and established exactly why the third cannot be closed here.
+
+### Anthropic and Razorpay — now exercised for real
+Both SDKs run against a **local stand-in over real HTTP**, so every line of our
+side executes: request serialisation, auth headers, URL building, response
+parsing, error handling. Only the vendor host is redirected.
+
+- `tests/studio/ai-contract.test.ts` (11) — asserts the request we actually put
+  on the wire carries a `json_schema` whose enums are generated from the palette,
+  font and mark registries, so the two can never drift. Then every way a response
+  can be wrong: an invented palette id, an unlicensed font id, non-JSON prose, an
+  empty array, a refusal, a 500, a 429 — each falls back to the deterministic
+  path with onboarding still completing. The model's choices are kept; the mark
+  seed stays ours, so a brand renders identically forever.
+- `tests/studio/billing-contract.test.ts` (10) — real Basic auth,
+  `/v1/subscriptions`, right plan id per cycle, `total_count` 5 yearly / 120
+  monthly, yearly quoted at the yearly price. Then the loop a merchant account
+  would only reveal *after* a customer had paid: the `notes` written at checkout
+  are fed back through a signed webhook and the entitlement is asserted to open.
+  Get that shape wrong and every payment succeeds while nobody is upgraded.
+
+Mutation-tested: bypassing zod failed 2, using the model's seed instead of ours
+failed 1, dropping `userId` from `notes` failed 1, billing yearly 120 times
+failed 1.
+
+### MongoDB — partly closed, and a documented dead end
+`npx prisma db push` **did run successfully against a real MongoDB-wire-protocol
+server** (FerretDB 1.24 on a PostgreSQL backend, installed from apt). All nine
+collections and twelve indexes were created, so the schema is now proven valid
+against a real server rather than merely parsed by `prisma validate`.
+
+The full round-trip still could not run, and the reason is worth recording so
+nobody repeats the search: Docker is unavailable, `mongod` is not in the Ubuntu
+24.04 archives, `fastdl.mongodb.org` / `downloads.mongodb.com` /
+`repo.mongodb.org` are blocked by network policy (so `mongodb-memory-server`
+cannot fetch a binary), and no npm package vendors one. FerretDB is not a
+substitute: **Prisma's Mongo connector wraps every write in `startTransaction`
+regardless of topology**, and FerretDB 1.x implements neither transactions nor
+`$and` inside `$match`, which the `UsageCounter` compound-unique upsert needs.
+Reads work; writes cannot. FerretDB 2.x needs the DocumentDB Postgres extension,
+whose apt repository is also blocked.
+
+`tests/studio/db-integration.test.ts` is therefore written, typechecked and
+shipped **unexecuted** — 10 tests driving the real handlers through a real
+`PrismaClient`, gated on its own `STUDIO_TEST_DATABASE_URL` so a shell pointed at
+production cannot trigger it. Running it against a scratch Atlas database is
+runbook §1 and is the launch gate. Expect to fix the suite on first run, not only
+the app.
+
+### Verification
+- `npx tsc --noEmit` clean; `npx eslint` clean.
+- `npx vitest run`: **383 passing, 11 skipped** (the skips are the two opt-in
+  suites — the sample renderer and the live-database suite).
+- `npm run build`: clean, 150 static pages, Studio marketing pages still static.
