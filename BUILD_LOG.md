@@ -194,13 +194,20 @@ actually works rather than asserting that it does. No feature work.
   lapsed and halted subscriptions, cross-user brand isolation, and the full
   Razorpay webhook matrix (valid, tampered, wrong secret, missing signature,
   cancel, halt, renewal, unhandled, unattributable).
+- `tests/studio/curation.test.ts` (13 tests) — the heuristic curation path had
+  **no coverage at all**, and with no `ANTHROPIC_API_KEY` set it is not a corner
+  case: it produces the first three directions every new user sees. Now asserted
+  on the property that actually matters — every direction it returns survives
+  `resolveTokens` and renders a real logo and a full letterhead with the
+  statutory footer intact — plus determinism, genuine variety across the three,
+  and graceful degradation when the API call fails.
 - `tests/studio/samples.test.ts` — opt-in review tool, skipped unless
   `SAMPLE_OUT` is set. Renders one of everything into a contact sheet plus the
   print-ready PDFs, for eyeballing output before a release.
 
 ### Verified this session
 - `npx tsc --noEmit`: clean. `npx eslint`: clean across all new files.
-- `npx vitest run`: **349 passing, 1 skipped** (312 prior + 37 new; the skip is
+- `npx vitest run`: **362 passing, 1 skipped** (312 prior + 50 new; the skip is
   the opt-in sample renderer).
 - `npm run build`: clean; 121 tool pages + 10 category hubs still generated,
   `/studio` and `/studio/pricing` still `○ (Static)`.
@@ -208,10 +215,11 @@ actually works rather than asserting that it does. No feature work.
   `/studio/app` 307s to `/studio/signin?next=…`; export and checkout 401
   unauthenticated; the webhook 400s on a bad signature. Sitemap carries 134 URLs
   including both Studio pages; robots disallows `/api/`.
-- **Mutation-tested the new gating suite** rather than trusting a green run:
-  disabling the capability check failed 4 tests, removing the quota rollback
-  failed 1, and making the webhook signature always valid failed 2. The tests
-  bite.
+- **Mutation-tested the new suites** rather than trusting a green run: disabling
+  the capability check failed 4 tests, removing the quota rollback failed 1,
+  making the webhook signature always valid failed 2, collapsing the three mark
+  styles to one failed 1, and pinning the mark seed instead of deriving it from
+  the brand name failed 1. The tests bite.
 - Rendered a full sample set and checked it for `NaN`, `undefined` and
   `[object Object]` in the SVG output — none. Compliance behaves as designed on
   a real brand: complete → `pass`; CIN and registered office removed → `fail` on
@@ -225,3 +233,12 @@ policy, so `mongodb-memory-server` cannot fetch a binary either. `prisma db push
 and a live round-trip therefore remain a pre-launch step (runbook §1). Razorpay
 and Anthropic likewise still need real credentials (runbook §3, §4). The route
 tests narrow this gap but do not close it — they prove our logic, not the driver.
+
+### Known limit made explicit
+The free-plan watermark is applied client-side (`brand-workspace.tsx`), because
+screen assets are rasterised in the browser per the repo's standing convention —
+so the artwork is already there and a determined free user can skip it. That is
+a deliberate line, not an oversight: the paid artifact is the print PDF, which is
+rendered server-side behind `assertCapability("printPdf")`. Written up in
+runbook §7 so nobody later assumes it was enforced.
+

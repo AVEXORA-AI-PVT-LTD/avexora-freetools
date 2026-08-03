@@ -192,3 +192,13 @@ through the app when you only want to look at output.
   s.21 particulars — it is not a full statutory audit.
 - **Quota metering is per calendar month in IST** and has no proration. A plan
   upgrade mid-month raises the ceiling; it does not reset the counter.
+- **The free-plan watermark is a speed bump, not a boundary.** Screen assets
+  (social posts, ads) are rasterised in the browser — that is the repo's
+  standing convention and it means the artwork is already client-side, so a
+  determined free user can skip the watermark from devtools. This is a
+  deliberate line, not an oversight: the thing customers actually pay for is the
+  **print-ready PDF**, and that is rendered server-side behind
+  `assertCapability("printPdf")` where it cannot be bypassed. If watermark
+  evasion ever shows up in the numbers, the fix is to move screen-asset
+  rasterisation server-side for free accounts only — not to add client-side
+  obfuscation, which would not hold either.
