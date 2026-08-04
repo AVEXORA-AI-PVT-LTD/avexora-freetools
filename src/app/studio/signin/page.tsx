@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, emailEnabled, googleEnabled, signIn } from "@/server/auth";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 export const metadata: Metadata = {
   title: "Sign in to Brand Studio",
@@ -35,14 +38,27 @@ export default async function SignInPage({
 
       {!emailEnabled && !googleEnabled && (
         <div className="mt-8 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-semibold">Sign-in is not configured yet.</p>
+          <p className="font-semibold">Sign-in isn&apos;t available yet.</p>
           <p className="mt-1">
-            Set <code className="font-mono">AUTH_SECRET</code> plus either{" "}
-            <code className="font-mono">AUTH_RESEND_KEY</code> and{" "}
-            <code className="font-mono">EMAIL_FROM</code> for magic links, or{" "}
-            <code className="font-mono">AUTH_GOOGLE_ID</code> and{" "}
-            <code className="font-mono">AUTH_GOOGLE_SECRET</code> for Google.
+            Brand Studio accounts are not open on this deployment. The
+            compliance checker is free and needs no account — run your
+            letterhead through it in the meantime.
           </p>
+          <Link
+            href="/business-legal/letterhead-compliance-checker"
+            className="mt-2 inline-block font-semibold underline hover:text-amber-950"
+          >
+            Check my letterhead
+          </Link>
+          {/* Operators need the specific variables; visitors on the public site
+              do not, and listing them there is internal detail in a dead end. */}
+          {!isProduction && (
+            <p className="mt-3 border-t border-amber-200 pt-3 font-mono text-xs">
+              Set AUTH_SECRET plus either AUTH_RESEND_KEY and EMAIL_FROM for
+              magic links, or AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET for Google.
+              Runbook §2.
+            </p>
+          )}
         </div>
       )}
 

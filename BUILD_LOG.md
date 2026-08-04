@@ -419,3 +419,17 @@ both labels are full and nothing changed.
 against the standalone artifact: `/` 200 with three `/studio` links, `/studio`
 200 with all eight assets still rendering, and desktop/mobile screenshots
 checked.
+
+### Addendum — the sign-in dead end
+
+Linking Studio from the homepage made `/studio/signin` publicly reachable, and
+its unconfigured state listed `AUTH_SECRET`, `AUTH_RESEND_KEY`, `EMAIL_FROM`,
+`AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` to whoever landed there — internal
+detail, in a page with no way forward. Visitors now get a plain "sign-in isn't
+available yet" and a link to the free letterhead compliance checker; the
+variable list is kept for operators outside production. Verified both paths:
+production build renders no variable names, `next dev` still prints the
+checklist.
+
+This does not switch sign-in on. That still needs the §2 variables set on the
+deployment, which remains owner-gated.
