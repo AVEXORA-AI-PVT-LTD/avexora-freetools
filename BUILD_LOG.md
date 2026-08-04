@@ -325,3 +325,46 @@ Final: `npx vitest run` with the database attached is **393 passing, 1 skipped**
 (the skip is the opt-in sample renderer). tsc and eslint clean, build clean.
 Nothing in the product is now unexercised; what a production account adds is the
 vendor's own behaviour, not a new code path.
+
+## Deploy packaging
+
+`next.config.ts` now sets `output: "standalone"`, and there is a `Dockerfile`
+that ships that output on `node:22-bookworm-slim` — Debian rather than Alpine
+because `prisma generate` emits `libquery_engine-debian-openssl-3.0.x.so.node`,
+and a musl base would fail at the first query rather than at build. Next traces
+the engine into `.next/standalone` on its own, so no hand-copied binary. The
+runtime stage carries no package manager, runs as a non-root user, and takes all
+configuration from the environment at request time, so one image promotes across
+environments unchanged.
+
+### What is verified, and what is not
+
+The **standalone artifact** — the exact thing the image runs — was booted here
+with `node .next/standalone/server.js` and checked over HTTP with no environment
+set at all: `/`, `/studio`, `/studio/pricing`, `sitemap.xml`, `robots.txt` 200;
+`/studio/app` 307 to sign-in; `POST /api/studio/export` 401; the Razorpay
+webhook 400 on a bad signature. That matches the HTTP surface table in §0.
+
+The **image itself is not verified**, and should be treated as unproven until CI
+says otherwise. `docker build` cannot run in this environment: the session's
+egress policy answers 403 to `production.cloudfront.docker.com:443`, so no base
+image can be pulled — `docker build --check` cannot even resolve `FROM`. This is
+a sandbox limitation, not a defect in the Dockerfile, and it is precisely why
+`.github/workflows/ci.yml` builds the image and re-runs that same smoke test
+against a real container on every push.
+
+Also fixed one pre-existing lint error that predates this change and would have
+landed the new CI job red on its first run: `pdf-metadata-editor.tsx` called
+`setState` synchronously inside an effect to reset the form when the picker was
+cleared. `onPick` is the only thing that mutates `file`, so the reset moved into
+that handler — same behaviour, no cascading render. `npm run lint` is now 0
+errors (3 pre-existing warnings remain), `tsc --noEmit` clean, `vitest run`
+383 passing / 11 skipped, `npm run build` clean.
+
+### Still owner-gated
+
+Nothing here deploys the app to a host. That needs a target and credentials that
+do not exist in this repo: a MongoDB Atlas URL, `AUTH_SECRET` and a sign-in
+provider, the Razorpay live keys and six plan ids, and somewhere to run the
+container. Runbook §5 is the sequence; §5's proxy note is the failure to expect
+first.

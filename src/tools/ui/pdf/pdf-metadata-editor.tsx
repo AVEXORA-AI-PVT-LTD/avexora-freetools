@@ -18,11 +18,19 @@ export default function PdfMetadataEditor() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (!file) {
+  // Clearing the picker resets the form here rather than in the effect below:
+  // onPick is the only thing that changes `file`, so this is the same
+  // behaviour without a synchronous setState inside an effect.
+  const pick = (next: File | null) => {
+    setFile(next);
+    if (!next) {
       setMeta(empty);
-      return;
+      setError(null);
     }
+  };
+
+  useEffect(() => {
+    if (!file) return;
     let active = true;
     (async () => {
       try {
@@ -66,7 +74,7 @@ export default function PdfMetadataEditor() {
 
   return (
     <div className="space-y-4">
-      <PdfPicker file={file} pageCount={null} onPick={setFile} />
+      <PdfPicker file={file} pageCount={null} onPick={pick} />
       {file && (
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

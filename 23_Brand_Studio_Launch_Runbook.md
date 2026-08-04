@@ -232,7 +232,51 @@ adds is the live model's judgement, not a new code path.
 
 ---
 
-## 5. Pre-launch walk-through
+## 5. Ship it — build and run the container
+
+The app builds to `output: "standalone"`: `next build` emits `.next/standalone`,
+a self-contained server plus only the `node_modules` it actually traced. The
+`Dockerfile` ships exactly that, so the runtime image has no package manager and
+never runs an install.
+
+```bash
+docker build -t avexora-freetools:$(git rev-parse --short HEAD) .
+docker run -d -p 3000:3000 --env-file .env avexora-freetools:$(git rev-parse --short HEAD)
+```
+
+The base is Debian (`node:22-bookworm-slim`), not Alpine, and that is load
+bearing: `prisma generate` emits `libquery_engine-debian-openssl-3.0.x.so.node`.
+A musl base needs a different `binaryTargets`, and it fails at the first query
+rather than at build — the most expensive time to find out.
+
+Runtime environment, all read at request time so one image promotes across
+environments unchanged: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, whichever
+sign-in provider you configured (§2), the Razorpay keys and six plan ids (§3),
+and `ANTHROPIC_API_KEY` (§4). Only `DATABASE_URL` is needed for the app to be
+useful; the rest degrade the feature rather than breaking the boot, which is why
+the smoke test below passes with no environment at all.
+
+> **Check:** with **no** env set, `/`, `/studio`, `/studio/pricing`,
+> `sitemap.xml` and `robots.txt` return 200, `/studio/app` 307s to sign-in, a
+> `POST` to `/api/studio/export` 401s, and the webhook 400s on a bad signature.
+> This is asserted on every push by the `image` job in
+> `.github/workflows/ci.yml`, against a container built from this Dockerfile.
+
+### Behind a proxy — the one deployment-specific failure to expect
+
+The Razorpay webhook signature is HMAC-SHA256 over the **raw body** (§3). Any
+ingress that re-encodes, pretty-prints, or re-chunks the request body before it
+reaches `/api/studio/webhooks/razorpay` will make every webhook 400 and no
+subscription will ever activate. If activations do not land, check this first —
+`buffer` the body untouched, or exempt that one path from body rewriting.
+
+Also set `AUTH_URL` to the external origin and forward `X-Forwarded-Proto`, or
+Auth.js will mint callback URLs against the container's own host and sign-in
+will bounce.
+
+---
+
+## 6. Pre-launch walk-through
 
 Do this once, by hand, on the deployed site, as a real user would:
 
@@ -253,7 +297,7 @@ through the app when you only want to look at output.
 
 ---
 
-## 6. Day-one GTM (from `21_…_Research_and_GTM.md` §6)
+## 7. Day-one GTM (from `21_…_Research_and_GTM.md` §6)
 
 - Point the ~30 branding, HR and legal tool pages at Studio via the CTA block.
 - Publish `letterhead-compliance-checker` and treat it as the wedge: the
@@ -263,7 +307,7 @@ through the app when you only want to look at output.
 
 ---
 
-## 7. Known limits — say these out loud rather than discovering them later
+## 8. Known limits — say these out loud rather than discovering them later
 
 - **PDF fonts are the standard 14**, mapped per curated family. A Playfair
   heading prints as Times Bold. Drop matching TTFs into `public/studio/fonts/`
