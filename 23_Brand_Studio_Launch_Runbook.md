@@ -244,6 +244,19 @@ docker build -t avexora-freetools:$(git rev-parse --short HEAD) .
 docker run -d -p 3000:3000 --env-file .env avexora-freetools:$(git rev-parse --short HEAD)
 ```
 
+You do not have to build it yourself. Every push to a branch publishes the same
+image to this repository's own registry, tagged with both the commit SHA and the
+branch name, but only after `verify` and `image` have passed — so nothing is
+published that has not already built and served the expected surface:
+
+```bash
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u <your-username> --password-stdin
+docker pull ghcr.io/wpdigitals/avexora-freetools:<commit-sha>
+```
+
+The package inherits the repository's visibility. This repo is private, so the
+package is private too and a token with `read:packages` is needed to pull it.
+
 The base is Debian (`node:22-bookworm-slim`), not Alpine, and that is load
 bearing: `prisma generate` emits `libquery_engine-debian-openssl-3.0.x.so.node`.
 A musl base needs a different `binaryTargets`, and it fails at the first query
