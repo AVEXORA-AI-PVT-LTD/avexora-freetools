@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+# Cancel superseded runs on the same ref rather than paying for both.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, lint, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Everything below needs the generated client for types. No DATABASE_URL
+      # is required to generate — only to connect.
+      - run: npx prisma generate
+
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  image:
+    name: Build the production image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build only — no registry push, and no secrets are needed to get here.
+      # This is the step that proves the Dockerfile still assembles; the image
+      # is discarded with the runner.
+      - run: docker build -t avexora-freetools:${{ github.sha }} .
+
+      # Boot the image with no environment at all and assert the public surface.
+      # Unset DATABASE_URL is the honest worst case: the marketing and free-tool
+      # routes must still serve, and Studio must refuse rather than crash.
+      - name: Smoke-test the container
+        run: |
+          set -euo pipefail
+          docker run -d --name smoke -p 3000:3000 avexora-freetools:${{ github.sha }}
+          for i in $(seq 1 30); do
+            curl -fsS -o /dev/null http://127.0.0.1:3000/ && break
+            sleep 2
+          done
+          check() {
+            actual=$(curl -s -o /dev/null -w '%{http_code}' "${@:2}")
+            if [ "$actual" != "$1" ]; then
+              echo "expected $1, got $actual for: ${*:2}"
+              docker logs smoke
+              exit 1
+            fi
+          }
+          check 200 http://127.0.0.1:3000/
+          check 200 http://127.0.0.1:3000/studio
+          check 200 http://127.0.0.1:3000/studio/pricing
+          check 200 http://127.0.0.1:3000/sitemap.xml
+          check 200 http://127.0.0.1:3000/robots.txt
+          check 307 http://127.0.0.1:3000/studio/app
+          check 401 -X POST http://127.0.0.1:3000/api/studio/export
+          check 400 -X POST -H 'x-razorpay-signature: bogus' \
+            -H 'content-type: application/json' -d '{}' \
+            http://127.0.0.1:3000/api/studio/webhooks/razorpay
+          docker rm -f smoke
+
+  publish:
+    name: Publish the image to GHCR
+    runs-on: ubuntu-latest
+    # Only after the image is proven to build and serve. Skipped on
+    # pull_request so a PR does not publish the same commit twice.
+    needs: [verify, image]
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # The built-in GITHUB_TOKEN is enough for this repo's own namespace —
+      # no owner-supplied registry secret is involved.
+      - name: Log in to ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" \
+          | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # The repository inherits its visibility, so for a private repo this
+      # package is private too and still needs a token to pull.
+      - name: Build and push
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          branch="${GITHUB_REF_NAME//\//-}"
+          docker build -t "$image:${GITHUB_SHA}" -t "$image:${branch}" .
+          docker push "$image:${GITHUB_SHA}"
+          docker push "$image:${branch}"
+          echo "Pushed $image:${GITHUB_SHA} and $image:${branch}" >> "$GITHUB_STEP_SUMMARY"

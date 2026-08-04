@@ -67,3 +67,324 @@ Read this first at the start of every session. Spec: `20_Free_Tools_Growth_Engin
 - `ANTHROPIC_API_KEY` — AI writer tools render with a disabled notice until this is set.
 - Confirmation of EBOS module URLs (`NEXT_PUBLIC_EBOS_URL`, currently defaults to `https://ebos.avexora.in`).
 - Hosting/deployment target and domain DNS for `freetools.avexora.in` — undecided as of this session.
+
+## Session 4 — 2026-08-02 — Brand Studio: research, spec and MVP
+
+New product, same codebase: a paid subscription tier at `/studio` that generates
+business stationery. Specs: `21_Brand_Studio_Research_and_GTM.md` (market, ICP,
+offers, GTM) and `22_Brand_Studio_Spec.md` (build spec). Read those first.
+
+### Decisions taken with the owner
+- Lives in **this** Next app under `/studio`, not a separate app or repo — the
+  120 free tools are already the top of the funnel for this exact ICP.
+- **Deterministic design engine**, not diffusion. Curated palettes, OFL font
+  pairings and parametric SVG marks drawn from a seed.
+- **Razorpay** subscriptions in INR (India-first ICP).
+- **India-first, compliance-aware** positioning.
+- **Auth.js v5** + Prisma Mongo adapter.
+
+### Positioning (the reason this is not another logo maker)
+Companies Act 2013 s.12(3)(c) requires name, registered office address and CIN
+on all business letters and billheads; penalty ₹1,000/day capped at ₹1,00,000.
+LLPs carry the parallel LLPIN duty. No incumbent design tool knows this rule
+exists. Second gap: Indian HR platforms track that an employee ID card is due
+but none of them produce it, while design tools have templates and none of the
+employee data.
+
+### Built
+- **Data model**: `User`/`Account`/`Session`/`VerificationToken` (Auth.js Mongo
+  shapes) plus `Brand`, `BrandKit`, `Asset`, `Employee`, `Subscription`,
+  `UsageCounter`. `Lead` is untouched.
+- **Design engine** (`src/studio/engine/`): one `DocSpec` intermediate, three
+  renderers — SVG (preview/download), print PDF via pdf-lib (true vector,
+  bleed, crop marks), client-side Canvas raster. Layouts for letterhead,
+  envelope (DL/C5/C4), visiting card (89×54mm India standard), CR80 ID cards
+  with vCard QR, 8 social/ad formats, and an HTML email signature.
+- **Compliance engine** (`src/studio/compliance/`): rule table by entity type ×
+  document type with statutory citations and penalty exposure on every finding;
+  CIN / GSTIN (mod-36 checksum) / PAN / LLPIN / PIN validators.
+- **AI layer**: Claude curates by id from the registries and writes copy, never
+  invents colours or fonts; structured outputs + zod validation; deterministic
+  fallback when `ANTHROPIC_API_KEY` is unset.
+- **Plans & entitlements**: `src/studio/plans.ts` is the single source of truth;
+  `assertCapability` / `consumeQuota` / `assertBrandLimit` gate every export and
+  AI route **server-side**. Free tier watermarks and blocks print PDFs.
+- **Billing**: Razorpay subscriptions + webhook with HMAC-SHA256 signature
+  verification over the raw body.
+- **UI**: static marketing + pricing pages, magic-link/Google sign-in,
+  dashboard, two-step onboarding wizard, and a seven-tab brand workspace with
+  live previews and exports.
+- **Funnel**: new free tool `letterhead-compliance-checker` in `business-legal`
+  runs the same rule table and hands off to Studio; `Lead` rows are matched by
+  email on signup for free-tool → paid attribution.
+
+### Deviations / decisions (technical)
+- **`middleware.ts` does not exist in Next 16** — it is `proxy.ts` at `src/`.
+  Confirmed against `node_modules/next/dist/docs/01-app/01-getting-started/16-proxy.md`.
+  Used for optimistic redirects only; every Studio page and route re-checks the
+  real session, per the Next docs' explicit warning.
+- **The Studio layout deliberately does not call `auth()`.** Reading the session
+  there made `/studio` and `/studio/pricing` dynamic, which would cost us static
+  rendering on the primary SEO surface. The header links to `/studio/app`, which
+  redirects when signed out. Both pages are `○ (Static)` in the build output.
+- **PDF fonts**: pdf-lib embeds the standard-14 faces, mapped per curated family
+  (sans→Helvetica, serif→Times, mono→Courier). Print output is always correct
+  and needs no network, but a Playfair heading prints as Times Bold. Dropping
+  matching TTFs into `public/studio/fonts/` is the upgrade path — see
+  `engine/render/fonts-pdf.ts`, which documents the tradeoff rather than hiding it.
+- **PDF gradients** are approximated by their midpoint colour (pdf-lib has no
+  cheap gradient primitive). Layouts use gradients only for decorative bands,
+  never for anything carrying information.
+- The PDF renderer includes a **parser for the SVG subset the engine itself
+  emits** (`engine/render/svg-subset.ts`) so logos stay vector in print rather
+  than being rasterised. It is deliberately not a general SVG parser.
+
+### Defects found and fixed this session
+- A failing test exposed a real inconsistency: an LLPIN typed without a hyphen
+  printed unhyphenated on stationery, while MCA's canonical form is `AAB-1234`.
+  Fixed in `statutoryLines` — the code was wrong, not the test.
+- The GSTIN checksum was initially tested only against self-consistent fixtures,
+  which would pass even if the algorithm were wrong. Re-pinned to two real
+  published GSTINs (`27AAPFU0939F1ZV`, `29AAGCB7383J1Z4`).
+
+### Verification (this session)
+- `npx tsc --noEmit`: clean.
+- `npx vitest run`: **312/312 passing** (191 pre-existing + 121 new).
+- `npm run build`: compiled clean; **121 tool pages + 10 category hubs** still
+  generated, `/studio` and `/studio/pricing` static, Studio app routes dynamic.
+- `npx eslint`: clean across all new files. (Pre-existing warnings in
+  `src/tools/ui/image/*` and one error in `pdf-metadata-editor.tsx` are
+  untouched by this session.)
+
+### Not exercised — do before launch
+- **No live database was available in this sandbox.** `npx prisma db push` has
+  not been run against the new models, and no sign-in, brand creation, or
+  export has been round-tripped against real Mongo. Run `npx prisma db push`
+  and walk the flow in §11 of `22_Brand_Studio_Spec.md` before going live.
+- **Razorpay was not exercised.** No merchant account, so checkout and the
+  webhook are untested against the live API. Create the six plan ids, set the
+  env vars, and replay a `subscription.activated` webhook in test mode.
+- **No AI key was present**, so brand curation ran only through the
+  deterministic fallback path. The structured-output path typechecks and is
+  zod-guarded but has not been run against the live API.
+
+### Pending (owner inputs)
+- `AUTH_SECRET` plus either Resend or Google credentials — sign-in is disabled
+  without them and the sign-in page says so.
+- `ANTHROPIC_API_KEY` — AI curation and copy fall back to heuristics without it.
+- Razorpay keys, webhook secret, and the six plan ids.
+- Production `DATABASE_URL`, and `npx prisma db push` against it.
+
+## Session 5 — 2026-08-03 — Brand Studio: launch verification
+
+Goal for the session was narrow: make the thing launchable, and check it
+actually works rather than asserting that it does. No feature work.
+
+### Added
+- `23_Brand_Studio_Launch_Runbook.md` — go-live steps in order, each with the
+  observable that proves the step worked, plus an honest split of what is
+  verified versus what still needs a live service.
+- `tests/studio/export-pipeline.test.ts` (14 tests) — renders every sellable
+  asset and asserts on the **produced PDF bytes**, not the `DocSpec`: page
+  geometry in points, bleed on all four edges, statutory particulars present as
+  real selectable text, logos still vector. Catches a class of defect the
+  spec-level tests structurally cannot.
+- `tests/studio/routes.test.ts` (23 tests) — drives the real route handlers over
+  an in-memory Prisma double: capability gating, quota exhaustion with rollback,
+  lapsed and halted subscriptions, cross-user brand isolation, and the full
+  Razorpay webhook matrix (valid, tampered, wrong secret, missing signature,
+  cancel, halt, renewal, unhandled, unattributable).
+- `tests/studio/curation.test.ts` (13 tests) — the heuristic curation path had
+  **no coverage at all**, and with no `ANTHROPIC_API_KEY` set it is not a corner
+  case: it produces the first three directions every new user sees. Now asserted
+  on the property that actually matters — every direction it returns survives
+  `resolveTokens` and renders a real logo and a full letterhead with the
+  statutory footer intact — plus determinism, genuine variety across the three,
+  and graceful degradation when the API call fails.
+- `tests/studio/samples.test.ts` — opt-in review tool, skipped unless
+  `SAMPLE_OUT` is set. Renders one of everything into a contact sheet plus the
+  print-ready PDFs, for eyeballing output before a release.
+
+### Verified this session
+- `npx tsc --noEmit`: clean. `npx eslint`: clean across all new files.
+- `npx vitest run`: **362 passing, 1 skipped** (312 prior + 50 new; the skip is
+  the opt-in sample renderer).
+- `npm run build`: clean; 121 tool pages + 10 category hubs still generated,
+  `/studio` and `/studio/pricing` still `○ (Static)`.
+- **Production server booted and smoked.** All public surfaces 200;
+  `/studio/app` 307s to `/studio/signin?next=…`; export and checkout 401
+  unauthenticated; the webhook 400s on a bad signature. Sitemap carries 134 URLs
+  including both Studio pages; robots disallows `/api/`.
+- **Mutation-tested the new suites** rather than trusting a green run: disabling
+  the capability check failed 4 tests, removing the quota rollback failed 1,
+  making the webhook signature always valid failed 2, collapsing the three mark
+  styles to one failed 1, and pinning the mark seed instead of deriving it from
+  the brand name failed 1. The tests bite.
+- Rendered a full sample set and checked it for `NaN`, `undefined` and
+  `[object Object]` in the SVG output — none. Compliance behaves as designed on
+  a real brand: complete → `pass`; CIN and registered office removed → `fail` on
+  letterhead and invoice, `warn` on envelope, `pass` on visiting card (a card is
+  not a business letter).
+
+### Still not exercised — unchanged from session 4, and why
+No MongoDB was reachable in this sandbox: Docker is unavailable, `mongod` is not
+in the Ubuntu 24.04 archives, and `fastdl.mongodb.org` is blocked by the network
+policy, so `mongodb-memory-server` cannot fetch a binary either. `prisma db push`
+and a live round-trip therefore remain a pre-launch step (runbook §1). Razorpay
+and Anthropic likewise still need real credentials (runbook §3, §4). The route
+tests narrow this gap but do not close it — they prove our logic, not the driver.
+
+### Known limit made explicit
+The free-plan watermark is applied client-side (`brand-workspace.tsx`), because
+screen assets are rasterised in the browser per the repo's standing convention —
+so the artwork is already there and a determined free user can skip it. That is
+a deliberate line, not an oversight: the paid artifact is the print PDF, which is
+rendered server-side behind `assertCapability("printPdf")`. Written up in
+runbook §7 so nobody later assumes it was enforced.
+
+
+## Session 6 — 2026-08-03 — Closing the unverified paths
+
+Session 5 handed off three unexercised integrations. This session closed two of
+them properly and established exactly why the third cannot be closed here.
+
+### Anthropic and Razorpay — now exercised for real
+Both SDKs run against a **local stand-in over real HTTP**, so every line of our
+side executes: request serialisation, auth headers, URL building, response
+parsing, error handling. Only the vendor host is redirected.
+
+- `tests/studio/ai-contract.test.ts` (11) — asserts the request we actually put
+  on the wire carries a `json_schema` whose enums are generated from the palette,
+  font and mark registries, so the two can never drift. Then every way a response
+  can be wrong: an invented palette id, an unlicensed font id, non-JSON prose, an
+  empty array, a refusal, a 500, a 429 — each falls back to the deterministic
+  path with onboarding still completing. The model's choices are kept; the mark
+  seed stays ours, so a brand renders identically forever.
+- `tests/studio/billing-contract.test.ts` (10) — real Basic auth,
+  `/v1/subscriptions`, right plan id per cycle, `total_count` 5 yearly / 120
+  monthly, yearly quoted at the yearly price. Then the loop a merchant account
+  would only reveal *after* a customer had paid: the `notes` written at checkout
+  are fed back through a signed webhook and the entitlement is asserted to open.
+  Get that shape wrong and every payment succeeds while nobody is upgraded.
+
+Mutation-tested: bypassing zod failed 2, using the model's seed instead of ours
+failed 1, dropping `userId` from `notes` failed 1, billing yearly 120 times
+failed 1.
+
+### MongoDB — partly closed, and a documented dead end
+`npx prisma db push` **did run successfully against a real MongoDB-wire-protocol
+server** (FerretDB 1.24 on a PostgreSQL backend, installed from apt). All nine
+collections and twelve indexes were created, so the schema is now proven valid
+against a real server rather than merely parsed by `prisma validate`.
+
+The full round-trip still could not run, and the reason is worth recording so
+nobody repeats the search: Docker is unavailable, `mongod` is not in the Ubuntu
+24.04 archives, `fastdl.mongodb.org` / `downloads.mongodb.com` /
+`repo.mongodb.org` are blocked by network policy (so `mongodb-memory-server`
+cannot fetch a binary), and no npm package vendors one. FerretDB is not a
+substitute: **Prisma's Mongo connector wraps every write in `startTransaction`
+regardless of topology**, and FerretDB 1.x implements neither transactions nor
+`$and` inside `$match`, which the `UsageCounter` compound-unique upsert needs.
+Reads work; writes cannot. FerretDB 2.x needs the DocumentDB Postgres extension,
+whose apt repository is also blocked.
+
+`tests/studio/db-integration.test.ts` is therefore written, typechecked and
+shipped **unexecuted** — 10 tests driving the real handlers through a real
+`PrismaClient`, gated on its own `STUDIO_TEST_DATABASE_URL` so a shell pointed at
+production cannot trigger it. Running it against a scratch Atlas database is
+runbook §1 and is the launch gate. Expect to fix the suite on first run, not only
+the app.
+
+### Verification
+- `npx tsc --noEmit` clean; `npx eslint` clean.
+- `npx vitest run`: **383 passing, 11 skipped** (the skips are the two opt-in
+  suites — the sample renderer and the live-database suite).
+- `npm run build`: clean, 150 static pages, Studio marketing pages still static.
+
+### Update — all three integrations closed
+The MongoDB blocker was solved: **conda-forge ships a real mongod**
+(`mongodb-8.0.23-h8ca7601_0.conda`, linux-64), and `conda.anaconda.org` is
+reachable where every MongoDB-owned host is blocked. Extracted it, ran it as a
+single-node replica set, and the whole picture changed:
+
+- `prisma db push` — 9 collections, 12 indexes, against real mongod 8.0.23.
+- `tests/studio/db-integration.test.ts` — **10/10 passing** on first run.
+  Tightened afterwards: the concurrency test now asserts four simultaneous
+  exports against two remaining units grant *exactly* two, not merely "at most"
+  two, since a gate that granted nothing would also never exceed.
+- **Full stack over HTTP** — production server against real Mongo, a real
+  Auth.js database session, `/studio/app` 200 signed in, export 402 on free,
+  activation by signed webhook, then all five asset types returned as real PDFs.
+  Database showed 5 `Asset` rows, `UsageCounter.count = 5`, active `growth`
+  subscription. Cancellation webhook → 402 again; tampered webhook → 400;
+  unauthenticated export → 401.
+- Mutation-tested against real Mongo too: removing the quota rollback failed 2,
+  unscoping the brand lookup from `userId` failed 1.
+
+Final: `npx vitest run` with the database attached is **393 passing, 1 skipped**
+(the skip is the opt-in sample renderer). tsc and eslint clean, build clean.
+Nothing in the product is now unexercised; what a production account adds is the
+vendor's own behaviour, not a new code path.
+
+## Deploy packaging
+
+`next.config.ts` now sets `output: "standalone"`, and there is a `Dockerfile`
+that ships that output on `node:22-bookworm-slim` — Debian rather than Alpine
+because `prisma generate` emits `libquery_engine-debian-openssl-3.0.x.so.node`,
+and a musl base would fail at the first query rather than at build. Next traces
+the engine into `.next/standalone` on its own, so no hand-copied binary. The
+runtime stage carries no package manager, runs as a non-root user, and takes all
+configuration from the environment at request time, so one image promotes across
+environments unchanged.
+
+### What is verified, and what is not
+
+The **standalone artifact** — the exact thing the image runs — was booted here
+with `node .next/standalone/server.js` and checked over HTTP with no environment
+set at all: `/`, `/studio`, `/studio/pricing`, `sitemap.xml`, `robots.txt` 200;
+`/studio/app` 307 to sign-in; `POST /api/studio/export` 401; the Razorpay
+webhook 400 on a bad signature. That matches the HTTP surface table in §0.
+
+The **image itself is not verified**, and should be treated as unproven until CI
+says otherwise. `docker build` cannot run in this environment: the session's
+egress policy answers 403 to `production.cloudfront.docker.com:443`, so no base
+image can be pulled — `docker build --check` cannot even resolve `FROM`. This is
+a sandbox limitation, not a defect in the Dockerfile, and it is precisely why
+`.github/workflows/ci.yml` builds the image and re-runs that same smoke test
+against a real container on every push.
+
+Also fixed one pre-existing lint error that predates this change and would have
+landed the new CI job red on its first run: `pdf-metadata-editor.tsx` called
+`setState` synchronously inside an effect to reset the form when the picker was
+cleared. `onPick` is the only thing that mutates `file`, so the reset moved into
+that handler — same behaviour, no cascading render. `npm run lint` is now 0
+errors (3 pre-existing warnings remain), `tsc --noEmit` clean, `vitest run`
+383 passing / 11 skipped, `npm run build` clean.
+
+### Still owner-gated
+
+Nothing here deploys the app to a host. That needs a target and credentials that
+do not exist in this repo: a MongoDB Atlas URL, `AUTH_SECRET` and a sign-in
+provider, the Razorpay live keys and six plan ids, and somewhere to run the
+container. Runbook §5 is the sequence; §5's proxy note is the failure to expect
+first.
+
+### Security patch before launch — Next 16.2.10 → 16.3.0
+
+`npm audit` flagged nine high-severity advisories against 16.2.10, several of
+which matter for a payment-handling app on the public internet: unauthenticated
+disclosure of internal Server Function endpoints, SSRF via attacker-controlled
+rewrite destinations, cache confusion of response bodies, and an App Router
+Proxy bypass. Patched by moving to 16.3.0 (with `eslint-config-next` in step),
+plus an in-range `npm audit fix` for a dev-only `brace-expansion` DoS that came
+in through the ESLint toolchain and never reaches the runtime image.
+
+The Proxy-bypass advisory was the least alarming of the set here, because
+`src/proxy.ts` only does optimistic redirects and every Studio page and route
+re-checks the real session — but relying on that as the mitigation was never the
+plan.
+
+Re-verified on 16.3.0: `tsc --noEmit` clean, `npm run lint` 0 errors,
+`vitest run` 383 passing / 11 skipped, `npm run build` clean, and the standalone
+artifact re-booted and re-checked over HTTP — same eight assertions, same
+results. `npm audit` now reports **0 vulnerabilities**.

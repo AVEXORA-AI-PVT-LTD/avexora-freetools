@@ -1,4 +1,5 @@
 import type { ToolConfig } from "../types";
+import LetterheadComplianceChecker from "../ui/business-legal/letterhead-compliance-checker";
 import { generateNda } from "../compute/legal/nda";
 import { generatePrivacyPolicy } from "../compute/legal/privacy-policy";
 import { generateTerms } from "../compute/legal/terms";
@@ -11,6 +12,50 @@ import { generateLoanAgreement } from "../compute/legal/loan-agreement";
 import { generatePartnershipDeed } from "../compute/legal/partnership-deed";
 
 export const tools: ToolConfig[] = [
+  {
+    kind: "generator",
+    slug: "letterhead-compliance-checker",
+    category: "business-legal",
+    name: "Letterhead Compliance Checker",
+    tagline: "Check whether your company letterhead carries the particulars the law requires.",
+    seoDescription:
+      "Free letterhead compliance checker for Indian companies and LLPs. Verify your CIN, LLPIN, GSTIN, registered office address and contact details against Companies Act 2013 s.12(3)(c) requirements.",
+    component: LetterheadComplianceChecker,
+    about: [
+      "Section 12(3)(c) of the Companies Act 2013 requires every company registered in India to print its name, the address of its registered office and its Corporate Identity Number \u2014 along with its telephone number and, where they exist, its email and website addresses \u2014 on all its business letters, billheads, letter papers, notices and other official publications. It is one of the most routinely missed compliance requirements in Indian corporate practice, precisely because it looks like a design decision rather than a statutory one. A founder orders letterheads from a printer or builds one in a design tool, nobody involved knows the section exists, and the company operates for years on stationery that is technically in default.",
+      "The consequences are not theoretical. Failure to comply attracts a penalty of one thousand rupees for every day the default continues, subject to a maximum of one lakh rupees. Because the penalty accrues daily rather than as a one-time fine, a letterhead printed without a CIN and used for two years represents meaningful exposure. The same obligation extends to invoices and billheads, which is why a GST invoice issued on non-compliant letterhead compounds the problem across every customer you have billed.",
+      "Limited liability partnerships carry a parallel duty. Section 21 of the Limited Liability Partnership Act 2008 requires an LLP to ensure that its invoices, correspondence and official publications bear its name, the address of its registered office and its LLP Identification Number. Partnership firms and sole proprietorships have no CIN or LLPIN and therefore no equivalent obligation, though a business registered under GST must still display its GSTIN on every tax invoice it issues.",
+      "This checker runs your entity type and identifiers against those rules and tells you, document by document, what is present and what is missing. It validates the structure of your CIN, verifies your GSTIN against its mod-36 check digit so a typo is caught rather than trusted, and cross-checks that the company class encoded in your CIN matches the entity type you selected. Each finding cites the provision it comes from so you can take the report to your company secretary or chartered accountant rather than take our word for it. Nothing you enter is transmitted or stored \u2014 the entire check runs in your browser.",
+    ],
+    faq: [
+      {
+        question: "What exactly has to appear on a company letterhead in India?",
+        answer:
+          "For a company: its registered name, the address of its registered office, its CIN, and its telephone number, plus its email and website addresses if it has them. The requirement covers business letters, billheads, letter papers, notices and other official publications \u2014 not just the letterhead itself.",
+      },
+      {
+        question: "What is the penalty for not printing the CIN?",
+        answer:
+          "One thousand rupees for every day the default continues, up to a maximum of one lakh rupees. Because it accrues daily, the exposure grows for as long as non-compliant stationery remains in use.",
+      },
+      {
+        question: "Does this apply to a visiting card or a social media post?",
+        answer:
+          "No. A visiting card is not a business letter, billhead or official publication, and neither is a social post. The obligation attaches to correspondence and official documents. This checker deliberately does not flag those, so a pass on your letterhead means something.",
+      },
+      {
+        question: "Do LLPs and proprietorships have the same requirement?",
+        answer:
+          "An LLP has a parallel duty under section 21 of the LLP Act 2008 to show its name, registered office address and LLPIN on invoices, correspondence and official publications. Partnership firms and sole proprietorships have no CIN or LLPIN and no equivalent obligation, though GST-registered businesses must show their GSTIN on tax invoices.",
+      },
+      {
+        question: "Is my data sent anywhere?",
+        answer:
+          "No. The rules and validators run entirely in your browser. Your CIN, GSTIN and address never leave your device.",
+      },
+    ],
+    related: ["nda-generator", "privacy-policy-generator", "invoice-generator", "gst-calculator"],
+  },
   {
     kind: "generator",
     slug: "nda-generator",
