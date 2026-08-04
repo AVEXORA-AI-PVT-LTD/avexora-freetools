@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_NAME, SITE_URL } from "@/tools/categories";
 import { PLANS, PLAN_ORDER, formatINR } from "@/studio/plans";
+import { STUDIO_ASSETS } from "@/studio/assets";
 
 const title = "Brand Studio — compliance-ready business stationery for Indian startups";
 const description =
@@ -20,17 +21,6 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title, description },
 };
-
-const ASSETS = [
-  { name: "Logo suite", detail: "SVG, PNG, mono, reversed — four layouts" },
-  { name: "Letterhead", detail: "A4 with the statutory footer block" },
-  { name: "Envelopes", detail: "DL, C5 and C4 with bleed and crop marks" },
-  { name: "Visiting cards", detail: "89 × 54 mm — the Indian standard size" },
-  { name: "Employee ID cards", detail: "CR80 badges with vCard QR, generated in batches" },
-  { name: "Social posts", detail: "Square, portrait, story and link-preview sizes" },
-  { name: "Ad creatives", detail: "Meta feed and Google Display units" },
-  { name: "Email signatures", detail: "Inline-styled HTML that survives Outlook" },
-];
 
 export default function StudioLandingPage() {
   const jsonLd = {
@@ -111,7 +101,7 @@ export default function StudioLandingPage() {
           Everything a newly incorporated company needs
         </h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {ASSETS.map((asset) => (
+          {STUDIO_ASSETS.map((asset) => (
             <div
               key={asset.name}
               className="rounded-lg border border-slate-200 p-4"
