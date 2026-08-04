@@ -82,25 +82,31 @@ export const tools: ToolConfig[] = [
     slug: "compress-pdf",
     category: "pdf-tools",
     name: "Compress PDF",
-    tagline: "Shrink a PDF's file size with a lossless structural pass, in your browser.",
+    tagline: "Shrink a PDF by re-encoding its images, in your browser.",
     seoDescription:
-      "Free PDF compressor. Reduce PDF file size with a lossless structural pass — strips redundant metadata and repacks the file — entirely in your browser.",
+      "Free PDF compressor. Reduce PDF file size by re-encoding embedded images — or run a lossless structural pass — entirely in your browser. Scans and photo-heavy PDFs typically shrink by 70–95%.",
     component: CompressPdf,
     about: [
-      "PDF files often carry more bytes than their content needs — verbose internal structure, duplicated objects, and metadata fields (author, application version, edit history) that serve no purpose once the document is final. This tool re-saves your PDF with a leaner internal structure and strips that metadata, shrinking the file without touching a single pixel of the visible content.",
-      "Be clear-eyed about what this does and doesn't do. It's a lossless, structural compression: text stays crisp, vector graphics stay sharp, and nothing is re-rendered or degraded. What it can't do is recompress embedded images — the biggest source of bloat in scan-heavy or photo-heavy PDFs — because that requires decoding, re-encoding and potentially quality loss, which a lossless browser tool won't do without your explicit consent to a lossy trade-off. For a PDF that's mostly text and light graphics, expect a meaningful reduction; for a PDF built from high-resolution photos, expect the report to tell you the structural pass alone won't move the needle much.",
-      "The tool shows you the before-and-after size so you know exactly what you gained. Processing happens entirely in your browser, so uploading a confidential contract or financial report to compress it is not something this tool ever does.",
+      "In almost every large PDF, the bytes are in the pictures. A scanned contract or a photo-heavy report is really a stack of high-resolution JPEGs in a thin PDF wrapper, and no amount of tidying the file's internal structure will meaningfully shrink it. This tool re-encodes those embedded images, which is the only thing that actually moves the number.",
+      "Three settings, and the difference matters. **Lossless** repacks the file and strips metadata (author, application version, edit history) without touching a pixel — honest, but on an image-heavy PDF it often saves nothing, and it will tell you so rather than claim a win. **Balanced** re-encodes embedded JPEGs at high quality while keeping their original dimensions; this is the right default and typically cuts a scan by well over half. **Strong** also caps images at 1600px on the longest edge, which is ideal for something headed to email or a web form, and wrong for something headed to a printer.",
+      "Two guarantees worth stating plainly. An image is only ever replaced when the re-encode is genuinely smaller, so a pass can shrink your file or leave it alone but never inflate it. And anything the browser can't safely decode — CMYK JPEGs, vector art, fonts, stencil masks, exotic image formats — is passed through untouched rather than mangled. Text and vector graphics stay perfectly sharp at every setting, because only bitmap images are ever re-encoded.",
+      "Processing happens entirely in your browser. Compressing a confidential contract or a financial report never involves uploading it anywhere.",
     ],
     faq: [
       {
         question: "How much smaller will my PDF get?",
         answer:
-          "It depends on the source. Text-heavy PDFs with accumulated metadata and redundant structure often shrink noticeably. Image-heavy PDFs (scans, photo-based documents) see little change from this lossless pass, since the images themselves aren't re-encoded.",
+          "For scans and photo-heavy documents, usually a lot — 70–95% on Balanced or Strong, because those files are mostly JPEG data and that is exactly what gets re-encoded. For a PDF that is mostly text and vector graphics there is little to reclaim, and the Lossless setting will say so instead of reporting a meaningless 0%.",
       },
       {
         question: "Does compression reduce quality?",
         answer:
-          "No — this is a lossless structural compression. Text, vector graphics and embedded images are preserved exactly as they were; only redundant structure and metadata are removed.",
+          "It depends on the setting you choose. Lossless changes nothing visible — it only removes redundant structure and metadata. Balanced and Strong re-encode embedded bitmap images, which is a lossy trade made deliberately in exchange for a much smaller file; Strong additionally reduces image dimensions. Text and vector graphics stay perfectly sharp at every setting, since only bitmap images are ever re-encoded.",
+      },
+      {
+        question: "Could it make my PDF bigger?",
+        answer:
+          "No. Each image is only swapped in when the re-encoded version is genuinely smaller than the one it replaces, and if the finished file is not smaller than what you started with, the tool reports that rather than handing you a download.",
       },
       {
         question: "Is my file uploaded to compress it?",
