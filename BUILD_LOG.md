@@ -388,3 +388,48 @@ Re-verified on 16.3.0: `tsc --noEmit` clean, `npm run lint` 0 errors,
 `vitest run` 383 passing / 11 skipped, `npm run build` clean, and the standalone
 artifact re-booted and re-checked over HTTP — same eight assertions, same
 results. `npm audit` now reports **0 vulnerabilities**.
+
+## Session 7 — 2026-08-04 — Brand Studio was unreachable from the homepage
+
+`/studio` shipped with a sitemap entry and nothing else: no link from `/`, the
+header or the footer, so the only paid surface on the property could be reached
+only by typing the URL or arriving from search.
+
+Added three entry points:
+
+- A Brand Studio band on the homepage between the search hero and the category
+  grid — positioning line, the section 12(3)(c) framing, the asset list, and
+  CTAs to `/studio` and `/studio/pricing`.
+- A header nav link, present on every page.
+- Footer links to Brand Studio and Studio pricing alongside the category column.
+
+The homepage band reads its price from `PLANS.launch.monthlyPaise` rather than
+hardcoding ₹499, for the same reason `plans.ts` exists. The asset list moved out
+of `src/app/studio/page.tsx` into `src/studio/assets.ts` so the landing page and
+the homepage cannot advertise different stationery sets.
+
+One layout consequence: at 390 px the header only fits two nav items, and adding
+a third wrapped the wordmark onto a second line (measured: 28 px → 56 px). The
+Studio link shortens to "Studio" below `sm`, and "All tools" is hidden there —
+the wordmark already goes to `/`, which opens on the category grid. Above `sm`
+both labels are full and nothing changed.
+
+`tsc --noEmit` clean, `npm run lint` 0 errors (3 pre-existing warnings),
+`vitest run` 383 passing / 11 skipped, `npm run build` clean. Verified over HTTP
+against the standalone artifact: `/` 200 with three `/studio` links, `/studio`
+200 with all eight assets still rendering, and desktop/mobile screenshots
+checked.
+
+### Addendum — the sign-in dead end
+
+Linking Studio from the homepage made `/studio/signin` publicly reachable, and
+its unconfigured state listed `AUTH_SECRET`, `AUTH_RESEND_KEY`, `EMAIL_FROM`,
+`AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` to whoever landed there — internal
+detail, in a page with no way forward. Visitors now get a plain "sign-in isn't
+available yet" and a link to the free letterhead compliance checker; the
+variable list is kept for operators outside production. Verified both paths:
+production build renders no variable names, `next dev` still prints the
+checklist.
+
+This does not switch sign-in on. That still needs the §2 variables set on the
+deployment, which remains owner-gated.

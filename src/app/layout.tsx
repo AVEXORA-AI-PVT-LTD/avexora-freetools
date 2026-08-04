@@ -41,8 +41,17 @@ export default function RootLayout({
               Avexora <span className="text-indigo-600">Free Tools</span>
             </Link>
             <nav className="flex items-center gap-4 text-sm">
-              <Link href="/#categories" className="text-slate-600 hover:text-slate-900">
+              {/* Below sm the header only fits two items; the logo already
+                  lands on the category grid, so "All tools" is the one to drop. */}
+              <Link
+                href="/#categories"
+                className="hidden text-slate-600 hover:text-slate-900 sm:inline"
+              >
                 All tools
+              </Link>
+              <Link href="/studio" className="text-slate-600 hover:text-slate-900">
+                <span className="sm:hidden">Studio</span>
+                <span className="hidden sm:inline">Brand Studio</span>
               </Link>
               <a
                 href={`${EBOS_URL}?utm_source=freetools&utm_medium=header&utm_campaign=site`}
@@ -69,6 +78,20 @@ export default function RootLayout({
                   </Link>
                 </div>
               ))}
+              <div>
+                <Link
+                  href="/studio"
+                  className="text-sm font-semibold text-slate-800 hover:text-indigo-700"
+                >
+                  Brand Studio
+                </Link>
+                <Link
+                  href="/studio/pricing"
+                  className="mt-1 block text-sm text-slate-600 hover:text-indigo-700"
+                >
+                  Studio pricing
+                </Link>
+              </div>
             </div>
             <p className="mt-8 text-xs text-slate-500">
               © {new Date().getFullYear()} Avexora · freetools.avexora.in — free
