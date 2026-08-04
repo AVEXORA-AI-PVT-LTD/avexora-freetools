@@ -275,6 +275,41 @@ the smoke test below passes with no environment at all.
 > This is asserted on every push by the `image` job in
 > `.github/workflows/ci.yml`, against a container built from this Dockerfile.
 
+### Or deploy on Vercel
+
+Vercel does not use the Dockerfile — it builds through its own adapter — so the
+container above is the self-hosting path and this is the alternative, not a
+second step. Import `wpdigitals/avexora-freetools` at `vercel.com/new`; the
+framework is detected automatically and nothing needs configuring at import
+time.
+
+Two things in the repo exist for this:
+
+- **`package.json` has `postinstall: prisma generate`.** Vercel restores a
+  cached `node_modules` between builds and can skip a dependency's own install
+  hooks, which leaves a stale or missing client and fails the build somewhere
+  confusing. The explicit postinstall makes generation part of every install.
+  Note it errors rather than skipping when it cannot find a schema, which is why
+  the Dockerfile copies `prisma/` before `npm ci`.
+- **`vercel.json` pins `regions: ["bom1"]`** (Mumbai). Match this to wherever
+  the Atlas cluster actually lives — a function in Washington talking to a
+  cluster in Mumbai pays that round trip on every query, and PDF export is the
+  place it shows.
+
+Set the §1–§4 environment variables in **Project → Settings → Environment
+Variables** before the first deploy, `AUTH_URL` among them, set to the real
+origin. Production deploys come from the repository's **default branch**, so
+this work has to be merged to `main` — a green branch is not a deploy.
+
+> **Check:** the deployment shows Ready, `/` and `/studio` load on the Vercel
+> URL, and `/studio/signin` offers whichever provider you configured rather than
+> reporting that none is set.
+
+If PDF export ever times out on a large ID-card batch, raise `maxDuration` for
+`src/app/api/studio/export/route.ts` via the `functions` key in `vercel.json`.
+It is deliberately not set now, because a `functions` pattern that matches
+nothing fails the build outright.
+
 ### Behind a proxy — the one deployment-specific failure to expect
 
 The Razorpay webhook signature is HMAC-SHA256 over the **raw body** (§3). Any

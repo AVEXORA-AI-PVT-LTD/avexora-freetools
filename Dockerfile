@@ -14,6 +14,11 @@
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
+# The schema has to be here before npm ci: package.json's postinstall runs
+# `prisma generate`, which errors out rather than skipping when it finds no
+# schema. That postinstall exists for Vercel, whose cached node_modules can
+# otherwise carry a stale client into a build.
+COPY prisma ./prisma
 RUN npm ci
 
 # ---------------------------------------------------------------------------
