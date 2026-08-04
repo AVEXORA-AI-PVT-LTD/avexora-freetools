@@ -368,3 +368,23 @@ do not exist in this repo: a MongoDB Atlas URL, `AUTH_SECRET` and a sign-in
 provider, the Razorpay live keys and six plan ids, and somewhere to run the
 container. Runbook §5 is the sequence; §5's proxy note is the failure to expect
 first.
+
+### Security patch before launch — Next 16.2.10 → 16.3.0
+
+`npm audit` flagged nine high-severity advisories against 16.2.10, several of
+which matter for a payment-handling app on the public internet: unauthenticated
+disclosure of internal Server Function endpoints, SSRF via attacker-controlled
+rewrite destinations, cache confusion of response bodies, and an App Router
+Proxy bypass. Patched by moving to 16.3.0 (with `eslint-config-next` in step),
+plus an in-range `npm audit fix` for a dev-only `brace-expansion` DoS that came
+in through the ESLint toolchain and never reaches the runtime image.
+
+The Proxy-bypass advisory was the least alarming of the set here, because
+`src/proxy.ts` only does optimistic redirects and every Studio page and route
+re-checks the real session — but relying on that as the mitigation was never the
+plan.
+
+Re-verified on 16.3.0: `tsc --noEmit` clean, `npm run lint` 0 errors,
+`vitest run` 383 passing / 11 skipped, `npm run build` clean, and the standalone
+artifact re-booted and re-checked over HTTP — same eight assertions, same
+results. `npm audit` now reports **0 vulnerabilities**.
