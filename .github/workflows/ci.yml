@@ -74,3 +74,34 @@ jobs:
             -H 'content-type: application/json' -d '{}' \
             http://127.0.0.1:3000/api/studio/webhooks/razorpay
           docker rm -f smoke
+
+  publish:
+    name: Publish the image to GHCR
+    runs-on: ubuntu-latest
+    # Only after the image is proven to build and serve. Skipped on
+    # pull_request so a PR does not publish the same commit twice.
+    needs: [verify, image]
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # The built-in GITHUB_TOKEN is enough for this repo's own namespace —
+      # no owner-supplied registry secret is involved.
+      - name: Log in to ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" \
+          | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # The repository inherits its visibility, so for a private repo this
+      # package is private too and still needs a token to pull.
+      - name: Build and push
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          branch="${GITHUB_REF_NAME//\//-}"
+          docker build -t "$image:${GITHUB_SHA}" -t "$image:${branch}" .
+          docker push "$image:${GITHUB_SHA}"
+          docker push "$image:${branch}"
+          echo "Pushed $image:${GITHUB_SHA} and $image:${branch}" >> "$GITHUB_STEP_SUMMARY"
