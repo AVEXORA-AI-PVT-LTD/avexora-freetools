@@ -145,6 +145,28 @@ describe("computeBreakEven", () => {
   it("errors when variable cost >= price", () => {
     expect(computeBreakEven({ fixedCosts: "1000", pricePerUnit: "100", variableCostPerUnit: "100" })).toHaveProperty("error");
   });
+  it("uses ceil'd units for revenue (bug fix)", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "101", pricePerUnit: "10", variableCostPerUnit: "8" });
+    expect(r.get("Break-even units")).toBe("51");
+    expect(r.get("Break-even revenue")).toBe("₹510.00");
+    expect(r.get("Contribution margin per unit")).toBe("₹2.00");
+    expect(r.get("Contribution margin ratio")).toBe("20%");
+  });
+  it("exact division produces correct revenue", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "100", pricePerUnit: "10", variableCostPerUnit: "5" });
+    expect(r.get("Break-even units")).toBe("20");
+    expect(r.get("Break-even revenue")).toBe("₹200.00");
+  });
+  it("ceil with fractional units and higher price", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "100", pricePerUnit: "20", variableCostPerUnit: "12" });
+    expect(r.get("Break-even units")).toBe("13");
+    expect(r.get("Break-even revenue")).toBe("₹260.00");
+  });
+  it("larger values", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "1000", pricePerUnit: "100", variableCostPerUnit: "60" });
+    expect(r.get("Break-even units")).toBe("25");
+    expect(r.get("Break-even revenue")).toBe("₹2,500.00");
+  });
 });
 
 describe("computeMargin", () => {
