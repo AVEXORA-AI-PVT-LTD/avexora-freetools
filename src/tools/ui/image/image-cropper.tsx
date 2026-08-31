@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ImagePicker, canvasToBlob, downloadBlob, labelCls, primaryBtn, useImageFile } from "./image-shared";
+import { ImagePicker, canvasToBlob, computeCropRect, downloadBlob, labelCls, primaryBtn, useImageFile } from "./image-shared";
 
 export default function ImageCropper() {
   const { file, image, error, setError, pick } = useImageFile();
@@ -48,17 +48,18 @@ export default function ImageCropper() {
     setBusy(true);
     setError(null);
     try {
-      const scale = image.naturalWidth / imgRef.current.getBoundingClientRect().width;
-      const sx = box.x * scale;
-      const sy = box.y * scale;
-      const sw = box.w * scale;
-      const sh = box.h * scale;
+      const rect = imgRef.current.getBoundingClientRect();
+      const cropRect = computeCropRect(box, rect, image.naturalWidth, image.naturalHeight);
+      if (!cropRect) {
+        setError("The selected crop area is too small. Please select a larger area.");
+        return;
+      }
 
       const canvas = document.createElement("canvas");
-      canvas.width = Math.round(sw);
-      canvas.height = Math.round(sh);
+      canvas.width = cropRect.outW;
+      canvas.height = cropRect.outH;
       const ctx = canvas.getContext("2d")!;
-      ctx.drawImage(image, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, cropRect.sx, cropRect.sy, cropRect.outW, cropRect.outH, 0, 0, cropRect.outW, cropRect.outH);
 
       const type = file.type === "image/png" ? "image/png" : "image/jpeg";
       const blob = await canvasToBlob(canvas, type, 0.92);

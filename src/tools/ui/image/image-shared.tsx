@@ -106,6 +106,59 @@ export function rotateFlipGeometry(
   };
 }
 
+export interface CropBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface CropRect {
+  sx: number;
+  sy: number;
+  outW: number;
+  outH: number;
+}
+
+/**
+ * Convert a display-space crop selection to a valid natural-image-space crop
+ * rectangle, safe to pass to `drawImage`.
+ *
+ * The selection box is expressed in displayed/rendered image coordinates and
+ * `rect` is the displayed image size. This converts to the source image's
+ * natural pixel space and then CLAMPS the source rectangle to the natural image
+ * bounds, so the source rectangle never extends past the image edge (which
+ * would make `drawImage` clip the source and leave a blank/transparent strip at
+ * the boundary).
+ *
+ * Returns `null` when the crop would have non-positive width/height so callers
+ * can show a validation message instead of generating a blank canvas.
+ */
+export function computeCropRect(
+  box: CropBox,
+  rect: { width: number; height: number },
+  naturalWidth: number,
+  naturalHeight: number,
+): CropRect | null {
+  if (naturalWidth <= 0 || naturalHeight <= 0 || rect.width <= 0 || rect.height <= 0) return null;
+
+  const scaleX = naturalWidth / rect.width;
+  const scaleY = naturalHeight / rect.height;
+
+  const sx = Math.max(0, Math.floor(box.x * scaleX));
+  const sy = Math.max(0, Math.floor(box.y * scaleY));
+
+  const sw = Math.min(box.w * scaleX, naturalWidth - sx);
+  const sh = Math.min(box.h * scaleY, naturalHeight - sy);
+
+  if (sw <= 0 || sh <= 0) return null;
+
+  const outW = Math.max(1, Math.floor(sw));
+  const outH = Math.max(1, Math.floor(sh));
+
+  return { sx, sy, outW, outH };
+}
+
 export function useImageFile() {
   const [file, setFile] = useState<File | null>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
