@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import Image from "next/image";
 import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
 import "./globals.css";
 
@@ -36,9 +37,9 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col text-slate-900" suppressHydrationWarning>
         <header className="border-b border-slate-200 print:hidden">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-            <Link href="/" className="text-lg font-bold tracking-tight text-slate-900">
-              Avexora <span className="text-indigo-600">Free Tools</span>
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:py-1.5">
+            <Link href="/" className="flex items-center -ml-4">
+              <Image src="/logo.png" alt="Avexora Free Tools" width={400} height={100} className="h-12 w-auto object-contain sm:h-14" priority />
             </Link>
             <nav className="flex items-center gap-4 text-sm">
               <Link href="/#categories" className="text-slate-600 hover:text-slate-900">
