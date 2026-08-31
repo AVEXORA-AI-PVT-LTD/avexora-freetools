@@ -17,7 +17,12 @@ export const generateLoanAgreement: GenerateFn = (values) => {
   if (repaymentMonths === null) return { error: "Enter the repayment period in months." };
   if (loanDate === "") return { error: "Select the loan date." };
 
-  const monthlyInstalment = principal * (1 + (interestRate / 100) * (repaymentMonths / 12)) / repaymentMonths;
+  const monthlyRate = interestRate / 12 / 100;
+  const emi =
+    monthlyRate === 0
+      ? principal / repaymentMonths
+      : (principal * monthlyRate * Math.pow(1 + monthlyRate, repaymentMonths)) /
+        (Math.pow(1 + monthlyRate, repaymentMonths) - 1);
 
   const text = `LOAN AGREEMENT
 
@@ -36,7 +41,7 @@ The Lender agrees to lend, and the Borrower agrees to borrow, a sum of ${formatI
 The Loan Amount shall carry interest at the rate of ${formatPercent(interestRate)} per annum, calculated on the outstanding principal balance.
 
 3. Repayment
-The Borrower shall repay the Loan Amount together with interest in ${repaymentMonths} equal monthly instalments of approximately ${formatINR(monthlyInstalment)} each, commencing one month from the date of disbursement, until the Loan Amount and all accrued interest are repaid in full.
+The Borrower shall repay the Loan Amount together with interest in ${repaymentMonths} equal monthly instalments of approximately ${formatINR(emi)} each, commencing one month from the date of disbursement, until the Loan Amount and all accrued interest are repaid in full.
 
 4. Prepayment
 The Borrower may prepay the outstanding Loan Amount, in whole or in part, at any time without penalty, unless otherwise agreed in writing between the Parties.
