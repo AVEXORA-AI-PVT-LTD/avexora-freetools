@@ -38,6 +38,18 @@ export function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Choose the output type for browser-canvas compression/processing.
+ *
+ * PNG sources keep PNG output: PNG is lossless and supports an alpha channel,
+ * whereas an alpha-less format (e.g. JPEG) would flatten a transparent image
+ * onto an opaque black background. Non-PNG sources keep the JPEG path so the
+ * existing compression behaviour is unchanged for images without transparency.
+ */
+export function imageCompressionType(fileType: string): "image/png" | "image/jpeg" {
+  return fileType === "image/png" ? "image/png" : "image/jpeg";
+}
+
 export function useImageFile() {
   const [file, setFile] = useState<File | null>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
