@@ -103,6 +103,30 @@ describe("generateDeliveryChallan", () => {
     expect(out).toMatch(/not a tax invoice/);
     expect(out).toContain("MH12AB1234");
   });
+  it("includes the approximate value when a valid positive value is provided", () => {
+    const out = textOf(generateDeliveryChallan, {
+      businessName: "Acme", consigneeName: "Ravi", challanNumber: "DC1", date: "2026-08-01",
+      deliveryAddress: "Market Road, Nashik", items: "Tiles, 50", approxValue: "150000",
+    });
+    expect(out).toContain("₹1,50,000.00");
+  });
+  it("omits the approximate value line when left empty", () => {
+    const out = textOf(generateDeliveryChallan, {
+      businessName: "Acme", consigneeName: "Ravi", challanNumber: "DC1", date: "2026-08-01",
+      deliveryAddress: "Market Road, Nashik", items: "Tiles, 50", approxValue: "",
+    });
+    expect(out).not.toContain("Approximate value");
+  });
+  it("rejects a present-but-invalid approximate value instead of silently omitting it", () => {
+    for (const bad of ["abc", "12..5", "--100", "12abc"]) {
+      const out = generateDeliveryChallan({
+        businessName: "Acme", consigneeName: "Ravi", challanNumber: "DC1", date: "2026-08-01",
+        deliveryAddress: "Market Road, Nashik", items: "Tiles, 50", approxValue: bad,
+      });
+      expect(out).toHaveProperty("error");
+      expect(out).not.toHaveProperty("text");
+    }
+  });
 });
 
 describe("generatePaymentReminder", () => {

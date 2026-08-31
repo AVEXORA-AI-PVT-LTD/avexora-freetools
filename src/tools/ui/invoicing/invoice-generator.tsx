@@ -44,7 +44,26 @@ export default function InvoiceGenerator() {
   const totalGst = rows.reduce((s, r) => s + r.gst, 0);
   const grandTotal = subtotal + totalGst;
 
-  const canPrint = seller.name.trim() !== "" && buyer.name.trim() !== "" &&
+  // Invalid numeric input must never be silently coerced to 0. Any line item a
+  // user has filled in with a malformed/non-numeric quantity or rate is flagged
+  // with an inline error and blocks printing instead of producing a misleading
+  // amount from a coerced zero.
+  const numericErrors: string[] = [];
+  items.forEach((it, i) => {
+    const qtyRaw = it.qty.trim();
+    const rateRaw = it.rate.trim();
+    const used = it.description.trim() !== "" || qtyRaw !== "" || rateRaw !== "";
+    if (!used) return;
+    const qtyValid = qtyRaw === "" || (Number.isFinite(Number(qtyRaw)) && Number(qtyRaw) >= 0);
+    const rateValid = rateRaw === "" || (Number.isFinite(Number(rateRaw)) && Number(rateRaw) >= 0);
+    if (!qtyValid) numericErrors.push(`Line ${i + 1} quantity must be a valid non-negative number.`);
+    if (!rateValid) numericErrors.push(`Line ${i + 1} rate must be a valid non-negative number.`);
+  });
+
+  const canPrint =
+    numericErrors.length === 0 &&
+    seller.name.trim() !== "" &&
+    buyer.name.trim() !== "" &&
     rows.some((r) => r.description.trim() !== "" && r.amount > 0);
 
   return (
@@ -143,6 +162,14 @@ export default function InvoiceGenerator() {
           + Add line item
         </button>
       </div>
+
+      {numericErrors.length > 0 && (
+        <ul className="space-y-0.5 text-sm text-red-600 print:hidden">
+          {numericErrors.map((msg, i) => (
+            <li key={i}>{msg}</li>
+          ))}
+        </ul>
+      )}
 
       {/* Invoice preview — the only region visible when printing */}
       <div className="print-area rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-900">

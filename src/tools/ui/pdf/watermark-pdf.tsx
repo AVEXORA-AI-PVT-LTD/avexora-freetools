@@ -14,13 +14,18 @@ export default function WatermarkPdf() {
       setError("Enter the watermark text.");
       return;
     }
+    const opacityNum = Number(opacity);
+    if (opacity.trim() === "" || !Number.isFinite(opacityNum) || opacityNum < 0 || opacityNum > 100) {
+      setError("Enter a valid opacity between 0 and 100.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
       const { PDFDocument, rgb, degrees, StandardFonts } = await import("pdf-lib");
       const doc = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
       const font = await doc.embedFont(StandardFonts.HelveticaBold);
-      const alpha = Math.min(Math.max(Number(opacity) / 100, 0.05), 1);
+      const alpha = Math.min(Math.max(opacityNum / 100, 0.05), 1);
       const size = 48;
 
       for (const page of doc.getPages()) {

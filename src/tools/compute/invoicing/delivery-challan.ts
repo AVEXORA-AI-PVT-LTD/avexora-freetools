@@ -35,6 +35,11 @@ export const generateDeliveryChallan: GenerateFn = (values) => {
   if (date === "") return { error: "Select the date." };
   if (deliveryAddress === "") return { error: "Enter the delivery address." };
   if (itemsRaw === "") return { error: "Add at least one item (description, qty)." };
+  // Present-but-invalid input for the optional approximate value must error
+  // rather than being silently treated as absent/zero.
+  if (str(values.approxValue) !== "" && value === null) {
+    return { error: "Enter a valid approximate value, or leave it blank." };
+  }
 
   const items = parseChallanItems(itemsRaw);
   if (items.length === 0) return { error: "Could not parse any items. Use one per line: description, qty." };
