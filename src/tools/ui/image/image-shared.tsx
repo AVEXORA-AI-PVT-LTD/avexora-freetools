@@ -50,6 +50,62 @@ export function imageCompressionType(fileType: string): "image/png" | "image/jpe
   return fileType === "image/png" ? "image/png" : "image/jpeg";
 }
 
+export interface RotateFlipGeometry {
+  srcW: number;
+  srcH: number;
+  outW: number;
+  outH: number;
+  cx: number;
+  cy: number;
+  rad: number;
+  cos: number;
+  sin: number;
+  flipH: number;
+  flipV: number;
+}
+
+/**
+ * Compute the geometry for rotate + horizontal/vertical flip.
+ *
+ * This is the single source of truth for the transformation model used by the
+ * Image Rotator & Flipper. All values are derived mathematically from the
+ * actual source dimensions (no hard-coded offsets), so it works for arbitrary
+ * image sizes.
+ *
+ * Output dimensions are the bounding box of the source rotated by `angle`
+ * degrees. For axis-aligned 90°-step angles this equals swapping width/height
+ * for 90°/270° and keeping them for 0°/180°.
+ *
+ * The caller draws the source centered at the output canvas center:
+ *   translate(cx, cy)  rotate(rad)  scale(flipH, flipV)  drawImage(-srcW/2, -srcH/2)
+ */
+export function rotateFlipGeometry(
+  srcW: number,
+  srcH: number,
+  angle: number,
+  flipH: boolean,
+  flipV: boolean,
+): RotateFlipGeometry {
+  const rad = (((angle % 360) + 360) % 360) * (Math.PI / 180);
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  const outW = Math.abs(Math.round(srcW * cos + srcH * sin));
+  const outH = Math.abs(Math.round(srcW * sin + srcH * cos));
+  return {
+    srcW,
+    srcH,
+    outW,
+    outH,
+    cx: outW / 2,
+    cy: outH / 2,
+    rad,
+    cos,
+    sin,
+    flipH: flipH ? -1 : 1,
+    flipV: flipV ? -1 : 1,
+  };
+}
+
 export function useImageFile() {
   const [file, setFile] = useState<File | null>(null);
   const [image, setImage] = useState<HTMLImageElement | null>(null);

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ImagePicker, canvasToBlob, downloadBlob, inputCls, labelCls, primaryBtn, useImageFile } from "./image-shared";
+import {
+  ImagePicker, canvasToBlob, downloadBlob, inputCls, labelCls, primaryBtn, rotateFlipGeometry, useImageFile,
+} from "./image-shared";
 
 export function ImageRotatorFlipper() {
   const { file, image, error, setError, pick } = useImageFile();
@@ -16,18 +18,16 @@ export function ImageRotatorFlipper() {
     setError(null);
     try {
       const angle = Number(rotation);
-      const swapDims = angle === 90 || angle === 270;
-      const w = swapDims ? image.naturalHeight : image.naturalWidth;
-      const h = swapDims ? image.naturalWidth : image.naturalHeight;
+      const geo = rotateFlipGeometry(image.naturalWidth, image.naturalHeight, angle, flipH, flipV);
 
       const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
+      canvas.width = geo.outW;
+      canvas.height = geo.outH;
       const ctx = canvas.getContext("2d")!;
-      ctx.translate(w / 2, h / 2);
-      ctx.rotate((angle * Math.PI) / 180);
-      ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
-      ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+      ctx.translate(geo.cx, geo.cy);
+      ctx.rotate(geo.rad);
+      ctx.scale(geo.flipH, geo.flipV);
+      ctx.drawImage(image, -geo.srcW / 2, -geo.srcH / 2);
 
       const type = file.type === "image/png" ? "image/png" : "image/jpeg";
       const blob = await canvasToBlob(canvas, type, 0.92);
