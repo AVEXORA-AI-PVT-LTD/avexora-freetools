@@ -60,6 +60,82 @@ describe("buildUtmUrl", () => {
     expect(buildUtmUrl({ url: "ftp://x.in", source: "s", medium: "m", campaign: "c" })).toHaveProperty("error");
     expect(buildUtmUrl({ url: "https://x.in", source: "", medium: "m", campaign: "c" })).toHaveProperty("error");
   });
+
+  it("fixes basic fragment: UTM params go before #pricing", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/page#pricing", source: "google", medium: "cpc", campaign: "test" }),
+    ).toBe("https://example.com/page?utm_source=google&utm_medium=cpc&utm_campaign=test#pricing");
+  });
+
+  it("fixes existing query + fragment: preserves query and puts UTM before #pricing", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/page?ref=abc#pricing", source: "google", medium: "email", campaign: "sale" }),
+    ).toBe("https://example.com/page?ref=abc&utm_source=google&utm_medium=email&utm_campaign=sale#pricing");
+  });
+
+  it("fixes hyphenated fragment: #product-details stays at the end", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/product#product-details", source: "instagram", medium: "social", campaign: "launch" }),
+    ).toBe("https://example.com/product?utm_source=instagram&utm_medium=social&utm_campaign=launch#product-details");
+  });
+
+  it("fixes fragment + optional UTM fields: encodes term/content before #contact", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/page#contact", source: "facebook", medium: "social", campaign: "contact-campaign", term: "summer offer", content: "banner-a" }),
+    ).toBe("https://example.com/page?utm_source=facebook&utm_medium=social&utm_campaign=contact-campaign&utm_term=summer%20offer&utm_content=banner-a#contact");
+  });
+
+  it("handles existing query with multiple params + fragment", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/page?foo=bar&ref=abc#section", source: "google", medium: "cpc", campaign: "test" }),
+    ).toBe("https://example.com/page?foo=bar&ref=abc&utm_source=google&utm_medium=cpc&utm_campaign=test#section");
+  });
+
+  it("regression: no UTM parameter appears after # for fragment URLs", () => {
+    for (const url of [
+      "https://example.com/page#pricing",
+      "https://example.com/page?ref=abc#pricing",
+      "https://example.com/product#product-details",
+    ]) {
+      const out = textOf(buildUtmUrl, { url, source: "s", medium: "m", campaign: "c" });
+      const hash = out.indexOf("#");
+      expect(hash).toBeGreaterThan(-1);
+      const beforeHash = out.slice(0, hash);
+      const afterHash = out.slice(hash + 1);
+      // Every utm_ parameter must be a query parameter before the fragment.
+      expect(beforeHash).toContain("utm_source=");
+      expect(beforeHash).toContain("utm_medium=");
+      expect(beforeHash).toContain("utm_campaign=");
+      // The fragment is the final component with nothing after it.
+      expect(afterHash).not.toContain("utm_");
+      expect(afterHash).not.toContain("?");
+      expect(afterHash).not.toContain("&");
+    }
+  });
+
+  it("still works without a fragment", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/page", source: "google", medium: "cpc", campaign: "test" }),
+    ).toBe("https://example.com/page?utm_source=google&utm_medium=cpc&utm_campaign=test");
+  });
+
+  it("still works with an existing query and no fragment", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/page?ref=abc", source: "google", medium: "cpc", campaign: "test" }),
+    ).toBe("https://example.com/page?ref=abc&utm_source=google&utm_medium=cpc&utm_campaign=test");
+  });
+
+  it("handles a trailing ? without producing a double question mark", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://x.in/page?", source: "google", medium: "cpc", campaign: "spring" }),
+    ).toBe("https://x.in/page?utm_source=google&utm_medium=cpc&utm_campaign=spring");
+  });
+
+  it("omits optional UTM fields when not provided", () => {
+    expect(
+      textOf(buildUtmUrl, { url: "https://example.com/page#contact", source: "google", medium: "email", campaign: "launch" }),
+    ).toBe("https://example.com/page?utm_source=google&utm_medium=email&utm_campaign=launch#contact");
+  });
 });
 
 describe("generateSlugs", () => {
