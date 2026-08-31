@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ImagePicker, canvasToBlob, drawToCanvas, primaryBtn, useImageFile } from "./image-shared";
+import { ImagePicker, canvasToBlob, downloadZip, drawToCanvas, primaryBtn, useImageFile } from "./image-shared";
 
 const SIZES = [16, 32, 48, 180, 192, 512];
 
@@ -16,18 +16,15 @@ export function FaviconGenerator() {
     setError(null);
     setSnippet(null);
     try {
+      const assets: Array<{ name: string; blob: Blob }> = [];
       for (const size of SIZES) {
         const canvas = drawToCanvas(image, size, size);
         const blob = await canvasToBlob(canvas, "image/png");
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `favicon-${size}x${size}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-        // Small delay so the browser doesn't block rapid-fire downloads as a pop-up flood.
-        await new Promise((r) => setTimeout(r, 150));
+        assets.push({ name: `favicon-${size}x${size}.png`, blob });
       }
+      // One single download: package every generated asset into a single ZIP so
+      // the browser is not asked to run many independent downloads at once.
+      await downloadZip("favicon-package.zip", assets);
       setSnippet(
         [
           '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />',
@@ -47,7 +44,7 @@ export function FaviconGenerator() {
     <div className="space-y-4">
       <ImagePicker file={file} image={image} onPick={pick} />
       <p className="text-xs text-slate-500">
-        Generates PNG favicons at {SIZES.join(", ")}px (each downloads separately) plus the HTML snippet to reference them.
+        Generates PNG favicons at {SIZES.join(", ")}px and downloads them together as one ZIP, plus the HTML snippet to reference them.
       </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button type="button" onClick={generate} disabled={!image || busy} className={primaryBtn} data-lead-action="download">

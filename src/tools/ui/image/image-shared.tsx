@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { zipSync } from "fflate";
 
 export const inputCls =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
@@ -36,6 +37,44 @@ export function downloadBlob(blob: Blob, filename: string) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Build an in-memory ZIP archive from raw file contents.
+ *
+ * Uses the `fflate` library (minimal, dependency-free, works in the browser and
+ * Node). Entries are stored with `level: 0` (no re-compression) because the
+ * typical contents (PNG/ICO images) are already compressed; this keeps the
+ * pack/unpack fast and lossless.
+ */
+export function buildZip(files: Record<string, Uint8Array>): Uint8Array {
+  return zipSync(files, { level: 0 });
+}
+
+/**
+ * Package a list of `{ name, blob }` entries into ONE ZIP and trigger a single
+ * browser download. Any entry missing a valid name or content is skipped so the
+ * archive never contains undefined/null/empty entries.
+ *
+ * This avoids triggering many independent browser downloads (which browsers may
+ * block as pop-up downloads). Callers generate every asset first, then call this
+ * once to produce a single `application/zip` download.
+ */
+export async function downloadZip(
+  zipName: string,
+  entries: Array<{ name: string; blob: Blob }>,
+): Promise<void> {
+  const files: Record<string, Uint8Array> = {};
+  for (const entry of entries) {
+    if (!entry.name || !entry.blob) continue;
+    files[entry.name] = new Uint8Array(await entry.blob.arrayBuffer());
+  }
+  const zipped = buildZip(files);
+  // `zipSync` returns a view over an ArrayBufferLike; copy into a plain
+  // ArrayBuffer-backed Uint8Array so it is a valid BlobPart under TS.
+  const zippedCopy = new Uint8Array(zipped.length);
+  zippedCopy.set(zipped);
+  downloadBlob(new Blob([zippedCopy], { type: "application/zip" }), zipName);
 }
 
 /**
