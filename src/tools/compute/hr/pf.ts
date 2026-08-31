@@ -32,7 +32,8 @@ export const computePf: ComputeFn = (values) => {
 
   for (let m = 0; m < months; m++) {
     if (m > 0 && m % 12 === 0) salary *= 1 + salaryIncrease / 100;
-    const contribution = salary * EPF_CONTRIBUTION_RATE;
+    const contributionWage = Math.min(salary, 15000);
+    const contribution = contributionWage * EPF_CONTRIBUTION_RATE;
     totalContributions += contribution;
     balance = (balance + contribution) * (1 + monthlyRate);
   }

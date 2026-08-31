@@ -70,6 +70,28 @@ describe("computePf", () => {
   it("rejects retirement age below current age", () => {
     expect(computePf({ currentAge: "40", retirementAge: "35", basicSalary: "30000", salaryIncrease: 5, interestRate: 8 })).toHaveProperty("error");
   });
+  it("caps contribution wage at ₹15,000", () => {
+    const above = resultMap(computePf, { currentAge: "25", retirementAge: "26", basicSalary: "20000", currentBalance: 0, salaryIncrease: 0, interestRate: 8.25 });
+    const at = resultMap(computePf, { currentAge: "25", retirementAge: "26", basicSalary: "15000", currentBalance: 0, salaryIncrease: 0, interestRate: 8.25 });
+    expect(above.get("EPF corpus at retirement")).toBe(at.get("EPF corpus at retirement"));
+    expect(above.get("Total contributions (employee + employer)")).toBe(at.get("Total contributions (employee + employer)"));
+  });
+  it("does not increase corpus from ₹15,000 to ₹15,001", () => {
+    const at = resultMap(computePf, { currentAge: "25", retirementAge: "26", basicSalary: "15000", currentBalance: 0, salaryIncrease: 0, interestRate: 8.25 });
+    const above = resultMap(computePf, { currentAge: "25", retirementAge: "26", basicSalary: "15001", currentBalance: 0, salaryIncrease: 0, interestRate: 8.25 });
+    expect(above.get("EPF corpus at retirement")).toBe(at.get("EPF corpus at retirement"));
+    expect(above.get("Total contributions (employee + employer)")).toBe(at.get("Total contributions (employee + employer)"));
+  });
+  it("uses full salary below the ceiling", () => {
+    const r14999 = resultMap(computePf, { currentAge: "25", retirementAge: "26", basicSalary: "14999", currentBalance: 0, salaryIncrease: 0, interestRate: 8.25 });
+    const r15000 = resultMap(computePf, { currentAge: "25", retirementAge: "26", basicSalary: "15000", currentBalance: 0, salaryIncrease: 0, interestRate: 8.25 });
+    expect(r14999.get("EPF corpus at retirement")).not.toBe(r15000.get("EPF corpus at retirement"));
+  });
+  it("caps at ₹15,000 even with salary growth exceeding ceiling", () => {
+    const r10 = resultMap(computePf, { currentAge: "25", retirementAge: "28", basicSalary: "14000", currentBalance: 0, salaryIncrease: 10, interestRate: 8.25 });
+    const r30 = resultMap(computePf, { currentAge: "25", retirementAge: "28", basicSalary: "14000", currentBalance: 0, salaryIncrease: 30, interestRate: 8.25 });
+    expect(r10.get("EPF corpus at retirement")).toBe(r30.get("EPF corpus at retirement"));
+  });
 });
 
 describe("computeHra", () => {
