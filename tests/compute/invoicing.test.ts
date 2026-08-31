@@ -140,6 +140,17 @@ describe("computeDiscount", () => {
     expect(r.get("Final price")).toBe("₹1,440.00");
     expect(r.get("Effective discount")).toBe("28%");
   });
+  it("rejects invalid optional discount2 instead of treating it as 0", () => {
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "abc" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "@#$" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "12..5" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "--100" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "-5" })).toHaveProperty("error");
+  });
+  it("allows empty optional discount2 and explicit zero", () => {
+    const empty = resultMap(computeDiscount, { price: "2000", discount1: "20", discount2: "" });
+    expect(empty.get("Final price")).toBe("₹1,600.00");
+  });
 });
 
 describe("computeInvoiceDueDate", () => {

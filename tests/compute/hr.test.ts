@@ -92,6 +92,16 @@ describe("computePf", () => {
     const r30 = resultMap(computePf, { currentAge: "25", retirementAge: "28", basicSalary: "14000", currentBalance: 0, salaryIncrease: 30, interestRate: 8.25 });
     expect(r10.get("EPF corpus at retirement")).toBe(r30.get("EPF corpus at retirement"));
   });
+  it("rejects invalid optional current EPF balance instead of treating it as 0", () => {
+    const base = { currentAge: "25", retirementAge: "26", basicSalary: "20000", salaryIncrease: 0, interestRate: 8.25 };
+    expect(computePf({ ...base, currentBalance: "abc" })).toHaveProperty("error");
+    expect(computePf({ ...base, currentBalance: "12..5" })).toHaveProperty("error");
+    expect(computePf({ ...base, currentBalance: "@#$" })).toHaveProperty("error");
+  });
+  it("allows empty optional current EPF balance", () => {
+    const r = resultMap(computePf, { currentAge: "25", retirementAge: "26", basicSalary: "20000", currentBalance: "", salaryIncrease: 0, interestRate: 8.25 });
+    expect(r.get("EPF corpus at retirement")).toBeTruthy();
+  });
 });
 
 describe("computeHra", () => {
@@ -168,6 +178,18 @@ describe("generatePayslip", () => {
   });
   it("rejects missing required fields", () => {
     expect(generatePayslip({ companyName: "", employeeName: "X", designation: "Y", month: "June", basic: "1000", hra: 0, specialAllowance: 0, pfDeduction: 0, professionalTax: 0 })).toHaveProperty("error");
+  });
+  it("rejects invalid optional allowances/deductions instead of treating as 0", () => {
+    const base = { companyName: "C", employeeName: "E", designation: "D", month: "Jun 2026", basic: 30000, hra: 0, specialAllowance: 0, pfDeduction: 0, professionalTax: 0 };
+    expect(generatePayslip({ ...base, otherAllowances: "abc" })).toHaveProperty("error");
+    expect(generatePayslip({ ...base, otherAllowances: "12..5" })).toHaveProperty("error");
+    expect(generatePayslip({ ...base, otherDeductions: "abc" })).toHaveProperty("error");
+    expect(generatePayslip({ ...base, otherDeductions: "--100" })).toHaveProperty("error");
+    expect(generatePayslip({ ...base, otherDeductions: "-5" })).toHaveProperty("error");
+  });
+  it("allows empty optional allowances/deductions", () => {
+    const out = textOf(generatePayslip, { companyName: "C", employeeName: "E", designation: "D", month: "Jun 2026", basic: 30000, hra: 0, specialAllowance: 0, otherAllowances: "", pfDeduction: 0, professionalTax: 0, otherDeductions: "" });
+    expect(out).toContain("NET PAY");
   });
 });
 

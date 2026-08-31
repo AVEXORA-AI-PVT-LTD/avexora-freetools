@@ -79,6 +79,15 @@ describe("generateRefundPolicy", () => {
     });
     expect(out).toMatch(/unused, in its original packaging/);
   });
+  it("rejects invalid return window instead of falling back to default", () => {
+    expect(generateRefundPolicy({ companyName: "Acme", contactEmail: "hi@acme.in", returnWindowDays: "abc" })).toHaveProperty("error");
+    expect(generateRefundPolicy({ companyName: "Acme", contactEmail: "hi@acme.in", returnWindowDays: "12..5" })).toHaveProperty("error");
+    expect(generateRefundPolicy({ companyName: "Acme", contactEmail: "hi@acme.in", returnWindowDays: "-3" })).toHaveProperty("error");
+  });
+  it("falls back to default when return window is empty", () => {
+    const out = textOf(generateRefundPolicy, { companyName: "Acme", contactEmail: "hi@acme.in", returnWindowDays: "" });
+    expect(out).toContain("7 days");
+  });
 });
 
 describe("generateDisclaimer", () => {
@@ -110,6 +119,23 @@ describe("generateRentAgreement", () => {
       monthlyRent: "1000", securityDeposit: "1000", startDate: "2026-01-01",
     })).toHaveProperty("error");
   });
+  it("rejects invalid duration instead of falling back to default", () => {
+    expect(generateRentAgreement({
+      landlordName: "A", tenantName: "B", propertyAddress: "X",
+      monthlyRent: "1000", securityDeposit: "1000", startDate: "2026-01-01", durationMonths: "abc",
+    })).toHaveProperty("error");
+    expect(generateRentAgreement({
+      landlordName: "A", tenantName: "B", propertyAddress: "X",
+      monthlyRent: "1000", securityDeposit: "1000", startDate: "2026-01-01", durationMonths: "12..5",
+    })).toHaveProperty("error");
+  });
+  it("falls back to default when duration is empty", () => {
+    const out = textOf(generateRentAgreement, {
+      landlordName: "A", tenantName: "B", propertyAddress: "X",
+      monthlyRent: "1000", securityDeposit: "1000", startDate: "2026-01-01", durationMonths: "",
+    });
+    expect(out).toContain("11 months");
+  });
 });
 
 describe("generateFreelanceContract", () => {
@@ -132,6 +158,16 @@ describe("generateEmploymentContract", () => {
     expect(out).toContain("₹10,00,000.00");
     expect(out).toContain("30 days");
     expect(out).toContain("Hyderabad");
+  });
+  it("rejects invalid notice period instead of falling back to default", () => {
+    const base = { companyName: "Acme", employeeName: "Kavya Reddy", designation: "Engineer", annualCtc: "1000000", startDate: "2026-08-01", workLocation: "Hyderabad" };
+    expect(generateEmploymentContract({ ...base, noticePeriodDays: "abc" })).toHaveProperty("error");
+    expect(generateEmploymentContract({ ...base, noticePeriodDays: "12..5" })).toHaveProperty("error");
+    expect(generateEmploymentContract({ ...base, noticePeriodDays: "--100" })).toHaveProperty("error");
+  });
+  it("falls back to default when notice period is empty", () => {
+    const out = textOf(generateEmploymentContract, { companyName: "Acme", employeeName: "Kavya Reddy", designation: "Engineer", annualCtc: "1000000", startDate: "2026-08-01", workLocation: "Hyderabad", noticePeriodDays: "" });
+    expect(out).toContain("30 days");
   });
 });
 

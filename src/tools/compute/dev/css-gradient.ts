@@ -1,5 +1,5 @@
 import type { GenerateFn } from "@/tools/types";
-import { toNumber } from "../format";
+import { toNonNegativeOr } from "../format";
 
 const HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
@@ -15,8 +15,9 @@ export const generateGradient: GenerateFn = (values) => {
   if (type === "radial") {
     gradient = `radial-gradient(circle, ${from} 0%, ${to} 100%)`;
   } else {
-    const angle = toNumber(values.angle) ?? 135;
-    if (angle < 0 || angle > 360) return { error: "Angle must be between 0 and 360 degrees." };
+    const angle = toNonNegativeOr(values.angle ?? 135, 135);
+    if (angle === null) return { error: "Enter a valid angle in degrees (or leave it empty)." };
+    if (angle > 360) return { error: "Angle must be between 0 and 360 degrees." };
     gradient = `linear-gradient(${angle}deg, ${from} 0%, ${to} 100%)`;
   }
 
