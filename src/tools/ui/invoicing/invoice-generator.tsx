@@ -32,6 +32,18 @@ export default function InvoiceGenerator() {
   const setItem = (i: number, patch: Partial<LineItem>) =>
     setItems((prev) => prev.map((it, j) => (j === i ? { ...it, ...patch } : it)));
 
+  const reset = () => {
+    setSeller({ name: "", address: "", gstin: "" });
+    setBuyer({ name: "", address: "", gstin: "" });
+    setMeta({
+      number: "INV-001",
+      date: new Date().toISOString().slice(0, 10),
+      dueDate: "",
+    });
+    setInterState(false);
+    setItems([{ ...emptyItem }]);
+  };
+
   const rows = items.map((it) => {
     // Parse each line-item numeric field with the shared mandatory/optional
     // rules: a genuinely empty field is treated as 0, but present-but-invalid
@@ -237,15 +249,24 @@ export default function InvoiceGenerator() {
         </div>
       </div>
 
-      <button
-        type="button"
-        disabled={!canPrint}
-        onClick={() => requireEmail(() => window.print())}
-        className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 print:hidden"
-        data-lead-action="download"
-      >
-        Print / Save as PDF
-      </button>
+      <div className="flex flex-wrap items-center gap-3 print:hidden">
+        <button
+          type="button"
+          disabled={!canPrint}
+          onClick={() => requireEmail(() => window.print())}
+          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          data-lead-action="download"
+        >
+          Print / Save as PDF
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Clear
+        </button>
+      </div>
       {!canPrint && (
         <p className="text-xs text-slate-500 print:hidden">
           Fill in your business name, customer name and at least one line item to print.

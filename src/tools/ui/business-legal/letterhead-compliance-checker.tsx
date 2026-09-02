@@ -62,6 +62,23 @@ export default function LetterheadComplianceChecker() {
     setChecked(false);
   };
 
+  const reset = () => {
+    setForm({
+      entityType: "pvt-ltd" as EntityType,
+      legalName: "",
+      cin: "",
+      llpin: "",
+      gstin: "",
+      registeredAddress: "",
+      city: "",
+      state: "",
+      pincode: "",
+      phone: "",
+      email: "",
+    });
+    setChecked(false);
+  };
+
   const isCompany = ["pvt-ltd", "public-ltd", "opc"].includes(form.entityType);
   const isLlp = form.entityType === "llp";
 
@@ -238,12 +255,21 @@ export default function LetterheadComplianceChecker() {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
-        >
-          Check compliance
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="submit"
+            className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+          >
+            Check compliance
+          </button>
+          <button
+            type="button"
+            onClick={reset}
+            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            Clear
+          </button>
+        </div>
       </form>
 
       {audit && (

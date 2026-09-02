@@ -26,6 +26,14 @@ export default function HashGenerator() {
   const toggle = (id: string) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]));
 
+  const reset = () => {
+    setText("");
+    setSelected(["SHA-256"]);
+    setResults([]);
+    setError(null);
+    setCopied(null);
+  };
+
   const generate = async () => {
     if (text === "") {
       setError("Enter some text to hash.");
@@ -72,13 +80,22 @@ export default function HashGenerator() {
           </label>
         ))}
       </fieldset>
-      <button
-        type="button"
-        onClick={generate}
-        className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
-      >
-        Generate hashes
-      </button>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={generate}
+          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+        >
+          Generate hashes
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Clear
+        </button>
+      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       {results.length > 0 && (
         <dl className="space-y-3">

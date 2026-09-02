@@ -62,6 +62,15 @@ export function AiWriterShape({
     }
   };
 
+  const reset = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setValues(initialValues(tool.fields));
+    setOutput("");
+    setError(null);
+    setBusy(false);
+  };
+
   return (
     <form
       className="space-y-4"
@@ -82,13 +91,22 @@ export function AiWriterShape({
           </div>
         ))}
       </div>
-      <button
-        type="submit"
-        disabled={busy}
-        className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
-      >
-        {busy ? "Generating…" : (tool.submitLabel ?? "Generate")}
-      </button>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="submit"
+          disabled={busy}
+          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {busy ? "Generating…" : (tool.submitLabel ?? "Generate")}
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Clear
+        </button>
+      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       {output && <OutputBlock text={output} filename={`${tool.slug}.md`} />}
     </form>
