@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { formatINR } from "@/tools/compute/format";
+import { formatINR, toNonNegativeOr } from "@/tools/compute/format";
 import { useToolGate } from "@/components/lead/email-gate";
 
 interface LineItem {
@@ -33,12 +33,18 @@ export default function InvoiceGenerator() {
     setItems((prev) => prev.map((it, j) => (j === i ? { ...it, ...patch } : it)));
 
   const rows = items.map((it) => {
-    const qty = Number(it.qty) || 0;
-    const rate = Number(it.rate) || 0;
-    const gstRate = Number(it.gstRate) || 0;
-    const amount = qty * rate;
-    const gst = amount * (gstRate / 100);
-    return { ...it, qty, rate, gstRate, amount, gst };
+    // Parse each line-item numeric field with the shared mandatory/optional
+    // rules: a genuinely empty field is treated as 0, but present-but-invalid
+    // input is NOT silently coerced to zero — it returns null so the row is
+    // flagged `hasInvalid` and the preview shows "—" instead of a fabricated
+    // amount.
+    const qty = toNonNegativeOr(it.qty, 0);
+    const rate = toNonNegativeOr(it.rate, 0);
+    const gstRate = toNonNegativeOr(it.gstRate, 0);
+    const hasInvalid = qty === null || rate === null || gstRate === null;
+    const amount = qty !== null && rate !== null ? qty * rate : 0;
+    const gst = amount * ((gstRate ?? 0) / 100);
+    return { ...it, qty: qty ?? 0, rate: rate ?? 0, gstRate: gstRate ?? 0, amount, gst, hasInvalid };
   });
   const subtotal = rows.reduce((s, r) => s + r.amount, 0);
   const totalGst = rows.reduce((s, r) => s + r.gst, 0);
@@ -47,7 +53,8 @@ export default function InvoiceGenerator() {
   // Invalid numeric input must never be silently coerced to 0. Any line item a
   // user has filled in with a malformed/non-numeric quantity or rate is flagged
   // with an inline error and blocks printing instead of producing a misleading
-  // amount from a coerced zero.
+  // amount from a coerced zero. The rows above already mark such lines
+  // `hasInvalid` so the preview never shows a fabricated ₹0.00 amount either.
   const numericErrors: string[] = [];
   items.forEach((it, i) => {
     const qtyRaw = it.qty.trim();
@@ -203,13 +210,13 @@ export default function InvoiceGenerator() {
             </tr>
           </thead>
           <tbody>
-            {rows.filter((r) => r.description.trim() !== "" || r.amount > 0).map((r, i) => (
+            {rows.filter((r) => r.description.trim() !== "" || r.amount > 0 || r.hasInvalid).map((r, i) => (
               <tr key={i} className="border-b border-slate-100">
                 <td className="py-2 pr-2">{r.description}</td>
-                <td className="py-2 pr-2 text-right">{r.qty}</td>
-                <td className="py-2 pr-2 text-right">{formatINR(r.rate)}</td>
+                <td className="py-2 pr-2 text-right">{r.hasInvalid ? "—" : r.qty}</td>
+                <td className="py-2 pr-2 text-right">{r.hasInvalid ? "—" : formatINR(r.rate)}</td>
                 <td className="py-2 pr-2 text-right">{r.gstRate}%</td>
-                <td className="py-2 text-right">{formatINR(r.amount)}</td>
+                <td className="py-2 text-right">{r.hasInvalid ? "—" : formatINR(r.amount)}</td>
               </tr>
             ))}
           </tbody>

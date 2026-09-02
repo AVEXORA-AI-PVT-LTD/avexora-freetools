@@ -49,7 +49,7 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
         </button>
       )}
 
-      {outcome && "error" in outcome && hasInput && !tool.autoCompute && (
+      {outcome && "error" in outcome && hasInput && (
         <p className="text-sm text-red-600">{outcome.error}</p>
       )}
       {outcome && "results" in outcome && <ResultsPanel results={outcome.results} />}
