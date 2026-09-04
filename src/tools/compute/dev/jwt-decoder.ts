@@ -10,7 +10,9 @@ function decodeSegment(segment: string): unknown {
 
 function describeTimestamp(value: unknown): string | null {
   if (typeof value !== "number") return null;
-  return new Date(value * 1000).toISOString();
+  const date = new Date(value * 1000);
+  if (!Number.isFinite(date.getTime())) return null;
+  return date.toISOString();
 }
 
 export const decodeJwt: GenerateFn = (values) => {
