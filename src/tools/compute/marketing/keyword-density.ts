@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatNumber } from "../format";
 
 function escapeRegex(s: string): string {

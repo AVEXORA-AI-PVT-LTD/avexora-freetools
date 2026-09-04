@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ComputeFn, FieldValues } from "@/tools/types";
+import type { ComputeFn, FieldValues } from "@/types/tools";
 import { computeEmi } from "@/tools/compute/finance/emi";
 import { computeSip } from "@/tools/compute/finance/sip";
 import { computeFd } from "@/tools/compute/finance/fd";

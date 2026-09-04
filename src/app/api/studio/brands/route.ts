@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { prisma } from "@/server/db";
-import { assertBrandLimit, consumeQuota } from "@/studio/entitlements";
-import { errorResponse, readJson, requireUser } from "@/studio/route-helpers";
+import { assertBrandLimit, consumeQuota } from "@/server/studio/entitlements";
+import { errorResponse, readJson, requireUser } from "@/server/studio/route-helpers";
 import { generateDirections } from "@/studio/ai/brand-brief";
 import { seedFrom } from "@/studio/engine/marks";
 import { ENTITY_TYPES } from "@/studio/compliance/india";

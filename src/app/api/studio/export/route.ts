@@ -4,8 +4,8 @@ import {
   assertCapability,
   assertIdCardLimit,
   consumeQuota,
-} from "@/studio/entitlements";
-import { errorResponse, HttpError, readJson, requireUser } from "@/studio/route-helpers";
+} from "@/server/studio/entitlements";
+import { errorResponse, HttpError, readJson, requireUser } from "@/server/studio/route-helpers";
 import { toComplianceInput, toTokens } from "@/studio/brand-context";
 import { renderPdf } from "@/studio/engine/render/pdf";
 import type { DocSpec } from "@/studio/engine/doc-spec";

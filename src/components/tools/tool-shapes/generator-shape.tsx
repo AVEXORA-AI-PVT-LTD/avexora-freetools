@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { FieldValues, GeneratorTool } from "@/tools/types";
+import type { FieldValues, GeneratorTool } from "@/types/tools";
 import { FieldInput, initialValues } from "./field-input";
 import { OutputBlock } from "./output-block";
 import { GateProvider, useEmailGate } from "@/components/lead/email-gate";

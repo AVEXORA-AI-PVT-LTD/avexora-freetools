@@ -1,4 +1,4 @@
-import type { CategorySlug, ToolConfig } from "./types";
+import type { CategorySlug, ToolConfig } from "../types/tools";
 import { tools as financeCalculators } from "./configs/finance-calculators";
 import { tools as invoicingBilling } from "./configs/invoicing-billing";
 import { tools as hrPayroll } from "./configs/hr-payroll";

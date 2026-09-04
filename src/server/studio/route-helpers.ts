@@ -1,4 +1,4 @@
-import { EntitlementError } from "@/studio/entitlements";
+import { EntitlementError } from "./entitlements";
 import { currentUserId } from "@/server/auth";
 
 /**

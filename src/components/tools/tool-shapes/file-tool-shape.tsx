@@ -1,6 +1,6 @@
 "use client";
 
-import type { FileTool } from "@/tools/types";
+import type { FileTool } from "@/types/tools";
 
 export function FileToolShape({ tool }: { tool: FileTool }) {
   const Component = tool.component;

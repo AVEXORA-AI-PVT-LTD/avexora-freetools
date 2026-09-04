@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatINR, formatPercent, toNonNegative, toPositive } from "../format";
 
 export const computeMargin: ComputeFn = (values) => {

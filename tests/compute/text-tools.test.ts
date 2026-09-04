@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FieldValues, GenerateFn } from "@/tools/types";
+import type { FieldValues, GenerateFn } from "@/types/tools";
 import { computeCharacterCount } from "@/tools/compute/text/character-counter";
 import { convertCase } from "@/tools/compute/text/case-converter";
 import { formatJson } from "@/tools/compute/text/json-formatter";

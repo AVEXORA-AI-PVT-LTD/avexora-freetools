@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { PlanId } from "@/studio/plans";
+import type { PlanId } from "@/server/studio/plans";
 
 declare global {
   interface Window {

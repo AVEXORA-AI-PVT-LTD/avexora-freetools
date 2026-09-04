@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 import { LEGAL_DISCLAIMER, formatDate, str } from "./shared";
 
 export const generateNda: GenerateFn = (values) => {

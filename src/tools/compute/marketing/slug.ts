@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 export const generateSlugs: GenerateFn = (values) => {
   const text = typeof values.text === "string" ? values.text : "";

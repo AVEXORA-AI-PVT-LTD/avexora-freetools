@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL } from "@/tools/categories";
-import { PLANS, PLAN_ORDER, annualSavingMonths, formatINR } from "@/studio/plans";
+import { PLANS, PLAN_ORDER, annualSavingMonths, formatINR } from "@/server/studio/plans";
 import { razorpayEnabled } from "@/server/billing/razorpay";
 import { UpgradeButton } from "@/components/studio/upgrade-button";
 

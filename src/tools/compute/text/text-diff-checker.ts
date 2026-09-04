@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 /** Line-based diff via a simple LCS table. Returns unified-style lines:
  *  "  " unchanged, "- " removed, "+ " added. */

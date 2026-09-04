@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { prisma } from "@/server/db";
-import { errorResponse, HttpError, readJson, requireUser } from "@/studio/route-helpers";
+import { errorResponse, HttpError, readJson, requireUser } from "@/server/studio/route-helpers";
 import { createSubscription, razorpayEnabled } from "@/server/billing/razorpay";
-import { isPlanId } from "@/studio/plans";
+import { isPlanId } from "@/server/studio/plans";
 
 export const runtime = "nodejs";
 

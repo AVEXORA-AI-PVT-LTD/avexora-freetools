@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 /** Quote a CSV field if it contains a comma, quote or newline. */
 function csvField(value: unknown): string {

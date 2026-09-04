@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import MergePdf from "../ui/pdf/merge-pdf";
 import SplitPdf from "../ui/pdf/split-pdf";
 import CompressPdf from "../ui/pdf/compress-pdf";

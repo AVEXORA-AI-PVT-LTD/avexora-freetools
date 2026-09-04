@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CalculatorTool, FieldValues } from "@/tools/types";
+import type { CalculatorTool, FieldValues } from "@/types/tools";
 import { FieldInput, initialValues } from "./field-input";
 import { ResultsPanel } from "./results-panel";
 

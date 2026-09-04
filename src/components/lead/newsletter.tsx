@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { submitLead } from "@/lib/leads-client";
+import { submitLead } from "./client";
 
 export function NewsletterBlock({
   toolSlug,

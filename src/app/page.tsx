@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { categories } from "@/tools/categories";
 import { allTools, toolsByCategory } from "@/tools/registry";
-import { ToolSearch, type SearchItem } from "@/components/tool-search";
+import { ToolSearch, type SearchItem } from "@/components/tools/tool-search";
 import { STUDIO_ASSETS } from "@/studio/assets";
-import { PLANS, formatINR } from "@/studio/plans";
+import { PLANS, formatINR } from "@/server/studio/plans";
 
 export default function HomePage() {
   const searchItems: SearchItem[] = categories.flatMap((c) =>

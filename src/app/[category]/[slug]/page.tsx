@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ebosCtaUrl, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { allTools, getTool, toolsByCategory } from "@/tools/registry";
-import { ToolRunner } from "@/components/tool-shapes/tool-runner";
+import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 

@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 import { LEGAL_DISCLAIMER, str } from "./shared";
 
 export const generatePrivacyPolicy: GenerateFn = (values) => {

@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import ImageCompressor from "../ui/image/image-compressor";
 import ImageResizer from "../ui/image/image-resizer";
 import ImageCropper from "../ui/image/image-cropper";

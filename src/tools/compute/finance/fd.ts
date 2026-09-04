@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatINR, toNonNegative, toPositive } from "../format";
 
 const FREQUENCIES: Record<string, { periodsPerYear: number; label: string }> = {

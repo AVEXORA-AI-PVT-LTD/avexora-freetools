@@ -1,6 +1,6 @@
 "use client";
 
-import { submitLead } from "@/lib/leads-client";
+import { submitLead } from "./client";
 
 /**
  * EBOS module CTA (spec §4): category-specific pitch + link to the mapped

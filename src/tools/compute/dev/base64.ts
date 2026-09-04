@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 /** Unicode-safe base64 that works in browsers and Node. */
 function encodeBase64(text: string): string {

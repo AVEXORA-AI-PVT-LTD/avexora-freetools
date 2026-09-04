@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ComputeFn, FieldValues, GenerateFn } from "@/tools/types";
+import type { ComputeFn, FieldValues, GenerateFn } from "@/types/tools";
 import { generateQuotation } from "@/tools/compute/invoicing/quotation";
 import { generateProformaInvoice } from "@/tools/compute/invoicing/proforma-invoice";
 import { generateReceipt } from "@/tools/compute/invoicing/receipt";

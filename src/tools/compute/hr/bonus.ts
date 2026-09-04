@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatINR, formatNumber, toPositive } from "../format";
 
 /** Eligibility ceiling under the Payment of Bonus Act, 1965 (₹21,000/month basic + DA). */

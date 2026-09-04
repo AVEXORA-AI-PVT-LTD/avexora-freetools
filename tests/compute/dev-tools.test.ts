@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FieldValues, GenerateFn } from "@/tools/types";
+import type { FieldValues, GenerateFn } from "@/types/tools";
 import { generateUrlEncodeDecode } from "@/tools/compute/dev/url-encoder-decoder";
 import { generateBase64 } from "@/tools/compute/dev/base64";
 import { generateUuids } from "@/tools/compute/dev/uuid";

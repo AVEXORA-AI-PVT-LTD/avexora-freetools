@@ -1,4 +1,4 @@
-import type { FieldValues } from "@/tools/types";
+import type { FieldValues } from "@/types/tools";
 
 /**
  * Server-side prompt registry for AI writer tools (spec §3.5): prompts are

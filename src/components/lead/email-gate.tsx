@@ -9,8 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { ToolConfig } from "@/tools/types";
-import { submitLead } from "@/lib/leads-client";
+import type { ToolConfig } from "@/types/tools";
+import { submitLead } from "./client";
 
 const STORAGE_KEY = "ft_gate_email";
 

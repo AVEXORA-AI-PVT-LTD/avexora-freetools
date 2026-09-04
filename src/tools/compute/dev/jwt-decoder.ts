@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 function decodeSegment(segment: string): unknown {
   const b64 = segment.replace(/-/g, "+").replace(/_/g, "/");

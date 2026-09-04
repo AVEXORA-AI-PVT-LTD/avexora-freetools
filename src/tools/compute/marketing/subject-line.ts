@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 
 const SPAM_TRIGGERS = [
   "free!!!", "act now", "urgent", "winner", "guarantee",

@@ -83,8 +83,8 @@ vi.mock("@/server/db", () => ({
 const { createSubscription, cancelSubscription, priceFor, razorpayPlanId, razorpayEnabled } =
   await import("@/server/billing/razorpay");
 const { POST: webhookRoute } = await import("@/app/api/studio/webhooks/razorpay/route");
-const { resolvePlan } = await import("@/studio/entitlements");
-const { PLANS } = await import("@/studio/plans");
+const { resolvePlan } = await import("@/server/studio/entitlements");
+const { PLANS } = await import("@/server/studio/plans");
 
 beforeAll(async () => {
   server = http.createServer((req, res) => {

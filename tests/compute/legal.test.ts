@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FieldValues, GenerateFn } from "@/tools/types";
+import type { FieldValues, GenerateFn } from "@/types/tools";
 import { generateNda } from "@/tools/compute/legal/nda";
 import { generatePrivacyPolicy } from "@/tools/compute/legal/privacy-policy";
 import { generateTerms } from "@/tools/compute/legal/terms";

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_NAME, SITE_URL } from "@/tools/categories";
-import { PLANS, PLAN_ORDER, formatINR } from "@/studio/plans";
+import { PLANS, PLAN_ORDER, formatINR } from "@/server/studio/plans";
 
 const title = "Brand Studio — compliance-ready business stationery for Indian startups";
 const description =

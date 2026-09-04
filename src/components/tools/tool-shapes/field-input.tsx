@@ -1,6 +1,6 @@
 "use client";
 
-import type { FieldDef, FieldValue } from "@/tools/types";
+import type { FieldDef, FieldValue } from "@/types/tools";
 
 const inputCls =
   "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500";

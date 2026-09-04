@@ -1,4 +1,4 @@
-import type { ComputeFn, ResultItem } from "@/tools/types";
+import type { ComputeFn, ResultItem } from "@/types/tools";
 import { formatINR, toNumber, toPositive } from "../format";
 
 function optionalPositive(value: unknown): { n: number | null; invalid: boolean } {

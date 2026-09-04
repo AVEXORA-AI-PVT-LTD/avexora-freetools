@@ -3,12 +3,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/server/db";
 import { currentUserId } from "@/server/auth";
-import { entitlementSummary } from "@/studio/entitlements";
+import { entitlementSummary } from "@/server/studio/entitlements";
 import { auditBrand } from "@/studio/compliance/india";
 import { toComplianceInput } from "@/studio/brand-context";
 import { composeLogo } from "@/studio/engine/logo";
 import { toTokens } from "@/studio/brand-context";
-import { formatINR } from "@/studio/plans";
+import { formatINR } from "@/server/studio/plans";
 import { StatusPill } from "@/components/studio/status-pill";
 
 export const metadata: Metadata = {

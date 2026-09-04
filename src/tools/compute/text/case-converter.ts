@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 /** Split text into words on whitespace, punctuation and camelCase boundaries. */
 function splitWords(text: string): string[] {

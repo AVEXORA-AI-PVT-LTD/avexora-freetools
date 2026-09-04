@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import { computeWordCount } from "../compute/text/word-counter";
 import { computeCharacterCount } from "../compute/text/character-counter";
 import { convertCase } from "../compute/text/case-converter";

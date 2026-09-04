@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { AiWriterTool, FieldValues } from "@/tools/types";
+import type { AiWriterTool, FieldValues } from "@/types/tools";
 import { FieldInput, initialValues } from "./field-input";
 import { OutputBlock } from "./output-block";
 

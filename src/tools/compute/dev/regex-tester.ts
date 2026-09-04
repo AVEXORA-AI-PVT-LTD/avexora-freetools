@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 export const testRegex: GenerateFn = (values) => {
   const pattern = typeof values.pattern === "string" ? values.pattern : "";

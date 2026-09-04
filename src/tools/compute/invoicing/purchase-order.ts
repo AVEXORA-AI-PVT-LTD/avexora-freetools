@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 import { formatDate, parseLineItems, renderItemsTable, str } from "./shared";
 
 export const generatePurchaseOrder: GenerateFn = (values) => {

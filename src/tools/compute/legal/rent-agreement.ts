@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 import { formatINR, toPositive, toPositiveOr } from "../format";
 import { LEGAL_DISCLAIMER, formatDate, str } from "./shared";
 

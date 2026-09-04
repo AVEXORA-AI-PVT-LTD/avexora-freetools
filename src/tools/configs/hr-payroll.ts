@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import { computeSalary } from "../compute/hr/salary";
 import { computeGratuity } from "../compute/hr/gratuity";
 import { computePf } from "../compute/hr/pf";

@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import { generateUrlEncodeDecode } from "../compute/dev/url-encoder-decoder";
 import { generateBase64 } from "../compute/dev/base64";
 import { generateUuids } from "../compute/dev/uuid";

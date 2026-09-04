@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import Razorpay from "razorpay";
-import { PLANS, type PlanId, type Plan } from "@/studio/plans";
+import { PLANS, type PlanId, type Plan } from "@/server/studio/plans";
 
 /**
  * Razorpay subscriptions (spec 22 §7).

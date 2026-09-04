@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import { computeGst } from "../compute/finance/gst";
 import { computeEmi } from "../compute/finance/emi";
 import { computeSip } from "../compute/finance/sip";

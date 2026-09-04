@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 
 function parseInput(raw: string): Date | null {
   const s = raw.trim();

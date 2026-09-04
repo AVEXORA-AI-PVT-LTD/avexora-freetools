@@ -1,4 +1,4 @@
-import type { ResultItem } from "@/tools/types";
+import type { ResultItem } from "@/types/tools";
 
 export function ResultsPanel({ results }: { results: ResultItem[] }) {
   return (
