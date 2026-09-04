@@ -37,6 +37,14 @@ export async function POST(req: Request) {
     return Response.json({ error: "Email is required." }, { status: 400 });
   }
 
-  await prisma.lead.create({ data: lead });
+  try {
+    await prisma.lead.create({ data: lead });
+  } catch (err) {
+    console.error("[leads] database error:", err);
+    return Response.json(
+      { error: "Unable to process lead request." },
+      { status: 500 },
+    );
+  }
   return Response.json({ ok: true });
 }
