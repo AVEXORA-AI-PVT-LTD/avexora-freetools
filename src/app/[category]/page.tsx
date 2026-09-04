@@ -19,7 +19,7 @@ export async function generateMetadata({
   const cat = getCategory(category);
   if (!cat) return {};
   return {
-    title: `${cat.name} — Free Online Tools`,
+    title: `${cat.name} — Avex Online Tools`,
     description: cat.description,
     alternates: { canonical: `${SITE_URL}/${cat.slug}` },
   };
@@ -39,7 +39,7 @@ export default async function CategoryPage({
     <div className="mx-auto max-w-6xl px-4 py-12">
       <nav className="text-sm text-slate-500">
         <Link href="/" className="hover:text-indigo-700">
-          Free Tools
+          Avex Tools
         </Link>{" "}
         / <span className="text-slate-700">{cat.name}</span>
       </nav>

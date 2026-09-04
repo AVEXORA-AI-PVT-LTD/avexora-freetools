@@ -19,7 +19,7 @@ export default function HomePage() {
     <div className="mx-auto max-w-6xl px-4">
       <section className="py-16 text-center">
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          Free tools that run your business faster
+          Avex Tools that run your business faster
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
           {allTools.length}+ calculators, generators, PDF &amp; image utilities and AI

@@ -26,7 +26,7 @@ export default async function SignInPage({
         Sign in to Brand Studio
       </h1>
       <p className="mt-2 text-sm text-slate-600">
-        Your free-tools history carries over — no separate account needed.
+        Your Avex tools history carries over — no separate account needed.
       </p>
 
       {error === "too_many_requests" && (

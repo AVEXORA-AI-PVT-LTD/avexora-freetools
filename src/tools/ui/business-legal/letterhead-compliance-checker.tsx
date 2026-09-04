@@ -336,7 +336,7 @@ export default function LetterheadComplianceChecker() {
               logo, employee ID cards and social posts.
             </p>
             <Link
-              href="/studio?utm_source=freetools&utm_medium=tool&utm_campaign=letterhead-compliance-checker"
+              href="/studio?utm_source=avextools&utm_medium=tool&utm_campaign=letterhead-compliance-checker"
               className="mt-3 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
             >
               Generate compliant stationery

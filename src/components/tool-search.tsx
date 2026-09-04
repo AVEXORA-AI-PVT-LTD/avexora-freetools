@@ -60,7 +60,7 @@ export function ToolSearch({ items }: { items: SearchItem[] }) {
         aria-controls="search-listbox"
         aria-autocomplete="list"
         aria-activedescendant={activeId}
-        placeholder={`Search ${items.length} free tools…`}
+        placeholder={`Search ${items.length} Avex tools…`}
         className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
       />
       {matches.length > 0 && (

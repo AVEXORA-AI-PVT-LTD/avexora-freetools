@@ -22,7 +22,7 @@ export async function generateMetadata({
   const tool = getTool(slug);
   if (!tool) return {};
   const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
-  const title = `${tool.name} — Free Online Tool`;
+  const title = `${tool.name} — Avex Online Tool`;
   return {
     title,
     description: tool.seoDescription,
@@ -82,7 +82,7 @@ export default async function ToolPage({
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Free Tools", item: SITE_URL },
+        { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/${cat.slug}` },
         { "@type": "ListItem", position: 3, name: tool.name, item: canonical },
       ],
@@ -98,7 +98,7 @@ export default async function ToolPage({
 
       <nav className="text-sm text-slate-500 print:hidden">
         <Link href="/" className="hover:text-indigo-700">
-          Free Tools
+          Avex Tools
         </Link>{" "}
         /{" "}
         <Link href={`/${cat.slug}`} className="hover:text-indigo-700">
