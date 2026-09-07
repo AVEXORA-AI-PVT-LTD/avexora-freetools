@@ -47,6 +47,10 @@ export interface FieldDef {
   help?: string;
   optional?: boolean;
   rows?: number;
+  /** User must supply a value; enforced on the client and the server (Writers). */
+  required?: boolean;
+  /** Upper bound enforced natively on the input and again server-side. */
+  maxLength?: number;
 }
 
 export interface ResultItem {

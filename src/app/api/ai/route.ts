@@ -79,6 +79,10 @@ export async function POST(req: Request) {
   if (!template) {
     return Response.json({ error: "Unknown tool." }, { status: 404 });
   }
+  const invalid = template.validate?.(parsed.data.values);
+  if (invalid) {
+    return Response.json({ error: invalid }, { status: 400 });
+  }
 
   const client = new Anthropic();
   const stream = client.messages.stream({

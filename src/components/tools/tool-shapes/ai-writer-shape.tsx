@@ -16,16 +16,29 @@ export function AiWriterShape({
   const [output, setOutput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const abortRef = useRef<AbortController | null>(null);
 
   if (!aiEnabled) {
     return (
       <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-        This AI tool is temporarily unavailable. Please check back soon — our other
+        This AI tool is not available right now. Please check back soon — our other
         Avex tools are all working.
       </div>
     );
   }
+
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    for (const f of tool.fields) {
+      if (!f.required) continue;
+      const v = values[f.name];
+      if (typeof v !== "string" || v.trim() === "") {
+        errs[f.name] = "This field is required.";
+      }
+    }
+    return errs;
+  };
 
   const generate = async () => {
     abortRef.current?.abort();
@@ -33,6 +46,7 @@ export function AiWriterShape({
     abortRef.current = controller;
     setBusy(true);
     setError(null);
+    setFieldErrors({});
     setOutput("");
     try {
       const res = await fetch("/api/ai", {
@@ -68,6 +82,7 @@ export function AiWriterShape({
     setValues(initialValues(tool.fields));
     setOutput("");
     setError(null);
+    setFieldErrors({});
     setBusy(false);
   };
 
@@ -76,6 +91,10 @@ export function AiWriterShape({
       className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
+        if (busy) return;
+        const errs = validate();
+        setFieldErrors(errs);
+        if (Object.keys(errs).length > 0) return;
         generate();
       }}
     >
@@ -86,7 +105,13 @@ export function AiWriterShape({
               field={f}
               value={values[f.name]}
               idPrefix={tool.slug}
-              onChange={(v) => setValues((prev) => ({ ...prev, [f.name]: v }))}
+              error={fieldErrors[f.name] || undefined}
+              onChange={(v) => {
+                setValues((prev) => ({ ...prev, [f.name]: v }));
+                if (fieldErrors[f.name]) {
+                  setFieldErrors((prev) => ({ ...prev, [f.name]: "" }));
+                }
+              }}
             />
           </div>
         ))}

@@ -17,13 +17,16 @@ export function FieldInput({
   value,
   onChange,
   idPrefix,
+  error,
 }: {
   field: FieldDef;
   value: FieldValue;
   onChange: (value: FieldValue) => void;
   idPrefix: string;
+  error?: string;
 }) {
   const id = `${idPrefix}-${field.name}`;
+  const describedBy = error ? `${id}-error` : undefined;
 
   if (field.type === "checkbox") {
     return (
@@ -44,6 +47,11 @@ export function FieldInput({
     <div>
       <label htmlFor={id} className="mb-1 block text-sm font-medium text-slate-700">
         {field.label}
+        {field.required && (
+          <span className="ml-0.5 text-sm text-red-500" aria-hidden="true">
+            *
+          </span>
+        )}
         {field.unit && <span className="ml-1 text-slate-400">({field.unit})</span>}
         {field.optional && <span className="ml-1 text-xs text-slate-400">optional</span>}
       </label>
@@ -52,6 +60,8 @@ export function FieldInput({
           id={id}
           className={inputCls}
           value={String(value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           onChange={(e) => onChange(e.target.value)}
         >
           {field.options?.map((o) => (
@@ -66,7 +76,10 @@ export function FieldInput({
           className={inputCls}
           value={String(value)}
           rows={field.rows ?? 4}
+          maxLength={field.maxLength}
           placeholder={field.placeholder}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
@@ -75,14 +88,23 @@ export function FieldInput({
           type={field.type}
           className={inputCls}
           value={String(value)}
+          maxLength={field.maxLength}
           placeholder={field.placeholder}
           min={field.min}
           max={field.max}
           step={field.step}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           onChange={(e) => onChange(e.target.value)}
         />
       )}
-      {field.help && <p className="mt-1 text-xs text-slate-500">{field.help}</p>}
+      {error ? (
+        <p id={`${id}-error`} className="mt-1 text-xs text-red-600" role="alert">
+          {error}
+        </p>
+      ) : field.help ? (
+        <p className="mt-1 text-xs text-slate-500">{field.help}</p>
+      ) : null}
     </div>
   );
 }

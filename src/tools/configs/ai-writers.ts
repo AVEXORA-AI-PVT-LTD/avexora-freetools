@@ -1,4 +1,5 @@
 import type { ToolConfig } from "../../types/tools";
+import { JOB_EXPERIENCE_LEVELS, JOB_FIELD_LIMITS } from "../ai-constants";
 
 export const tools: ToolConfig[] = [
   {
@@ -610,5 +611,104 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["ai-product-description-generator", "meta-tag-generator", "ai-seo-title-generator", "serp-snippet-preview"],
+  },
+  {
+    kind: "ai-writer",
+    slug: "job-description-generator",
+    category: "ai-writers",
+    name: "AI Job Description Generator",
+    tagline:
+      "Turn a role, experience level and required skills into a professional, ready-to-post job description.",
+    seoDescription:
+      "Free AI job description generator. Enter a role, experience level and required skills to get a professional, recruitment-ready job description — powered by AI, no sign-up.",
+    fields: [
+      {
+        name: "role",
+        label: "Job role / title",
+        type: "text",
+        required: true,
+        maxLength: JOB_FIELD_LIMITS.role,
+        placeholder: "e.g. Senior React Developer",
+      },
+      {
+        name: "experience",
+        label: "Experience level",
+        type: "select",
+        required: true,
+        defaultValue: "",
+        options: [
+          { value: "", label: "Select experience level" },
+          ...JOB_EXPERIENCE_LEVELS.map((level) => ({ value: level, label: level })),
+        ],
+      },
+      {
+        name: "skills",
+        label: "Required skills",
+        type: "textarea",
+        required: true,
+        rows: 3,
+        maxLength: JOB_FIELD_LIMITS.skills,
+        placeholder: "e.g. React, TypeScript, Node.js",
+        help: "Separate multiple skills with commas — technical names like C++, C# and .NET work fine.",
+      },
+      {
+        name: "industry",
+        label: "Industry / field",
+        type: "text",
+        optional: true,
+        maxLength: JOB_FIELD_LIMITS.industry,
+        placeholder: "e.g. SaaS, e-commerce, fintech, manufacturing",
+      },
+      {
+        name: "company",
+        label: "Company information",
+        type: "textarea",
+        optional: true,
+        rows: 3,
+        maxLength: JOB_FIELD_LIMITS.company,
+        placeholder: "e.g. a 15-person SaaS startup building billing software for Indian SMEs, remote-first",
+        help: "Name and describe the company. The generator uses only what you provide — it never invents company details.",
+      },
+      {
+        name: "responsibilities",
+        label: "Additional responsibilities / requirements",
+        type: "textarea",
+        optional: true,
+        rows: 4,
+        maxLength: JOB_FIELD_LIMITS.responsibilities,
+        placeholder: "e.g. lead a team of 4, own the release process, mentor juniors, on-call rotation",
+        help: "Extra duties or must-haves the description should cover.",
+      },
+    ],
+    submitLabel: "Generate job description",
+    about: [
+      "Most job descriptions are either copied from a competitor or dashed off in ten minutes — and both show up in your applications. A vague description attracts under-qualified candidates, while a padded one sets expectations nobody can meet. This generator fixes the starting point: you supply three facts you already know — the role, the experience level, the skills you need — and it produces a professional, structured description in under a minute.",
+      "A job description works as two things at once: an advertisement that sells the role to good candidates, and a filter that discourages the wrong ones. That's why structure matters. Ten sections cover the ground a candidate actually checks — a summary of what the job is and why it matters, an overview of the day-to-day, five to eight specific responsibilities scaled to the experience level, the skills grouped sensibly, and honest qualifications. Setting expectations early pays off: candidates who self-select out at the application stage cost you nothing; discovering the mismatch after an interview costs you days.",
+      "The generator writes from your inputs only. If you don't provide company information, industry or benefits, it says nothing about them rather than inventing them — the How to Apply section ends with a placeholder where you add your real contact details. That anti-fabrication rule is deliberate: a job description that invents a benefit or a salary strand someone to withdraw, or worse, to a claim they didn't make. Add the facts in your own words after generating, and tailor the responsibilities to the actual scope of the role before posting.",
+      "The tool is free and requires no account. For the rest of the hiring workflow — offer letters, appointment letters and experience letters — the EBOS HR module covers the full employee lifecycle from the same foundation.",
+    ],
+    faq: [
+      {
+        question: "What do I need to provide?",
+        answer:
+          "Just three things: the job role or title, the experience level, and the required skills. Industry, company information and extra responsibilities are optional add-ons that make the output more specific.",
+      },
+      {
+        question: "Will it invent salary, benefits or contact details?",
+        answer:
+          "No. The generator is instructed to write only from what you provide and never to fabricate salary, benefits, location, company details or a contact address. The How to Apply section ends with a placeholder where you add your real application instructions.",
+      },
+      {
+        question: "Can I post the output directly?",
+        answer:
+          "Largely, yes — after filling any placeholders and checking the responsibilities against the real scope of the role. Before posting in India, also review the description for any wording that could be seen as discriminatory on grounds like age, gender or marital status, which hiring norms prohibit.",
+      },
+      {
+        question: "Are the responsibilities realistic?",
+        answer:
+          "They're generated to match the experience level you select and are based only on your inputs. For a lead or manager level, expect ownership and mentoring duties; for entry level, expect learning and support duties. Adjust any line that doesn't reflect the actual day-to-day.",
+      },
+    ],
+    related: ["offer-letter-generator", "experience-letter-generator", "ai-linkedin-post-generator", "salary-calculator"],
   },
 ];

@@ -1,4 +1,5 @@
 import type { FieldValues } from "@/types/tools";
+import { JOB_EXPERIENCE_LEVELS, JOB_FIELD_LIMITS } from "@/tools/ai-constants";
 
 /**
  * Server-side prompt registry for AI writer tools (spec §3.5): prompts are
@@ -7,6 +8,7 @@ import type { FieldValues } from "@/types/tools";
 interface PromptTemplate {
   system: string;
   build: (values: FieldValues) => string;
+  validate?: (values: FieldValues) => string | null;
   maxTokens?: number;
 }
 
@@ -181,6 +183,68 @@ export const aiPrompts: Record<string, PromptTemplate> = {
         "Write the questions the way real customers phrase them (including one price/cost question and one",
         "comparison or alternative question), with clear 2-4 sentence answers. Format as markdown:",
         "**Q:** question / **A:** answer.",
+      ]
+        .filter(Boolean)
+        .join("\n"),
+  },
+  "job-description-generator": {
+    system:
+      "You are an experienced HR and recruitment copywriter who writes clear, professional, " +
+      "non-generic job descriptions for startups and small businesses. You write only from the " +
+      "information the user provides. Never invent company details, benefits, salary, location, " +
+      "team size, certifications, or a contact email, phone number, or application URL. Keep " +
+      "responsibilities and requirements proportionate to the stated experience level. Avoid " +
+      "discriminatory language, buzzword-soup requirements, and unrealistic or contradictory " +
+      "expectations. Output clean markdown with concise headings and bullet points — no preamble, " +
+      "no closing remarks.",
+    maxTokens: 2048,
+    validate: (v) => {
+      const role = str(v.role);
+      if (!role) return "Please enter the job role or title.";
+      if (role.length > JOB_FIELD_LIMITS.role)
+        return `The job role or title is too long (max ${JOB_FIELD_LIMITS.role} characters).`;
+      const experience = str(v.experience);
+      if (experience && !(JOB_EXPERIENCE_LEVELS as readonly string[]).includes(experience))
+        return "Please select a valid experience level.";
+      if (!experience) return "Please select an experience level.";
+      const skills = str(v.skills);
+      if (!skills) return "Please enter at least one required skill.";
+      if (skills.length > JOB_FIELD_LIMITS.skills)
+        return `The required skills list is too long (max ${JOB_FIELD_LIMITS.skills} characters).`;
+      if (str(v.industry).length > JOB_FIELD_LIMITS.industry)
+        return `The industry is too long (max ${JOB_FIELD_LIMITS.industry} characters).`;
+      if (str(v.company).length > JOB_FIELD_LIMITS.company)
+        return `The company information is too long (max ${JOB_FIELD_LIMITS.company} characters).`;
+      if (str(v.responsibilities).length > JOB_FIELD_LIMITS.responsibilities)
+        return `The additional requirements are too long (max ${JOB_FIELD_LIMITS.responsibilities} characters).`;
+      return null;
+    },
+    build: (v) =>
+      [
+        `Create a professional, recruitment-ready job description for: "${str(v.role)}".`,
+        `Experience level: ${str(v.experience)}.`,
+        `Required skills: ${str(v.skills)}.`,
+        str(v.industry) && `Industry: ${str(v.industry)}.`,
+        str(v.company) && `Company context: ${str(v.company)}.`,
+        str(v.responsibilities) &&
+          `Additional responsibilities or requirements to cover: ${str(v.responsibilities)}.`,
+        "Use the exact job title supplied, verbatim, as the heading and throughout.",
+        "Structure the document with these markdown headings:",
+        "## Job Title",
+        "## Professional Summary",
+        "## Job Overview",
+        "## Key Responsibilities",
+        "## Required Skills",
+        "## Preferred Skills",
+        "## Experience Requirements",
+        "## Qualifications",
+        "## Nice-to-Have Skills",
+        "## How to Apply",
+        "Write 5-8 concise, specific Key Responsibilities matched to the experience level.",
+        "Group Required Skills sensibly and keep Preferred Skills and Nice-to-Have Skills short.",
+        "Under How to Apply, include only a placeholder line like [Add application instructions or contact email].",
+        "Never fabricate salary, benefits, location, company name, or contact details.",
+        "If company context or industry was not provided, use neutral generic wording and do not invent a company.",
       ]
         .filter(Boolean)
         .join("\n"),
