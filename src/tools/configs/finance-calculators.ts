@@ -6,6 +6,7 @@ import { computeFd } from "../compute/finance/fd";
 import { computeRd } from "../compute/finance/rd";
 import { computeIncomeTax } from "../compute/finance/income-tax";
 import { computeTds } from "../compute/finance/tds";
+import { computeAdvanceTax } from "../compute/finance/advance-tax";
 import { computeCompoundInterest } from "../compute/finance/compound-interest";
 import { computeSimpleInterest } from "../compute/finance/simple-interest";
 import { computeBreakEven } from "../compute/finance/break-even";
@@ -316,7 +317,7 @@ export const tools: ToolConfig[] = [
           "Only the ₹50,000 standard deduction for salaried taxpayers. Add your own 80C/80D/HRA/home-loan deductions mentally: each ₹1 of deduction saves tax at your marginal slab rate.",
       },
     ],
-    related: ["tds-calculator", "salary-calculator", "hra-exemption-calculator", "gst-calculator"],
+    related: ["tds-calculator", "advance-tax-calculator", "salary-calculator", "hra-exemption-calculator", "gst-calculator"],
   },
   {
     kind: "calculator",
@@ -373,7 +374,118 @@ export const tools: ToolConfig[] = [
           "Common ones (FY 2025-26): 194C — ₹30,000 per contract or ₹1,00,000 aggregate per year; 194J — ₹50,000 per year; 194I — ₹6,00,000 per year; 194H — ₹20,000 per year; 194A — ₹10,000 (₹1,00,000 for senior citizens at banks). Below these, deduct nothing.",
       },
     ],
-    related: ["gst-calculator", "income-tax-calculator", "salary-calculator", "invoice-generator"],
+    related: ["gst-calculator", "income-tax-calculator", "advance-tax-calculator", "salary-calculator", "invoice-generator"],
+  },
+  {
+    kind: "calculator",
+    slug: "advance-tax-calculator",
+    category: "finance-calculators",
+    name: "Advance Tax Calculator (FY 2026-27)",
+    tagline:
+      "Estimate your annual income tax for AY 2027-28 and see exactly how much advance tax to pay and when.",
+    seoDescription:
+      "Free advance tax calculator for FY 2026-27 (AY 2027-28). Estimate your income tax under the new or old regime, subtract TDS and advance tax already paid, and see the quarterly advance tax instalment schedule with due dates.",
+    fields: [
+      {
+        name: "taxYear",
+        label: "Tax year",
+        type: "select",
+        defaultValue: "2026-27",
+        options: [{ value: "2026-27", label: "FY 2026-27 (AY 2027-28)" }],
+      },
+      {
+        name: "taxpayerType",
+        label: "I am a",
+        type: "select",
+        defaultValue: "professional",
+        options: [
+          { value: "individual", label: "Individual / Freelancer" },
+          { value: "professional", label: "Self-employed professional" },
+          { value: "business", label: "Business / Proprietor" },
+        ],
+      },
+      {
+        name: "regime",
+        label: "Tax regime",
+        type: "select",
+        defaultValue: "new",
+        options: [
+          { value: "new", label: "New regime (default)" },
+          { value: "old", label: "Old regime" },
+        ],
+      },
+      {
+        name: "incomeMode",
+        label: "How to enter business income",
+        type: "select",
+        defaultValue: "net",
+        options: [
+          { value: "net", label: "Enter my net taxable profit" },
+          { value: "gross", label: "Enter gross receipts minus expenses" },
+        ],
+      },
+      {
+        name: "presumptive",
+        label: "Presumptive taxation",
+        type: "select",
+        defaultValue: "none",
+        help: "Professionals can estimate income at 50% of receipts (44ADA), businesses at 8% (44AD). Expenses are then ignored.",
+        options: [
+          { value: "none", label: "Not applicable — estimate actual profit" },
+          { value: "44ada", label: "Section 44ADA — professional income at 50% of gross receipts" },
+          { value: "44ad", label: "Section 44AD — business income at 8% of gross receipts" },
+        ],
+      },
+      { name: "grossReceipts", label: "Gross receipts / turnover", type: "number", placeholder: "5000000", min: 0, unit: "₹", optional: true, help: "Required when entering gross receipts, or for presumptive taxation (44AD/44ADA)." },
+      { name: "businessExpenses", label: "Business expenses", type: "number", placeholder: "2000000", min: 0, unit: "₹", optional: true, help: "Only when entering gross receipts minus expenses." },
+      { name: "netProfit", label: "Net taxable profit", type: "number", placeholder: "1500000", min: 0, unit: "₹", optional: true, help: "Only when entering net profit." },
+      { name: "otherIncome", label: "Other taxable income", type: "number", placeholder: "50000", min: 0, unit: "₹", optional: true, help: "Interest, rent, capital gains after allowable deductions, etc." },
+      { name: "tdsDeducted", label: "TDS / TCS already deducted on your income", type: "number", placeholder: "80000", min: 0, unit: "₹", optional: true },
+      { name: "advanceTaxPaid", label: "Advance tax already paid this year", type: "number", placeholder: "20000", min: 0, unit: "₹", optional: true, help: "Applied against the earliest instalments first." },
+      { name: "dedSection80c", label: "80C deduction (LIC, PF, ELSS…)", type: "number", placeholder: "50000", min: 0, max: 150000, unit: "₹", optional: true, help: "Old regime only — capped at ₹1,50,000." },
+      { name: "dedSection24b", label: "Home-loan interest — section 24(b)", type: "number", placeholder: "120000", min: 0, max: 200000, unit: "₹", optional: true, help: "Old regime only — capped at ₹2,00,000 for a self-occupied property." },
+      { name: "dedSection80d", label: "80D health insurance premium", type: "number", placeholder: "15000", min: 0, max: 25000, unit: "₹", optional: true, help: "Old regime only — capped at ₹25,000 for self and family." },
+    ],
+    compute: computeAdvanceTax,
+    submitLabel: "Calculate advance tax",
+    about: [
+      "Advance tax means paying your income tax in instalments during the same financial year in which you earn the income, instead of as a single lump sum while filing in the next year. If you are a freelancer, self-employed professional, or business owner, TDS is not deducted from what your clients pay you (or only a small part is), so you owe the tax yourself — and you can be charged interest under sections 234B/234C (now 423–425 of the Income-tax Act, 2025) if you don't pay it on time. This calculator estimates your full-year tax for FY 2026-27 (AY 2027-28) and converts the balance into the exact instalments that fall due on 15 June, 15 September, 15 December and 15 March.",
+      "The calculation follows the FY 2026-27 rules, which are unchanged from FY 2025-26 under the new Income-tax Act, 2025. The new regime has slabs of nil/5/10/15/20/25/30% at ₹4/8/12/16/20/24 lakh, with a §87A rebate that wipes out tax entirely up to ₹12 lakh of taxable income (with marginal relief just above it). The old regime keeps the 5%/20%/30% slabs above ₹2.5/5/10 lakh with the familiar 80C, 24(b) and 80D deductions — enter those in the three deduction fields, and only the old regime uses them. Taxable income here is your business or professional profit plus other income. TDS already credited to your PAN is subtracted, the 4% health-and-education cess is included on top, and surcharge (10–37% depending on income and regime) applies above ₹50 lakh.",
+      "Two simplifications are documented rather than hidden. First, TDS is assumed to be credited evenly across the year (the schedule spreads net tax, after TDS, over the four quarters). Second, surcharge is applied at its flat rate without the marginal relief that softens the jump around each threshold — treat results above ₹50 lakh as indicative. If your net tax after TDS is ₹10,000 or less, no advance tax is payable under section 404, and the calculator tells you so instead of showing instalments. It is an estimator for planning purposes, not a substitute for your chartered accountant or the return-filing computation.",
+    ],
+    faq: [
+      {
+        question: "When is advance tax due in FY 2026-27?",
+        answer:
+          "If your tax liability after TDS exceeds ₹10,000 (section 404), pay at least 15% by 15 June, 45% by 15 September, 75% by 15 December and 100% by 15 March. If you are taxed under presumptive schemes (44AD/44ADA), the entire balance is due as a single instalment on 15 March (section 408(2)).",
+      },
+      {
+        question: "Who has to pay advance tax?",
+        answer:
+          "Freelancers, professionals and businesses whose estimated tax for the year, net of TDS deducted from them, exceeds ₹10,000. Salaried people whose employer deducts TDS usually don't need to, because the deduction covers the liability. If the ₹10,000 threshold isn't crossed, no advance tax is due.",
+      },
+      {
+        question: "What are the new-regime slabs and rebate for FY 2026-27?",
+        answer:
+          "Nil up to ₹4 lakh, then 5/10/15/20/25/30% above ₹8/12/16/20/24 lakh. The §87A rebate cancels tax up to ₹12 lakh of taxable income, with marginal relief so income just above ₹12 lakh doesn't jump in tax. The old regime retains 5/20/30% slabs above ₹2.5/5/10 lakh.",
+      },
+      {
+        question: "How is TDS and advance tax already paid handled?",
+        answer:
+          "TDS credited to your PAN is subtracted from your total estimated tax before the schedule is built — the calculator assumes it is spread evenly across the year. Advance tax you've already paid is applied to the earliest instalments first, so paying in June reduces what is due in June, then September, and so on. Any balance is absorbed in the final instalment.",
+      },
+      {
+        question: "Do I need to deduct TDS when paying professionals?",
+        answer:
+          "Separately from your own advance tax, if you engage contractors, professionals, rent or commission payments, you generally must deduct TDS before paying them and deposit it with the government — see the TDS calculator for the applicable sections and rates.",
+      },
+      {
+        question: "Is this a substitute for my CA or the IT Department's computation?",
+        answer:
+          "No. It uses the standard FY 2026-27 slabs, rebate, cess and surcharge on the income you enter, and it is a planning estimate. Your final liability depends on your exact return computation. Surcharge marginal relief is not modelled, and old-regime deductions are limited to 80C, 24(b) and 80D.",
+      },
+    ],
+    related: ["income-tax-calculator", "tds-calculator", "gst-calculator", "depreciation-calculator"],
   },
   {
     kind: "calculator",

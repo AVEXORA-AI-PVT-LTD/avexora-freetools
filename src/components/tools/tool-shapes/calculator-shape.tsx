@@ -60,7 +60,9 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
       {outcome && "error" in outcome && hasInput && (
         <p className="text-sm text-red-600">{outcome.error}</p>
       )}
-      {outcome && "results" in outcome && <ResultsPanel results={outcome.results} />}
+      {outcome && "results" in outcome && (
+        <ResultsPanel results={outcome.results} tables={outcome.tables} />
+      )}
     </form>
   );
 }

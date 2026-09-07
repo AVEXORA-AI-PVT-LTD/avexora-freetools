@@ -59,7 +59,16 @@ export interface ResultItem {
   emphasis?: boolean;
 }
 
-export type ComputeResult = { results: ResultItem[] } | { error: string };
+/** Optional data grid rendered below the result rows (e.g. a payment schedule). */
+export interface ResultTable {
+  title?: string;
+  headers: string[];
+  rows: string[][];
+}
+
+export type ComputeResult =
+  | { results: ResultItem[]; tables?: ResultTable[] }
+  | { error: string };
 export type ComputeFn = (values: FieldValues) => ComputeResult;
 
 export interface GeneratedOutput {
