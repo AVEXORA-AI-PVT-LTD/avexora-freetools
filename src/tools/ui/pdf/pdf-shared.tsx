@@ -2,11 +2,7 @@
 
 import { useRef, useState } from "react";
 
-export const inputCls =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
-export const labelCls = "mb-1 block text-sm font-medium text-slate-700";
-export const primaryBtn =
-  "rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50";
+export { inputCls, labelCls, primaryBtn, secondaryBtn, iconBtn, panelCls } from "../ui-tokens";
 
 export function downloadBytes(bytes: Uint8Array, filename: string, type = "application/pdf") {
   const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type }));
@@ -91,19 +87,20 @@ export function PdfPicker({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-600 hover:border-indigo-400 hover:text-indigo-600"
+        className="grid w-full gap-1.5 rounded-lg border-2 border-dashed border-slate-300 px-4 py-5 text-center text-sm text-slate-600 transition hover:border-indigo-400 hover:bg-indigo-50/40 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
       >
-        <span className="block text-2xl">📄</span>
+        <span aria-hidden="true" className="text-xl leading-none">📄</span>
         {file ? (
           <>
-            <span className="font-medium text-slate-800">{file.name}</span>
-            {pageCount !== null && <span className="block text-xs text-slate-500">{pageCount} pages</span>}
-            <span className="mt-1 block text-xs text-indigo-500">Click to choose a different file</span>
+            <span className="truncate font-medium text-slate-800">{file.name}</span>
+            <span className="text-xs text-slate-500">
+              {pageCount !== null ? `${pageCount} page${pageCount === 1 ? "" : "s"}` : "PDF"} · click to change
+            </span>
           </>
         ) : (
           <>
-            Click to choose a PDF
-            <span className="mt-1 block text-xs text-slate-400">
+            <span className="font-medium text-slate-700">Click to choose a PDF</span>
+            <span className="text-xs text-slate-400">
               Processed in your browser — the file never leaves your device.
             </span>
           </>

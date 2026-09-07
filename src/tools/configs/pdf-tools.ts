@@ -3,7 +3,8 @@ import MergePdf from "../ui/pdf/merge-pdf";
 import SplitPdf from "../ui/pdf/split-pdf";
 import CompressPdf from "../ui/pdf/compress-pdf";
 import { JpgToPdf, PngToPdf } from "../ui/pdf/images-to-pdf";
-import { PdfPageRemover, ExtractPdfPages, ReorderPdfPages, RotatePdf } from "../ui/pdf/page-tools";
+import { PdfPageRemover, ExtractPdfPages, ReorderPdfPages } from "../ui/pdf/page-tools";
+import { RotatePdf } from "../ui/pdf/rotate-pdf";
 import WatermarkPdf from "../ui/pdf/watermark-pdf";
 import PageNumbersPdf from "../ui/pdf/page-numbers-pdf";
 import PdfMetadataEditor from "../ui/pdf/pdf-metadata-editor";
@@ -291,7 +292,7 @@ export const tools: ToolConfig[] = [
     component: RotatePdf,
     about: [
       "Scanned documents come out sideways or upside-down more often than anyone would like — a phone held the wrong way, a scanner fed a page in landscape when the document is portrait. This tool rotates a PDF's pages by 90°, 180° or 270°, fixing the orientation without needing to rescan anything.",
-      "Apply the rotation to every page at once, or, when only some pages came in sideways (common with mixed-orientation scans), specify exactly which pages need it using the same page-range syntax as the other tools here — \"2, 5-7\" rotates just those pages, leaving the rest as they are. Each rotation is applied on top of whatever orientation a page already has, so you can nudge a page further if the first rotation wasn't quite enough.",
+      "Every page is shown as a live thumbnail. Use the \"Rotate all\" buttons to spin the whole document, or click individual pages (or select several at once) and rotate just those. Each preview updates immediately to show exactly what will be saved, and rotation stacks on top of whatever orientation a page already has — so you can nudge a sideways page further if one pass isn't enough.",
       "The rotation is a page-level property recognised by every PDF viewer, not a re-render of the content, so text stays sharp and selectable, and file size is essentially unaffected. As always, this runs entirely in your browser — scanned IDs, contracts and reports never leave your device to get straightened out.",
       "This is a quick fix for a problem that otherwise sends people back to a scanner or a phone camera: a handful of sideways pages in an otherwise fine document. Fix the orientation here, then move straight into merging, reordering or numbering if the corrected file needs further assembly.",
     ],
@@ -299,7 +300,7 @@ export const tools: ToolConfig[] = [
       {
         question: "Can I rotate just some pages, not the whole document?",
         answer:
-          "Yes — choose \"Specific pages\" and enter a comma-separated list of page numbers and ranges, like \"2, 5-7\", to rotate only those pages while leaving the rest untouched.",
+          "Yes — click the pages you want (a ring highlights each selected page) and use the \"Rotate selected\" buttons, or use a single page's own ⟲ / 180° / ⟳ controls. Pages you leave untouched stay exactly as they are.",
       },
       {
         question: "Does rotating reduce quality or make text unselectable?",

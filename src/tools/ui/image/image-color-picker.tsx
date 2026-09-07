@@ -37,17 +37,22 @@ export function ImageColorPicker() {
     <div className="space-y-4">
       <ImagePicker file={file} image={image} onPick={onPick} />
       {image && (
-        <div>
-          <img
-            ref={imgRef}
-            src={image.src}
-            alt=""
-            onClick={(e) => sampleAt(e.clientX, e.clientY)}
-            className="max-w-full cursor-crosshair rounded-lg border border-slate-200"
-            draggable={false}
-          />
-          <p className="mt-1 text-xs text-slate-500">Click anywhere on the image to sample its colour.</p>
-        </div>
+        <figure className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="flex items-center justify-center bg-slate-50 p-3 sm:p-4">
+            <img
+              ref={imgRef}
+              src={image.src}
+              alt="Image to sample colours from — click to pick"
+              role="img"
+              onClick={(e) => sampleAt(e.clientX, e.clientY)}
+              className="max-h-80 max-w-full cursor-crosshair rounded border border-slate-200 bg-white object-contain shadow-sm"
+              draggable={false}
+            />
+          </div>
+          <figcaption className="border-t border-slate-100 px-3 py-2 text-xs text-slate-500">
+            Click any pixel to sample its colour — the value appears below.
+          </figcaption>
+        </figure>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
       {picked && (

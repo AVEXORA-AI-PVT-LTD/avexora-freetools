@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ImagePicker, canvasToBlob, computeCropRect, downloadBlob, labelCls, primaryBtn, useImageFile } from "./image-shared";
+import { ImagePicker, canvasToBlob, computeCropRect, downloadBlob, primaryBtn, useImageFile } from "./image-shared";
 
 export default function ImageCropper() {
   const { file, image, error, setError, pick } = useImageFile();
@@ -75,18 +75,38 @@ export default function ImageCropper() {
     <div className="space-y-4">
       <ImagePicker file={file} image={image} onPick={onPick} />
       {image && (
-        <div className="relative inline-block max-w-full select-none touch-none"
-          onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
-          <img ref={imgRef} src={image.src} alt="" className="max-w-full rounded-lg border border-slate-200" draggable={false} />
-          {box.w > 0 && (
-            <div
-              className="pointer-events-none absolute border-2 border-indigo-500 bg-indigo-500/20"
-              style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
+        <figure className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="relative select-none touch-none bg-slate-50 p-3 sm:p-4"
+            onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+            <img
+              ref={imgRef}
+              src={image.src}
+              alt="Image to crop — drag across it to choose the area"
+              className="block max-w-full rounded border border-slate-200 bg-white shadow-sm"
+              draggable={false}
             />
-          )}
-        </div>
+            {box.w > 0 && (
+              <div
+                className="pointer-events-none absolute border-2 border-indigo-500 bg-indigo-500/20"
+                style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
+              />
+            )}
+          </div>
+          <figcaption
+            className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-100 px-3 py-2 text-xs text-slate-500"
+            data-testid="crop-selection"
+          >
+            <span className="font-medium text-slate-600">{file?.name}</span>
+            {box.w >= 2 && box.h >= 2 ? (
+              <span>
+                Selected {Math.round(box.w)} × {Math.round(box.h)}px — Crop &amp; download below
+              </span>
+            ) : (
+              <span>Drag across the image to select the area to crop</span>
+            )}
+          </figcaption>
+        </figure>
       )}
-      {image && <p className={labelCls}>Click and drag on the image above to select the area to crop.</p>}
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button type="button" onClick={crop} disabled={!image || busy} className={primaryBtn} data-lead-action="download">
         {busy ? "Cropping…" : "Crop & download"}

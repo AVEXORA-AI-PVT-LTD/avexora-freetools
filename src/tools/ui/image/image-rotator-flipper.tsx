@@ -75,9 +75,33 @@ export function ImageRotatorFlipper() {
     }
   };
 
+  const outputDims = image
+    ? rotateFlipGeometry(image.naturalWidth, image.naturalHeight, Number(rotation), flipH, flipV)
+    : null;
+
   return (
     <div className="space-y-4">
       <ImagePicker file={file} image={image} onPick={pick} />
+      {image && (
+        <figure className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="flex items-center justify-center bg-slate-50 p-3 sm:p-4">
+            <canvas
+              ref={previewRef}
+              role="img"
+              aria-label="Preview of the rotated and flipped result"
+              className="block h-auto max-w-full rounded border border-slate-200 bg-white shadow-sm"
+            />
+          </div>
+          <figcaption className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-slate-100 px-3 py-2 text-xs text-slate-500">
+            <span className="font-medium text-slate-600">{file?.name}</span>
+            {outputDims && (
+              <span>
+                Output {outputDims.outW} × {outputDims.outH}px — updates live, download matches exactly
+              </span>
+            )}
+          </figcaption>
+        </figure>
+      )}
       {image && (
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
@@ -99,19 +123,6 @@ export function ImageRotatorFlipper() {
               className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
             Flip vertically
           </label>
-        </div>
-      )}
-      {image && (
-        <div>
-          <canvas
-            ref={previewRef}
-            role="img"
-            aria-label="Preview of the rotated and flipped result"
-            className="block h-auto max-w-full rounded-lg border border-slate-200"
-          />
-          <p className="mt-1 text-xs text-slate-500">
-            Preview updates live — the downloaded image matches it exactly.
-          </p>
         </div>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
