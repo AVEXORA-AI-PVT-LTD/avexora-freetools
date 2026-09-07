@@ -1,13 +1,14 @@
 import type { ComputeFn } from "@/tools/types";
-import { formatINR, formatPercent, toNonNegative, toPositive } from "../format";
+import { formatINR, formatPercent, toNonNegative, toNonNegativeOr, toPositive } from "../format";
 
 export const computeDiscount: ComputeFn = (values) => {
   const price = toPositive(values.price);
   const discount1 = toNonNegative(values.discount1);
-  const discount2 = toNonNegative(values.discount2 ?? 0) ?? 0;
+  const discount2 = toNonNegativeOr(values.discount2 ?? 0, 0);
 
   if (price === null) return { error: "Enter the original price." };
   if (discount1 === null) return { error: "Enter the first discount percentage." };
+  if (discount2 === null) return { error: "Enter a valid second discount percentage (or leave it empty)." };
   if (discount1 > 100 || discount2 > 100) return { error: "Discount percentages cannot exceed 100%." };
 
   const afterFirst = price * (1 - discount1 / 100);

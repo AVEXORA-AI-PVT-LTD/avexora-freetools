@@ -33,6 +33,14 @@ export const buildUtmUrl: GenerateFn = (values) => {
   if (term) params.push(`utm_term=${encodeURIComponent(term)}`);
   if (content) params.push(`utm_content=${encodeURIComponent(content)}`);
 
-  const separator = baseUrl.includes("?") ? "&" : "?";
-  return { text: `${baseUrl}${separator}${params.join("&")}` };
+  // A URL fragment (#...) must always remain at the very end of the final URL.
+  // Split it off first so the UTM query parameters are inserted before it and
+  // are never swallowed into the fragment.
+  const hashIndex = baseUrl.indexOf("#");
+  const fragment = hashIndex >= 0 ? baseUrl.slice(hashIndex) : "";
+  const url = new URL(hashIndex >= 0 ? baseUrl.slice(0, hashIndex) : baseUrl);
+
+  const existing = url.search ? url.search.slice(1) : "";
+  const joined = existing ? `${existing}&${params.join("&")}` : params.join("&");
+  return { text: `${url.origin}${url.pathname}?${joined}${fragment}` };
 };

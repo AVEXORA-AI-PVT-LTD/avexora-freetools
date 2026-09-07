@@ -11,7 +11,7 @@ export const computeDepreciation: ComputeFn = (values) => {
   if (life === null) return { error: "Enter a useful life greater than zero." };
   if (salvage >= cost) return { error: "Salvage value must be less than the asset cost." };
 
-  const years = Math.min(Math.round(life), 10);
+  const years = Math.round(life);
 
   if (method === "wdv") {
     const rate = toPositive(values.wdvRate);

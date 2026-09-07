@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { formatINR } from "@/tools/compute/format";
+import { formatINR, toNonNegativeOr } from "@/tools/compute/format";
 import { useToolGate } from "@/components/lead/email-gate";
 
 interface LineItem {
@@ -32,19 +32,57 @@ export default function InvoiceGenerator() {
   const setItem = (i: number, patch: Partial<LineItem>) =>
     setItems((prev) => prev.map((it, j) => (j === i ? { ...it, ...patch } : it)));
 
+  const reset = () => {
+    setSeller({ name: "", address: "", gstin: "" });
+    setBuyer({ name: "", address: "", gstin: "" });
+    setMeta({
+      number: "INV-001",
+      date: new Date().toISOString().slice(0, 10),
+      dueDate: "",
+    });
+    setInterState(false);
+    setItems([{ ...emptyItem }]);
+  };
+
   const rows = items.map((it) => {
-    const qty = Number(it.qty) || 0;
-    const rate = Number(it.rate) || 0;
-    const gstRate = Number(it.gstRate) || 0;
-    const amount = qty * rate;
-    const gst = amount * (gstRate / 100);
-    return { ...it, qty, rate, gstRate, amount, gst };
+    // Parse each line-item numeric field with the shared mandatory/optional
+    // rules: a genuinely empty field is treated as 0, but present-but-invalid
+    // input is NOT silently coerced to zero — it returns null so the row is
+    // flagged `hasInvalid` and the preview shows "—" instead of a fabricated
+    // amount.
+    const qty = toNonNegativeOr(it.qty, 0);
+    const rate = toNonNegativeOr(it.rate, 0);
+    const gstRate = toNonNegativeOr(it.gstRate, 0);
+    const hasInvalid = qty === null || rate === null || gstRate === null;
+    const amount = qty !== null && rate !== null ? qty * rate : 0;
+    const gst = amount * ((gstRate ?? 0) / 100);
+    return { ...it, qty: qty ?? 0, rate: rate ?? 0, gstRate: gstRate ?? 0, amount, gst, hasInvalid };
   });
   const subtotal = rows.reduce((s, r) => s + r.amount, 0);
   const totalGst = rows.reduce((s, r) => s + r.gst, 0);
   const grandTotal = subtotal + totalGst;
 
-  const canPrint = seller.name.trim() !== "" && buyer.name.trim() !== "" &&
+  // Invalid numeric input must never be silently coerced to 0. Any line item a
+  // user has filled in with a malformed/non-numeric quantity or rate is flagged
+  // with an inline error and blocks printing instead of producing a misleading
+  // amount from a coerced zero. The rows above already mark such lines
+  // `hasInvalid` so the preview never shows a fabricated ₹0.00 amount either.
+  const numericErrors: string[] = [];
+  items.forEach((it, i) => {
+    const qtyRaw = it.qty.trim();
+    const rateRaw = it.rate.trim();
+    const used = it.description.trim() !== "" || qtyRaw !== "" || rateRaw !== "";
+    if (!used) return;
+    const qtyValid = qtyRaw === "" || (Number.isFinite(Number(qtyRaw)) && Number(qtyRaw) >= 0);
+    const rateValid = rateRaw === "" || (Number.isFinite(Number(rateRaw)) && Number(rateRaw) >= 0);
+    if (!qtyValid) numericErrors.push(`Line ${i + 1} quantity must be a valid non-negative number.`);
+    if (!rateValid) numericErrors.push(`Line ${i + 1} rate must be a valid non-negative number.`);
+  });
+
+  const canPrint =
+    numericErrors.length === 0 &&
+    seller.name.trim() !== "" &&
+    buyer.name.trim() !== "" &&
     rows.some((r) => r.description.trim() !== "" && r.amount > 0);
 
   return (
@@ -144,6 +182,14 @@ export default function InvoiceGenerator() {
         </button>
       </div>
 
+      {numericErrors.length > 0 && (
+        <ul className="space-y-0.5 text-sm text-red-600 print:hidden">
+          {numericErrors.map((msg, i) => (
+            <li key={i}>{msg}</li>
+          ))}
+        </ul>
+      )}
+
       {/* Invoice preview — the only region visible when printing */}
       <div className="print-area rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-900">
         <div className="flex justify-between gap-4 border-b border-slate-200 pb-4">
@@ -176,13 +222,13 @@ export default function InvoiceGenerator() {
             </tr>
           </thead>
           <tbody>
-            {rows.filter((r) => r.description.trim() !== "" || r.amount > 0).map((r, i) => (
+            {rows.filter((r) => r.description.trim() !== "" || r.amount > 0 || r.hasInvalid).map((r, i) => (
               <tr key={i} className="border-b border-slate-100">
                 <td className="py-2 pr-2">{r.description}</td>
-                <td className="py-2 pr-2 text-right">{r.qty}</td>
-                <td className="py-2 pr-2 text-right">{formatINR(r.rate)}</td>
+                <td className="py-2 pr-2 text-right">{r.hasInvalid ? "—" : r.qty}</td>
+                <td className="py-2 pr-2 text-right">{r.hasInvalid ? "—" : formatINR(r.rate)}</td>
                 <td className="py-2 pr-2 text-right">{r.gstRate}%</td>
-                <td className="py-2 text-right">{formatINR(r.amount)}</td>
+                <td className="py-2 text-right">{r.hasInvalid ? "—" : formatINR(r.amount)}</td>
               </tr>
             ))}
           </tbody>
@@ -203,15 +249,24 @@ export default function InvoiceGenerator() {
         </div>
       </div>
 
-      <button
-        type="button"
-        disabled={!canPrint}
-        onClick={() => requireEmail(() => window.print())}
-        className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 print:hidden"
-        data-lead-action="download"
-      >
-        Print / Save as PDF
-      </button>
+      <div className="flex flex-wrap items-center gap-3 print:hidden">
+        <button
+          type="button"
+          disabled={!canPrint}
+          onClick={() => requireEmail(() => window.print())}
+          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          data-lead-action="download"
+        >
+          Print / Save as PDF
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Clear
+        </button>
+      </div>
       {!canPrint && (
         <p className="text-xs text-slate-500 print:hidden">
           Fill in your business name, customer name and at least one line item to print.

@@ -185,6 +185,28 @@ model Employee {
 }
 
 // ---------------------------------------------------------------------------
+// Brand Studio — magic-link rate limiting.
+//
+// Server-side, persistent rate-limit buckets for the magic-link sign-in. Keys
+// are namespaced fixed windows (`key:<windowStartMs>`) so each window is its
+// own document; the atomic upsert (create hits=1 / update increment) keeps the
+// count correct under concurrent requests without a read-modify-write race.
+// Unlike an in-memory Map, this is shared across serverless invocations and
+// instances.
+// ---------------------------------------------------------------------------
+
+model MagicLinkRateLimit {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
+  hits        Int      @default(1)
+  windowStart DateTime
+
+  updatedAt DateTime @updatedAt
+
+  @@index([windowStart])
+}
+
+// ---------------------------------------------------------------------------
 // Brand Studio — billing and metering.
 // ---------------------------------------------------------------------------
 

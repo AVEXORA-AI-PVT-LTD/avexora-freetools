@@ -10,25 +10,30 @@ export function OutputBlock({
 }: {
   text: string;
   filename?: string;
-  /** When true, copy/download must pass the email gate first (wired in lead capture). */
+  /** When true, the download (only) must pass the email gate first (wired in lead capture). Copy always runs ungated. */
   gated?: boolean;
   onGatedAction?: (proceed: () => void) => void;
 }) {
   const [copied, setCopied] = useState(false);
 
   const run = (action: () => void) => {
-    if (gated && onGatedAction) onGatedAction(action);
-    else action();
+    if (gated && onGatedAction) {
+      onGatedAction(action);
+      return;
+    }
+    action();
   };
 
-  const copy = () =>
-    run(() => {
-      navigator.clipboard.writeText(text).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      });
+  // Copy is never gated: it only writes the document text to the clipboard. It
+  // must not open the email modal or trigger the download flow.
+  const copy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
     });
+  };
 
+  // Download stays gated: it must pass the email gate before saving the file.
   const download = () =>
     run(() => {
       const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));

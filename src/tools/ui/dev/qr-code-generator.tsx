@@ -41,6 +41,14 @@ export default function QrCodeGenerator() {
     a.click();
   };
 
+  const reset = () => {
+    setText("");
+    setSize("512");
+    setLevel("M");
+    setError(null);
+    setRendered(false);
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -79,13 +87,22 @@ export default function QrCodeGenerator() {
           </select>
         </div>
       </div>
-      <button
-        type="button"
-        onClick={generate}
-        className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
-      >
-        Generate QR code
-      </button>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={generate}
+          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+        >
+          Generate QR code
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+        >
+          Clear
+        </button>
+      </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className={rendered ? "space-y-3" : "hidden"}>
         <canvas ref={canvasRef} className="max-w-full rounded-lg border border-slate-200" />

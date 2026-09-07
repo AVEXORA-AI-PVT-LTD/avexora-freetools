@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { zipSync } from "fflate";
 
 export const inputCls =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
@@ -36,6 +37,165 @@ export function downloadBlob(blob: Blob, filename: string) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Build an in-memory ZIP archive from raw file contents.
+ *
+ * Uses the `fflate` library (minimal, dependency-free, works in the browser and
+ * Node). Entries are stored with `level: 0` (no re-compression) because the
+ * typical contents (PNG/ICO images) are already compressed; this keeps the
+ * pack/unpack fast and lossless.
+ */
+export function buildZip(files: Record<string, Uint8Array>): Uint8Array {
+  return zipSync(files, { level: 0 });
+}
+
+/**
+ * Package a list of `{ name, blob }` entries into ONE ZIP and trigger a single
+ * browser download. Any entry missing a valid name or content is skipped so the
+ * archive never contains undefined/null/empty entries.
+ *
+ * This avoids triggering many independent browser downloads (which browsers may
+ * block as pop-up downloads). Callers generate every asset first, then call this
+ * once to produce a single `application/zip` download.
+ */
+export async function downloadZip(
+  zipName: string,
+  entries: Array<{ name: string; blob: Blob }>,
+): Promise<void> {
+  const files: Record<string, Uint8Array> = {};
+  for (const entry of entries) {
+    if (!entry.name || !entry.blob) continue;
+    files[entry.name] = new Uint8Array(await entry.blob.arrayBuffer());
+  }
+  const zipped = buildZip(files);
+  // `zipSync` returns a view over an ArrayBufferLike; copy into a plain
+  // ArrayBuffer-backed Uint8Array so it is a valid BlobPart under TS.
+  const zippedCopy = new Uint8Array(zipped.length);
+  zippedCopy.set(zipped);
+  downloadBlob(new Blob([zippedCopy], { type: "application/zip" }), zipName);
+}
+
+/**
+ * Choose the output type for browser-canvas compression/processing.
+ *
+ * PNG sources keep PNG output: PNG is lossless and supports an alpha channel,
+ * whereas an alpha-less format (e.g. JPEG) would flatten a transparent image
+ * onto an opaque black background. Non-PNG sources keep the JPEG path so the
+ * existing compression behaviour is unchanged for images without transparency.
+ */
+export function imageCompressionType(fileType: string): "image/png" | "image/jpeg" {
+  return fileType === "image/png" ? "image/png" : "image/jpeg";
+}
+
+export interface RotateFlipGeometry {
+  srcW: number;
+  srcH: number;
+  outW: number;
+  outH: number;
+  cx: number;
+  cy: number;
+  rad: number;
+  cos: number;
+  sin: number;
+  flipH: number;
+  flipV: number;
+}
+
+/**
+ * Compute the geometry for rotate + horizontal/vertical flip.
+ *
+ * This is the single source of truth for the transformation model used by the
+ * Image Rotator & Flipper. All values are derived mathematically from the
+ * actual source dimensions (no hard-coded offsets), so it works for arbitrary
+ * image sizes.
+ *
+ * Output dimensions are the bounding box of the source rotated by `angle`
+ * degrees. For axis-aligned 90°-step angles this equals swapping width/height
+ * for 90°/270° and keeping them for 0°/180°.
+ *
+ * The caller draws the source centered at the output canvas center:
+ *   translate(cx, cy)  rotate(rad)  scale(flipH, flipV)  drawImage(-srcW/2, -srcH/2)
+ */
+export function rotateFlipGeometry(
+  srcW: number,
+  srcH: number,
+  angle: number,
+  flipH: boolean,
+  flipV: boolean,
+): RotateFlipGeometry {
+  const rad = (((angle % 360) + 360) % 360) * (Math.PI / 180);
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  const outW = Math.abs(Math.round(srcW * cos + srcH * sin));
+  const outH = Math.abs(Math.round(srcW * sin + srcH * cos));
+  return {
+    srcW,
+    srcH,
+    outW,
+    outH,
+    cx: outW / 2,
+    cy: outH / 2,
+    rad,
+    cos,
+    sin,
+    flipH: flipH ? -1 : 1,
+    flipV: flipV ? -1 : 1,
+  };
+}
+
+export interface CropBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface CropRect {
+  sx: number;
+  sy: number;
+  outW: number;
+  outH: number;
+}
+
+/**
+ * Convert a display-space crop selection to a valid natural-image-space crop
+ * rectangle, safe to pass to `drawImage`.
+ *
+ * The selection box is expressed in displayed/rendered image coordinates and
+ * `rect` is the displayed image size. This converts to the source image's
+ * natural pixel space and then CLAMPS the source rectangle to the natural image
+ * bounds, so the source rectangle never extends past the image edge (which
+ * would make `drawImage` clip the source and leave a blank/transparent strip at
+ * the boundary).
+ *
+ * Returns `null` when the crop would have non-positive width/height so callers
+ * can show a validation message instead of generating a blank canvas.
+ */
+export function computeCropRect(
+  box: CropBox,
+  rect: { width: number; height: number },
+  naturalWidth: number,
+  naturalHeight: number,
+): CropRect | null {
+  if (naturalWidth <= 0 || naturalHeight <= 0 || rect.width <= 0 || rect.height <= 0) return null;
+
+  const scaleX = naturalWidth / rect.width;
+  const scaleY = naturalHeight / rect.height;
+
+  const sx = Math.max(0, Math.floor(box.x * scaleX));
+  const sy = Math.max(0, Math.floor(box.y * scaleY));
+
+  const sw = Math.min(box.w * scaleX, naturalWidth - sx);
+  const sh = Math.min(box.h * scaleY, naturalHeight - sy);
+
+  if (sw <= 0 || sh <= 0) return null;
+
+  const outW = Math.max(1, Math.floor(sw));
+  const outH = Math.max(1, Math.floor(sh));
+
+  return { sx, sy, outW, outH };
 }
 
 export function useImageFile() {

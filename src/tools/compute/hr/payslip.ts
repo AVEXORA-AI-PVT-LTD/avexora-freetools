@@ -1,5 +1,5 @@
 import type { GenerateFn } from "@/tools/types";
-import { formatINR, toNonNegative, toPositive } from "../format";
+import { formatINR, toNonNegative, toNonNegativeOr, toPositive } from "../format";
 
 const WIDTH = 58;
 
@@ -25,10 +25,10 @@ export const generatePayslip: GenerateFn = (values) => {
   const basic = toPositive(values.basic);
   const hra = toNonNegative(values.hra);
   const specialAllowance = toNonNegative(values.specialAllowance);
-  const otherAllowances = toNonNegative(values.otherAllowances ?? 0) ?? 0;
+  const otherAllowances = toNonNegativeOr(values.otherAllowances ?? 0, 0);
   const pfDeduction = toNonNegative(values.pfDeduction);
   const professionalTax = toNonNegative(values.professionalTax);
-  const otherDeductions = toNonNegative(values.otherDeductions ?? 0) ?? 0;
+  const otherDeductions = toNonNegativeOr(values.otherDeductions ?? 0, 0);
 
   if (companyName === "") return { error: "Enter the company name." };
   if (employeeName === "") return { error: "Enter the employee name." };
@@ -37,8 +37,10 @@ export const generatePayslip: GenerateFn = (values) => {
   if (basic === null) return { error: "Enter a basic salary greater than zero." };
   if (hra === null) return { error: "Enter the HRA amount (zero or more)." };
   if (specialAllowance === null) return { error: "Enter the special allowance (zero or more)." };
+  if (otherAllowances === null) return { error: "Enter a valid other allowances amount (or leave it empty)." };
   if (pfDeduction === null) return { error: "Enter the PF deduction (zero or more)." };
   if (professionalTax === null) return { error: "Enter the professional tax (zero or more)." };
+  if (otherDeductions === null) return { error: "Enter a valid other deductions amount (or leave it empty)." };
 
   const totalEarnings = basic + hra + specialAllowance + otherAllowances;
   const totalDeductions = pfDeduction + professionalTax + otherDeductions;

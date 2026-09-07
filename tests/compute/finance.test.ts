@@ -145,6 +145,28 @@ describe("computeBreakEven", () => {
   it("errors when variable cost >= price", () => {
     expect(computeBreakEven({ fixedCosts: "1000", pricePerUnit: "100", variableCostPerUnit: "100" })).toHaveProperty("error");
   });
+  it("uses ceil'd units for revenue (bug fix)", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "101", pricePerUnit: "10", variableCostPerUnit: "8" });
+    expect(r.get("Break-even units")).toBe("51");
+    expect(r.get("Break-even revenue")).toBe("₹510.00");
+    expect(r.get("Contribution margin per unit")).toBe("₹2.00");
+    expect(r.get("Contribution margin ratio")).toBe("20%");
+  });
+  it("exact division produces correct revenue", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "100", pricePerUnit: "10", variableCostPerUnit: "5" });
+    expect(r.get("Break-even units")).toBe("20");
+    expect(r.get("Break-even revenue")).toBe("₹200.00");
+  });
+  it("ceil with fractional units and higher price", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "100", pricePerUnit: "20", variableCostPerUnit: "12" });
+    expect(r.get("Break-even units")).toBe("13");
+    expect(r.get("Break-even revenue")).toBe("₹260.00");
+  });
+  it("larger values", () => {
+    const r = resultMap(computeBreakEven, { fixedCosts: "1000", pricePerUnit: "100", variableCostPerUnit: "60" });
+    expect(r.get("Break-even units")).toBe("25");
+    expect(r.get("Break-even revenue")).toBe("₹2,500.00");
+  });
 });
 
 describe("computeMargin", () => {
@@ -194,6 +216,30 @@ describe("computeDepreciation", () => {
     expect(
       computeDepreciation({ assetCost: "1000", salvageValue: "1000", usefulLife: "5", method: "straight-line" }),
     ).toHaveProperty("error");
+  });
+  it("wdv respects full useful life beyond 10 years", () => {
+    const out = computeDepreciation({
+      assetCost: "500000", salvageValue: "0", usefulLife: "15", method: "wdv", wdvRate: "15",
+    });
+    expect("error" in out).toBe(false);
+    const results = (out as any).results;
+    const bookValues = results.filter((r: any) => r.label.startsWith("Book value after year"));
+    expect(bookValues).toHaveLength(15);
+    expect(bookValues[bookValues.length - 1].label).toBe("Book value after year 15");
+    expect(bookValues[10].label).toBe("Book value after year 11");
+    expect(bookValues[10].value).toBe("₹83,671.62");
+  });
+  it("wdv emits one row per useful life year (5, 10, 11, 20)", () => {
+    for (const life of [5, 10, 11, 20]) {
+      const out = computeDepreciation({
+        assetCost: "100000", salvageValue: "0", usefulLife: String(life), method: "wdv", wdvRate: "25",
+      });
+      expect("error" in out).toBe(false);
+      const results = (out as any).results;
+      const bookValues = results.filter((r: any) => r.label.startsWith("Book value after year"));
+      expect(bookValues).toHaveLength(life);
+      expect(bookValues[bookValues.length - 1].label).toBe(`Book value after year ${life}`);
+    }
   });
 });
 

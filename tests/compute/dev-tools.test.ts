@@ -105,6 +105,16 @@ describe("generateGradient", () => {
   it("rejects invalid hex", () => {
     expect(generateGradient({ from: "blue", to: "#fff", type: "linear", angle: 90 })).toHaveProperty("error");
   });
+  it("rejects invalid angle instead of treating it as default", () => {
+    const base = { from: "#4f46e5", to: "#9333ea", type: "linear" };
+    expect(generateGradient({ ...base, angle: "abc" })).toHaveProperty("error");
+    expect(generateGradient({ ...base, angle: "12..5" })).toHaveProperty("error");
+    expect(generateGradient({ ...base, angle: "--135" })).toHaveProperty("error");
+  });
+  it("allows empty angle (default 135) and explicit zero", () => {
+    expect(textOf(generateGradient, { from: "#4f46e5", to: "#9333ea", type: "linear", angle: "" })).toContain("135deg");
+    expect(textOf(generateGradient, { from: "#4f46e5", to: "#9333ea", type: "linear", angle: "0" })).toContain("0deg");
+  });
 });
 
 describe("generateHtmlEntities", () => {

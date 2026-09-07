@@ -1,5 +1,5 @@
 import type { GenerateFn } from "@/tools/types";
-import { formatINR, toPositive } from "../format";
+import { formatINR, toPositive, toPositiveOr } from "../format";
 import { LEGAL_DISCLAIMER, formatDate, str } from "./shared";
 
 export const generateRentAgreement: GenerateFn = (values) => {
@@ -9,7 +9,7 @@ export const generateRentAgreement: GenerateFn = (values) => {
   const monthlyRent = toPositive(values.monthlyRent);
   const securityDeposit = toPositive(values.securityDeposit);
   const startDate = formatDate(values.startDate);
-  const durationMonths = toPositive(values.durationMonths) ?? 11;
+  const durationMonths = toPositiveOr(values.durationMonths ?? 11, 11);
 
   if (landlordName === "") return { error: "Enter the landlord's name." };
   if (tenantName === "") return { error: "Enter the tenant's name." };
@@ -17,6 +17,7 @@ export const generateRentAgreement: GenerateFn = (values) => {
   if (monthlyRent === null) return { error: "Enter the monthly rent amount." };
   if (securityDeposit === null) return { error: "Enter the security deposit amount." };
   if (startDate === "") return { error: "Select the tenancy start date." };
+  if (durationMonths === null) return { error: "Enter a valid duration in months." };
 
   const text = `RENT AGREEMENT (LEAVE AND LICENSE)
 

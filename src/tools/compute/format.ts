@@ -39,3 +39,31 @@ export function toNonNegative(value: unknown): number | null {
   const n = toNumber(value);
   return n !== null && n >= 0 ? n : null;
 }
+
+/**
+ * Resolve an optional numeric field: empty/undefined input falls back to the
+ * supplied default, while present-but-invalid input returns null so callers can
+ * surface a validation error (invalid input must never be silently coerced to
+ * a default/zero).
+ */
+function toOptional(
+  value: unknown,
+  validate: (v: unknown) => number | null,
+  fallback: number,
+): number | null {
+  if (value === undefined || value === null || (typeof value === "string" && value.trim() === "")) {
+    return fallback;
+  }
+  const n = validate(value);
+  return n === null ? null : n;
+}
+
+/** Optional field requiring a positive (> 0) value; empty -> fallback, invalid -> null. */
+export function toPositiveOr(value: unknown, fallback: number): number | null {
+  return toOptional(value, toPositive, fallback);
+}
+
+/** Optional field requiring a zero-or-more value; empty -> fallback, invalid -> null. */
+export function toNonNegativeOr(value: unknown, fallback: number): number | null {
+  return toOptional(value, toNonNegative, fallback);
+}

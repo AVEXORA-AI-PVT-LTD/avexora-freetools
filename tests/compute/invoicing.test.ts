@@ -103,6 +103,30 @@ describe("generateDeliveryChallan", () => {
     expect(out).toMatch(/not a tax invoice/);
     expect(out).toContain("MH12AB1234");
   });
+  it("includes the approximate value when a valid positive value is provided", () => {
+    const out = textOf(generateDeliveryChallan, {
+      businessName: "Acme", consigneeName: "Ravi", challanNumber: "DC1", date: "2026-08-01",
+      deliveryAddress: "Market Road, Nashik", items: "Tiles, 50", approxValue: "150000",
+    });
+    expect(out).toContain("₹1,50,000.00");
+  });
+  it("omits the approximate value line when left empty", () => {
+    const out = textOf(generateDeliveryChallan, {
+      businessName: "Acme", consigneeName: "Ravi", challanNumber: "DC1", date: "2026-08-01",
+      deliveryAddress: "Market Road, Nashik", items: "Tiles, 50", approxValue: "",
+    });
+    expect(out).not.toContain("Approximate value");
+  });
+  it("rejects a present-but-invalid approximate value instead of silently omitting it", () => {
+    for (const bad of ["abc", "12..5", "--100", "12abc"]) {
+      const out = generateDeliveryChallan({
+        businessName: "Acme", consigneeName: "Ravi", challanNumber: "DC1", date: "2026-08-01",
+        deliveryAddress: "Market Road, Nashik", items: "Tiles, 50", approxValue: bad,
+      });
+      expect(out).toHaveProperty("error");
+      expect(out).not.toHaveProperty("text");
+    }
+  });
 });
 
 describe("generatePaymentReminder", () => {
@@ -139,6 +163,17 @@ describe("computeDiscount", () => {
     const r = resultMap(computeDiscount, { price: "2000", discount1: "20", discount2: "10" });
     expect(r.get("Final price")).toBe("₹1,440.00");
     expect(r.get("Effective discount")).toBe("28%");
+  });
+  it("rejects invalid optional discount2 instead of treating it as 0", () => {
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "abc" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "@#$" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "12..5" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "--100" })).toHaveProperty("error");
+    expect(computeDiscount({ price: "2000", discount1: "20", discount2: "-5" })).toHaveProperty("error");
+  });
+  it("allows empty optional discount2 and explicit zero", () => {
+    const empty = resultMap(computeDiscount, { price: "2000", discount1: "20", discount2: "" });
+    expect(empty.get("Final price")).toBe("₹1,600.00");
   });
 });
 

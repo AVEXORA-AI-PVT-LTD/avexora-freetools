@@ -18,7 +18,7 @@ export const computeBreakEven: ComputeFn = (values) => {
   const contribution = price - variableCost;
   const units = fixedCosts / contribution;
   const unitsRounded = Math.ceil(units);
-  const revenue = units * price;
+  const revenue = unitsRounded * price;
 
   return {
     results: [

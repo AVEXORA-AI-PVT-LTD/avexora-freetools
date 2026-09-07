@@ -1,5 +1,5 @@
 import type { GenerateFn } from "@/tools/types";
-import { formatINR, formatNumber, toPositive } from "../format";
+import { formatINR, formatNumber, toPositive, toPositiveOr } from "../format";
 import { LEGAL_DISCLAIMER, formatDate, str } from "./shared";
 
 export const generateEmploymentContract: GenerateFn = (values) => {
@@ -9,7 +9,7 @@ export const generateEmploymentContract: GenerateFn = (values) => {
   const annualCtc = toPositive(values.annualCtc);
   const startDate = formatDate(values.startDate);
   const workLocation = str(values.workLocation);
-  const noticePeriodDays = toPositive(values.noticePeriodDays) ?? 30;
+  const noticePeriodDays = toPositiveOr(values.noticePeriodDays ?? 30, 30);
 
   if (companyName === "") return { error: "Enter the company name." };
   if (employeeName === "") return { error: "Enter the employee's name." };
@@ -17,6 +17,7 @@ export const generateEmploymentContract: GenerateFn = (values) => {
   if (annualCtc === null) return { error: "Enter the annual CTC." };
   if (startDate === "") return { error: "Select the start date." };
   if (workLocation === "") return { error: "Enter the work location." };
+  if (noticePeriodDays === null) return { error: "Enter a valid notice period in days." };
 
   const text = `EMPLOYMENT CONTRACT
 

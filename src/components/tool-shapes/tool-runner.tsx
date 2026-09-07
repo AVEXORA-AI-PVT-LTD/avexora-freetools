@@ -11,6 +11,12 @@ import { AiWriterShape } from "./ai-writer-shape";
 /**
  * Client-side dispatcher: dynamically imports only this category's configs
  * (see client-loaders.ts) and renders the tool via its shape renderer.
+ *
+ * The category config is loaded with a dynamic `import()`. If that chunk fails
+ * to load (network error, chunk-load error, etc.) the promise rejects; without
+ * a catch the tool would stay `null` and the loading skeleton would remain on
+ * screen forever. This component instead surfaces a load error with a retry so
+ * the page can never get stuck in a loading state.
  */
 export function ToolRunner({
   category,
@@ -22,16 +28,47 @@ export function ToolRunner({
   aiEnabled?: boolean;
 }) {
   const [tool, setTool] = useState<ToolConfig | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
-    categoryLoaders[category]().then((mod) => {
-      if (active) setTool(mod.tools.find((t) => t.slug === slug) ?? null);
-    });
+    categoryLoaders[category]()
+      .then((mod) => {
+        if (active) {
+          setTool(mod.tools.find((t) => t.slug === slug) ?? null);
+          setError(null);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setTool(null);
+          setError("This tool failed to load. Check your connection and try again.");
+        }
+      });
     return () => {
       active = false;
     };
-  }, [category, slug]);
+  }, [category, slug, attempt]);
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+        <p className="font-semibold">This tool failed to load.</p>
+        <p className="mt-1">Check your connection and try again.</p>
+        <button
+          type="button"
+          onClick={() => {
+            setError(null);
+            setAttempt((a) => a + 1);
+          }}
+          className="mt-3 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
 
   if (!tool) {
     return (

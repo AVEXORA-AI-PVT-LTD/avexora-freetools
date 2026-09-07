@@ -19,6 +19,11 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
     return typeof v === "string" ? v.trim() !== "" : v !== undefined;
   });
 
+  const reset = () => {
+    setValues(initialValues(tool.fields));
+    setSubmitted(false);
+  };
+
   return (
     <form
       className="space-y-4"
@@ -40,16 +45,25 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
         ))}
       </div>
 
-      {!tool.autoCompute && (
+      <div className="flex flex-wrap items-center gap-3">
+        {!tool.autoCompute && (
+          <button
+            type="submit"
+            className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+          >
+            {tool.submitLabel ?? "Calculate"}
+          </button>
+        )}
         <button
-          type="submit"
-          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+          type="button"
+          onClick={reset}
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
-          {tool.submitLabel ?? "Calculate"}
+          Reset
         </button>
-      )}
+      </div>
 
-      {outcome && "error" in outcome && hasInput && !tool.autoCompute && (
+      {outcome && "error" in outcome && hasInput && (
         <p className="text-sm text-red-600">{outcome.error}</p>
       )}
       {outcome && "results" in outcome && <ResultsPanel results={outcome.results} />}

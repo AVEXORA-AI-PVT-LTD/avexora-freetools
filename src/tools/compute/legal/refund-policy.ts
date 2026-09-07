@@ -1,16 +1,17 @@
 import type { GenerateFn } from "@/tools/types";
 import { LEGAL_DISCLAIMER, str } from "./shared";
-import { toPositive } from "../format";
+import { toPositiveOr } from "../format";
 
 export const generateRefundPolicy: GenerateFn = (values) => {
   const companyName = str(values.companyName);
   const contactEmail = str(values.contactEmail);
-  const returnWindowDays = toPositive(values.returnWindowDays) ?? 7;
+  const returnWindowDays = toPositiveOr(values.returnWindowDays ?? 7, 7);
   const productType = str(values.productType) || "physical products";
   const isDigital = values.digitalGoods === true;
 
   if (companyName === "") return { error: "Enter the company name." };
   if (contactEmail === "") return { error: "Enter a contact email address." };
+  if (returnWindowDays === null) return { error: "Enter a valid return/refund window in days." };
 
   const digitalClause = isDigital
     ? `Because our products are digital and delivered instantly, refunds for digital goods are only available if the product is materially defective, was not delivered due to a technical error on our part, or as otherwise required by applicable consumer protection law.`

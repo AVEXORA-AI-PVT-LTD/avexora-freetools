@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth, emailEnabled, googleEnabled, signIn } from "@/server/auth";
+import { enforceMagicLinkLimit } from "@/server/magic-link-limit";
 
 export const metadata: Metadata = {
   title: "Sign in to Brand Studio",
@@ -27,7 +29,19 @@ export default async function SignInPage({
         Your free-tools history carries over — no separate account needed.
       </p>
 
-      {error && (
+      {error === "too_many_requests" && (
+        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Too many requests. Please wait a minute and try again.
+        </p>
+      )}
+
+      {error === "invalid_email" && (
+        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Enter a valid work email and try again.
+        </p>
+      )}
+
+      {error && error !== "too_many_requests" && error !== "invalid_email" && (
         <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           That sign-in link didn&apos;t work. Try again.
         </p>
@@ -51,8 +65,22 @@ export default async function SignInPage({
           className="mt-8 space-y-3"
           action={async (formData: FormData) => {
             "use server";
+
+            // Server-side rate limiting and validation run BEFORE the magic
+            // link is sent, so a rejected request never triggers an email.
+            const check = await enforceMagicLinkLimit(
+              String(formData.get("email") ?? ""),
+              await headers(),
+            );
+            if (check.status === "invalid_email") {
+              redirect("/studio/signin?error=invalid_email");
+            }
+            if (check.status !== "allowed") {
+              redirect("/studio/signin?error=too_many_requests");
+            }
+
             await signIn("resend", {
-              email: String(formData.get("email") ?? ""),
+              email: check.email,
               redirectTo: callbackUrl,
             });
           }}
