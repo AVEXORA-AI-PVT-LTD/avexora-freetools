@@ -10,6 +10,7 @@ import { generateHtmlEntities } from "@/tools/compute/dev/html-entities";
 import { decodeJwt } from "@/tools/compute/dev/jwt-decoder";
 import { markdownToHtml, generateMarkdownHtml } from "@/tools/compute/dev/markdown-to-html";
 import { convertTimestamp } from "@/tools/compute/dev/timestamp-converter";
+import { generateJsonToTypescript, MAX_INPUT_LENGTH } from "@/tools/compute/dev/json-to-typescript";
 
 function textOf(fn: GenerateFn, values: FieldValues): string {
   const out = fn(values);
@@ -191,5 +192,192 @@ describe("convertTimestamp", () => {
   });
   it("rejects garbage", () => {
     expect(convertTimestamp({ input: "not a date" })).toHaveProperty("error");
+  });
+});
+
+describe("generateJsonToTypescript", () => {
+  it("generates interfaces for a simple object", () => {
+    expect(
+      textOf(generateJsonToTypescript, {
+        json: '{"name":"Asha","age":30,"active":true}',
+        format: "interface",
+        rootName: "User",
+      }),
+    ).toBe("interface User {\n  name: string;\n  age: number;\n  active: boolean;\n}\n");
+  });
+
+  it("generates type aliases in type mode", () => {
+    expect(
+      textOf(generateJsonToTypescript, {
+        json: '{"id":1}',
+        format: "type",
+        rootName: "User",
+      }),
+    ).toBe("type User = {\n  id: number;\n};\n");
+  });
+
+  it("defaults to interfaces when format is missing", () => {
+    expect(
+      textOf(generateJsonToTypescript, { json: '{"id":1}', rootName: "User" }),
+    ).toContain("interface User {");
+  });
+
+  it("quotes keys that are not valid identifiers", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '{"first name":"Asha","age-in-years":30,"2fa":true}',
+      format: "interface",
+      rootName: "User",
+    });
+    expect(out).toContain('"first name": string;');
+    expect(out).toContain('"age-in-years": number;');
+    expect(out).toContain('"2fa": boolean;');
+  });
+
+  it("builds union types for mixed arrays and keeps null", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '{"flags":[1,"on",true,null]}',
+      format: "interface",
+      rootName: "User",
+    });
+    expect(out).toContain("flags: (number | string | boolean | null)[];");
+  });
+
+  it("names nested objects with PascalCase derived from keys", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '{"profile":{"address":{"city":"Pune","pincode":411001}},"active":true}',
+      format: "interface",
+      rootName: "User",
+    });
+    expect(out).toBe(
+      [
+        "interface User {",
+        "  profile: UserProfile;",
+        "  active: boolean;",
+        "}",
+        "",
+        "interface UserProfile {",
+        "  address: UserProfileAddress;",
+        "}",
+        "",
+        "interface UserProfileAddress {",
+        "  city: string;",
+        "  pincode: number;",
+        "}",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("handles a root array of objects with a dedicated element type", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '[{"id":1,"name":"A"},{"id":2,"name":"B"}]',
+      format: "interface",
+      rootName: "Root",
+    });
+    expect(out).toBe(
+      ["type Root = RootItem[];", "", "interface RootItem {", "  id: number;", "  name: string;", "}", ""].join("\n"),
+    );
+  });
+
+  it("applies a custom root name to arrays", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '[{"id":1}]',
+      format: "interface",
+      rootName: "Product",
+    });
+    expect(out).toBe(["type Product = ProductItem[];", "", "interface ProductItem {", "  id: number;", "}", ""].join("\n"));
+  });
+
+  it("collapses structurally identical objects into a single type", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '{"left":{"x":1},"right":{"x":2}}',
+      format: "interface",
+      rootName: "User",
+    });
+    expect(out).toContain("right: UserLeft;");
+    expect(out.match(/interface UserLeft/g) || []).toHaveLength(1);
+  });
+
+  it("disambiguates name collisions with a numeric suffix", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '{"rows":[[{"a":1}],[{"b":2}]]}',
+      format: "interface",
+      rootName: "Root",
+    });
+    expect(out).toContain("rows: (RootRows[] | RootRows2[])[];");
+    expect(out).toContain("interface RootRows2");
+  });
+
+  it("maps empty arrays to unknown[] and empty objects to Record<string, unknown>", () => {
+    expect(textOf(generateJsonToTypescript, { json: '[]', format: "interface", rootName: "Root" })).toBe(
+      "type Root = unknown[];\n",
+    );
+    expect(
+      textOf(generateJsonToTypescript, { json: '{"meta":{}}', format: "interface", rootName: "User" }),
+    ).toContain("meta: Record<string, unknown>;");
+  });
+
+  it("emits an empty interface for an empty root object", () => {
+    expect(textOf(generateJsonToTypescript, { json: "{}", format: "interface", rootName: "Root" })).toBe(
+      "interface Root {}\n",
+    );
+  });
+
+  it("maps scalar roots to type aliases", () => {
+    expect(textOf(generateJsonToTypescript, { json: "42", format: "type", rootName: "Root" })).toBe(
+      "type Root = number;\n",
+    );
+    expect(textOf(generateJsonToTypescript, { json: '"hi"', format: "type", rootName: "Root" })).toBe(
+      "type Root = string;\n",
+    );
+  });
+
+  it("sanitises an invalid root name", () => {
+    const out = textOf(generateJsonToTypescript, {
+      json: '{"id":1}',
+      format: "interface",
+      rootName: "123 Start",
+    });
+    expect(out).toContain("interface _123Start {");
+  });
+
+  it("sets a filename derived from the root name", () => {
+    const res = generateJsonToTypescript({ json: '{"id":1}', format: "interface", rootName: "User" });
+    if ("error" in res) throw new Error(res.error);
+    expect(res.filename).toBe("User.ts");
+  });
+
+  it("handles deeply nested JSON without recursion issues", () => {
+    let deep: unknown = { v: 1 };
+    for (let i = 0; i < 200; i += 1) deep = { next: deep };
+    const out = textOf(generateJsonToTypescript, {
+      json: JSON.stringify(deep),
+      format: "interface",
+      rootName: "Root",
+    });
+    expect(out).toContain("interface Root {");
+    expect(out).toContain("next:");
+  });
+
+  it("handles large JSON and dedupes repeated rows", () => {
+    const big = { items: Array.from({ length: 400 }, (_, i) => ({ id: i, label: `item-${i}` })) };
+    const out = textOf(generateJsonToTypescript, {
+      json: JSON.stringify(big),
+      format: "interface",
+      rootName: "Feed",
+    });
+    expect(out).toContain("items: FeedItems[];");
+    expect(out.match(/interface FeedItems/g) || []).toHaveLength(1);
+  });
+
+  it("reports invalid JSON and empty input", () => {
+    expect(generateJsonToTypescript({ json: "{ nope", format: "interface", rootName: "User" })).toHaveProperty("error");
+    expect(generateJsonToTypescript({ json: "   ", format: "interface", rootName: "User" })).toHaveProperty("error");
+  });
+
+  it("rejects oversized input", () => {
+    expect(generateJsonToTypescript({ json: "x".repeat(MAX_INPUT_LENGTH + 1), format: "interface", rootName: "User" })).toHaveProperty(
+      "error",
+    );
   });
 });
