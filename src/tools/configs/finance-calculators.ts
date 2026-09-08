@@ -7,6 +7,7 @@ import { computeRd } from "../compute/finance/rd";
 import { computeIncomeTax } from "../compute/finance/income-tax";
 import { computeTds } from "../compute/finance/tds";
 import { computeAdvanceTax } from "../compute/finance/advance-tax";
+import { computeFreelanceTds } from "../compute/finance/freelance-tds";
 import { computeCompoundInterest } from "../compute/finance/compound-interest";
 import { computeSimpleInterest } from "../compute/finance/simple-interest";
 import { computeBreakEven } from "../compute/finance/break-even";
@@ -317,7 +318,7 @@ export const tools: ToolConfig[] = [
           "Only the ₹50,000 standard deduction for salaried taxpayers. Add your own 80C/80D/HRA/home-loan deductions mentally: each ₹1 of deduction saves tax at your marginal slab rate.",
       },
     ],
-    related: ["tds-calculator", "advance-tax-calculator", "salary-calculator", "hra-exemption-calculator", "gst-calculator"],
+    related: ["tds-calculator", "advance-tax-calculator", "freelance-tds-calculator", "salary-calculator", "hra-exemption-calculator", "gst-calculator"],
   },
   {
     kind: "calculator",
@@ -374,7 +375,7 @@ export const tools: ToolConfig[] = [
           "Common ones (FY 2025-26): 194C — ₹30,000 per contract or ₹1,00,000 aggregate per year; 194J — ₹50,000 per year; 194I — ₹6,00,000 per year; 194H — ₹20,000 per year; 194A — ₹10,000 (₹1,00,000 for senior citizens at banks). Below these, deduct nothing.",
       },
     ],
-    related: ["gst-calculator", "income-tax-calculator", "advance-tax-calculator", "salary-calculator", "invoice-generator"],
+    related: ["gst-calculator", "income-tax-calculator", "advance-tax-calculator", "freelance-tds-calculator", "salary-calculator", "invoice-generator"],
   },
   {
     kind: "calculator",
@@ -485,7 +486,93 @@ export const tools: ToolConfig[] = [
           "No. It uses the standard FY 2026-27 slabs, rebate, cess and surcharge on the income you enter, and it is a planning estimate. Your final liability depends on your exact return computation. Surcharge marginal relief is not modelled, and old-regime deductions are limited to 80C, 24(b) and 80D.",
       },
     ],
-    related: ["income-tax-calculator", "tds-calculator", "gst-calculator", "depreciation-calculator"],
+    related: ["income-tax-calculator", "tds-calculator", "freelance-tds-calculator", "gst-calculator", "depreciation-calculator"],
+  },
+  {
+    kind: "calculator",
+    slug: "freelance-tds-calculator",
+    category: "finance-calculators",
+    name: "Freelance TDS Calculator",
+    tagline:
+      "Section 194J TDS on professional and technical fees — see what your client deducts and the net you receive.",
+    seoDescription:
+      "Free Section 194J TDS calculator for freelancers and consultants (Tax Year 2026-27, Income-tax Act 2025). Enter your fee, category and annual payments to see the applicable TDS rate (10% professional / 2% technical), the TDS deducted and your net receivable.",
+    fields: [
+      { name: "amount", label: "Payment / invoice amount (fee only)", type: "number", placeholder: "100000", min: 0, step: 0.01, unit: "₹", help: "Enter the fee excluding GST — when GST is shown separately on the invoice, TDS applies to the fee only." },
+      {
+        name: "category",
+        label: "Nature of the payment",
+        type: "select",
+        defaultValue: "professional",
+        help: "Distinguishes the two 194J rates: 10% for professional services and 2% for fees for technical services (FTS).",
+        options: [
+          { value: "professional", label: "Professional services — 10%" },
+          { value: "technical", label: "Fees for technical services (FTS) — 2%" },
+        ],
+      },
+      { name: "yearlyTotal", label: "Total paid to you in this category this year (including this payment)", type: "number", placeholder: "100000", min: 0, step: 0.01, unit: "₹", optional: true, help: "TDS starts once the year's aggregate in the category exceeds ₹50,000. Leave blank to treat this as the only payment." },
+      {
+        name: "payerType",
+        label: "Who is paying you?",
+        type: "select",
+        defaultValue: "non-individual",
+        options: [
+          { value: "non-individual", label: "Company, firm or other non-individual" },
+          { value: "huf-specified", label: "Individual / HUF with turnover above ₹1 crore (business) or ₹50 lakh (profession) last year" },
+          { value: "huf-exempt", label: "Individual / HUF within those limits, or paying me for personal purposes" },
+        ],
+      },
+      {
+        name: "panProvided",
+        label: "Have you furnished a valid PAN to the payer?",
+        type: "select",
+        defaultValue: "yes",
+        options: [
+          { value: "yes", label: "Yes — normal section rate applies" },
+          { value: "no", label: "No — TDS at 20% (Section 397(2))" },
+        ],
+      },
+    ],
+    compute: computeFreelanceTds,
+    autoCompute: true,
+    about: [
+      "When a client pays a freelancer or consultant for professional or technical services, the payer is generally required to deduct TDS before making the payment, deposit it with the Income Tax Department, and report it in their return. The fee you invoice is not what lands in your bank account — the TDS is credited to your PAN and adjusted against your own tax, but the timing matters for your cash flow. This calculator works out the Section 194J deduction for a single payment: the category sets the rate (10% for professional services, 2% for fees for technical services), the annual aggregate in that category sets the threshold, and the result tells you the exact TDS to expect and the net amount you will actually receive.",
+      "Under the Income-tax Act, 2025 (in force from 1 April 2026), Section 194J has been renumbered as Section 393(1), Table Sl. No. 6(iii), with the same rates: professional services attract 10%, and fees for technical services (FTS) — an engagement that is managerial, technical or consultancy in nature rather than a professional service — attract 2%. No TDS is deducted while the aggregate of payments in a single category during the tax year is within ₹50,000 (raised from ₹30,000 by the Finance Act, 2025). Once that aggregate crosses ₹50,000, TDS applies to the full amount of the payment, not just the excess. Payment codes in TDS returns are 1027 for professional fees and 1026 for technical fees.",
+      "Applicability depends on the payer. Companies, firms and other non-individuals must always deduct once the threshold is crossed; an individual or HUF deducts only if their business turnover exceeded ₹1 crore or their professional receipts exceeded ₹50 lakh in the immediately preceding tax year, and never for payments made for purely personal purposes. If the payee has not furnished a valid PAN the rate rises to 20% (Section 397(2) of the 2025 Act, formerly 206AA). This calculator models the current residency threshold and applies TDS on the fee excluding separately-shown GST — payments to non-residents, royalty, call-centre and director-remuneration variants of the section are outside its scope.",
+    ],
+    faq: [
+      {
+        question: "What TDS rate applies to my freelance income?",
+        answer:
+          "10% if you are paid for professional services — services in the course of a legal, medical, engineering, architectural, accountancy, technical-consultancy, interior-design or advertising profession. 2% if you are paid fees for technical services (FTS) — managerial, technical or consultancy work. If you haven't furnished a valid PAN, both rates rise to 20%.",
+      },
+      {
+        question: "Is there a threshold below which no TDS is deducted?",
+        answer:
+          "Yes. No TDS is deducted while the aggregate of payments in a single category during the tax year is within ₹50,000 — professional and technical services are tested separately. Once the aggregate crosses ₹50,000, TDS applies to the full amount of the payment. Payments within the threshold are still your taxable income.",
+      },
+      {
+        question: "Do all clients have to deduct TDS on fees over ₹50,000 a year?",
+        answer:
+          "Companies, firms and other non-individual payers must. An individual or HUF client deducts only if their business turnover exceeded ₹1 crore or their professional gross receipts exceeded ₹50 lakh in the previous tax year — and never for payments for purely personal purposes. Select the payer type that matches to see whether TDS is deducted in your case.",
+      },
+      {
+        question: "Is TDS calculated on the GST-inclusive amount?",
+        answer:
+          "No. When GST is shown separately on the invoice, TDS under Section 194J applies to the fee excluding GST. Enter the pre-GST fee amount.",
+      },
+      {
+        question: "Which section governs my fees now that the Income-tax Act 2025 is in force?",
+        answer:
+          "From 1 April 2026, old Section 194J of the 1961 Act is renumbered as Section 393(1), Table Sl. No. 6(iii). Rates, the ₹50,000 threshold and the PAN rules are unchanged, and no TDS is required on payments to residents below the threshold. This calculator models the rules for Tax Year 2026-27 (AY 2027-28).",
+      },
+      {
+        question: "What happens to the TDS my client deducts?",
+        answer:
+          "Your client deposits it with the Income Tax Department, it appears against your PAN, and you claim it against your tax while filing your return — your tax return (ITR) follows the same calculation as the advance-tax calculator on this site, where TDS credited is subtracted from your total liability.",
+      },
+    ],
+    related: ["tds-calculator", "advance-tax-calculator", "income-tax-calculator", "gst-calculator", "invoice-generator"],
   },
   {
     kind: "calculator",
