@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  ImagePicker, canvasToBlob, downloadBlob, drawToCanvas, imageCompressionType, labelCls, primaryBtn, useImageFile,
+  ImagePicker, canvasToBlob, downloadBlob, drawToCanvas, inputCls, labelCls, primaryBtn, useImageFile,
 } from "./image-shared";
 
 function fmtSize(bytes: number): string {
@@ -22,17 +22,13 @@ export default function ImageCompressor() {
     setReport(null);
     try {
       const canvas = drawToCanvas(image, image.naturalWidth, image.naturalHeight);
-      // Preserve PNG alpha by keeping PNG output for PNG sources; do not route a
-      // transparent PNG through the alpha-stripping JPEG path (which would
-      // flatten it onto a black background). Non-PNG sources keep JPEG.
-      const type = imageCompressionType(file.type);
-      const blob = await canvasToBlob(canvas, type, Number(quality) / 100);
+      const blob = await canvasToBlob(canvas, "image/jpeg", Number(quality) / 100);
       const saved = file.size - blob.size;
       setReport(
         `Compressed from ${fmtSize(file.size)} to ${fmtSize(blob.size)}` +
           (saved > 0 ? ` (${Math.round((saved / file.size) * 100)}% smaller).` : "."),
       );
-      downloadBlob(blob, file.name.replace(/\.\w+$/, "") + "-compressed" + (type === "image/png" ? ".png" : ".jpg"));
+      downloadBlob(blob, file.name.replace(/\.\w+$/, "") + "-compressed.jpg");
     } catch {
       setError("Something went wrong while compressing this image.");
     } finally {
