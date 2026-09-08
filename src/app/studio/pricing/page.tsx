@@ -43,12 +43,12 @@ export default function PricingPage() {
               key={id}
               className={`flex flex-col rounded-lg border p-6 ${
                 featured
-                  ? "border-indigo-500 ring-1 ring-indigo-500"
+                  ? "border-orange-500 ring-1 ring-orange-500"
                   : "border-slate-200"
               }`}
             >
               {featured && (
-                <span className="mb-3 self-start rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">
+                <span className="mb-3 self-start rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-800">
                   Most popular
                 </span>
               )}
@@ -70,7 +70,7 @@ export default function PricingPage() {
               <ul className="mt-5 flex-1 space-y-2 text-sm text-slate-700">
                 {plan.highlights.map((h) => (
                   <li key={h} className="flex gap-2">
-                    <span aria-hidden className="text-indigo-600">
+                    <span aria-hidden className="text-orange-700">
                       •
                     </span>
                     <span>{h}</span>

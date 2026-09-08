@@ -92,7 +92,7 @@ export function UpgradeButton({
         subscription_id: data.subscriptionId,
         name: "Avexora Brand Studio",
         description: `${data.planName} plan`,
-        theme: { color: "#4f46e5" },
+        theme: { color: "#ea580c" },
         handler: () => router.push("/studio/app?upgraded=1"),
       }).open();
     } catch {
@@ -110,7 +110,7 @@ export function UpgradeButton({
         disabled={busy || !enabled}
         className={
           className ??
-          "w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+          "w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         }
       >
         {busy ? "Starting…" : (label ?? `Choose ${planName}`)}

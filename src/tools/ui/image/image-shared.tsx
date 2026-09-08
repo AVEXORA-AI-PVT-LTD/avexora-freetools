@@ -242,7 +242,7 @@ export function ImagePicker({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="grid w-full gap-1.5 rounded-lg border-2 border-dashed border-slate-300 px-4 py-5 text-center text-sm text-slate-600 transition hover:border-indigo-400 hover:bg-indigo-50/40 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        className="grid w-full gap-1.5 rounded-lg border-2 border-dashed border-slate-300 px-4 py-5 text-center text-sm text-slate-600 transition hover:border-orange-400 hover:bg-orange-50/40 hover:text-orange-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
       >
         <span aria-hidden="true" className="text-xl leading-none">🖼️</span>
         {file && image ? (

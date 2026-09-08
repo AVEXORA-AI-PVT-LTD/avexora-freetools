@@ -120,7 +120,7 @@ export function AiWriterShape({
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50"
         >
           {busy ? "Generating…" : (tool.submitLabel ?? "Generate")}
         </button>

@@ -36,7 +36,7 @@ export function FieldInput({
           type="checkbox"
           checked={value === true}
           onChange={(e) => onChange(e.target.checked)}
-          className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="h-4 w-4 rounded border-slate-300 text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
         />
         {field.label}
       </label>

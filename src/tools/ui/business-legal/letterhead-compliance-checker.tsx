@@ -19,7 +19,7 @@ import {
  */
 
 const inputCls =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none";
 const labelCls = "block text-xs font-medium text-slate-600 mb-1";
 
 const SEVERITY = {
@@ -258,7 +258,7 @@ export default function LetterheadComplianceChecker() {
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
-            className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
           >
             Check compliance
           </button>
@@ -326,7 +326,7 @@ export default function LetterheadComplianceChecker() {
             </div>
           ))}
 
-          <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-5">
+          <div className="rounded-lg border border-orange-200 bg-orange-50 p-5">
             <h4 className="text-sm font-semibold text-slate-900">
               Fix it in one click
             </h4>
@@ -337,7 +337,7 @@ export default function LetterheadComplianceChecker() {
             </p>
             <Link
               href="/studio?utm_source=avextools&utm_medium=tool&utm_campaign=letterhead-compliance-checker"
-              className="mt-3 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+              className="mt-3 inline-block rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
             >
               Generate compliant stationery
             </Link>

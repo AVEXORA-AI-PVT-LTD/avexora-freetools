@@ -18,7 +18,7 @@ export function ResultsPanel({
             <dd
               className={
                 r.emphasis
-                  ? "text-lg font-bold text-indigo-700"
+                  ? "text-lg font-bold text-orange-800"
                   : "text-sm font-medium text-slate-900"
               }
             >

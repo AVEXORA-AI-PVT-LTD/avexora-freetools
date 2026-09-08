@@ -62,7 +62,7 @@ export function ToolRunner({
             setError(null);
             setAttempt((a) => a + 1);
           }}
-          className="mt-3 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+          className="mt-3 rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
         >
           Try again
         </button>

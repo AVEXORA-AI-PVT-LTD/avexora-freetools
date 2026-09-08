@@ -80,10 +80,10 @@ function PageThumb({
 }
 
 const arrowBtn =
-  "inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-sm text-slate-600 transition hover:bg-slate-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-40";
+  "inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-sm text-slate-600 transition hover:bg-slate-50 hover:text-orange-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 disabled:opacity-40";
 
 const halfTurnBtn =
-  "inline-flex h-9 items-center justify-center rounded-md border border-slate-200 px-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:opacity-40";
+  "inline-flex h-9 items-center justify-center rounded-md border border-slate-200 px-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-orange-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 disabled:opacity-40";
 
 interface PageCardProps {
   pdf: PDFDocumentProxy;
@@ -100,7 +100,7 @@ function PageCard({ pdf, index, rotation, selected, onToggle, onRotate }: PageCa
     <li
       className={
         selected
-          ? "overflow-hidden rounded-lg border border-indigo-500 bg-white ring-2 ring-indigo-500"
+          ? "overflow-hidden rounded-lg border border-orange-500 bg-white ring-2 ring-orange-500"
           : "overflow-hidden rounded-lg border border-slate-200 bg-white"
       }
     >
@@ -116,7 +116,7 @@ function PageCard({ pdf, index, rotation, selected, onToggle, onRotate }: PageCa
             onToggle();
           }
         }}
-        className="block cursor-pointer p-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500"
+        className="block cursor-pointer p-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange-500"
       >
         <PageThumb pdf={pdf} pageIndex={index} rotation={rotation} />
         <div className="mt-1.5 flex items-center justify-between gap-1 text-xs">
@@ -124,7 +124,7 @@ function PageCard({ pdf, index, rotation, selected, onToggle, onRotate }: PageCa
           <span
             className={
               rotation
-                ? "rounded-full bg-indigo-50 px-1.5 py-0.5 font-semibold text-indigo-700"
+                ? "rounded-full bg-orange-50 px-1.5 py-0.5 font-semibold text-orange-800"
                 : "px-1.5 text-slate-400"
             }
           >
@@ -132,7 +132,7 @@ function PageCard({ pdf, index, rotation, selected, onToggle, onRotate }: PageCa
           </span>
           <span className="flex w-3 justify-center" aria-hidden="true">
             {selected ? (
-              <span className="font-semibold text-indigo-600">✓</span>
+              <span className="font-semibold text-orange-700">✓</span>
             ) : (
               <span className="text-slate-300">○</span>
             )}

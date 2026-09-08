@@ -87,7 +87,7 @@ export default function ImageCropper() {
             />
             {box.w > 0 && (
               <div
-                className="pointer-events-none absolute border-2 border-indigo-500 bg-indigo-500/20"
+                className="pointer-events-none absolute border-2 border-orange-500 bg-orange-500/20"
                 style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
               />
             )}

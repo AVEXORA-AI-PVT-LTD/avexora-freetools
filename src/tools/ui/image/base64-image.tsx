@@ -32,7 +32,7 @@ export function ImageToBase64() {
                 setTimeout(() => setCopied(false), 1500);
               });
             }}
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700">
+            className="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700">
             {copied ? "Copied ✓" : "Copy Base64 string"}
           </button>
         </div>
@@ -74,12 +74,12 @@ export function Base64ToImage() {
           Base64 string (with or without the data:image/… prefix)
         </label>
         <textarea id="b64-input" rows={8}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-xs focus:border-indigo-500 focus:outline-none"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-xs focus:border-orange-500 focus:outline-none"
           placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA…"
           value={input} onChange={(e) => setInput(e.target.value)} />
       </div>
       <button type="button" onClick={decode}
-        className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">
+        className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700">
         Decode
       </button>
       {error && <p className="text-sm text-red-600">{error}</p>}

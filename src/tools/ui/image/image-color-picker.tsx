@@ -70,7 +70,7 @@ export function ImageColorPicker() {
                 setTimeout(() => setCopied(false), 1500);
               });
             }}
-            className="ml-auto text-sm font-medium text-indigo-600 hover:text-indigo-800"
+            className="ml-auto text-sm font-medium text-orange-700 hover:text-orange-900"
           >
             {copied ? "Copied ✓" : "Copy hex"}
           </button>

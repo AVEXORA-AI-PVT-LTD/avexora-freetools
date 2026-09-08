@@ -56,7 +56,7 @@ export default function RootLayout({
                 href={`${EBOS_URL}?utm_source=avextools&utm_medium=header&utm_campaign=site`}
                 target="_blank"
                 rel="noopener"
-                className="rounded-md bg-indigo-600 px-3 py-1.5 font-semibold text-white hover:bg-indigo-700"
+                className="rounded-md bg-orange-600 px-3 py-1.5 font-semibold text-white hover:bg-orange-700"
               >
                 Try EBOS
               </a>
@@ -71,7 +71,7 @@ export default function RootLayout({
                 <div key={c.slug}>
                   <Link
                     href={`/${c.slug}`}
-                    className="text-sm font-semibold text-slate-800 hover:text-indigo-700"
+                    className="text-sm font-semibold text-slate-800 hover:text-orange-800"
                   >
                     {c.name}
                   </Link>
@@ -80,13 +80,13 @@ export default function RootLayout({
               <div>
                 <Link
                   href="/studio"
-                  className="text-sm font-semibold text-slate-800 hover:text-indigo-700"
+                  className="text-sm font-semibold text-slate-800 hover:text-orange-800"
                 >
                   Brand Studio
                 </Link>
                 <Link
                   href="/studio/pricing"
-                  className="mt-1 block text-sm text-slate-600 hover:text-indigo-700"
+                  className="mt-1 block text-sm text-slate-600 hover:text-orange-800"
                 >
                   Studio pricing
                 </Link>

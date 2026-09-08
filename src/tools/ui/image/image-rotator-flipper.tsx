@@ -115,12 +115,12 @@ export function ImageRotatorFlipper() {
           </div>
           <label className="flex items-end gap-2 pb-2 text-sm text-slate-700">
             <input type="checkbox" checked={flipH} onChange={(e) => setFlipH(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+              className="h-4 w-4 rounded border-slate-300 text-orange-700" />
             Flip horizontally
           </label>
           <label className="flex items-end gap-2 pb-2 text-sm text-slate-700">
             <input type="checkbox" checked={flipV} onChange={(e) => setFlipV(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+              className="h-4 w-4 rounded border-slate-300 text-orange-700" />
             Flip vertically
           </label>
         </div>

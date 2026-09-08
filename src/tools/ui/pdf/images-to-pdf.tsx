@@ -68,7 +68,7 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-600 hover:border-indigo-400 hover:text-indigo-600"
+        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-600 hover:border-orange-400 hover:text-orange-700"
       >
         <span className="block text-2xl">🖼️</span>
         Click to choose {label} (or add more)

@@ -38,7 +38,7 @@ export default async function CategoryPage({
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <nav className="text-sm text-slate-500">
-        <Link href="/" className="hover:text-indigo-700">
+        <Link href="/" className="hover:text-orange-800">
           Avex Tools
         </Link>{" "}
         / <span className="text-slate-700">{cat.name}</span>
@@ -58,7 +58,7 @@ export default async function CategoryPage({
             <Link
               key={t.slug}
               href={`/${cat.slug}/${t.slug}`}
-              className="rounded-xl border border-slate-200 p-5 transition hover:border-indigo-300 hover:shadow-sm"
+              className="rounded-xl border border-slate-200 p-5 transition hover:border-orange-300 hover:shadow-sm"
             >
               <h2 className="font-semibold text-slate-900">{t.name}</h2>
               <p className="mt-1 text-sm text-slate-600">{t.tagline}</p>

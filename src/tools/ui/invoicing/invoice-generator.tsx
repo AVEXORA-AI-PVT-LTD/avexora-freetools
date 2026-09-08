@@ -14,7 +14,7 @@ interface LineItem {
 const emptyItem: LineItem = { description: "", qty: "1", rate: "", gstRate: "18" };
 
 const inputCls =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none";
 const labelCls = "block text-xs font-medium text-slate-600 mb-1";
 
 export default function InvoiceGenerator() {
@@ -176,7 +176,7 @@ export default function InvoiceGenerator() {
             </div>
           ))}
         </div>
-        <button type="button" className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+        <button type="button" className="mt-2 text-sm font-medium text-orange-700 hover:text-orange-900"
           onClick={() => setItems((prev) => [...prev, { ...emptyItem }])}>
           + Add line item
         </button>
@@ -254,7 +254,7 @@ export default function InvoiceGenerator() {
           type="button"
           disabled={!canPrint}
           onClick={() => requireEmail(() => window.print())}
-          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
           data-lead-action="download"
         >
           Print / Save as PDF
