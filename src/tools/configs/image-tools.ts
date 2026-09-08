@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import ImageCompressor from "../ui/image/image-compressor";
 import ImageResizer from "../ui/image/image-resizer";
 import ImageCropper from "../ui/image/image-cropper";
@@ -33,7 +33,7 @@ export const tools: ToolConfig[] = [
       {
         question: "Does compression convert my image to JPEG?",
         answer:
-          "Yes — this tool outputs JPEG, which supports the adjustable quality compression that gives the biggest size reductions. If you need to keep transparency (PNG), compress separately or accept a flattened white background.",
+          "Photos and other opaque images are compressed to JPEG — the format that gives the biggest size reductions, and which the quality slider adjusts. Transparent PNGs are kept as PNG so their alpha channel is never lost; opaque PNGs (like a photo saved as PNG) have no transparency to preserve, so they are converted to JPEG automatically.",
       },
       {
         question: "Is my photo uploaded anywhere?",

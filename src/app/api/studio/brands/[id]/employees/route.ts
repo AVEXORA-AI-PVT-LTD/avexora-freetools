@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { prisma } from "@/server/db";
-import { errorResponse, HttpError, readJson, requireUser } from "@/studio/route-helpers";
+import { errorResponse, HttpError, readJson, requireUser } from "@/server/studio/route-helpers";
 
 export const runtime = "nodejs";
 

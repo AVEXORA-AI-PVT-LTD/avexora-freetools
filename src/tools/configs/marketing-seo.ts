@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import { generateMetaTags } from "../compute/marketing/meta-tags";
 import { buildUtmUrl } from "../compute/marketing/utm-builder";
 import { generateSlugs } from "../compute/marketing/slug";

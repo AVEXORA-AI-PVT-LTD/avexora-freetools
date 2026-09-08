@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 
 const inputCls =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none";
 
 export default function QrCodeGenerator() {
   const [text, setText] = useState("");
@@ -91,7 +91,7 @@ export default function QrCodeGenerator() {
         <button
           type="button"
           onClick={generate}
-          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+          className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
         >
           Generate QR code
         </button>

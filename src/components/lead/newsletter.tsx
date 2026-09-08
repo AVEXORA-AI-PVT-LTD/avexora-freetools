@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { submitLead } from "@/lib/leads-client";
+import { submitLead } from "./client";
 
 export function NewsletterBlock({
   toolSlug,
@@ -49,12 +49,12 @@ export function NewsletterBlock({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@company.com"
           aria-label="Email address"
-          className="w-full max-w-xs rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          className="w-full max-w-xs rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none"
         />
         <button
           type="submit"
           disabled={state === "busy"}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+          className="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50"
         >
           {state === "busy" ? "…" : "Subscribe"}
         </button>

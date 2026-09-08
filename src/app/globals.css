@@ -5,6 +5,31 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/*
+ * Avex Tools brand accent — Avexora orange.
+ *
+ * Source of the brand orange:
+ *  - `public/logo.png` — the official AvexTools/Avexora logo, core glyph orange
+ *    #fe7201 (hue gradient spans #fe7201 → #feb001 gold).
+ *  - The Avexora/EBOS product site (https://avexora.in — the visual reference
+ *    for this theme) uses the Tailwind orange scale with orange-600 (#ea580c)
+ *    as its interactive primary.
+ *
+ * The site accent therefore uses Tailwind's standard orange scale:
+ *  - orange-600 (#ea580c)  — primary buttons / solid actions (matches EBOS)
+ *  - orange-700 (#c2410c)  — button hover, text links on white (AA 4.8:1)
+ *  - orange-800 (#9a3412)  – hover/active text states
+ *  - orange-500 (#f97316)  — focus rings, selection borders
+ *  - orange-50/100/200     — light accent tints for callouts/selection
+ *
+ * Contrast notes: white on orange-600 is 3.56:1 (WCAG AA for large text and
+ * UI components — the same treatment EBOS ships). Text links use orange-700
+ * (4.8:1, WCAG AA normal text) so links stay accessible on white.
+ *
+ * Semantic error/success/warning colours (red / emerald / amber) and the
+ * neutral slate surfaces are intentionally left untouched.
+ */
+
 body {
   background: #ffffff;
   color: #0f172a;

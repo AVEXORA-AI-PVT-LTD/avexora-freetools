@@ -159,7 +159,7 @@ process.env.RAZORPAY_WEBHOOK_SECRET = WEBHOOK_SECRET;
 // Imported after the mocks so the handlers pick up the double.
 const { POST: exportRoute } = await import("@/app/api/studio/export/route");
 const { POST: webhookRoute } = await import("@/app/api/studio/webhooks/razorpay/route");
-const { resolvePlan, currentPeriod } = await import("@/studio/entitlements");
+const { resolvePlan, currentPeriod } = await import("@/server/studio/entitlements");
 
 // --- fixtures ---------------------------------------------------------------
 

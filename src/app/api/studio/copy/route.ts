@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { prisma } from "@/server/db";
-import { assertCapability, consumeQuota } from "@/studio/entitlements";
-import { errorResponse, HttpError, readJson, requireUser } from "@/studio/route-helpers";
+import { assertCapability, consumeQuota } from "@/server/studio/entitlements";
+import { errorResponse, HttpError, readJson, requireUser } from "@/server/studio/route-helpers";
 import { generateCopy } from "@/studio/ai/copy";
 import { clientIp, rateLimit } from "@/server/rate-limit";
 

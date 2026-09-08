@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatINR, formatPercent, toPositive } from "../format";
 
 export const TDS_SECTIONS: Record<string, { rate: number; label: string }> = {

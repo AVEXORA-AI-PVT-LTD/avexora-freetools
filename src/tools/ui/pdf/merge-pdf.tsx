@@ -77,7 +77,7 @@ export default function MergePdf() {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-600 hover:border-indigo-400 hover:text-indigo-600"
+        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-600 hover:border-orange-400 hover:text-orange-700"
       >
         <span className="block text-2xl">📄</span>
         Click to choose PDF files (or add more)
@@ -110,7 +110,7 @@ export default function MergePdf() {
         type="button"
         disabled={files.length < 2 || busy}
         onClick={merge}
-        className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
         data-lead-action="download"
       >
         {busy ? "Merging…" : `Merge ${files.length || ""} PDFs & download`}

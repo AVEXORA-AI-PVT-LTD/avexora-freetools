@@ -47,6 +47,10 @@ export interface FieldDef {
   help?: string;
   optional?: boolean;
   rows?: number;
+  /** User must supply a value; enforced on the client and the server (Writers). */
+  required?: boolean;
+  /** Upper bound enforced natively on the input and again server-side. */
+  maxLength?: number;
 }
 
 export interface ResultItem {
@@ -55,7 +59,16 @@ export interface ResultItem {
   emphasis?: boolean;
 }
 
-export type ComputeResult = { results: ResultItem[] } | { error: string };
+/** Optional data grid rendered below the result rows (e.g. a payment schedule). */
+export interface ResultTable {
+  title?: string;
+  headers: string[];
+  rows: string[][];
+}
+
+export type ComputeResult =
+  | { results: ResultItem[]; tables?: ResultTable[] }
+  | { error: string };
 export type ComputeFn = (values: FieldValues) => ComputeResult;
 
 export interface GeneratedOutput {

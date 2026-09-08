@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import LetterheadComplianceChecker from "../ui/business-legal/letterhead-compliance-checker";
 import { generateNda } from "../compute/legal/nda";
 import { generatePrivacyPolicy } from "../compute/legal/privacy-policy";

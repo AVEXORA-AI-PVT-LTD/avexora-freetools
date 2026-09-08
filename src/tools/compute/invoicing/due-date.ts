@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { toPositive } from "../format";
 
 const TERMS: Record<string, number> = {

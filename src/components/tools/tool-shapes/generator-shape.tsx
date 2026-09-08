@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { FieldValues, GeneratorTool } from "@/tools/types";
+import type { FieldValues, GeneratorTool } from "@/types/tools";
 import { FieldInput, initialValues } from "./field-input";
 import { OutputBlock } from "./output-block";
 import { GateProvider, useEmailGate } from "@/components/lead/email-gate";
@@ -66,7 +66,7 @@ function DeclarativeGenerator({ tool }: { tool: GeneratorTool }) {
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="submit"
-          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+          className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
         >
           {tool.submitLabel ?? "Generate"}
         </button>

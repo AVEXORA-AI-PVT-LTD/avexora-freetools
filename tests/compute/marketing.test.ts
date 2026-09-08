@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ComputeFn, FieldValues, GenerateFn } from "@/tools/types";
+import type { ComputeFn, FieldValues, GenerateFn } from "@/types/tools";
 import { generateMetaTags } from "@/tools/compute/marketing/meta-tags";
 import { buildUtmUrl } from "@/tools/compute/marketing/utm-builder";
 import { generateSlugs } from "@/tools/compute/marketing/slug";

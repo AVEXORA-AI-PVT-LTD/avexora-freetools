@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CalculatorTool, FieldValues } from "@/tools/types";
+import type { CalculatorTool, FieldValues } from "@/types/tools";
+import { primaryBtn, secondaryBtn } from "@/tools/ui/ui-tokens";
 import { FieldInput, initialValues } from "./field-input";
 import { ResultsPanel } from "./results-panel";
 
@@ -47,18 +48,11 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
 
       <div className="flex flex-wrap items-center gap-3">
         {!tool.autoCompute && (
-          <button
-            type="submit"
-            className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
-          >
+          <button type="submit" className={primaryBtn}>
             {tool.submitLabel ?? "Calculate"}
           </button>
         )}
-        <button
-          type="button"
-          onClick={reset}
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
+        <button type="button" onClick={reset} className={secondaryBtn}>
           Reset
         </button>
       </div>
@@ -66,7 +60,9 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
       {outcome && "error" in outcome && hasInput && (
         <p className="text-sm text-red-600">{outcome.error}</p>
       )}
-      {outcome && "results" in outcome && <ResultsPanel results={outcome.results} />}
+      {outcome && "results" in outcome && (
+        <ResultsPanel results={outcome.results} tables={outcome.tables} />
+      )}
     </form>
   );
 }

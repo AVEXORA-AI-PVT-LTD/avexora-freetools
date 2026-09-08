@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 const NAMED: Record<string, string> = {
   amp: "&",

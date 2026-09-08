@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 import { toNonNegativeOr } from "../format";
 
 const HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;

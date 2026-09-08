@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { primaryBtn, secondaryBtn } from "@/tools/ui/ui-tokens";
 
 export function OutputBlock({
   text,
@@ -46,22 +47,22 @@ export function OutputBlock({
 
   return (
     <div className="space-y-2">
-      <pre className="max-h-96 overflow-auto whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-900">
-        {text}
-      </pre>
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={copy}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
-        >
+      <div className="overflow-hidden rounded-lg border border-slate-200">
+        {filename && (
+          <div className="flex items-center justify-between gap-3 border-b border-slate-100 bg-slate-50 px-4 py-2">
+            <span className="truncate text-xs font-medium text-slate-600">{filename}</span>
+            <span className="shrink-0 text-xs text-slate-400">text/plain</span>
+          </div>
+        )}
+        <pre className="max-h-96 overflow-auto whitespace-pre-wrap bg-white p-4 text-sm text-slate-900">
+          {text}
+        </pre>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={copy} className={primaryBtn}>
           {copied ? "Copied ✓" : "Copy"}
         </button>
-        <button
-          type="button"
-          onClick={download}
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
+        <button type="button" onClick={download} className={secondaryBtn}>
           Download
         </button>
       </div>

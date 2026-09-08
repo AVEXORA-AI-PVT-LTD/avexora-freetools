@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_NAME, SITE_URL } from "@/tools/categories";
-import { PLANS, PLAN_ORDER, formatINR } from "@/studio/plans";
+import { PLANS, PLAN_ORDER, formatINR } from "@/server/studio/plans";
 
 const title = "Brand Studio — compliance-ready business stationery for Indian startups";
 const description =
@@ -56,11 +56,11 @@ export default function StudioLandingPage() {
       />
 
       <section className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
+        <p className="text-sm font-semibold uppercase tracking-wide text-orange-700">
           Avexora Brand Studio
         </p>
         <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          Business stationery that is <span className="text-indigo-600">correct</span>,
+          Business stationery that is <span className="text-orange-700">correct</span>,
           not just pretty
         </h1>
         <p className="mt-5 text-lg text-slate-600">
@@ -71,7 +71,7 @@ export default function StudioLandingPage() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/studio/app/new"
-            className="rounded-md bg-indigo-600 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="rounded-md bg-orange-600 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-700"
           >
             Create your brand — free
           </Link>

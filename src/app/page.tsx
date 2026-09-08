@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { categories } from "@/tools/categories";
 import { allTools, toolsByCategory } from "@/tools/registry";
-import { ToolSearch, type SearchItem } from "@/components/tool-search";
+import { ToolSearch, type SearchItem } from "@/components/tools/tool-search";
 import { STUDIO_ASSETS } from "@/studio/assets";
-import { PLANS, formatINR } from "@/studio/plans";
+import { PLANS, formatINR } from "@/server/studio/plans";
 
 export default function HomePage() {
   const searchItems: SearchItem[] = categories.flatMap((c) =>
@@ -19,7 +19,7 @@ export default function HomePage() {
     <div className="mx-auto max-w-6xl px-4">
       <section className="py-16 text-center">
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          Free tools that run your business faster
+          Avex Tools that run your business faster
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
           {allTools.length}+ calculators, generators, PDF &amp; image utilities and AI
@@ -31,10 +31,10 @@ export default function HomePage() {
       </section>
 
       <section id="brand-studio" className="pb-16">
-        <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-8 sm:p-10">
+        <div className="rounded-2xl border border-orange-200 bg-orange-50/60 p-8 sm:p-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-xl">
-              <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
+              <p className="text-sm font-semibold uppercase tracking-wide text-orange-700">
                 Avexora Brand Studio
               </p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
@@ -48,7 +48,7 @@ export default function HomePage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href="/studio"
-                  className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+                  className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
                 >
                   Explore Brand Studio
                 </Link>
@@ -68,7 +68,7 @@ export default function HomePage() {
             <ul className="grid flex-1 gap-x-6 gap-y-2 sm:grid-cols-2 lg:max-w-md">
               {STUDIO_ASSETS.map((asset) => (
                 <li key={asset.name} className="flex gap-2 text-sm text-slate-700">
-                  <span aria-hidden className="text-indigo-600">
+                  <span aria-hidden className="text-orange-700">
                     •
                   </span>
                   <span>{asset.name}</span>
@@ -86,10 +86,10 @@ export default function HomePage() {
             return (
               <div
                 key={c.slug}
-                className="flex flex-col rounded-xl border border-slate-200 p-6 transition hover:border-indigo-300 hover:shadow-sm"
+                className="flex flex-col rounded-xl border border-slate-200 p-6 transition hover:border-orange-300 hover:shadow-sm"
               >
                 <h2 className="text-lg font-semibold text-slate-900">
-                  <Link href={`/${c.slug}`} className="hover:text-indigo-700">
+                  <Link href={`/${c.slug}`} className="hover:text-orange-800">
                     {c.name}
                   </Link>
                 </h2>
@@ -100,7 +100,7 @@ export default function HomePage() {
                       <li key={t.slug}>
                         <Link
                           href={`/${c.slug}/${t.slug}`}
-                          className="text-sm text-indigo-600 hover:text-indigo-800 hover:underline"
+                          className="text-sm text-orange-700 hover:text-orange-900 hover:underline"
                         >
                           {t.name}
                         </Link>

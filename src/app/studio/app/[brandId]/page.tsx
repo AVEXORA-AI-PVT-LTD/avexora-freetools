@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/server/db";
 import { currentUserId } from "@/server/auth";
-import { resolvePlan } from "@/studio/entitlements";
+import { resolvePlan } from "@/server/studio/entitlements";
 import { toComplianceInput } from "@/studio/brand-context";
 import { ComplianceReport } from "@/components/studio/compliance-panel";
 import { BrandWorkspace } from "@/components/studio/brand-workspace";

@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import InvoiceGenerator from "../ui/invoicing/invoice-generator";
 import { generateQuotation } from "../compute/invoicing/quotation";
 import { generateProformaInvoice } from "../compute/invoicing/proforma-invoice";

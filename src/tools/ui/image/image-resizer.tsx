@@ -76,7 +76,7 @@ export default function ImageResizer() {
           </div>
           <label className="flex items-center gap-2 text-sm text-slate-700 sm:col-span-2">
             <input type="checkbox" checked={keepAspect} onChange={(e) => setKeepAspect(e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600" />
+              className="h-4 w-4 rounded border-slate-300 text-orange-700" />
             Lock aspect ratio
           </label>
         </div>

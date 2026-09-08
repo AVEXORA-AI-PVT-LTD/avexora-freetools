@@ -1,9 +1,7 @@
 "use client";
 
-import type { FieldDef, FieldValue } from "@/tools/types";
-
-const inputCls =
-  "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500";
+import type { FieldDef, FieldValue } from "@/types/tools";
+import { inputCls } from "@/tools/ui/ui-tokens";
 
 export function initialValues(fields: FieldDef[]): Record<string, FieldValue> {
   const values: Record<string, FieldValue> = {};
@@ -19,13 +17,16 @@ export function FieldInput({
   value,
   onChange,
   idPrefix,
+  error,
 }: {
   field: FieldDef;
   value: FieldValue;
   onChange: (value: FieldValue) => void;
   idPrefix: string;
+  error?: string;
 }) {
   const id = `${idPrefix}-${field.name}`;
+  const describedBy = error ? `${id}-error` : undefined;
 
   if (field.type === "checkbox") {
     return (
@@ -35,7 +36,7 @@ export function FieldInput({
           type="checkbox"
           checked={value === true}
           onChange={(e) => onChange(e.target.checked)}
-          className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+          className="h-4 w-4 rounded border-slate-300 text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
         />
         {field.label}
       </label>
@@ -46,6 +47,11 @@ export function FieldInput({
     <div>
       <label htmlFor={id} className="mb-1 block text-sm font-medium text-slate-700">
         {field.label}
+        {field.required && (
+          <span className="ml-0.5 text-sm text-red-500" aria-hidden="true">
+            *
+          </span>
+        )}
         {field.unit && <span className="ml-1 text-slate-400">({field.unit})</span>}
         {field.optional && <span className="ml-1 text-xs text-slate-400">optional</span>}
       </label>
@@ -54,6 +60,8 @@ export function FieldInput({
           id={id}
           className={inputCls}
           value={String(value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           onChange={(e) => onChange(e.target.value)}
         >
           {field.options?.map((o) => (
@@ -68,7 +76,10 @@ export function FieldInput({
           className={inputCls}
           value={String(value)}
           rows={field.rows ?? 4}
+          maxLength={field.maxLength}
           placeholder={field.placeholder}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
@@ -77,14 +88,23 @@ export function FieldInput({
           type={field.type}
           className={inputCls}
           value={String(value)}
+          maxLength={field.maxLength}
           placeholder={field.placeholder}
           min={field.min}
           max={field.max}
           step={field.step}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           onChange={(e) => onChange(e.target.value)}
         />
       )}
-      {field.help && <p className="mt-1 text-xs text-slate-500">{field.help}</p>}
+      {error ? (
+        <p id={`${id}-error`} className="mt-1 text-xs text-red-600" role="alert">
+          {error}
+        </p>
+      ) : field.help ? (
+        <p className="mt-1 text-xs text-slate-500">{field.help}</p>
+      ) : null}
     </div>
   );
 }

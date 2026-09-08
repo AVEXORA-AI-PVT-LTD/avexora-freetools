@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ebosCtaUrl, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { allTools, getTool, toolsByCategory } from "@/tools/registry";
-import { ToolRunner } from "@/components/tool-shapes/tool-runner";
+import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 
@@ -22,7 +22,7 @@ export async function generateMetadata({
   const tool = getTool(slug);
   if (!tool) return {};
   const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
-  const title = `${tool.name} — Free Online Tool`;
+  const title = `${tool.name} — Avex Online Tool`;
   return {
     title,
     description: tool.seoDescription,
@@ -82,7 +82,7 @@ export default async function ToolPage({
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Free Tools", item: SITE_URL },
+        { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/${cat.slug}` },
         { "@type": "ListItem", position: 3, name: tool.name, item: canonical },
       ],
@@ -97,11 +97,11 @@ export default async function ToolPage({
       />
 
       <nav className="text-sm text-slate-500 print:hidden">
-        <Link href="/" className="hover:text-indigo-700">
-          Free Tools
+        <Link href="/" className="hover:text-orange-800">
+          Avex Tools
         </Link>{" "}
         /{" "}
-        <Link href={`/${cat.slug}`} className="hover:text-indigo-700">
+        <Link href={`/${cat.slug}`} className="hover:text-orange-800">
           {cat.shortName}
         </Link>{" "}
         / <span className="text-slate-700">{tool.name}</span>
@@ -163,7 +163,7 @@ export default async function ToolPage({
                 <Link
                   key={r.slug}
                   href={`/${r.category}/${r.slug}`}
-                  className="rounded-lg border border-slate-200 p-4 transition hover:border-indigo-300"
+                  className="rounded-lg border border-slate-200 p-4 transition hover:border-orange-300"
                 >
                   <span className="font-medium text-slate-900">{r.name}</span>
                   <p className="mt-0.5 text-sm text-slate-600">{r.tagline}</p>
@@ -184,7 +184,7 @@ export default async function ToolPage({
                 <Link
                   key={t.slug}
                   href={`/${t.category}/${t.slug}`}
-                  className="rounded-full border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:border-indigo-300 hover:text-indigo-700"
+                  className="rounded-full border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:border-orange-300 hover:text-orange-800"
                 >
                   {t.name}
                 </Link>

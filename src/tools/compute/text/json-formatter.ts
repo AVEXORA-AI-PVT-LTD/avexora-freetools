@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 export const formatJson: GenerateFn = (values) => {
   const text = typeof values.json === "string" ? values.json : "";

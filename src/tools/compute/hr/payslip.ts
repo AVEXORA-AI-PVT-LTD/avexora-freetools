@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 import { formatINR, toNonNegative, toNonNegativeOr, toPositive } from "../format";
 
 const WIDTH = 58;

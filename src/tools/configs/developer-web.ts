@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import { generateUrlEncodeDecode } from "../compute/dev/url-encoder-decoder";
 import { generateBase64 } from "../compute/dev/base64";
 import { generateUuids } from "../compute/dev/uuid";
@@ -6,6 +6,7 @@ import { testRegex } from "../compute/dev/regex-tester";
 import { convertColor } from "../compute/dev/color-converter";
 import { generateGradient } from "../compute/dev/css-gradient";
 import { generateHtmlEntities } from "../compute/dev/html-entities";
+import { generateJsonToTypescript } from "../compute/dev/json-to-typescript";
 import { decodeJwt } from "../compute/dev/jwt-decoder";
 import { generateMarkdownHtml } from "../compute/dev/markdown-to-html";
 import { convertTimestamp } from "../compute/dev/timestamp-converter";
@@ -479,6 +480,73 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["html-entity-encoder-decoder", "case-converter", "word-counter", "ai-blog-outline-generator"],
+  },
+  {
+    kind: "generator",
+    slug: "json-to-typescript",
+    category: "developer-web",
+    name: "JSON to TypeScript Interface / Type Generator",
+    tagline: "Turn a JSON sample into clean TypeScript interfaces or type aliases.",
+    seoDescription:
+      "Free JSON to TypeScript converter. Turn any JSON sample into clean TypeScript interfaces or type aliases — nested objects, arrays, union types, null and quoted keys all handled automatically.",
+    fields: [
+      {
+        name: "json",
+        label: "JSON input",
+        type: "textarea",
+        placeholder: '{"name":"Asha","profile":{"city":"Pune","pincode":411001},"active":true}',
+        rows: 10,
+        required: true,
+      },
+      {
+        name: "rootName",
+        label: "Root type name",
+        type: "text",
+        defaultValue: "User",
+        maxLength: 40,
+        help: "Type name for the top-level value (used for nested types too).",
+      },
+      {
+        name: "format",
+        label: "Generate",
+        type: "select",
+        defaultValue: "interface",
+        options: [
+          { value: "interface", label: "Interfaces" },
+          { value: "type", label: "Type aliases" },
+        ],
+      },
+    ],
+    generate: generateJsonToTypescript,
+    submitLabel: "Generate TypeScript",
+    about: [
+      "APIs deliver JSON and TypeScript wants types, and the gap between the two is where a thousand hand-rolled interfaces get written — guessed from a response, wrong the moment a field is optional, and stale the day the payload changes. This generator closes the gap from your own data: paste one realistic JSON response and get clean TypeScript declarations for the whole shape, so the compile-time types always agree with what the server actually sends. Copy the result into a types.ts, paste it into your API client layer, and let the compiler catch the mismatches for you.",
+      "The inference follows the data precisely. Every object becomes its own named interface (or type alias) with a PascalCase name built from its path — a profile object inside a User record becomes UserProfile — and identical shapes encountered in different places collapse into a single shared type instead of duplicating. Primitive values map to string, number and boolean; null appears literally as null; arrays of several element types become a union such as (string | number)[]; an empty array is typed unknown[] and an empty object Record<string, unknown>, both honest about the fact that a sample carries no information. Property keys that aren't valid identifiers — first name, age-in-years, a key starting with a digit — are quoted so the output stays valid TypeScript.",
+      "Two honest limits worth knowing. The types describe the JSON you pasted: if a field is genuinely optional in production, the sample had better show an object without it — paste a few representative records to capture the variation you actually see. And the tool generates the shape, not the final design: you'll still want to hand it to your team's TS conventions. Generation runs entirely in your browser — API responses, customer records and internal payloads never leave your machine, which is exactly what you want when deriving types from production data.",
+    ],
+    faq: [
+      {
+        question: "Why does a mixed array become a union type?",
+        answer:
+          "Because a single element type would lie about some elements. An array mixing numbers and strings gets (number | string)[] so each element keeps its own real type. If your data should really be homogeneous, use a representative sample to get the cleaner, narrower type.",
+      },
+      {
+        question: "Interfaces or type aliases — which should I use?",
+        answer:
+          "For plain data shapes they are interchangeable, and both work in the dropdown. Interfaces are open and show richer editor hints, wonderful for shaping API contracts; type aliases can express unions, arrays and scalar types, so the tool uses them for array-of-object roots. Pick the one your codebase already uses.",
+      },
+      {
+        question: "What about an empty array or empty object?",
+        answer:
+          "A sample with no elements carries no type information, so the output is honest rather than invented: an empty array becomes unknown[], an empty object Record<string, unknown>. Provide at least one populated example to get precise types.",
+      },
+      {
+        question: "Is my JSON uploaded anywhere?",
+        answer:
+          "No — conversion runs entirely in your browser. Nothing is sent to a server, which is what makes this safe to use with real API responses and internal data while you build types.",
+      },
+    ],
+    related: ["json-formatter", "csv-to-json", "json-to-csv", "base64-encoder-decoder"],
   },
   {
     kind: "calculator",

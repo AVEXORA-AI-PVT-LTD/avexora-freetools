@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { prisma } from "@/server/db";
-import { errorResponse, HttpError, readJson, requireUser } from "@/studio/route-helpers";
+import { errorResponse, HttpError, readJson, requireUser } from "@/server/studio/route-helpers";
 import { MARK_STYLES, type MarkStyle, seedFrom } from "@/studio/engine/marks";
 import { PALETTE_IDS } from "@/studio/engine/palettes";
 import { FONT_PAIR_IDS } from "@/studio/engine/fonts";

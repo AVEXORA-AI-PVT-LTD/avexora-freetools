@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatINR, formatNumber, formatPercent, toPositive, toNonNegative } from "../format";
 
 export const computeBreakEven: ComputeFn = (values) => {

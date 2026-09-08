@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 function str(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";

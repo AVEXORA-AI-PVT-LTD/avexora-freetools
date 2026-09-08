@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatNumber, toNonNegative, toPositive } from "../format";
 
 export const computeEngagementRate: ComputeFn = (values) => {

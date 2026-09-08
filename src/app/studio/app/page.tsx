@@ -3,12 +3,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/server/db";
 import { currentUserId } from "@/server/auth";
-import { entitlementSummary } from "@/studio/entitlements";
+import { entitlementSummary } from "@/server/studio/entitlements";
 import { auditBrand } from "@/studio/compliance/india";
 import { toComplianceInput } from "@/studio/brand-context";
 import { composeLogo } from "@/studio/engine/logo";
 import { toTokens } from "@/studio/brand-context";
-import { formatINR } from "@/studio/plans";
+import { formatINR } from "@/server/studio/plans";
 import { StatusPill } from "@/components/studio/status-pill";
 
 export const metadata: Metadata = {
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
           {!atBrandLimit && (
             <Link
               href="/studio/app/new"
-              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+              className="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
             >
               New brand
             </Link>
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
           </p>
           <Link
             href="/studio/app/new"
-            className="mt-6 inline-block rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="mt-6 inline-block rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
           >
             Create your first brand
           </Link>
@@ -124,7 +124,7 @@ export default async function DashboardPage() {
               <li key={brand.id}>
                 <Link
                   href={`/studio/app/${brand.id}`}
-                  className="block rounded-lg border border-slate-200 p-5 transition hover:border-indigo-400"
+                  className="block rounded-lg border border-slate-200 p-5 transition hover:border-orange-400"
                 >
                   <div
                     className="h-14 w-full max-w-56 [&>svg]:h-full [&>svg]:w-auto"

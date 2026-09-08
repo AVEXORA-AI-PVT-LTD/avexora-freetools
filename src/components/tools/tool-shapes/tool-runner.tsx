@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CategorySlug, ToolConfig } from "@/tools/types";
-import { categoryLoaders } from "@/tools/client-loaders";
+import type { CategorySlug, ToolConfig } from "@/types/tools";
+import { categoryLoaders } from "./client-loaders";
 import { CalculatorShape } from "./calculator-shape";
 import { GeneratorShape } from "./generator-shape";
 import { FileToolShape } from "./file-tool-shape";
@@ -62,7 +62,7 @@ export function ToolRunner({
             setError(null);
             setAttempt((a) => a + 1);
           }}
-          className="mt-3 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+          className="mt-3 rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
         >
           Try again
         </button>

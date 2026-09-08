@@ -1,4 +1,4 @@
-import type { ComputeFn } from "@/tools/types";
+import type { ComputeFn } from "@/types/tools";
 import { formatINR, formatNumber, toNonNegative } from "../format";
 
 export const computeWorkingCapital: ComputeFn = (values) => {

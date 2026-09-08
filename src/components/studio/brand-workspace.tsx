@@ -35,11 +35,11 @@ const TABS: { id: Tab; label: string }[] = [
 ];
 
 const btn =
-  "rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300";
+  "rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-slate-300";
 const btnGhost =
   "rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-400 disabled:opacity-50";
 const inputCls =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none";
 const labelCls = "block text-xs font-medium text-slate-600 mb-1";
 
 export function BrandWorkspace({
@@ -154,7 +154,7 @@ export function BrandWorkspace({
             }}
             className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium ${
               tab === t.id
-                ? "border-indigo-600 text-indigo-700"
+                ? "border-orange-600 text-orange-800"
                 : "border-transparent text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -512,7 +512,7 @@ function Chip({
       onClick={onClick}
       className={`rounded-full border px-3 py-1 text-xs font-medium capitalize ${
         on
-          ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+          ? "border-orange-500 bg-orange-50 text-orange-800"
           : "border-slate-300 text-slate-600 hover:border-slate-400"
       }`}
     >

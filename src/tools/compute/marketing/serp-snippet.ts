@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 const TITLE_LIMIT = 60;
 const DESC_LIMIT = 160;

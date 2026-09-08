@@ -9,8 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { ToolConfig } from "@/tools/types";
-import { submitLead } from "@/lib/leads-client";
+import type { ToolConfig } from "@/types/tools";
+import { submitLead } from "./client";
 
 const STORAGE_KEY = "ft_gate_email";
 
@@ -159,7 +159,7 @@ export function useEmailGate(tool: Pick<ToolConfig, "slug" | "category" | "email
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none"
             />
           </div>
           <div>
@@ -179,7 +179,7 @@ export function useEmailGate(tool: Pick<ToolConfig, "slug" | "category" | "email
               onChange={(e) => setEmail(e.target.value)}
               aria-invalid={error ? true : undefined}
               aria-describedby={error ? "emailGateError" : undefined}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none"
             />
           </div>
           {error && (
@@ -192,7 +192,7 @@ export function useEmailGate(tool: Pick<ToolConfig, "slug" | "category" | "email
               type="button"
               onClick={submit}
               disabled={busy}
-              className="flex-1 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="flex-1 rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50"
             >
               {busy ? "Please wait…" : "Unlock download"}
             </button>

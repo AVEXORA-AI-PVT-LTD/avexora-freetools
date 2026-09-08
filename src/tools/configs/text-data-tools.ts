@@ -1,4 +1,4 @@
-import type { ToolConfig } from "../types";
+import type { ToolConfig } from "../../types/tools";
 import { computeWordCount } from "../compute/text/word-counter";
 import { computeCharacterCount } from "../compute/text/character-counter";
 import { convertCase } from "../compute/text/case-converter";
@@ -193,7 +193,7 @@ export const tools: ToolConfig[] = [
           "For production traffic and storage: minified JSON strips all whitespace, cutting payload size meaningfully on large documents. Keep the pretty version for humans, ship the minified one to machines.",
       },
     ],
-    related: ["csv-to-json", "json-to-csv", "base64-encoder-decoder", "jwt-decoder"],
+    related: ["csv-to-json", "json-to-csv", "json-to-typescript", "base64-encoder-decoder", "jwt-decoder"],
   },
   {
     kind: "generator",

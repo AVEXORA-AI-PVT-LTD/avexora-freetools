@@ -30,7 +30,7 @@ const TONES = [
 ];
 
 const inputCls =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none";
 const labelCls = "block text-xs font-medium text-slate-600 mb-1";
 
 interface FormState {
@@ -214,7 +214,7 @@ export function OnboardingWizard() {
                 aria-pressed={selected}
                 className={`rounded-lg border p-5 text-left transition ${
                   selected
-                    ? "border-indigo-500 ring-2 ring-indigo-500"
+                    ? "border-orange-500 ring-2 ring-orange-500"
                     : "border-slate-200 hover:border-slate-400"
                 }`}
               >
@@ -253,7 +253,7 @@ export function OnboardingWizard() {
             type="button"
             onClick={chooseDirection}
             disabled={busy}
-            className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:bg-slate-300"
+            className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-slate-300"
           >
             {busy ? "Saving…" : "Use this direction"}
           </button>
@@ -375,7 +375,7 @@ export function OnboardingWizard() {
                   }
                   className={`rounded-full border px-3 py-1 text-xs font-medium ${
                     on
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-700"
+                      ? "border-orange-500 bg-orange-50 text-orange-800"
                       : "border-slate-300 text-slate-600 hover:border-slate-400"
                   }`}
                 >
@@ -573,7 +573,7 @@ export function OnboardingWizard() {
       <button
         type="submit"
         disabled={busy}
-        className="mt-8 rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:bg-slate-300"
+        className="mt-8 rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-slate-300"
       >
         {busy ? "Generating directions…" : "Generate brand directions"}
       </button>

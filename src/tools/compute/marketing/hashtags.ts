@@ -1,4 +1,4 @@
-import type { GenerateFn } from "@/tools/types";
+import type { GenerateFn } from "@/types/tools";
 
 function styleWords(words: string[], style: string): string {
   const cap = (w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();

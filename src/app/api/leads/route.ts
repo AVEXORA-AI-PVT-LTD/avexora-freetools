@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { prisma } from "@/server/db";
+import { isDatabaseConfigured, prisma } from "@/server/db";
 import { clientIp, rateLimit } from "@/server/rate-limit";
 
 export const runtime = "nodejs";
@@ -37,6 +37,22 @@ export async function POST(req: Request) {
     return Response.json({ error: "Email is required." }, { status: 400 });
   }
 
-  await prisma.lead.create({ data: lead });
+  if (!isDatabaseConfigured()) {
+    console.error("[leads] database is not configured (DATABASE_URL placeholder or missing)");
+    return Response.json(
+      { error: "Unable to process lead request." },
+      { status: 500 },
+    );
+  }
+
+  try {
+    await prisma.lead.create({ data: lead });
+  } catch (err) {
+    console.error("[leads] database error:", err);
+    return Response.json(
+      { error: "Unable to process lead request." },
+      { status: 500 },
+    );
+  }
   return Response.json({ ok: true });
 }

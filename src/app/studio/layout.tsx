@@ -22,7 +22,7 @@ export default function StudioLayout({
             href="/studio"
             className="flex items-center gap-2 text-sm font-semibold text-slate-900"
           >
-            <span className="rounded bg-indigo-600 px-1.5 py-0.5 text-xs font-bold text-white">
+            <span className="rounded bg-orange-600 px-1.5 py-0.5 text-xs font-bold text-white">
               Studio
             </span>
             Brand Studio
@@ -33,7 +33,7 @@ export default function StudioLayout({
             </Link>
             <Link
               href="/studio/app"
-              className="rounded-md bg-indigo-600 px-3 py-1.5 font-medium text-white hover:bg-indigo-700"
+              className="rounded-md bg-orange-600 px-3 py-1.5 font-medium text-white hover:bg-orange-700"
             >
               Dashboard
             </Link>

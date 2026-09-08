@@ -47,7 +47,7 @@ describe.runIf(TEST_URL)("live database", async () => {
     usageCount,
     currentPeriod,
     EntitlementError,
-  } = await import("@/studio/entitlements");
+  } = await import("@/server/studio/entitlements");
 
   let userId = "";
   let otherUserId = "";

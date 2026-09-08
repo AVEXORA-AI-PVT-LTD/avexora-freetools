@@ -59,7 +59,7 @@ export default function HashGenerator() {
         </label>
         <textarea
           id="hash-text"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none"
           rows={5}
           placeholder="Paste or type the text…"
           value={text}
@@ -74,7 +74,7 @@ export default function HashGenerator() {
               type="checkbox"
               checked={selected.includes(a.id)}
               onChange={() => toggle(a.id)}
-              className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+              className="h-4 w-4 rounded border-slate-300 text-orange-700"
             />
             {a.id} <span className="text-xs text-slate-400">({a.note})</span>
           </label>
@@ -84,7 +84,7 @@ export default function HashGenerator() {
         <button
           type="button"
           onClick={generate}
-          className="rounded-md bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+          className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700"
         >
           Generate hashes
         </button>
@@ -111,7 +111,7 @@ export default function HashGenerator() {
                       setTimeout(() => setCopied(null), 1500);
                     });
                   }}
-                  className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
+                  className="text-xs font-medium text-orange-700 hover:text-orange-900"
                 >
                   {copied === r.algorithm ? "Copied ✓" : "Copy"}
                 </button>
