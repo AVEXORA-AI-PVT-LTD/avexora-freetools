@@ -31,9 +31,9 @@ export const tools: ToolConfig[] = [
           "80% is a good default for most photos — a meaningful size reduction with no visible quality loss. Drop to 50-60% for web thumbnails or email attachments where file size matters more than fine detail.",
       },
       {
-        question: "Does compression convert my image to JPEG?",
+        question: "Does compression change my image's file type?",
         answer:
-          "Photos and other opaque images are compressed to JPEG — the format that gives the biggest size reductions, and which the quality slider adjusts. Transparent PNGs are kept as PNG so their alpha channel is never lost; opaque PNGs (like a photo saved as PNG) have no transparency to preserve, so they are converted to JPEG automatically.",
+          "No — the tool preserves your original format exactly: PNG stays PNG, JPEG stays JPEG and WebP stays WebP, including transparency and the original file extension. PNG files are re-compressed with a dedicated PNG encoder (lossless, or reduced colours where that meaningfully shrinks the file) so they never get flattened or converted. Formats the browser can't re-encode without changing type (GIF, BMP) are not processed — the tool shows a clear message instead of silently converting them.",
       },
       {
         question: "Is my photo uploaded anywhere?",
