@@ -1,54 +1,91 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { ImagePicker, canvasToBlob, computeCropRect, downloadBlob, primaryBtn, useImageFile } from "./image-shared";
+import { useEffect, useRef, useState } from "react";
+import { ImagePicker, canvasToBlob, downloadBlob, primaryBtn, useImageFile } from "./image-shared";
+import {
+  clientToImagePoint,
+  computeCropRect,
+  cropBoxFromPoints,
+  cropOverlayBox,
+  type CropBox,
+  type Rect,
+} from "@/tools/compute/image/crop-coords";
 
 export default function ImageCropper() {
   const { file, image, error, setError, pick } = useImageFile();
-  const [box, setBox] = useState({ x: 0, y: 0, w: 0, h: 0 });
+  const [box, setBox] = useState<CropBox>({ x: 0, y: 0, w: 0, h: 0 });
+  const [overlay, setOverlay] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRectRef = useRef<Rect | null>(null);
+  const containerRectRef = useRef<Rect | null>(null);
+
+  const captureRects = () => {
+    if (!imgRef.current || !containerRef.current) return;
+    imageRectRef.current = imgRef.current.getBoundingClientRect();
+    containerRectRef.current = containerRef.current.getBoundingClientRect();
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", captureRects);
+    window.addEventListener("orientationchange", captureRects);
+    return () => {
+      window.removeEventListener("resize", captureRects);
+      window.removeEventListener("orientationchange", captureRects);
+    };
+  }, []);
+
+  const applyBox = (b: CropBox) => {
+    setBox(b);
+    if (b.w > 0 && b.h > 0 && imageRectRef.current && containerRectRef.current) {
+      setOverlay(cropOverlayBox(b, imageRectRef.current, containerRectRef.current));
+    } else {
+      setOverlay(null);
+    }
+  };
 
   const onPick = async (f: File | null) => {
     await pick(f);
-    setBox({ x: 0, y: 0, w: 0, h: 0 });
+    setDragStart(null);
+    applyBox({ x: 0, y: 0, w: 0, h: 0 });
   };
 
-  const toDisplayCoords = (clientX: number, clientY: number) => {
-    const rect = imgRef.current!.getBoundingClientRect();
-    return {
-      x: Math.max(0, Math.min(clientX - rect.left, rect.width)),
-      y: Math.max(0, Math.min(clientY - rect.top, rect.height)),
-    };
-  };
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    const p = toDisplayCoords(e.clientX, e.clientY);
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    captureRects();
+    if (!imageRectRef.current) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Pointer already released; the drag simply won't capture.
+    }
+    const p = clientToImagePoint(e.clientX, e.clientY, imageRectRef.current);
     setDragStart(p);
-    setBox({ x: p.x, y: p.y, w: 0, h: 0 });
+    applyBox({ x: p.x, y: p.y, w: 0, h: 0 });
   };
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragStart) return;
-    const p = toDisplayCoords(e.clientX, e.clientY);
-    setBox({
-      x: Math.min(dragStart.x, p.x),
-      y: Math.min(dragStart.y, p.y),
-      w: Math.abs(p.x - dragStart.x),
-      h: Math.abs(p.y - dragStart.y),
-    });
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart || !imageRectRef.current) return;
+    const p = clientToImagePoint(e.clientX, e.clientY, imageRectRef.current);
+    applyBox(cropBoxFromPoints(dragStart, p));
   };
-  const onPointerUp = () => setDragStart(null);
+
+  const onPointerEnd = () => setDragStart(null);
 
   const crop = async () => {
-    if (!file || !image || !imgRef.current || box.w < 2 || box.h < 2) {
+    if (!file || !image || box.w < 2 || box.h < 2) {
       setError("Drag on the image to select a crop area first.");
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      const rect = imgRef.current.getBoundingClientRect();
+      const rect = imageRectRef.current ?? imgRef.current?.getBoundingClientRect();
+      if (!rect) {
+        setError("The image could not be measured. Please reselect the crop area.");
+        return;
+      }
       const cropRect = computeCropRect(box, rect, image.naturalWidth, image.naturalHeight);
       if (!cropRect) {
         setError("The selected crop area is too small. Please select a larger area.");
@@ -76,8 +113,14 @@ export default function ImageCropper() {
       <ImagePicker file={file} image={image} onPick={onPick} />
       {image && (
         <figure className="overflow-hidden rounded-lg border border-slate-200">
-          <div className="relative select-none touch-none bg-slate-50 p-3 sm:p-4"
-            onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+          <div
+            ref={containerRef}
+            className="relative select-none touch-none bg-slate-50 p-3 sm:p-4"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerEnd}
+            onPointerCancel={onPointerEnd}
+          >
             <img
               ref={imgRef}
               src={image.src}
@@ -85,10 +128,10 @@ export default function ImageCropper() {
               className="block max-w-full rounded border border-slate-200 bg-white shadow-sm"
               draggable={false}
             />
-            {box.w > 0 && (
+            {overlay && (
               <div
                 className="pointer-events-none absolute border-2 border-orange-500 bg-orange-500/20"
-                style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
+                style={{ left: overlay.left, top: overlay.top, width: overlay.width, height: overlay.height }}
               />
             )}
           </div>
