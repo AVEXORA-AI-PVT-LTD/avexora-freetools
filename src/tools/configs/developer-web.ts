@@ -12,6 +12,7 @@ import { generateMarkdownHtml } from "../compute/dev/markdown-to-html";
 import { convertTimestamp } from "../compute/dev/timestamp-converter";
 import QrCodeGenerator from "../ui/dev/qr-code-generator";
 import HashGenerator from "../ui/dev/hash-generator";
+import BarcodeGenerator from "../ui/dev/barcode-generator";
 
 export const tools: ToolConfig[] = [
   {
@@ -49,7 +50,50 @@ export const tools: ToolConfig[] = [
         answer: "No — the code is generated entirely in your browser and only exists on your device until you download it.",
       },
     ],
-    related: ["url-encoder-decoder", "slug-generator", "utm-builder", "base64-encoder-decoder"],
+    related: ["barcode-generator", "url-encoder-decoder", "slug-generator", "utm-builder", "base64-encoder-decoder"],
+  },
+  {
+    kind: "generator",
+    slug: "barcode-generator",
+    category: "developer-web",
+    name: "Barcode Generator",
+    tagline: "Generate EAN-13, UPC-A and Code 128 barcodes with real check-digit validation.",
+    seoDescription:
+      "Free barcode generator. Create EAN-13, UPC-A and Code 128 barcodes with proper check-digit validation, live preview, and crisp PNG or vector SVG download for print.",
+    component: BarcodeGenerator,
+    about: [
+      "EAN-13, UPC-A and Code 128 are the everyday identifiers of retail packaging, product labels and shipping. This generator produces real, scannable barcodes in your browser — not placeholder images — with genuine validation for each format: EAN-13 and UPC-A check digits are calculated per their official Modulo-10 algorithms, so an invalid number is never encoded.",
+      "Paste a 12-digit base into EAN-13 and the 13th check digit is calculated for you, or enter a complete 13-digit value and the supplied check digit is verified. UPC-A works the same way with 11/12 digits. Leading zeros are preserved exactly — barcode values are handled as strings, never truncated numbers. Code 128 accepts the full printable ASCII set for product IDs, serials and internal labels. The “Generate New” workflow turns a product record (name, SKU, brand, price, batch, expiry and more) into a full set of ready-to-print labels, with your choice of the same barcode on every package or a unique serial per label.",
+      "Every code renders instantly as a live preview. Choose PNG for a high-resolution raster or SVG for a fully vector file that scales to any print size without losing sharpness — both carry the real generated barcode with proper quiet zones and strong black-on-white contrast, ready for product packaging and labels. A note on numbers: this tool renders and validates identifiers, but generating a barcode does not assign or register an official GS1 product number — for commercial packaging, use a product number properly assigned to your business.",
+    ],
+    faq: [
+      {
+        question: "Do you assign real product numbers?",
+        answer:
+          "No. The tool validates a number and renders its barcode, but a valid check digit does not mean the number is registered with GS1. For commercial packaging use a company prefix and product number properly assigned to your business.",
+      },
+      {
+        question: "What is the EAN-13 check digit?",
+        answer:
+          "The 13th digit is computed from the first 12 with a Modulo-10 algorithm. Enter 12 digits and the tool adds it for you, or enter all 13 and the supplied final digit is verified against the calculation — invalid inputs are rejected, never encoded.",
+      },
+      {
+        question: "Why does my UPC-A need 12 digits?",
+        answer:
+          "UPC-A is 12 digits including check digit. Enter 11 and the 12th is calculated; enter 12 and the last digit is verified. Leading zeros are preserved — an all-zero or zero-led value is kept exactly as typed.",
+      },
+      {
+        question: "What characters can Code 128 encode?",
+        answer:
+          "The full printable ASCII set — uppercase, lowercase, digits, common punctuation and spaces. It is ideal for product IDs, serial numbers and internal tracking codes, and handles longer values than EAN/UPC numeric codes.",
+      },
+      {
+        question: "Is my content uploaded anywhere?",
+        answer:
+          "No — everything runs entirely in your browser. The value you encode never leaves your device.",
+      },
+    ],
+    related: ["qr-code-generator", "url-encoder-decoder", "slug-generator", "base64-encoder-decoder"],
   },
   {
     kind: "generator",
