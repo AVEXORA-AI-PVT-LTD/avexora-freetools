@@ -11,6 +11,10 @@ import { computeSimpleInterest } from "@/tools/compute/finance/simple-interest";
 import { computeBreakEven } from "@/tools/compute/finance/break-even";
 import { computeMargin } from "@/tools/compute/finance/margin";
 import { computeMarkup } from "@/tools/compute/finance/markup";
+import {
+  calculateProfitAndMarkup,
+  computeProfitMarginMarkup,
+} from "@/tools/compute/finance/profit-margin-markup";
 import { computeRoi } from "@/tools/compute/finance/roi";
 import { computeDepreciation } from "@/tools/compute/finance/depreciation";
 import { computeWorkingCapital } from "@/tools/compute/finance/working-capital";
@@ -190,6 +194,393 @@ describe("computeMarkup", () => {
     const r = resultMap(computeMarkup, { cost: "700", sellingPrice: "1000" });
     expect(r.get("Markup (on cost)")).toBe("42.86%");
     expect(r.get("Equivalent margin (on price)")).toBe("30%");
+  });
+});
+
+describe("calculateProfitAndMarkup", () => {
+  const base = { marketplace: "custom" as const, feeType: "percent" as const };
+
+  it("matches the worked example (S=1000, C=600, 15% fee)", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 1000,
+      cost: 600,
+      shippingCost: 0,
+      packagingCost: 0,
+      additionalCost: 0,
+      fee: 15,
+      ...base,
+    });
+    expect(calc.grossProfit).toBe(400);
+    expect(calc.marketplaceFee).toBe(150);
+    expect(calc.totalCost).toBe(750);
+    expect(calc.amountAfterMarketplaceFee).toBe(850);
+    expect(calc.netProfit).toBe(250);
+    expect(calc.profitMargin).toBe(25);
+    expect(calc.markup).toBeCloseTo(41.67, 1);
+  });
+
+  it("no fee with a custom marketplace", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 1000,
+      cost: 600,
+      shippingCost: 0,
+      packagingCost: 0,
+      additionalCost: 0,
+      fee: 0,
+      ...base,
+    });
+    expect(calc.marketplaceFee).toBe(0);
+    expect(calc.totalCost).toBe(600);
+    expect(calc.netProfit).toBe(400);
+    expect(calc.profitMargin).toBe(40);
+    expect(calc.markup).toBeCloseTo(66.67, 1);
+  });
+
+  it("applies a fixed fee", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 1000,
+      cost: 600,
+      shippingCost: 0,
+      packagingCost: 0,
+      additionalCost: 0,
+      marketplace: "custom",
+      feeType: "fixed",
+      fee: 100,
+    });
+    expect(calc.marketplaceFee).toBe(100);
+    expect(calc.totalCost).toBe(700);
+    expect(calc.netProfit).toBe(300);
+    expect(calc.profitMargin).toBe(30);
+    expect(calc.markup).toBe(50);
+  });
+
+  it("shipping cost raises total cost and lowers net profit", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 1000,
+      cost: 600,
+      shippingCost: 50,
+      packagingCost: 0,
+      additionalCost: 0,
+      fee: 15,
+      ...base,
+    });
+    expect(calc.totalCost).toBe(800);
+    expect(calc.netProfit).toBe(200);
+    expect(calc.profitMargin).toBe(20);
+    expect(calc.markup).toBeCloseTo(33.33, 2);
+  });
+
+  it("packaging and additional costs", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 1000,
+      cost: 600,
+      shippingCost: 0,
+      packagingCost: 100,
+      additionalCost: 150,
+      marketplace: "custom",
+      feeType: "percent",
+      fee: 0,
+    });
+    expect(calc.totalCost).toBe(850);
+    expect(calc.netProfit).toBe(150);
+    expect(calc.profitMargin).toBe(15);
+    expect(calc.markup).toBe(25);
+    expect(calc.markupOnTotalCost).toBeCloseTo(17.65, 2);
+  });
+
+  it("reports a loss without clamping the percentages", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 1000,
+      cost: 900,
+      shippingCost: 0,
+      packagingCost: 0,
+      additionalCost: 0,
+      fee: 15,
+      ...base,
+    });
+    expect(calc.netProfit).toBe(-50);
+    expect(calc.profitMargin).toBe(-5);
+    expect(calc.markup).toBeCloseTo(-5.56, 2);
+  });
+
+  it("zero cost gives a null markup, never NaN or Infinity", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 1000,
+      cost: 0,
+      shippingCost: 0,
+      packagingCost: 0,
+      additionalCost: 0,
+      fee: 10,
+      ...base,
+    });
+    expect(calc.markup).toBeNull();
+    expect(calc.netProfit).toBe(900);
+    expect(calc.profitMargin).toBe(90);
+  });
+
+  it("zero selling price gives a null margin", () => {
+    const calc = calculateProfitAndMarkup({
+      sellingPrice: 0,
+      cost: 100,
+      shippingCost: 0,
+      packagingCost: 0,
+      additionalCost: 0,
+      marketplace: "custom",
+      feeType: "percent",
+      fee: 0,
+    });
+    expect(calc.profitMargin).toBeNull();
+    expect(calc.netProfit).toBe(-100);
+  });
+});
+
+describe("computeProfitMarginMarkup", () => {
+  it("renders the worked example rows", () => {
+    const r = resultMap(computeProfitMarginMarkup, {
+      sellingPrice: "1000",
+      cost: "600",
+      shippingCost: "",
+      packagingCost: "",
+      additionalCost: "",
+      marketplace: "custom",
+      feeType: "percent",
+      feePercent: "15",
+      feeFixed: "",
+    });
+    expect(r.get("Gross profit")).toBe("₹400.00");
+    expect(r.get("Marketplace fee")).toBe("₹150.00");
+    expect(r.get("Total cost (incl. marketplace fee & others)")).toBe("₹750.00");
+    expect(r.get("Net profit")).toBe("₹250.00");
+    expect(r.get("Amount after marketplace fee")).toBe("₹850.00");
+    expect(r.get("Profit margin (on selling price)")).toBe("25%");
+    expect(r.get("Markup (on cost price)")).toBe("41.67%");
+    expect(r.get("Markup (on total cost)")).toBeUndefined();
+  });
+
+  it("treats a blank custom fee as zero", () => {
+    const r = resultMap(computeProfitMarginMarkup, {
+      sellingPrice: "1000",
+      cost: "600",
+      shippingCost: "",
+      packagingCost: "",
+      additionalCost: "",
+      marketplace: "custom",
+      feeType: "percent",
+      feePercent: "",
+      feeFixed: "",
+    });
+    expect(r.get("Marketplace fee")).toBe("₹0.00");
+    expect(r.get("Net profit")).toBe("₹400.00");
+    expect(r.get("Profit margin (on selling price)")).toBe("40%");
+    expect(r.get("Markup (on cost price)")).toBe("66.67%");
+  });
+
+  it("applies a fixed fee from the fixed fee field", () => {
+    const r = resultMap(computeProfitMarginMarkup, {
+      sellingPrice: "1000",
+      cost: "600",
+      shippingCost: "",
+      packagingCost: "",
+      additionalCost: "",
+      marketplace: "custom",
+      feeType: "fixed",
+      feePercent: "",
+      feeFixed: "100",
+    });
+    expect(r.get("Marketplace fee")).toBe("₹100.00");
+    expect(r.get("Net profit")).toBe("₹300.00");
+    expect(r.get("Profit margin (on selling price)")).toBe("30%");
+    expect(r.get("Markup (on cost price)")).toBe("50%");
+  });
+
+  it("shows markup on total cost when packaging/additions are present", () => {
+    const r = resultMap(computeProfitMarginMarkup, {
+      sellingPrice: "1000",
+      cost: "600",
+      shippingCost: "",
+      packagingCost: "100",
+      additionalCost: "150",
+      marketplace: "custom",
+      feeType: "percent",
+      feePercent: "",
+      feeFixed: "",
+    });
+    expect(r.get("Total cost (incl. marketplace fee & others)")).toBe("₹850.00");
+    expect(r.get("Net profit")).toBe("₹150.00");
+    expect(r.get("Markup (on total cost)")).toBe("17.65%");
+  });
+
+  it("labels a negative net profit as Net loss without clamping", () => {
+    const r = resultMap(computeProfitMarginMarkup, {
+      sellingPrice: "1000",
+      cost: "900",
+      shippingCost: "",
+      packagingCost: "",
+      additionalCost: "",
+      marketplace: "custom",
+      feeType: "percent",
+      feePercent: "15",
+      feeFixed: "",
+    });
+    expect(r.get("Net loss")).toBe("-₹50.00");
+    expect(r.get("Profit margin (on selling price)")).toBe("-5%");
+    expect(r.get("Markup (on cost price)")).toBe("-5.56%");
+  });
+
+  it("shows a dash for markup when cost is zero", () => {
+    const r = resultMap(computeProfitMarginMarkup, {
+      sellingPrice: "1000",
+      cost: "0",
+      shippingCost: "",
+      packagingCost: "",
+      additionalCost: "",
+      marketplace: "custom",
+      feeType: "percent",
+      feePercent: "10",
+      feeFixed: "",
+    });
+    expect(r.get("Markup (on cost price)")).toBe("—");
+    expect(r.get("Net profit")).toBe("₹900.00");
+    expect(r.get("Profit margin (on selling price)")).toBe("90%");
+  });
+
+  it("accepts a valid zero without error and dashes both percentages", () => {
+    const r = resultMap(computeProfitMarginMarkup, {
+      sellingPrice: "0",
+      cost: "0",
+      shippingCost: "0",
+      packagingCost: "0",
+      additionalCost: "0",
+      marketplace: "custom",
+      feeType: "percent",
+      feePercent: "",
+      feeFixed: "",
+    });
+    expect(r.get("Net profit")).toBe("₹0.00");
+    expect(r.get("Profit margin (on selling price)")).toBe("—");
+    expect(r.get("Markup (on cost price)")).toBe("—");
+  });
+
+  it("rejects a blank Amazon fee instead of assuming one", () => {
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice: "1000",
+        cost: "600",
+        shippingCost: "",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "amazon",
+        feeType: "percent",
+        feePercent: "",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
+  });
+
+  it("rejects a blank Flipkart fixed fee", () => {
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice: "1000",
+        cost: "600",
+        shippingCost: "",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "flipkart",
+        feeType: "fixed",
+        feePercent: "",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
+  });
+
+  it("rejects an invalid fee on a named marketplace", () => {
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice: "1000",
+        cost: "600",
+        shippingCost: "",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "amazon",
+        feeType: "percent",
+        feePercent: "-5",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
+  });
+
+  it.each(["abc", "--100", "12..5", "-100", ""])("rejects invalid selling price %s", (sellingPrice) => {
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice,
+        cost: "600",
+        shippingCost: "",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "custom",
+        feeType: "percent",
+        feePercent: "15",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
+  });
+
+  it("rejects an invalid cost or shipping value", () => {
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice: "1000",
+        cost: "-100",
+        shippingCost: "",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "custom",
+        feeType: "percent",
+        feePercent: "15",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice: "1000",
+        cost: "600",
+        shippingCost: "abc",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "custom",
+        feeType: "percent",
+        feePercent: "15",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
+  });
+
+  it("rejects an unknown marketplace or fee type", () => {
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice: "1000",
+        cost: "600",
+        shippingCost: "",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "meesho",
+        feeType: "percent",
+        feePercent: "15",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
+    expect(
+      computeProfitMarginMarkup({
+        sellingPrice: "1000",
+        cost: "600",
+        shippingCost: "",
+        packagingCost: "",
+        additionalCost: "",
+        marketplace: "custom",
+        feeType: "commission",
+        feePercent: "15",
+        feeFixed: "",
+      }),
+    ).toHaveProperty("error");
   });
 });
 

@@ -51,6 +51,8 @@ export interface FieldDef {
   required?: boolean;
   /** Upper bound enforced natively on the input and again server-side. */
   maxLength?: number;
+  /** Show this field only while the named select field holds this value. */
+  visibleWhen?: { field: string; equals: string };
 }
 
 export interface ResultItem {

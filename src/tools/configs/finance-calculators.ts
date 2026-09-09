@@ -13,6 +13,7 @@ import { computeSimpleInterest } from "../compute/finance/simple-interest";
 import { computeBreakEven } from "../compute/finance/break-even";
 import { computeMargin } from "../compute/finance/margin";
 import { computeMarkup } from "../compute/finance/markup";
+import { computeProfitMarginMarkup } from "../compute/finance/profit-margin-markup";
 import { computeRoi } from "../compute/finance/roi";
 import { computeDepreciation } from "../compute/finance/depreciation";
 import { computeWorkingCapital } from "../compute/finance/working-capital";
@@ -701,7 +702,7 @@ export const tools: ToolConfig[] = [
           "Three levers: raise the price (if the market allows), cut variable cost per unit (better sourcing, packaging), or cut fixed costs (cheaper premises, leaner payroll). Small changes in contribution per unit often move the break-even volume dramatically.",
       },
     ],
-    related: ["margin-calculator", "markup-calculator", "working-capital-calculator", "roi-calculator"],
+    related: ["margin-calculator", "markup-calculator", "working-capital-calculator", "roi-calculator", "profit-margin-markup-calculator"],
   },
   {
     kind: "calculator",
@@ -739,7 +740,7 @@ export const tools: ToolConfig[] = [
           "Gross — it considers only the direct cost of the goods sold. Net margin also subtracts overheads like rent, salaries and marketing from the profit before dividing by revenue.",
       },
     ],
-    related: ["markup-calculator", "break-even-calculator", "gst-calculator", "discount-calculator"],
+    related: ["markup-calculator", "break-even-calculator", "gst-calculator", "discount-calculator", "profit-margin-markup-calculator"],
   },
   {
     kind: "calculator",
@@ -777,7 +778,103 @@ export const tools: ToolConfig[] = [
           "Use markup when you start from cost and want a price. Use margin when you start from a target share of revenue. They're two views of the same profit — this calculator shows both so nothing is lost in translation.",
       },
     ],
-    related: ["margin-calculator", "break-even-calculator", "discount-calculator", "gst-calculator"],
+    related: ["margin-calculator", "break-even-calculator", "discount-calculator", "gst-calculator", "profit-margin-markup-calculator"],
+  },
+  {
+    kind: "calculator",
+    slug: "profit-margin-markup-calculator",
+    category: "finance-calculators",
+    name: "Profit Margin & Markup Calculator",
+    tagline:
+      "See your true profit on every sale after marketplace fees, shipping, packaging and other costs.",
+    seoDescription:
+      "Free profit margin and markup calculator for Indian marketplace sellers. Enter selling price, product cost, marketplace fee (percentage or fixed) and shipping to get gross profit, net profit, margin %, markup % and the amount you actually receive — instantly.",
+    fields: [
+      { name: "sellingPrice", label: "Selling price", type: "number", placeholder: "1000", min: 0, unit: "₹" },
+      { name: "cost", label: "Cost price (product cost)", type: "number", placeholder: "600", min: 0, unit: "₹" },
+      { name: "shippingCost", label: "Shipping cost", type: "number", placeholder: "50", min: 0, unit: "₹", optional: true, help: "What delivery of this one order costs you — including the loss you absorb on free shipping." },
+      { name: "packagingCost", label: "Packaging cost", type: "number", placeholder: "10", min: 0, unit: "₹", optional: true, help: "Boxes, labels, tape, inserts, and prep — whatever packaging one unit actually costs." },
+      { name: "additionalCost", label: "Additional costs", type: "number", placeholder: "20", min: 0, unit: "₹", optional: true, help: "Any other per-order cost — discounts, coupons, payment-gateway fees, photography per unit, etc." },
+      {
+        name: "marketplace",
+        label: "Marketplace",
+        type: "select",
+        defaultValue: "custom",
+        options: [
+          { value: "custom", label: "Custom (no marketplace fee)" },
+          { value: "amazon", label: "Amazon India" },
+          { value: "flipkart", label: "Flipkart India" },
+        ],
+        help: "Select Custom to price without marketplace fees. With Amazon or Flipkart you must enter the fee you actually pay — no automatic rate is assumed.",
+      },
+      {
+        name: "feeType",
+        label: "Marketplace fee type",
+        type: "select",
+        defaultValue: "percent",
+        options: [
+          { value: "percent", label: "Percentage (%) of selling price" },
+          { value: "fixed", label: "Fixed amount (₹) per order" },
+        ],
+        help: "Most marketplaces charge a percentage fee plus a fixed closing fee. Pick the component you want to model in the next field.",
+      },
+      {
+        name: "feePercent",
+        label: "Marketplace fee",
+        type: "number",
+        placeholder: "15",
+        min: 0,
+        unit: "%",
+        visibleWhen: { field: "feeType", equals: "percent" },
+        help: "Percentage of the selling price charged as the fee. Used only while the fee type is Percentage.",
+      },
+      {
+        name: "feeFixed",
+        label: "Marketplace fee",
+        type: "number",
+        placeholder: "25",
+        min: 0,
+        unit: "₹",
+        visibleWhen: { field: "feeType", equals: "fixed" },
+        help: "Fixed fee per order charged by the marketplace. Used only while the fee type is Fixed.",
+      },
+    ],
+    compute: computeProfitMarginMarkup,
+    autoCompute: true,
+    about: [
+      "Most sellers know their product cost but guess at what a sale actually earns them. The marketplace takes a commission, delivery eats into the price, packaging adds up — and the margin you think you're making on the selling price is not the margin you end up with. This calculator works backwards from the customer-facing price to the rupees that actually land with you: gross profit, the marketplace fee, total cost after shipping and packaging, net profit, and then the two numbers that pricing decisions really need — profit margin and markup.",
+      "The two percentages differ because they use different denominators. Profit margin is net profit ÷ selling price: of every rupee the customer pays, how much do you keep. Markup is net profit ÷ cost price: how much you earn on top of what the product cost you. A ₹1,000 sale of a ₹600 product with a ₹150 marketplace fee leaves ₹250 net — a 25% margin on the selling price but a 41.67% markup on cost. Confusing the two is the classic pricing error: aiming for a '30% margin' while adding 30% to cost gives you only a 23% margin. Both figures are shown here, labelled with their denominator.",
+      "Marketplace fees are the reason most Amazon India and Flipkart sellers under-price. Referral fees vary by category, and sellers also face closing fees, weight-based fulfilment charges, shipping subsidies, GST input cosupplies and coupon costs. Because these rates change and depend on your seller plan and fulfilment method, this calculator never assumes one — select Amazon or Flipkart and it asks for the fee you actually pay, and shows a disclaimer instead of a guess. If you're selling from your own store or comparing scenarios without a platform fee, choose Custom.",
+      "Use it before every listing launch to set a bottom-line price, when a marketplace announces a fee change, and while deciding whether to absorb or pass on shipping. The 'amount after marketplace fee' is what the marketplace actually pays you per sale — compare that with your product cost and other costs to see the true per-unit profit. That figure is before fixed costs like rent, staff and subscriptions (the break-even calculator handles those) and before income tax. Every calculation runs in your browser; nothing you enter is stored.",
+    ],
+    faq: [
+      {
+        question: "What is the difference between profit margin and markup?",
+        answer:
+          "Profit margin is net profit divided by the selling price — the share of each sale you keep. Markup is net profit divided by the cost price — how much you earn on top of cost. On a ₹1,000 sale with a ₹600 cost and ₹150 fee, net profit is ₹250: a 25% margin but a 41.67% markup. Using one when you mean the other underprices or overprices your goods.",
+      },
+      {
+        question: "Am I asked to enter the Amazon or Flipkart fee automatically?",
+        answer:
+          "No — deliberately. Marketplace fees vary by category, seller plan, fulfilment method, weight, and taxes, and they change over time. Baking a single rate in would mislead you. Select Amazon India or Flipkart India and enter the percentage or fixed fee you actually pay from your seller dashboard.",
+      },
+      {
+        question: "What does 'amount after marketplace fee' mean?",
+        answer:
+          "It is the selling price minus the marketplace fee — the money the marketplace actually transfers to you per sale, before you subtract your product and other costs. Compare it with your total cost (product + shipping + packaging + other) to judge whether an order is worth taking.",
+      },
+      {
+        question: "Is this my net profit after all expenses?",
+        answer:
+          "No. It is profit per unit after product cost, marketplace fee, shipping, packaging and the other costs you entered, but before fixed business costs (rent, salaries, subscriptions) and before income tax. Layer those on with the break-even calculator.",
+      },
+      {
+        question: "Why does markup show '—' sometimes?",
+        answer:
+          "Markup divides net profit by cost price, so when your cost price is zero the calculation has no denominator — it shows '—' instead of an undefined value. Profit margin likewise shows '—' when the selling price is zero. The net-profit rupees are always shown.",
+      },
+    ],
+    related: ["margin-calculator", "markup-calculator", "break-even-calculator", "gst-calculator"],
   },
   {
     kind: "calculator",
