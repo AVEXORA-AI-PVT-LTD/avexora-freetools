@@ -2,6 +2,7 @@ import type { ToolConfig } from "../../types/tools";
 import MergePdf from "../ui/pdf/merge-pdf";
 import SplitPdf from "../ui/pdf/split-pdf";
 import CompressPdf from "../ui/pdf/compress-pdf";
+import PdfToWord from "../ui/pdf/pdf-to-word";
 import { JpgToPdf, PngToPdf } from "../ui/pdf/images-to-pdf";
 import { PdfPageRemover, ExtractPdfPages, ReorderPdfPages } from "../ui/pdf/page-tools";
 import { RotatePdf } from "../ui/pdf/rotate-pdf";
@@ -178,6 +179,45 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["jpg-to-pdf", "merge-pdf", "favicon-generator", "image-compressor"],
+  },
+  {
+    kind: "file-tool",
+    slug: "pdf-to-word-converter",
+    category: "pdf-tools",
+    name: "PDF to Word Converter",
+    tagline: "Convert a PDF into an editable Word document, entirely in your browser.",
+    seoDescription:
+      "Free online PDF to Word converter. Turn a PDF into an editable .docx Word document — text, page order, headings, lists and tables preserved. 100% private: conversion happens in your browser and files are never uploaded.",
+    component: PdfToWord,
+    about: [
+      "Word documents are meant to be edited; PDFs are meant to be final. When you receive a PDF that needs rewriting — a contract you have to amend, a proposal your team must mark up, a report whose numbers changed, a resume someone wants you to update — you need it back in an editable format. This tool reads the text layer of your PDF and rebuilds it as a proper Word (.docx) document: editable paragraphs you can type into, with page breaks preserved so the page order matches the original, and simple layouts carried across.",
+      "The converter does its best to preserve structure, not just words. It detects headings from their size relative to the body text and maps them to Word's Heading 1/2/3 styles, so your document outline survives the trip. It keeps paragraphs and their alignment (left, centre, right), turns bullet and numbered lists into hanging-indent paragraphs, inserts a page break between pages so multi-page files keep their flow, and recognises simple aligned-column tables — a product list, an invoice table, a matrix of numbers — and rebuilds them as real Word tables you can edit in the grid.",
+      "It is also honest about what a text conversion cannot do. Embedded images (photos, logos, signatures) are detected but not embedded in this build, so the Word file contains the extracted text rather than copied graphics. PDFs that are scanned or image-based — no selectable text to read — can't be turned into editable text without OCR, and this tool doesn't run OCR; those pages are reported so you know exactly which parts were skipped rather than receiving a silently empty document. Complex layouts (multi-column newspaper-style pages, free-form design documents) may come across more simply than they appear in the original.",
+      "As with every tool in this suite, the whole conversion runs in your browser — your PDF is parsed and the Word file is assembled on your device, never uploaded. There's a 50 MB / 200-page limit (generous for virtually every real-world document) and a page count you can see before you convert. Password-protected PDFs can't be read, so remove the password with your PDF reader first. If the Word file needs further edits, you can refine it in Word, LibreOffice or Google Docs once it downloads."
+    ],
+    faq: [
+      {
+        question: "Are my PDF files uploaded to a server?",
+        answer:
+          "No. The PDF is read and converted entirely in your browser using in-page JavaScript, and the Word file is assembled the same way. Your document never leaves your device — which is what makes this safe for contracts, financial papers and other confidential files.",
+      },
+      {
+        question: "What exactly does the Word document preserve?",
+        answer:
+          "The readable text, in the right page order, with page breaks between pages. Headings are mapped to Word's Heading styles, paragraphs keep their alignment, bullet and numbered lists become hanging-indent paragraphs, and simple aligned-column tables are rebuilt as editable Word tables. Embedded images are detected but not copied in this build, and exact fonts or bold/italic styling can't always be recovered from every PDF.",
+      },
+      {
+        question: "My PDF is a scan and the result is empty. Why?",
+        answer:
+          "A scanned PDF is a set of pictures, not selectable text, and converting it to editable words requires OCR (Optical Character Recognition), which this tool doesn't run. Pages with no text layer are detected and reported — OCR the scan with a dedicated tool first, then convert the resulting text-based PDF here.",
+      },
+      {
+        question: "Can I convert a password-protected PDF?",
+        answer:
+          "No. The converter needs to read the text layer to build the Word file, and password-protected PDFs are not readable without the password. Unlock the PDF with your usual reader first, then convert the unlocked copy.",
+      },
+    ],
+    related: ["merge-pdf", "pdf-page-remover", "reorder-pdf-pages", "compress-pdf"],
   },
   {
     kind: "file-tool",
