@@ -266,15 +266,15 @@ export const tools: ToolConfig[] = [
     slug: "pdf-signature",
     category: "pdf-tools",
     name: "PDF Signature / E-Signature",
-    tagline: "Sign a PDF with a typed or uploaded signature, placed exactly where you see it.",
+    tagline: "Sign a PDF with a typed or uploaded signature, or stamp it with a company seal — placed exactly where you see it.",
     seoDescription:
-      "Free online PDF signature tool. Sign any PDF with a handwriting-style signature generated from your typed name, or an image you upload — drop it on any page, resize, rotate, and download. 100% private: your PDF never leaves your browser.",
+      "Free online PDF signature tool. Sign any PDF with a handwriting-style signature generated from your typed name, an image you upload, or a company seal/stamp — drop it on any page, resize, rotate, and download. 100% private: your PDF never leaves your browser.",
     component: PdfSignature,
     about: [
       "Signing a PDF usually means one of three things: printing it, signing by hand, and scanning it back in; buying a certificate-based digital signature from a CA; or sending your document to an online signing service with a free trial, a watermark, and your file on somebody else's server. This tool is the middle path for everyday business documents — an e-signature stamped onto your PDF, generated in your own browser, with full placement control and nothing uploaded.",
-      "There are two ways to get a signature. Type your name and the tool generates a handwriting-style signature image (four styles, from a classic script to a marker-style print) drawn locally with bundled fonts. Or upload a PNG or JPG of your hand-written signature — transparent PNG backgrounds are preserved exactly, so you never get a white or black box around it. Either way the signature appears in your live preview and you can add as many signatures as you need, on any pages, each drag-to-move, drag-to-resize, and rotate freely with a drag handle or the angle buttons.",
-      "The placement you set in the preview is the placement you get on the download — positions are stored relative to each page and mapped onto the actual PDF with the same math your browser uses to display it, so the signature lands in exactly the same spot at any zoom level, including on rotated pages. Your original PDF is never rasterized or flattened: the signatures are added to the untouched original and the file keeps its text, images, links and quality.",
-      "It is also honest about what this is and isn't: this places an image of your signature onto a PDF. It does not create a certificate-based digital signature, which is a cryptographic seal that requires a certificate authority and is typically used for legally binding e-documents in some jurisdictions — if that's what your document needs, use a dedicated provider. For contracts, invoices, NDA drafts, approvals and internal forms, an image signature is exactly what most people mean by \"sign it.\" Everything runs locally: your PDF and signature never leave your device.",
+      "There are three ways to get an element onto your document. Type your name and the tool generates a handwriting-style signature image (four styles, from a classic script to a marker-style print) drawn locally with bundled fonts. Or upload a PNG or JPG of your hand-written signature or your company seal/stamp — transparent PNG backgrounds are preserved exactly, so you never get a white or black box around it. Whichever you choose, the element appears in your live preview and you can add as many signatures and seals as you need, on any pages, each drag-to-move, drag-to-resize, and rotate freely with a drag handle or the angle buttons.",
+      "The placement you set in the preview is the placement you get on the download — positions are stored relative to each page and mapped onto the actual PDF with the same math your browser uses to display it, so the signature or seal lands in exactly the same spot at any zoom level, including on rotated pages. Your original PDF is never rasterized or flattened: the elements are added to the untouched original and the file keeps its text, images, links and quality.",
+      "It is also honest about what this is and isn't: this places an image of your signature or seal onto a PDF. It does not create a certificate-based digital signature, which is a cryptographic seal that requires a certificate authority and is typically used for legally binding e-documents in some jurisdictions — if that's what your document needs, use a dedicated provider. For contracts, invoices, NDA drafts, approvals and internal forms, an image signature is exactly what most people mean by \"sign it.\" Everything runs locally: your PDF and signature never leave your device.",
     ],
     faq: [
       {
@@ -291,6 +291,11 @@ export const tools: ToolConfig[] = [
         question: "Will a white or black box appear around my signature?",
         answer:
           "No, not for transparent PNG uploads or generated signatures — those keep their transparency, so the signature blends onto the page. JPG uploads never have transparency to begin with, so they are shown as-is.",
+      },
+      {
+        question: "Can I stamp a PDF with a company seal or official stamp?",
+        answer:
+          "Yes. Choose \"Upload Seal / Stamp\" (the first option) and upload a PNG, JPG or WebP of your seal — transparent PNG backgrounds are preserved exactly, ideal for round or rectangular company stamps. Seals are placed on the PDF the same way as signatures: drag to move, pull the corner dots to resize, rotate with the handle or buttons — and you can stamp the same seal on several pages alongside signatures in a single download.",
       },
       {
         question: "Is this the same as a certificate-based digital signature?",

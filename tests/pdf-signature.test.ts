@@ -489,6 +489,89 @@ describe("pdf-signature — buildSignedPdf output correctness", () => {
   });
 });
 
+describe("pdf-signature — seal + signature combined placement", () => {
+  it("places a seal on page 1 and a signature on page 2 of a 2-page PDF", async () => {
+    const fixture = await makeTwoPageFixture();
+    const seal = makeRgbaPng();
+    const sig = makeRgbaPng();
+    const meta1 = await makePageMeta(fixture, 1);
+    const meta2 = await makePageMeta(fixture, 2);
+    const out = await buildSignedPdf(fixture, [
+      { sigBytes: seal, ...spec(meta1, { sx: 0.3, sy: 0.3, wFrac: 0.4, hFrac: 0.15 }, 0) },
+      { sigBytes: sig, ...spec(meta2, { sx: 0.1, sy: 0.7, wFrac: 0.5, hFrac: 0.1 }, 0, 2) },
+    ]);
+
+    const doc = await pdfjs.getDocument({ data: out }).promise;
+    expect(doc.numPages).toBe(2);
+
+    function countImages(ops: { fnArray: number[] }) {
+      let count = 0;
+      for (let i = 0; i < ops.fnArray.length; i++) {
+        if (ops.fnArray[i] === 85) count++; // paintImageXObject opcode
+      }
+      return count;
+    }
+
+    const p1 = await doc.getPage(1);
+    const p1Ops = await p1.getOperatorList();
+    expect(countImages(p1Ops)).toBe(1);
+
+    const p2 = await doc.getPage(2);
+    const p2Ops = await p2.getOperatorList();
+    expect(countImages(p2Ops)).toBe(1);
+  });
+
+  it("places multiple seals on the same page without overlap", async () => {
+    const fixture = await makeThreePageFixture();
+    const seal = makeRgbaPng();
+    const meta = await makePageMeta(fixture, 1);
+    const out = await buildSignedPdf(fixture, [
+      { sigBytes: seal, ...spec(meta, { sx: 0.05, sy: 0.8, wFrac: 0.3, hFrac: 0.1 }, 0) },
+      { sigBytes: seal, ...spec(meta, { sx: 0.6, sy: 0.1, wFrac: 0.3, hFrac: 0.1 }, 15) },
+    ]);
+    // Take a private copy BEFORE pdfjs detaches the buffer via transfer.
+    const outForCtm = out.slice(0);
+
+    const doc = await pdfjs.getDocument({ data: out }).promise;
+    const p1 = await doc.getPage(1);
+    const ops = await p1.getOperatorList();
+    let imageCount = 0;
+    for (let i = 0; i < ops.fnArray.length; i++) {
+      if (ops.fnArray[i] === 85) imageCount++; // paintImageXObject
+    }
+    expect(imageCount).toBe(2);
+
+    // Both placements must have distinct CTMs (different positions)
+    const ctm1 = await imageCtm(outForCtm, 1);
+    // Second image's CTM — read after the first paintImageXObject
+    const stack2: number[][] = [];
+    let secondCtm: number[] = [1, 0, 0, 1, 0, 0];
+    let foundFirst = false;
+    for (let i = 0; i < ops.fnArray.length; i++) {
+      const fn = ops.fnArray[i];
+      const args = ops.argsArray[i];
+      if (fn === 10) { stack2.push([1, 0, 0, 1, 0, 0]); continue; } // save
+      if (fn === 11) { stack2.pop(); continue; } // restore
+      if (fn === 12) { // transform
+        const cur = stack2.length ? stack2[stack2.length - 1] : [1, 0, 0, 1, 0, 0];
+        const [a, b, c, d, e, f] = args as number[];
+        stack2[stack2.length - 1] = [
+          cur[0]*a+cur[2]*b, cur[1]*a+cur[3]*b,
+          cur[0]*c+cur[2]*d, cur[1]*c+cur[3]*d,
+          cur[0]*e+cur[2]*f+cur[4], cur[1]*e+cur[3]*f+cur[5],
+        ];
+        continue;
+      }
+      if (fn === 85) { // paintImageXObject
+        if (!foundFirst) { foundFirst = true; continue; }
+        secondCtm = stack2.length ? [...stack2[stack2.length - 1]] : [1, 0, 0, 1, 0, 0];
+        break;
+      }
+    }
+    expect(ctm1).not.toEqual(secondCtm);
+  });
+});
+
 describe("pdf-signature — exposed size limits", () => {
   it("exposes sane defaults for the editor and backend", () => {
     expect(SIG_MIN_FRAC).toBeLessThan(SIG_DEFAULT_W_FRAC);

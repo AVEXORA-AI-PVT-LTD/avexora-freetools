@@ -51,6 +51,7 @@ interface SigAsset {
   readonly bytes: Uint8Array;
   readonly width: number;
   readonly height: number;
+  readonly type: "signature" | "seal";
 }
 
 interface SigEntry {
@@ -109,7 +110,7 @@ export default function PdfSignature() {
   const [assets, setAssets] = useState<SigAsset[]>([]);
   const [activeAssetId, setActiveAssetId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [tab, setTab] = useState<"upload" | "generate">("upload");
+  const [tab, setTab] = useState<"seal" | "upload" | "generate">("seal");
   const [name, setName] = useState("");
   const [genStatus, setGenStatus] = useState<string | null>(null);
   const [draggingOver, setDraggingOver] = useState(false);
@@ -123,6 +124,7 @@ export default function PdfSignature() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const sigInputRef = useRef<HTMLInputElement>(null);
+  const sealInputRef = useRef<HTMLInputElement>(null);
   const dragRef = useRef<DragInfo | null>(null);
   const counterRef = useRef(1);
 
@@ -162,7 +164,7 @@ export default function PdfSignature() {
     setAssets([]);
     setActiveAssetId(null);
     setSelectedId(null);
-    setTab("upload");
+    setTab("seal");
     setName("");
     setGenStatus(null);
     setDraggingOver(false);
@@ -525,6 +527,7 @@ export default function PdfSignature() {
         bytes: raster.bytes,
         width: raster.width,
         height: raster.height,
+        type: "signature",
       };
       setAssets((prev) => [...prev.filter((a) => a.id.startsWith("asset-upload-")), asset]);
       setActiveAssetId(asset.id);
@@ -560,6 +563,7 @@ export default function PdfSignature() {
           bytes: raster.bytes,
           width: raster.width,
           height: raster.height,
+          type: "signature",
         });
       }
       setAssets((prev) => [
@@ -574,6 +578,36 @@ export default function PdfSignature() {
       setBusy(false);
     }
   }, [name]);
+
+  const handleSealUpload = useCallback(async (f: File | null) => {
+    if (!f) return;
+    setError(null);
+    try {
+      const imgErr = signatureImageError(f.name, f.type, f.size);
+      if (imgErr) {
+        setError(imgErr);
+        return;
+      }
+      setStatus("Reading seal/stamp…");
+      const raster = await rasterizeUploadedSignature(f);
+      const asset: SigAsset = {
+        id: `asset-seal-${counterRef.current++}`,
+        label: f.name,
+        dataUrl: raster.dataUrl,
+        bytes: raster.bytes,
+        width: raster.width,
+        height: raster.height,
+        type: "seal",
+      };
+      setAssets((prev) => [...prev.filter((a) => !a.id.startsWith("asset-seal-")), asset]);
+      setActiveAssetId(asset.id);
+      setGenStatus(null);
+    } catch {
+      setError("This image could not be decoded. Please upload a valid PNG, JPG or WebP image.");
+    } finally {
+      setStatus(null);
+    }
+  }, []);
 
   const download = useCallback(async () => {
     if (!pdfBytes || !pageMeta || signatures.length === 0) return;
@@ -884,6 +918,7 @@ export default function PdfSignature() {
               <div className="flex rounded-lg bg-slate-100 p-1">
                 {(
                   [
+                    ["seal", "Upload Seal / Stamp"],
                     ["upload", "Upload Signature"],
                     ["generate", "Generate Signature"],
                   ] as const
@@ -907,7 +942,32 @@ export default function PdfSignature() {
                 ))}
               </div>
 
-              {tab === "upload" ? (
+              {tab === "seal" ? (
+                <div className="space-y-2">
+                  <input
+                    ref={sealInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp"
+                    className="hidden"
+                    aria-label="Choose a seal or stamp image (PNG, JPG or WebP)"
+                    onChange={(e) => {
+                      void handleSealUpload(e.target.files?.[0] ?? null);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => sealInputRef.current?.click()}
+                    className={secondaryBtn}
+                  >
+                    Upload seal / stamp image
+                  </button>
+                  <p className="text-xs text-slate-500">
+                    PNG, JPG or WebP. Transparent PNG backgrounds are preserved — ideal for company
+                    seals, official stamps, and round/rectangular stamps.
+                  </p>
+                </div>
+              ) : tab === "upload" ? (
                 <div className="space-y-2">
                   <input
                     ref={sigInputRef}
@@ -964,12 +1024,12 @@ export default function PdfSignature() {
                 </div>
               )}
 
-              <div aria-label="Available signatures" className="flex flex-wrap gap-2">
+              <div aria-label="Available signatures and seals" className="flex flex-wrap gap-2">
                 {assets.map((a) => (
                   <button
                     key={a.id}
                     type="button"
-                    aria-label={`Use signature: ${a.label}`}
+                    aria-label={`Use ${a.type === "seal" ? "seal/stamp" : "signature"}: ${a.label}`}
                     aria-pressed={activeAssetId === a.id}
                     onClick={() => {
                       setActiveAssetId(a.id);
@@ -992,7 +1052,11 @@ export default function PdfSignature() {
                   className="flex flex-wrap items-center gap-2 rounded-lg border border-orange-200 bg-orange-50/60 px-3 py-2 text-sm"
                   aria-label="Signature controls"
                 >
-                  <span className="font-medium text-slate-700">Signature selected</span>
+                  <span className="font-medium text-slate-700">
+                    {selected && assets.find((a) => a.id === selected.assetId)?.type === "seal"
+                      ? "Seal/stamp selected"
+                      : "Signature selected"}
+                  </span>
                   <button
                     type="button"
                     aria-label="Rotate signature left 15 degrees"
@@ -1038,7 +1102,9 @@ export default function PdfSignature() {
                   disabled={!activeAssetId || busy}
                   className={primaryBtn}
                 >
-                  Add Signature to Page {pageNumber}
+                  {activeAssetId && assets.find((a) => a.id === activeAssetId)?.type === "seal"
+                    ? `Add Seal to Page ${pageNumber}`
+                    : `Add Signature to Page ${pageNumber}`}
                 </button>
                 <button
                   type="button"
@@ -1060,9 +1126,9 @@ export default function PdfSignature() {
               )}
 
               <p className="text-xs text-slate-500">
-                {signatures.length} signature{signatures.length === 1 ? "" : "s"} placed. This tool
-                places a signature image onto your PDF — it does not create a certificate-based
-                digital signature.
+                {signatures.length} item{signatures.length === 1 ? "" : "s"} placed. This tool
+                places signature and seal/stamp images onto your PDF — it does not create a
+                certificate-based digital signature.
               </p>
             </div>
           </div>
