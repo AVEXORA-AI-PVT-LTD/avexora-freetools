@@ -7,6 +7,7 @@ import { ImageToBase64, Base64ToImage } from "../ui/image/base64-image";
 import { FaviconGenerator } from "../ui/image/favicon-generator";
 import { ImageColorPicker } from "../ui/image/image-color-picker";
 import { ImageRotatorFlipper } from "../ui/image/image-rotator-flipper";
+import ImageBackgroundRemover from "../ui/image/bg-remover";
 
 export const tools: ToolConfig[] = [
   {
@@ -382,5 +383,54 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["image-cropper", "image-resizer", "rotate-pdf", "image-compressor"],
+  },
+  {
+    kind: "file-tool",
+    slug: "image-background-remover",
+    category: "image-tools",
+    name: "Image Background Remover",
+    tagline: "Erase the background from any image with on-device AI — truly transparent output.",
+    seoDescription:
+      "Free AI background remover. Cut out the subject of any image with a real segmentation model running in your browser and download a genuinely transparent PNG or WebP — no upload, no watermark.",
+    component: ImageBackgroundRemover,
+    about: [
+      "Getting a clean cut-out — a product photo on plain white, a portrait you want to flip onto a different background, a logo on a busy backdrop — usually means either pixel-brushing by hand or paying for an online service that uploads your images to their servers. This tool removes the background properly, using a real AI segmentation model, and runs it entirely on your device.",
+      "Unlike a threshold or colour-key tool, the model (ISNet, running through ONNX in your browser) understands image content: it identifies the subject of the photo — a person, product, animal, or object — and separates it from the background by analysing edges and shapes, not just colour. Semi-transparent details like hair and fur are kept genuinely semi-transparent rather than replaced with white or black pixels, and the result is a true alpha channel: no checkerboard or white rectangle is ever baked into the file.",
+      "The output is always transparent-PNG or transparent-WebP at your original dimensions, downloaded straight from your browser. JPEG is intentionally not offered because it cannot store transparency, and no SVG is offered either — a transparent PNG or WebP is the honest equivalent for a raster image like a photo. Everything happens client-side: the segmentation model is loaded once from this site (~44 MB, then cached), your image never leaves your device, and nothing is uploaded, stored, or watermarked.",
+      "For best results use a clear photo of a single subject with a reasonably distinct background — a clean studio shot or a portrait. Very busy or heavily textured backgrounds, highly reflective subjects, or full-body shots with thin limbs and hair can leave small fringe artifacts at the edges, which is a limit of segmentation technology rather than a bug. Very large images (over roughly 16 megapixels) are automatically scaled down during processing to keep the math fast and stable in the browser.",
+    ],
+    faq: [
+      {
+        question: "Does this actually use AI?",
+        answer:
+          "Yes — the tool runs a real segmentation model (ISNet) via onnxruntime-web directly in your browser. It analyses image content to find the subject rather than applying a colour filter, and the download has genuine alpha transparency instead of a faked background colour.",
+      },
+      {
+        question: "Is my image uploaded anywhere?",
+        answer:
+          "No. The whole pipeline — model download, segmentation, and encoding — runs on your device. The model file (~44 MB) is fetched from this site once and cached; your image never leaves your computer.",
+      },
+      {
+        question: "Why can't I download as JPEG?",
+        answer:
+          "JPEG has no transparency channel, so a 'transparent JPEG' is impossible. PNG (lossless) and WebP (smaller files) are the honest formats for a cut-out image. If you need a JPEG for a specific platform, run this tool's output through the PNG-to-JPG converter, which flattens transparency onto white.",
+      },
+      {
+        question: "Why isn't SVG offered as an output?",
+        answer:
+          "SVG without extra tooling is a vector format and raster photos can't be meaningfully stored as vectors. An SVG containing your PNG would only add a wrapper with no benefit, so it isn't offered — the transparent PNG/WebP download is the same transparency in a format browsers actually use.",
+      },
+      {
+        question: "What kind of images work best?",
+        answer:
+          "A clear photo of a single subject against a distinct background works best — portraits, product shots, pets, logos. Very busy backgrounds and fine hair or fur can leave some edge artifacts, which is expected from segmentation models.",
+      },
+      {
+        question: "Will my file size or dimensions change?",
+        answer:
+          "Dimensions are preserved when the source is within the processing limit (~16 megapixels); larger images are scaled down so the browser can process them reliably. File size changes because the output is re-encoded as a transparent PNG/WebP and depends heavily on image content.",
+      },
+    ],
+    related: ["png-to-jpg", "webp-converter", "image-compressor", "image-cropper"],
   },
 ];
