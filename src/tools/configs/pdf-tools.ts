@@ -5,6 +5,7 @@ import CompressPdf from "../ui/pdf/compress-pdf";
 import PdfToWord from "../ui/pdf/pdf-to-word";
 import WordToPdf from "../ui/pdf/word-to-pdf";
 import PdfSignature from "../ui/pdf/pdf-signature";
+import PdfEditor from "../ui/pdf/pdf-editor";
 import { JpgToPdf, PngToPdf } from "../ui/pdf/images-to-pdf";
 import { PdfPageRemover, ExtractPdfPages, ReorderPdfPages } from "../ui/pdf/page-tools";
 import { RotatePdf } from "../ui/pdf/rotate-pdf";
@@ -536,5 +537,50 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["compress-pdf", "add-watermark-to-pdf", "merge-pdf", "privacy-policy-generator"],
+  },
+  {
+    kind: "file-tool",
+    slug: "pdf-editor",
+    category: "pdf-tools",
+    name: "PDF Editor",
+    tagline: "Edit text and add text boxes, headings and paragraphs to a PDF — in your browser.",
+    seoDescription:
+      "Free PDF text editor. Edit existing text, and add headings, taglines, paragraphs and text boxes to a PDF right in your browser — then download a real edited PDF. No upload, no watermark, no sign-up.",
+    component: PdfEditor,
+    about: [
+      "A PDF usually arrives frozen — as if the text on it were permanently baked in. This tool makes the text editable directly in your browser: upload a PDF, and every piece of text the page can detect appears as a small box you can click, edit, restyle or remove. You can also add your own content anywhere on any page — a heading, a tagline, a paragraph, or a free text box — position it with your mouse, choose a font, size and colour, and download a genuinely modified PDF document.",
+      "Adding new content is precise: place a heading for a proposal cover, a tagline under a logo, a paragraph of updated terms, or a text box next to a figure, then drag, resize and restyle it live on the page preview. Paragraphs and text boxes wrap within their width, and alignment, bold/italic, colour and font (sans, serif, monospace or handwriting) are all under your control. Every change is previewed in place, so what you see before clicking download is exactly what lands in the file.",
+      "Existing text is handled honestly, within the real limits of PDF technology: a standard browser can't rewrite the original text stream of an existing page, so replacing an existing piece of text covers the original area with a white rectangle and redraws your replacement on top in the font you pick — ideal on light, plain backgrounds. The original, sum-tested content streams can't be reused unscrambled, so the exact look of a replaced word isn't preserved; everything else on the page — layout, images, and every other line of text — is left byte-for-byte intact. Password-protected PDFs can't be edited and will be rejected rather than opened.",
+      "As with every tool in this suite, processing happens entirely in your browser. The PDF never leaves your device, which makes the editor safe for contracts, invoices and internal documents. There's no watermark, no size-based paywall, and no sign-up — upload, edit and download, done.",
+    ],
+    faq: [
+      {
+        question: "Does this tool create real edits in the downloaded file?",
+        answer:
+          "Yes. The download is a real, modified PDF file: new text you add is drawn into the document, and replaced text is covered and redrawn in place. It is not a mock-up or an overlay that only looks right on screen.",
+      },
+      {
+        question: "What are the limits when editing existing text?",
+        answer:
+          "A PDF's existing text stream can't be rewritten by a browser library, so a replaced piece of text is covered with a white rectangle and redrawn in your chosen font on top. Works cleanly on light, plain backgrounds; decorated or dark backgrounds may show a white patch. The original font of a replaced word can't be reused, so the new text uses the font you select.",
+      },
+      {
+        question: "Can I edit scanned images or password-protected PDFs?",
+        answer:
+          "No. A scanned PDF is made of images, not text, so there's nothing to detect or edit — our JPG-to-PDF and PNG-to-PDF converters work the other direction. Password-protected PDFs are rejected rather than opened, and are never bypassed.",
+      },
+      {
+        question: "Does editing change the rest of my document?",
+        answer:
+          "No. Every other page, image, vector graphic and line of text you don't touch is preserved exactly. Only the areas you edit are covered and redrawn.",
+      },
+    ],
+    related: [
+      "pdf-signature",
+      "pdf-to-word-converter",
+      "add-watermark-to-pdf",
+      "add-page-numbers-to-pdf",
+      "merge-pdf",
+    ],
   },
 ];
