@@ -11,6 +11,7 @@ import {
   secondaryBtn,
 } from "./pdf-shared";
 import {
+  PDF_EDITOR_ADVANCE_EM,
   PDF_EDITOR_COLORS,
   PDF_EDITOR_FONT_LABELS,
   PDF_EDITOR_MAX_BYTES,
@@ -19,14 +20,26 @@ import {
   PDF_EDITOR_MIN_ELEMENT_SIZE,
   PDF_EDITOR_MIN_FONT_SIZE,
   buildEditedPdf,
+  buildViewportTransform,
   clamp,
   colorsForItems,
+  elementContentHeight,
   elementFromTextItem,
   extractColorRuns,
+  finiteOr,
   inspectPdf,
   makeElement,
+  moveElementRect,
+  normalizeDegrees,
+  paddedCoverRect,
   readPageFonts,
+  replacementCoverRect,
+  replacementLines,
+  resizeElementRect,
   sanitizeEditedFilename,
+  snapDegrees,
+  wrapText,
+  type Corner,
   type PdfEditorAlign,
   type PdfEditorElement,
   type PdfEditorElementKind,
@@ -34,6 +47,7 @@ import {
   type PdfEditorWeight,
   type PdfSourceTextItem,
   type PdfSourceTextStyle,
+  type PdfViewportTransform,
 } from "@/tools/compute/pdf/pdf-editor";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 
@@ -58,21 +72,23 @@ interface EditorPageMeta {
   rotation: number;
 }
 
-interface Vs {
-  fromPdfPoint: (x: number, y: number) => [number, number];
-  toPdfPoint: (x: number, y: number) => [number, number];
-}
+type Vs = PdfViewportTransform;
 
 interface DragInfo {
   id: string;
-  mode: "move" | "resize";
+  mode: "move" | "resize" | "rotate";
   startX: number;
   startY: number;
   corner?: Corner;
   orig: PdfEditorElement;
+  /** Display-space centre of the element box; used by the rotation handle. */
+  centerX?: number;
+  centerY?: number;
+  /** Element rotation when the rotation drag started. */
+  startRotation?: number;
+  /** Pointer angle (radians, atan2 of the pointer around the element centre) at drag start. */
+  startAngle?: number;
 }
-
-type Corner = "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w";
 
 const ZOOM_STEPS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
 const ADD_LABELS: Record<PdfEditorElementKind, string> = {
@@ -81,6 +97,14 @@ const ADD_LABELS: Record<PdfEditorElementKind, string> = {
   tagline: "+ Tagline",
   paragraph: "+ Paragraph",
   textbox: "+ Text Box",
+};
+
+/** Arrow-key nudges, in PDF-space [dx, dy] per press. */
+const ARROW_MOVE: Record<string, [number, number]> = {
+  ArrowLeft: [-1, 0],
+  ArrowRight: [1, 0],
+  ArrowUp: [0, 1],
+  ArrowDown: [0, -1],
 };
 
 function fmtBytes(n: number): string {
@@ -115,6 +139,59 @@ function displayBoxFor(el: PdfEditorElement, vs: Vs) {
   return displayRect(vs, el);
 }
 
+/** Magnitude of the PDF x-axis mapped to display px (rotation-safe scale). */
+function displayScale(vs: Vs): number {
+  return Math.max(0.05, vs.scale);
+}
+
+/** PDF-space page size for an element's page, or null if unknown yet. */
+function editorPageMetaFor(
+  el: PdfEditorElement,
+  metas: EditorPageMeta[] | null,
+): { width: number; height: number } | null {
+  const m = metas?.[el.pageNumber - 1];
+  return m ? { width: m.width, height: m.height } : null;
+}
+
+/**
+ * Auto-size a NEW element while its text is typed: single-line kinds grow in
+ * width to fit the longest line, block kinds grow in height to fit every
+ * wrapped line — so typing can never clip the text or overflow the box. Only
+ * ever grows; the user keeps control with the resize handles.
+ */
+function growRectForText(
+  el: PdfEditorElement,
+  text: string,
+  page: { width: number; height: number },
+): Partial<PdfEditorElement> {
+  const fontSize = finiteOr(el.fontSize, PDF_EDITOR_MIN_FONT_SIZE);
+  const width = finiteOr(el.width, 1);
+  const step = Math.max(1, fontSize * el.lineHeight);
+  const lines = wrapText(text, Math.max(1, width), fontSize, el.font);
+  const rect: { width?: number; height?: number } = {};
+  const neededH = lines.length * step + fontSize * 0.4;
+  if (el.kind === "paragraph" || el.kind === "textbox") {
+    if (neededH > finiteOr(el.height, 0)) {
+      rect.height = Math.min(neededH, Math.max(finiteOr(el.height, 0), page.height));
+    }
+  } else {
+    // Single-line kinds never auto-wrap (elementWrapWidth keeps them on one
+    // line), so the grown width and height come from the actual content, not
+    // the wrap estimate — height only grows for real explicit lines.
+    const explicitLines = text.split("\n");
+    let longest = 0;
+    for (const ln of explicitLines) longest = Math.max(longest, ln.length);
+    const adv = PDF_EDITOR_ADVANCE_EM[el.font] * fontSize;
+    const growW = Math.max(width, longest * adv + fontSize * 0.5);
+    rect.width = Math.min(growW, Math.max(width, page.width - finiteOr(el.x, 0)));
+    const neededH = elementContentHeight(fontSize, el.lineHeight, Math.max(1, explicitLines.length));
+    if (neededH > finiteOr(el.height, 0)) {
+      rect.height = Math.min(neededH, page.height);
+    }
+  }
+  return rect;
+}
+
 function fontStyle(el: PdfEditorElement): CSSProperties {
   const family =
     el.font === "original"
@@ -137,6 +214,23 @@ function fontStyle(el: PdfEditorElement): CSSProperties {
   };
 }
 
+/** Human-readable name of the PDF font an extracted element uses. */
+function detectedFontNameFor(
+  el: PdfEditorElement,
+  pageFontsCache: Map<number, { ordinal: number; base: string; isStandard: boolean }[]>,
+): string {
+  if (el.source !== "extracted") return "";
+  const ordinal = Number((el.sourceFontName ?? "").match(/\d+$/)?.[0] ?? 0);
+  const pageFonts = pageFontsCache.get(el.pageNumber) ?? [];
+  const match = pageFonts.find((f) => f.ordinal === ordinal);
+  return (
+    match?.base?.replace(/^[A-Z]{6}\+/, "") ||
+    el.sourceFontLabel ||
+    el.sourceFontName ||
+    ""
+  );
+}
+
 export default function PdfEditor() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -153,11 +247,14 @@ export default function PdfEditor() {
   const [elements, setElements] = useState<PdfEditorElement[]>([]);
   const elementsRef = useRef<PdfEditorElement[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [showExtracted, setShowExtracted] = useState(true);
   const [draggingOver, setDraggingOver] = useState(false);
   const [stageWidth, setStageWidth] = useState(0);
   const [vs, setVs] = useState<Vs | null>(null);
-  const [pageFontsMap, setPageFontsMap] = useState<Map<number, { ordinal: number; base: string; isStandard: boolean }[]>>(new Map());
+  const [pageFontsMap, setPageFontsMap] = useState<
+    Map<number, { ordinal: number; base: string; isStandard: boolean }[]>
+  >(new Map());
 
   const [past, setPast] = useState<PdfEditorElement[][]>([]);
   const pastRef = useRef<PdfEditorElement[][]>([]);
@@ -174,6 +271,7 @@ export default function PdfEditor() {
   const dragRef = useRef<DragInfo | null>(null);
   const vsRef = useRef<Vs | null>(null);
   const historyGuardRef = useRef(false);
+  const pageMetaRef = useRef<EditorPageMeta[] | null>(null);
   const [pendingAddKind, setPendingAddKind] = useState<PdfEditorElementKind | null>(null);
   const pendingDragRef = useRef<DragInfo | null>(null);
   const wasDraggingRef = useRef(false);
@@ -187,6 +285,10 @@ export default function PdfEditor() {
     setElements(next);
   }, []);
 
+  useEffect(() => {
+    pageMetaRef.current = pageMeta;
+  }, [pageMeta]);
+
   /** Record the current snapshot as a step in the undo stack. */
   const pushHistory = useCallback(() => {
     pastRef.current = [
@@ -198,23 +300,72 @@ export default function PdfEditor() {
     setFuture([]);
   }, []);
 
+  /**
+   * Apply a partial update to one element. Geometry is sanitised at the single
+   * choke point the whole app shares: any value that reaches here is clamped
+   * to a finite, inside-the-page, minimum-sized box, so a bad pointer delta,
+   * stale state or NaN can never make an object disappear or jump off page.
+   * The first touch of extracted text snapshots the original area (coverRect)
+   * so the export can erase exactly what the PDF used to paint there.
+   */
   const patchElement = useCallback(
     (id: string, patch: Partial<PdfEditorElement>) => {
       setElementsBoth(
         elementsRef.current.map((e) => {
           if (e.id !== id) return e;
-          const touched = e.source === "extracted" && !e.removed && !e.coverRect;
+          const pristineExtracted = e.source === "extracted" && !e.removed && !e.coverRect;
           const next = { ...e, ...patch, touched: true } as PdfEditorElement;
-          if (touched) {
+          if (pristineExtracted) {
             next.coverRect = { x: e.x, y: e.y, width: e.width, height: e.height };
           } else if (next.coverRect) {
             next.coverRect = { ...next.coverRect };
+          }
+          const meta = pageMetaRef.current?.[next.pageNumber - 1];
+          if (meta) {
+            next.x = clamp(finiteOr(Number(next.x), 0), 0, meta.width);
+            next.y = clamp(finiteOr(Number(next.y), 0), 0, meta.height);
+            next.width = clamp(
+              finiteOr(Number(next.width), 1),
+              PDF_EDITOR_MIN_ELEMENT_SIZE,
+              meta.width,
+            );
+            next.height = clamp(
+              finiteOr(Number(next.height), 1),
+              PDF_EDITOR_MIN_ELEMENT_SIZE,
+              meta.height,
+            );
           }
           return next;
         }),
       );
     },
     [setElementsBoth],
+  );
+
+  /**
+   * The single place selection changes are made. Whenever the selection moves
+   * to a different element (or is cleared), any active inline editor is
+   * dropped in the same step — there is never more than one editing layer and
+   * no editor outlives a selection change.
+   */
+  const changeSelection = useCallback((id: string | null) => {
+    setEditingId((cur) => (cur && cur !== id ? null : cur));
+    setSelectedId(id);
+  }, []);
+
+  /** Typing handler: sets text and grow-to-fit a newly created element. */
+  const handleTextChange = useCallback(
+    (id: string, text: string) => {
+      const patch: Partial<PdfEditorElement> = { text };
+      const el = elementsRef.current.find((x) => x.id === id);
+      if (!el) { patchElement(id, patch); return; }
+      if (el.source === "new") {
+        const meta = pageMetaRef.current?.[el.pageNumber - 1];
+        if (meta) Object.assign(patch, growRectForText(el, text, meta));
+      }
+      patchElement(id, patch);
+    },
+    [patchElement],
   );
 
   const undo = useCallback(() => {
@@ -264,7 +415,7 @@ export default function PdfEditor() {
     setPageNumber(1);
     setZoom(1);
     setElementsBoth([]);
-    setSelectedId(null);
+    changeSelection(null);
     setShowExtracted(true);
     setVs(null);
     pastRef.current = [];
@@ -273,7 +424,7 @@ export default function PdfEditor() {
     setFuture([]);
     setDraggingOver(false);
     clearPdfResources();
-  }, [clearPdfResources, setElementsBoth]);
+  }, [clearPdfResources, changeSelection, setElementsBoth]);
 
   const pickFile = useCallback(async (f: File | null) => {
     if (!f) return;
@@ -402,7 +553,7 @@ export default function PdfEditor() {
         setPageNumber(1);
         setZoom(1);
         setElementsBoth(extracted);
-        setSelectedId(null);
+        changeSelection(null);
         pastRef.current = [];
         setPast([]);
         futureRef.current = [];
@@ -424,7 +575,7 @@ export default function PdfEditor() {
     return () => {
       cancelled = true;
     };
-  }, [pdfBytes, clearPdfResources, setElementsBoth]);
+  }, [pdfBytes, clearPdfResources, changeSelection, setElementsBoth]);
 
   useEffect(() => {
     if (!pdfBytes || !pageMeta) return;
@@ -490,6 +641,11 @@ export default function PdfEditor() {
         canvas.height = Math.max(1, Math.ceil(cssH * dpr));
         const ctx = canvas.getContext("2d");
         if (!ctx || cancelled) return;
+        // Never composite a new frame over the previous one: without this, re-
+        // renders at the same scale (rapid zoom/page changes) leave the old
+        // page ghosted underneath the new one and the document looks doubled
+        // and layered.
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         const t = viewport.transform as unknown as [
           number,
           number,
@@ -498,19 +654,9 @@ export default function PdfEditor() {
           number,
           number,
         ];
-        const fromPdfPoint = (x: number, y: number): [number, number] => [
-          t[0] * x + t[2] * y + t[4],
-          t[1] * x + t[3] * y + t[5],
-        ];
-        const toPdfPoint = (x: number, y: number): [number, number] => {
-          const det = t[0] * t[3] - t[1] * t[2];
-          if (det === 0) return [0, 0];
-          const dx = x - t[4];
-          const dy = y - t[5];
-          return [(t[3] * dx - t[2] * dy) / det, (-t[1] * dx + t[0] * dy) / det];
-        };
-        vsRef.current = { fromPdfPoint, toPdfPoint };
-        setVs({ fromPdfPoint, toPdfPoint });
+        const vs = buildViewportTransform(t, { width: cssW, height: cssH });
+        vsRef.current = vs;
+        setVs(vs);
         renderTaskRef.current?.cancel();
         const task = page.render({
           canvas,
@@ -526,13 +672,26 @@ export default function PdfEditor() {
     })();
     return () => {
       cancelled = true;
+      // Abort any in-flight paint so a stale partial frame never lingers under
+      // the next page/zoom render (the ghosted "double document" effect).
+      renderTaskRef.current?.cancel();
+      renderTaskRef.current = null;
     };
   }, [pageNumber, zoom, pageMeta, pdfProxy, stageWidth]);
 
   useEffect(() => {
+    // Pointer moves coalesce onto the animation frame: every event derives a
+    // deterministic patch from the drag ORIGIN snapshot (never from itself or
+    // a previous patch), so dropping intermediate frames is always safe and a
+    // long drag applies at most one store write + React render per frame.
+    let rafId = 0;
+    let queuedPatch: (() => void) | null = null;
     const onMove = (e: PointerEvent) => {
-      const mapToPdf = vsRef.current?.toPdfPoint;
-      if (!mapToPdf) return;
+      // Deltas must go through the LINEAR inverse: the full affine inverse
+      // adds the page offset to every pointer delta, which teleported dragged
+      // text to the top of the page and blew resizes up to the full page.
+      const deltaToPdf = vsRef.current?.deltaToPdf;
+      if (!deltaToPdf) return;
       const pending = pendingDragRef.current;
       const info = dragRef.current;
       if (pending && !info) {
@@ -547,43 +706,54 @@ export default function PdfEditor() {
       }
       const active = dragRef.current;
       if (!active) return;
+      // The pointer DELTA is converted through the shared PDF↔display
+      // transform, so a drag of N CSS pixels on screen moves the element a PDF
+      // delta that lands exactly N pixels from where it was at every zoom level.
       const dx = e.clientX - active.startX;
       const dy = e.clientY - active.startY;
-      const [dpX, dpY] = mapToPdf(dx, dy);
+      const [dpX, dpY] = deltaToPdf(dx, dy);
       const o = active.orig;
-      const pm = pageMeta?.[active.orig.pageNumber - 1];
-      const maxX = pm ? pm.width - o.width : Math.max(0, o.x + o.width);
-      const maxY = pm ? pm.height : Math.max(0, o.y);
+
+      let patch: Partial<PdfEditorElement> | null = null;
       if (active.mode === "move") {
-        const nx = clamp(o.x + dpX, 0, maxX);
-        const ny = clamp(o.y + dpY, 0, maxY);
-        if (nx === o.x && ny === o.y) return;
-        patchElement(active.id, { x: nx, y: ny });
-        return;
+        const page = editorPageMetaFor(o, pageMeta);
+        if (!page) return;
+        // Moves BOTH axes via the same shared geometry math as export; clamps
+        // to the page so a drag cannot send an object permanently off-canvas.
+        const r = moveElementRect(o, dpX, dpY, page);
+        if (r.x !== o.x || r.y !== o.y) patch = { x: r.x, y: r.y };
+      } else if (active.mode === "rotate") {
+        const acx = active.centerX ?? 0;
+        const acy = active.centerY ?? 0;
+        const angle = Math.atan2(e.clientY - acy, e.clientX - acx);
+        const deltaDeg = (angle - (active.startAngle ?? 0)) * (180 / Math.PI);
+        const deg = snapDegrees((active.startRotation ?? 0) + deltaDeg);
+        if (deg !== Math.round(o.rotation ?? 0)) patch = { rotation: deg };
+      } else {
+        const c = active.corner ?? "se";
+        const page = editorPageMetaFor(o, pageMeta);
+        if (!page) return;
+        // Resize anchors the edge opposite the handle and clamps growth BEFORE
+        // applying it, so dragging a handle past the page edge can never inflate
+        // the box to the whole page or jump it into a corner.
+        const nr = resizeElementRect(o, dpX, dpY, c, page);
+        if (
+          nr.x !== o.x ||
+          nr.y !== o.y ||
+          nr.width !== o.width ||
+          nr.height !== o.height
+        ) {
+          patch = { x: nr.x, y: nr.y, width: nr.width, height: nr.height };
+        }
       }
-      const c = active.corner ?? "se";
-      let nx = o.x;
-      let ny = o.y;
-      let nw = o.width;
-      let nh = o.height;
-      if (c.includes("e")) nw = Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, o.width + dpX);
-      if (c.includes("w")) {
-        nx = o.x + dpX;
-        nw = Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, o.width - dpX);
-      }
-      if (c.includes("n")) {
-        ny = o.y + dpY;
-        nh = Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, o.height - dpY);
-      }
-      if (c.includes("s")) nh = Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, o.height + dpY);
-      if (pm) {
-        nw = Math.min(nw, pm.width);
-        nh = Math.min(nh, pm.height);
-        nx = clamp(nx, 0, Math.max(0, pm.width - nw));
-        ny = clamp(ny, 0, Math.max(0, pm.height - nh));
-      }
-      if (nx === o.x && ny === o.y && nw === o.width && nh === o.height) return;
-      patchElement(active.id, { x: nx, y: ny, width: nw, height: nh });
+      if (!patch) return;
+      queuedPatch = () => patchElement(active.id, patch!);
+      if (!rafId) rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        const fn = queuedPatch;
+        queuedPatch = null;
+        fn?.();
+      });
     };
     const onUp = () => {
       pendingDragRef.current = null;
@@ -593,6 +763,7 @@ export default function PdfEditor() {
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
@@ -603,14 +774,25 @@ export default function PdfEditor() {
     (
       e: RPointerEvent,
       id: string,
-      mode: "move" | "resize",
+      mode: "move" | "resize" | "rotate",
       corner?: Corner,
     ) => {
       e.preventDefault();
       e.stopPropagation();
       const o = elementsRef.current.find((x) => x.id === id);
       if (!o) return;
-      setSelectedId(id);
+      changeSelection(id);
+      let centerX: number | undefined;
+      let centerY: number | undefined;
+      let startRotation: number | undefined;
+      let startAngle: number | undefined;
+      if (mode === "rotate" && vsRef.current) {
+        const box = displayBoxFor(o, vsRef.current);
+        centerX = box.x + box.width / 2;
+        centerY = box.y + box.height / 2;
+        startRotation = o.rotation ?? 0;
+        startAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+      }
       pendingDragRef.current = {
         id,
         mode,
@@ -618,9 +800,13 @@ export default function PdfEditor() {
         startY: e.clientY,
         corner,
         orig: { ...o, coverRect: o.coverRect ? { ...o.coverRect } : null },
+        centerX,
+        centerY,
+        startRotation,
+        startAngle,
       };
     },
-    [],
+    [changeSelection],
   );
 
   const addElement = useCallback(
@@ -628,13 +814,19 @@ export default function PdfEditor() {
       const meta = pageMeta?.[pageNumber - 1];
       if (!meta) return;
       pushHistory();
-      const el = makeElement(kind, pageNumber, {
-        ...(pos ? { x: pos.x, y: pos.y, width: kind === "paragraph" || kind === "textbox" ? 200 : 160, height: meta.height } : { width: meta.width, height: meta.height }),
-      });
+      const opts: Partial<Pick<PdfEditorElement, "x" | "y" | "width" | "height">> = pos
+        ? { x: pos.x, y: pos.y, width: kind === "paragraph" || kind === "textbox" ? 220 : 180 }
+        : { width: Math.min(meta.width, 240), height: Math.min(meta.height, 260) };
+      if (pos && (kind === "paragraph" || kind === "textbox")) opts.height = 90;
+      const el = makeElement(kind, pageNumber, meta, opts);
       setElementsBoth([...elementsRef.current, el]);
-      setSelectedId(el.id);
+      changeSelection(el.id);
+      // A freshly added text object opens its inline editor directly so the
+      // user can type immediately; afterwards it follows the same
+      // select-then-edit rhythm as existing PDF text.
+      setEditingId(el.id);
     },
-    [pageMeta, pageNumber, pushHistory, setElementsBoth],
+    [pageMeta, pageNumber, changeSelection, pushHistory, setElementsBoth],
   );
 
   const deleteSelected = useCallback(() => {
@@ -651,9 +843,9 @@ export default function PdfEditor() {
       );
     } else {
       setElementsBoth(elementsRef.current.filter((x) => x.id !== el.id));
-      setSelectedId(null);
+      changeSelection(null);
     }
-  }, [selectedId, pushHistory, setElementsBoth]);
+  }, [selectedId, changeSelection, pushHistory, setElementsBoth]);
 
   const handleEditFocus = useCallback(() => {
     if (!historyGuardRef.current) {
@@ -664,6 +856,30 @@ export default function PdfEditor() {
 
   const handleEditBlur = useCallback(() => {
     historyGuardRef.current = false;
+  }, []);
+
+  /**
+   * First click on a text element selects it ONLY — it never enters edit mode
+   * and never paints any text; the canvas keeps being the single visible copy.
+   * The inline editor is a separate state (editingId) so that:
+   *   - first click  → select (nothing rendered beyond the selection box)
+   *   - second click → inline edit (caret inside the one visible copy)
+   * Keep the active editor ≤ 1 at all times: whenever the selection moves away
+   * from an editing element, its transient edit layer is dropped immediately.
+   */
+  const selectOnly = useCallback(
+    (id: string) => {
+      changeSelection(id);
+    },
+    [changeSelection],
+  );
+
+  const startEdit = useCallback((id: string) => {
+    const o = elementsRef.current.find((x) => x.id === id);
+    if (!o || o.removed) return;
+    setEditingId((cur) => (cur && cur !== id ? null : cur));
+    setSelectedId(id);
+    setEditingId(id);
   }, []);
 
   const download = useCallback(async () => {
@@ -703,12 +919,24 @@ export default function PdfEditor() {
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       if (e.key === "Delete" || e.key === "Backspace") {
         if (selectedId) deleteSelected();
-      } else       if (e.key === "Escape") {
+      } else if (e.key === "Escape") {
         if (pendingAddKind) { setPendingAddKind(null); return; }
-        setSelectedId(null);
+        changeSelection(null);
+      } else if (ARROW_MOVE[e.key] && selectedId) {
+        // Precise nudge: 1pt per press, 3pt with ctrl/cmd, 10pt with shift.
+        e.preventDefault();
+        const el = elementsRef.current.find((x) => x.id === selectedId);
+        const page = el ? editorPageMetaFor(el, pageMetaRef.current) : null;
+        if (!el || !page) return;
+        const [dx, dy] = ARROW_MOVE[e.key];
+        const nudge = (e.shiftKey ? 10 : 1) * (e.ctrlKey || e.metaKey ? 3 : 1);
+        const r = moveElementRect(el, dx * nudge, dy * nudge, page);
+        if (r.x === el.x && r.y === el.y) return;
+        pushHistory();
+        patchElement(selectedId, { x: r.x, y: r.y });
       }
     },
-    [selectedId, deleteSelected, pendingAddKind],
+    [selectedId, changeSelection, deleteSelected, pendingAddKind, pushHistory, patchElement],
   );
 
   useEffect(() => {
@@ -721,6 +949,15 @@ export default function PdfEditor() {
   const displayEls = onPageElements.filter((el) => showExtracted || el.source === "new");
   const zoomIn = () => setZoom((z) => Math.min(ZOOM_STEPS[ZOOM_STEPS.length - 1], z + 0.25));
   const zoomOut = () => setZoom((z) => Math.max(ZOOM_STEPS[0], z - 0.25));
+
+  const goToPage = useCallback(
+    (n: number) => {
+      setPageNumber(clamp(n, 1, pageCount));
+      // Navigate cleanly: no stale selection or editing layer from the other page.
+      changeSelection(null);
+    },
+    [pageCount, changeSelection],
+  );
 
   return (
     <div>
@@ -798,7 +1035,7 @@ export default function PdfEditor() {
                 onClick={() => {
                   if (pendingAddKind === kind) { setPendingAddKind(null); return; }
                   setPendingAddKind(kind);
-                  setSelectedId(null);
+                  changeSelection(null);
                 }}
                 disabled={busy}
                 className={`${secondaryBtn} ${pendingAddKind === kind ? "!bg-orange-100 !text-orange-800 !border-orange-400" : ""}`}
@@ -898,7 +1135,7 @@ export default function PdfEditor() {
                     pdf={pdfProxy}
                     index={i + 1}
                     selected={i + 1 === pageNumber}
-                    onSelect={() => setPageNumber(i + 1)}
+                    onSelect={() => goToPage(i + 1)}
                     pageSize={{ width: m.vw, height: m.vh }}
                   />
                 ))}
@@ -913,7 +1150,7 @@ export default function PdfEditor() {
                 <div className="flex items-center gap-1 text-slate-500">
                   <button
                     type="button"
-                    onClick={() => setPageNumber((p) => clamp(p - 1, 1, pageCount))}
+                    onClick={() => goToPage(pageNumber - 1)}
                     disabled={pageNumber <= 1 || busy}
                     className={iconBtn}
                     aria-label="Previous page"
@@ -925,7 +1162,7 @@ export default function PdfEditor() {
                   </span>
                   <button
                     type="button"
-                    onClick={() => setPageNumber((p) => clamp(p + 1, 1, pageCount))}
+                    onClick={() => goToPage(pageNumber + 1)}
                     disabled={pageNumber >= pageCount || busy}
                     className={iconBtn}
                     aria-label="Next page"
@@ -934,6 +1171,16 @@ export default function PdfEditor() {
                   </button>
                 </div>
               </div>
+
+              {selected && !selected.removed && (
+                <ContextToolbar
+                  el={selected}
+                  onPatch={(patch) => {
+                    if (selectedId) patchElement(selectedId, patch);
+                  }}
+                  pageFontsCache={pageFontsMap}
+                />
+              )}
 
               <div
                 ref={stageRef}
@@ -945,7 +1192,7 @@ export default function PdfEditor() {
                   style={pendingAddKind ? { cursor: "crosshair" } : undefined}
                   onMouseDown={(e) => {
                     if (e.target === canvasRef.current || e.target === wrapRef.current) {
-                      setSelectedId(null);
+                      changeSelection(null);
                     }
                   }}
                   onClick={(e) => {
@@ -967,28 +1214,23 @@ export default function PdfEditor() {
                   {vs &&
                     currentMeta &&
                     displayEls.map((el) => (
-                      <ElementOverlay
+                      <EditorObject
                         key={el.id}
                         el={el}
                         selected={el.id === selectedId}
+                        editing={el.id === editingId && selectedId === el.id && !el.removed}
                         vs={vs}
-                        rotation={currentMeta.rotation}
-                        constrainWidth={
-                          currentMeta
-                            ? displayRect(vs, {
-                                x: 0,
-                                y: currentMeta.height,
-                                width: currentMeta.width,
-                                height: currentMeta.height,
-                              }).width
-                            : 0
-                        }
-                        onSelect={() => setSelectedId(el.id)}
+                        pageMeta={currentMeta}
+                        onSelect={() => selectOnly(el.id)}
+                        onStartEdit={() => startEdit(el.id)}
                         onStartMove={(e) => startDrag(e, el.id, "move")}
                         onStartResize={(e, corner) => startDrag(e, el.id, "resize", corner)}
-                        onChangeText={(text) => patchElement(el.id, { text })}
+                        onStartRotate={(e) => startDrag(e, el.id, "rotate")}
+                        onChangeText={(text) => handleTextChange(el.id, text)}
+                        onAutoGrow={patchElement}
                         onEditFocus={handleEditFocus}
                         onEditBlur={handleEditBlur}
+                        onStopEdit={() => setEditingId(null)}
                       />
                     ))}
                 </div>
@@ -1016,8 +1258,9 @@ export default function PdfEditor() {
 
           <p className="text-xs text-slate-500">
             {elements.length} editable item{elements.length === 1 ? "" : "s"} detected or created.
-            Click existing text to edit it in place; everything you don&apos;t touch — layout, images
-            and the rest of the text — is preserved exactly.
+            Click existing text to select it, click it again (or double-click) to edit inline — one
+            visible copy at all times. Everything you don&apos;t touch — layout, images and the rest
+            of the text — is preserved exactly.
           </p>
         </div>
       )}
@@ -1029,184 +1272,264 @@ function cloneEls(list: PdfEditorElement[]): PdfEditorElement[] {
   return list.map((e) => ({ ...e, coverRect: e.coverRect ? { ...e.coverRect } : null }));
 }
 
-function ElementOverlay({
+/**
+ * One editable object on the page. Three strictly-ordered layers (all in
+ * WRAP coordinates — never nested inside another offset box, which previously
+ * double-offset every painted cover):
+ *
+ *   z=1  cover masks   — white rects that hide the original PDF text under a
+ *                        replacement, at the original position and the current
+ *                        replacement area (same rects the export erases).
+ *   z=2  interactive   — the actual element: the live textarea while editing,
+ *                        the replacement preview once touched, nothing at all
+ *                        for pristine extracted text (the canvas stays the one
+ *                        visible copy).
+ *   z=3  selection     — the selection box with adaptive resize handles and the
+ *                        rotation grip for new text.
+ *
+ * Hit areas: covers and the selection box are pointer-events-none; handles are
+ * pointer-events-auto and stop propagation. Dragging the interactive layer
+ * moves BOTH axes; handles resize; only new text rotates.
+ */
+function EditorObject({
   el,
   selected,
+  editing,
   vs,
-  rotation,
-  constrainWidth,
+  pageMeta,
   onSelect,
+  onStartEdit,
   onStartMove,
   onStartResize,
+  onStartRotate,
   onChangeText,
+  onAutoGrow,
   onEditFocus,
   onEditBlur,
+  onStopEdit,
 }: {
   el: PdfEditorElement;
   selected: boolean;
+  editing: boolean;
   vs: Vs;
-  rotation: number;
-  constrainWidth: number;
+  pageMeta: EditorPageMeta;
   onSelect: () => void;
+  onStartEdit: () => void;
   onStartMove: (e: RPointerEvent) => void;
   onStartResize: (e: RPointerEvent, corner: Corner) => void;
+  onStartRotate: (e: RPointerEvent) => void;
   onChangeText: (text: string) => void;
+  onAutoGrow: (id: string, patch: Partial<PdfEditorElement>) => void;
   onEditFocus: () => void;
   onEditBlur: () => void;
+  onStopEdit: () => void;
 }) {
   const box = displayBoxFor(el, vs);
-  const vx = vs.fromPdfPoint(1, 0)[0] - vs.fromPdfPoint(0, 0)[0];
-  const scale = Math.max(0.05, Math.abs(vx) || 0.05);
-  const editing = selected && !el.removed;
+  const scale = displayScale(vs);
   const isExtracted = el.source === "extracted";
   const replacedByUser = isExtracted && (el.touched || el.removed);
-  const showText = el.source === "new" && !el.removed;
-  const showPlaceholder = isExtracted && !el.removed && !editing && !replacedByUser;
-  const rotate = rotation ? `rotate(${rotation}deg)` : undefined;
+  const showReplacementSpan =
+    (isExtracted && replacedByUser && !el.removed) || (el.source === "new" && !el.removed);
+  const showCovers = isExtracted && (editing || replacedByUser);
 
-  /** Display rect of the original PDF text this element is replacing. */
-  const originalBox = isExtracted
-    ? displayRect(vs, el.coverRect ?? { x: el.x, y: el.y, width: el.width, height: el.height })
+  // The visible content box: always the stored box. Single-line kinds keep
+  // their original tight height; multi-line heights are grown by the
+  // auto-grow effect so the frame still covers every wrapped line.
+  const frame = box;
+
+  // White cover masks at WRAP coordinates, matching the erasure the export does.
+  const originalCoverBox = isExtracted
+    ? displayRect(
+        vs,
+        paddedCoverRect(
+          el.coverRect ?? { x: el.x, y: el.y, width: el.width, height: el.height },
+          el.fontSize,
+        ),
+      )
     : null;
-  const movedAway =
-    !!originalBox &&
-    (Math.abs(originalBox.x - box.x) > 0.5 ||
-      Math.abs(originalBox.y - box.y) > 0.5 ||
-      Math.abs(originalBox.width - box.width) > 0.5 ||
-      Math.abs(originalBox.height - box.height) > 0.5);
+  const replaceCoverBox = isExtracted && !el.removed
+    ? displayRect(
+        vs,
+        replacementCoverRect(el, { width: pageMeta.width, height: pageMeta.height }),
+      )
+    : null;
 
+  /**
+   * Element-level rotation — preview only for new text (extracted always
+   * exports unrotated). CSS positive degrees rotate clockwise, which is the
+   * same visual the export produces (the compute side mirrors the sign for
+   * PDF user-space). This is NOT the page's /Rotate value; the display box
+   * already accounts for the page rotation via the viewport transform.
+   */
+  const elementRot = isExtracted ? 0 : normalizeDegrees(el.rotation ?? 0);
+  const rotateTf = elementRot ? `rotate(${elementRot}deg)` : undefined;
+
+  const downWasSelectedRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const measureRef = useRef<HTMLSpanElement>(null);
-  const downBoxRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
-  const [fitWidth, setFitWidth] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!editing) return;
-    let raf = 0;
-    const update = () => {
-      if (!measureRef.current) return;
-      const textW = measureRef.current.getBoundingClientRect().width;
-      const maxW = constrainWidth > 0 ? constrainWidth - box.x - 6 : box.width;
-      setFitWidth(Math.max(box.width, Math.min(textW, Math.max(maxW, box.width))));
-    };
-    raf = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(raf);
-  }, [editing, el.text, el.font, el.fontSize, el.weight, el.italic, scale, constrainWidth, box.x, box.width, isExtracted]);
+  const caretOnEntryRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (editing && textareaRef.current) {
       textareaRef.current.focus();
+      const caret = caretOnEntryRef.current;
+      if (caret != null) {
+        caretOnEntryRef.current = null;
+        requestAnimationFrame(() => {
+          const t = textareaRef.current;
+          if (t) t.setSelectionRange(caret, caret);
+        });
+      }
     }
   }, [editing]);
 
+  // Auto-grow stored width while editing — width measured from the textarea
+  // (fallback font) keeps the preview text on one line. Only grows; never
+  // shrinks; page-capped. New text uses growRectForText in handleTextChange.
+  const lastGrowWRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!editing || el.source === "new") { lastGrowWRef.current = null; return; }
+    const t = textareaRef.current;
+    if (!t) return;
+    const sw = t.scrollWidth;
+    const cw = t.clientWidth;
+    if (sw <= cw + 1) return;
+    if (lastGrowWRef.current != null && Math.abs(lastGrowWRef.current - sw) < 2) return;
+    lastGrowWRef.current = sw;
+    const wantW = Math.min(sw / scale, Math.max(el.width, pageMeta.width - el.x));
+    if (wantW > el.width + 0.5) {
+      onAutoGrow(el.id, { width: Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, wantW) });
+    }
+  }, [editing, el, pageMeta, scale, onAutoGrow]);
+
+  // Height auto-grow for extracted text: grow to match the export line count
+  // when the text wraps (e.g. user added a newline or typed past the box
+  // width). Height is deterministic from the compute layer, not DOM-measured.
+  useEffect(() => {
+    if (!editing || el.source === "new") return;
+    const contentLines = replacementLines(el).length;
+    if (contentLines <= 1) return;
+    const wantH = elementContentHeight(el.fontSize, el.lineHeight, contentLines);
+    if (wantH > el.height + 0.5) {
+      onAutoGrow(el.id, { height: wantH });
+    }
+  }, [editing, el, onAutoGrow]);
+
+  // Single content lines use tight line-height (1) so the box stays exactly
+  // fontSize tall; multi-line content uses the PDF-derived line-height.
+  const innerLineHeight = replacementLines(el).length === 1 ? 1 : el.lineHeight;
   const inner: CSSProperties = {
     ...fontStyle(el),
     fontSize: el.fontSize * scale,
-    lineHeight: el.lineHeight,
+    lineHeight: innerLineHeight,
     color: el.color,
     textAlign: el.align,
     whiteSpace: "pre-wrap",
   };
 
-  const mark = (rect: { x: number; y: number; width: number; height: number } | null) =>
-    rect ? (
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bg-white"
-        style={{ left: rect.x, top: rect.y, width: rect.width, height: rect.height }}
-      />
-    ) : null;
-
-  const editedWidth = (): number | undefined =>
-    editing && isExtracted ? (fitWidth ?? box.width) : undefined;
-
   return (
-    <div
-      role="button"
-      tabIndex={selected ? 0 : -1}
-      aria-label={
-        el.source === "extracted"
-          ? el.removed
-            ? "Removed existing text"
-            : "Existing text, click to edit in place"
-          : `Text element: ${el.text.slice(0, 40)}`
-      }
-      onPointerDown={(e) => {
-        downBoxRef.current = { ...box };
-        onStartMove(e);
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (
-          editing &&
-          isExtracted &&
-          textareaRef.current &&
-          e.target !== textareaRef.current &&
-          !(e.target as HTMLElement)?.closest?.("textarea")
-        ) {
-          const before = downBoxRef.current;
-          const same =
-            Math.abs(before.x - box.x) < 0.5 &&
-            Math.abs(before.y - box.y) < 0.5 &&
-            Math.abs(before.width - box.width) < 0.5 &&
-            Math.abs(before.height - box.height) < 0.5;
-          if (same) {
-            const len = textareaRef.current.value.length;
-            if (len > 0) {
-              const rect = textareaRef.current.getBoundingClientRect();
-              const frac = clamp((e.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
-              textareaRef.current.setSelectionRange(
-                Math.round(frac * len),
-                Math.round(frac * len),
-              );
-            }
+    <>
+      {/* z=1 covers (canvas erasure) */}
+      {showCovers && originalCoverBox && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bg-white"
+          style={{
+            left: originalCoverBox.x,
+            top: originalCoverBox.y,
+            width: originalCoverBox.width,
+            height: originalCoverBox.height,
+            zIndex: 1,
+          }}
+        />
+      )}
+      {showCovers && replaceCoverBox && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bg-white"
+          style={{
+            left: replaceCoverBox.x,
+            top: replaceCoverBox.y,
+            width: replaceCoverBox.width,
+            height: replaceCoverBox.height,
+            zIndex: 1,
+          }}
+        />
+      )}
+
+      {/* z=2 interactive layer */}
+      <div
+        role="button"
+        tabIndex={selected ? 0 : -1}
+        aria-label={
+          el.source === "extracted"
+            ? el.removed
+              ? "Removed existing text"
+              : "Existing text. First click selects, second click or double-click edits it in place"
+            : `Text element: ${el.text.slice(0, 40)}`
+        }
+        onPointerDown={(e) => {
+          downWasSelectedRef.current = selected;
+          onStartMove(e);
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          // Grabbing a resize handle / rotation grip is a gesture, not a
+          // select-or-edit click — never let it toggle deselection or editing.
+          if ((e.target as HTMLElement)?.closest?.("[data-handle],[data-rotate]")) return;
+          if (editing) {
+            // Inside the textarea: let the native caret handle the click.
+            const insideTextarea =
+              e.target === textareaRef.current ||
+              !!(e.target as HTMLElement)?.closest?.("textarea");
+            if (insideTextarea) return;
             return;
           }
-        }
-        onSelect();
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
+          if (downWasSelectedRef.current && !el.removed) {
+            // SECOND click on the already-selected text: enter inline edit mode
+            // with the caret at the clicked position. Nothing is duplicated —
+            // the single editable representation replaces the exact original.
+            const rect = e.currentTarget.getBoundingClientRect();
+            const frac = clamp((e.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+            caretOnEntryRef.current = Math.round(frac * el.text.length);
+            onStartEdit();
+          } else {
+            // FIRST click selects ONLY; the canvas stays the one visible copy.
+            onSelect();
+          }
+        }}
+        onDoubleClick={(e) => {
+          if ((e.target as HTMLElement)?.closest?.("[data-handle],[data-rotate]")) return;
+          const insideTextarea =
+            e.target === textareaRef.current ||
+            !!(e.target as HTMLElement)?.closest?.("textarea");
+          if (insideTextarea) return;
           e.stopPropagation();
-          onSelect();
-        }
-      }}
-      className={`absolute touch-none select-none rounded-sm outline-none ${
-        el.removed
-          ? "border border-dashed border-red-400"
-          : selected && isExtracted
-            ? "border border-dashed border-slate-400/70"
-            : selected
-              ? "border border-blue-500"
-              : isExtracted
-                ? "border border-dashed border-transparent hover:border-orange-400"
-                : "border border-transparent hover:border-orange-300"
-      }`}
-      style={{ left: box.x, top: box.y, width: box.width, height: box.height }}
-    >
-      {/* Hide exactly the original PDF text this element replaces — same rect the export erases. */}
-      {editing && originalBox && mark(originalBox)}
-      {editing && originalBox && movedAway && mark(box)}
-
-      {editing ? (
-        <>
-          {/* Invisible ruler: gives the textarea its true, PDF-proportional text width. */}
-          <span
-            ref={measureRef}
-            aria-hidden="true"
-            className="pointer-events-none invisible absolute top-0 left-0"
-            style={{ ...inner, whiteSpace: "pre", width: "max-content" }}
-          >
-            {el.text || " "}
-          </span>
+          if (!editing) onStartEdit();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            e.stopPropagation();
+            if (selected) onStartEdit();
+            else onSelect();
+          }
+        }}
+        className={`absolute touch-none select-none rounded-sm outline-none ${
+          el.removed ? "border border-dashed border-red-400" : "border border-transparent"
+        } ${selected ? "" : "hover:border-orange-300"}`}
+        style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height, zIndex: 2 }}
+      >
+        {editing ? (
           <textarea
             ref={textareaRef}
             value={el.text}
-            placeholder={el.source === "extracted" ? "Type replacement text" : undefined}
+            placeholder={el.source === "extracted" ? "Type replacement text" : "Type text…"}
             onChange={(e) => onChangeText(e.target.value)}
             onFocus={onEditFocus}
-            onBlur={onEditBlur}
+            onBlur={() => {
+              onEditBlur();
+              onStopEdit();
+            }}
             onPointerDown={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
               if (e.key === "Escape") {
@@ -1214,113 +1537,314 @@ function ElementOverlay({
                 e.currentTarget.blur();
               }
             }}
-            className={`resize-none select-text focus:outline-none ${
-              isExtracted ? "bg-white text-slate-900" : "bg-transparent"
-            }`}
+            className="resize-none select-text overflow-y-auto overflow-x-hidden bg-transparent focus:outline-none"
             style={{
               ...inner,
-              width: editedWidth() ?? "100%",
-              height: Math.max(box.height, el.fontSize * scale * el.lineHeight),
+              width: "100%",
+              height: "100%",
               padding: 0,
-              overflowY: "hidden",
               verticalAlign: "top",
               caretColor: "#f97316",
+              transform: rotateTf,
             }}
           />
-        </>
-      ) : replacedByUser ? (
-        <>
-          {mark(originalBox)}
-          {movedAway && mark(box)}
-          {isExtracted && (
-            <span
-              className={`block h-full overflow-hidden ${
-                el.removed ? "text-[10px] leading-tight text-red-400" : "bg-white text-slate-900"
-              }`}
-              style={{
-                ...inner,
-                whiteSpace: "pre",
-                overflow: "visible",
-                ...(el.removed ? { fontSize: 10, color: "#f87171" } : {}),
-              }}
-            >
-              {el.removed ? "removed" : el.text}
-            </span>
-          )}
-        </>
-      ) : showText ? (
-        <span className="block h-full w-full overflow-hidden" style={{ ...inner, transform: rotate }}>
-          {el.text}
-        </span>
-      ) : showPlaceholder ? (
-        <span
-          className="block h-full w-full text-[10px] leading-tight text-slate-400"
-          style={{ transform: rotate }}
+        ) : showReplacementSpan ? (
+          <span
+            className="block h-full w-full overflow-hidden"
+            style={{
+              ...inner,
+              whiteSpace: innerLineHeight === 1 ? "nowrap" : "pre-wrap",
+              opacity: el.opacity ?? 1,
+              transform: rotateTf,
+            }}
+          >
+            {el.text}
+            {el.source === "new" && el.text.trim() === "" && (
+              <span className="italic text-slate-300">Type text…</span>
+            )}
+          </span>
+        ) : el.removed ? (
+          <span className="flex h-full w-full items-center text-[10px] leading-tight text-red-400">
+            removed
+          </span>
+        ) : null}
+      </div>
+
+      {/* z=3 selection frame + handles + rotate grip */}
+      {selected && !el.removed && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute rounded-[3px] border border-blue-500/80"
+          style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height, zIndex: 3 }}
         >
-          …
-        </span>
-      ) : null}
-      {selected && !el.removed && !isExtracted && (
-        <>
-          <Handle pos="nw" onPointerDown={(e) => onStartResize(e, "nw")} />
-          <Handle pos="ne" onPointerDown={(e) => onStartResize(e, "ne")} />
-          <Handle pos="sw" onPointerDown={(e) => onStartResize(e, "sw")} />
-          <Handle pos="se" onPointerDown={(e) => onStartResize(e, "se")} />
-          <Handle pos="n" onPointerDown={(e) => onStartResize(e, "n")} />
-          <Handle pos="s" onPointerDown={(e) => onStartResize(e, "s")} />
-          <Handle pos="w" onPointerDown={(e) => onStartResize(e, "w")} />
-          <Handle pos="e" onPointerDown={(e) => onStartResize(e, "e")} />
-        </>
+          {(() => {
+            const small = frame.width < 56 || frame.height < 44;
+            const sideLen = clamp(Math.round((Math.max(frame.width, frame.height) * 0.4) / 2) * 2, 28, 96);
+            const s = small ? 11 : 13;
+            const handles: {
+              corner: Corner;
+              left: number;
+              top: number;
+              w: number;
+              h: number;
+            }[] = [
+              { corner: "nw", left: frame.x - s / 2, top: frame.y - s / 2, w: s, h: s },
+              { corner: "ne", left: frame.x + frame.width - s / 2, top: frame.y - s / 2, w: s, h: s },
+              { corner: "sw", left: frame.x - s / 2, top: frame.y + frame.height - s / 2, w: s, h: s },
+              { corner: "se", left: frame.x + frame.width - s / 2, top: frame.y + frame.height - s / 2, w: s, h: s },
+              { corner: "n", left: frame.x + frame.width / 2 - sideLen / 2, top: frame.y - 2, w: sideLen, h: 4 },
+              { corner: "s", left: frame.x + frame.width / 2 - sideLen / 2, top: frame.y + frame.height - 2, w: sideLen, h: 4 },
+              { corner: "e", left: frame.x + frame.width - 2, top: frame.y + frame.height / 2 - sideLen / 2, w: 4, h: sideLen },
+              { corner: "w", left: frame.x - 2, top: frame.y + frame.height / 2 - sideLen / 2, w: 4, h: sideLen },
+            ];
+            const shown = small
+              ? handles.filter((h) => h.corner.length === 2 || h.corner === "e" || h.corner === "w")
+              : handles;
+            return shown.map((h) => (
+              <Handle
+                key={h.corner}
+                corner={h.corner}
+                left={h.left}
+                top={h.top}
+                width={h.w}
+                height={h.h}
+                small={h.corner.length === 2}
+                onPointerDown={(e) => onStartResize(e, h.corner)}
+              />
+            ));
+          })()}
+        </div>
       )}
       {selected && !el.removed && !isExtracted && (
         <span
           aria-hidden="true"
-          className="absolute flex items-center justify-center"
-          style={{ left: box.width / 2 - 7, top: -28, width: 14, height: 14, cursor: "grab" }}
+          data-rotate="1"
+          className="absolute flex items-center justify-center rounded-full border border-orange-500 bg-white shadow"
+          style={{
+            left: frame.x + frame.width / 2 - 9,
+            top: Math.max(frame.y - 32, -4),
+            width: 18,
+            height: 18,
+            cursor: "grab",
+            zIndex: 4,
+          }}
           onPointerDown={(e) => {
             e.stopPropagation();
-            onStartResize(e, "nw");
+            onStartRotate(e);
           }}
         >
-          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 text-slate-400">
+          <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 text-slate-500">
             <path d="M8 2v12M4 6l4-4 4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
       )}
-    </div>
+      {selected && el.removed && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute rounded-sm border border-dashed border-red-400"
+          style={{ left: frame.x, top: frame.y, width: frame.width, height: frame.height, zIndex: 3 }}
+        />
+      )}
+    </>
   );
 }
 
-function Handle({ pos, onPointerDown }: { pos: Corner; onPointerDown: (e: RPointerEvent) => void }) {
-  const isSide = pos === "n" || pos === "s" || pos === "e" || pos === "w";
-  const style: CSSProperties = {
-    position: "absolute",
-    width: isSide ? 16 : 8,
-    height: isSide ? 8 : 16,
-    background: isSide ? "transparent" : "white",
-    border: isSide ? "none" : "1.5px solid #f97316",
-    borderRadius: isSide ? 2 : 9999,
-    cursor: pos === "nw" || pos === "se" ? "nwse-resize"
-      : pos === "ne" || pos === "sw" ? "nesw-resize"
-      : pos === "n" || pos === "s" ? "ns-resize"
-      : "ew-resize",
-    ...(isSide ? { background: "rgba(249,115,22,0.35)" } : {}),
-  };
-  if (pos.includes("n")) style.top = isSide ? -4 : -4;
-  else if (pos.includes("s")) style.bottom = isSide ? -4 : -4;
-  else { style.top = "50%"; style.transform = "translateY(-50%)"; }
-  if (pos.includes("w")) style.left = isSide ? -8 : -4;
-  else if (pos.includes("e")) style.right = isSide ? -8 : -4;
-  else if (isSide) { style.left = "50%"; style.transform = (style.transform ?? "") + " translateX(-50%)"; }
+function Handle({
+  corner,
+  left,
+  top,
+  width,
+  height,
+  small,
+  onPointerDown,
+}: {
+  corner: Corner;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  small: boolean;
+  onPointerDown: (e: RPointerEvent) => void;
+}) {
+  const cursor =
+    corner === "nw" || corner === "se"
+      ? "nwse-resize"
+      : corner === "ne" || corner === "sw"
+        ? "nesw-resize"
+        : corner === "n" || corner === "s"
+          ? "ns-resize"
+          : "ew-resize";
   return (
     <span
       aria-hidden="true"
+      data-handle="1"
+      className="absolute"
       onPointerDown={(e) => {
         e.stopPropagation();
         onPointerDown(e);
       }}
-      style={style}
+      style={{
+        left,
+        top,
+        width,
+        height,
+        cursor,
+        background: small ? "#ffffff" : "rgba(249,115,22,0.85)",
+        border: small ? "1.5px solid #f97316" : "none",
+        borderRadius: small ? 9999 : 2,
+        zIndex: 4,
+        pointerEvents: "auto",
+      }}
     />
+  );
+}
+
+/** Floating format bar shown for the selected object. */
+function ContextToolbar({
+  el,
+  onPatch,
+  pageFontsCache,
+}: {
+  el: PdfEditorElement;
+  onPatch: (patch: Partial<PdfEditorElement>) => void;
+  pageFontsCache: Map<number, { ordinal: number; base: string; isStandard: boolean }[]>;
+}) {
+  const detected = detectedFontNameFor(el, pageFontsCache);
+  const fonts = (
+    Object.keys(PDF_EDITOR_FONT_LABELS) as PdfEditorFontId[]
+  ).filter((f) => el.source === "extracted" || f !== "original");
+  const aligns: PdfEditorAlign[] = ["left", "center", "right"];
+  return (
+    <div className="sticky top-0 z-20 mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 shadow-sm backdrop-blur">
+      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-500">
+        {el.removed ? "Removed" : el.kind}
+      </span>
+      {el.source === "extracted" && detected && (
+        <span className="text-xs text-emerald-700" title={`Detected from the PDF: ${detected}`}>
+          {detected}
+        </span>
+      )}
+      <label className={`${labelCls} w-28`} htmlFor="ctx-font">
+        Font
+        <select
+          id="ctx-font"
+          value={el.font}
+          onChange={(e) => onPatch({ font: e.target.value as PdfEditorFontId })}
+          className={inputCls}
+        >
+          {fonts.map((f) => (
+            <option key={f} value={f}>
+              {f === "original" && detected
+                ? detected
+                : PDF_EDITOR_FONT_LABELS[f]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className={`${labelCls} w-16`} htmlFor="ctx-size">
+        Size
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() =>
+              onPatch({
+                fontSize: clamp(Math.round(el.fontSize) - 1, PDF_EDITOR_MIN_FONT_SIZE, PDF_EDITOR_MAX_FONT_SIZE),
+              })
+            }
+            className="flex h-7 w-7 items-center justify-center rounded border border-slate-300 text-sm text-slate-600 hover:bg-slate-50"
+          >
+            −
+          </button>
+          <input
+            id="ctx-size"
+            type="number"
+            min={PDF_EDITOR_MIN_FONT_SIZE}
+            max={PDF_EDITOR_MAX_FONT_SIZE}
+            value={Math.round(el.fontSize)}
+            onChange={(e) =>
+              onPatch({
+                fontSize: clamp(Number(e.target.value) || PDF_EDITOR_MIN_FONT_SIZE, PDF_EDITOR_MIN_FONT_SIZE, PDF_EDITOR_MAX_FONT_SIZE),
+              })
+            }
+            className={`${inputCls} w-14 text-center`}
+          />
+          <button
+            type="button"
+            onClick={() =>
+              onPatch({
+                fontSize: clamp(Math.round(el.fontSize) + 1, PDF_EDITOR_MIN_FONT_SIZE, PDF_EDITOR_MAX_FONT_SIZE),
+              })
+            }
+            className="flex h-7 w-7 items-center justify-center rounded border border-slate-300 text-sm text-slate-600 hover:bg-slate-50"
+          >
+            +
+          </button>
+        </div>
+      </label>
+      <span className="mx-1 flex items-center gap-1">
+        {(["bold", "italic", "underline"] as const).map((prop) => (
+          <button
+            key={prop}
+            type="button"
+            onClick={() => {
+              if (prop === "bold") onPatch({ weight: (el.weight === "bold" ? "normal" : "bold") as PdfEditorWeight });
+              else if (prop === "italic") onPatch({ italic: !el.italic });
+              else onPatch({ underline: !el.underline });
+            }}
+            title={prop}
+            className={`rounded-md border px-2 py-1 text-xs font-bold ${
+              (prop === "bold" && el.weight === "bold") || (prop === "italic" && el.italic) || (prop === "underline" && el.underline)
+                ? "border-orange-400 bg-orange-50 text-orange-700"
+                : "border-slate-300 text-slate-500 hover:bg-slate-50"
+            }`}
+          >
+            {prop === "bold" ? "B" : prop === "italic" ? "I" : "U"}
+          </button>
+        ))}
+      </span>
+      <span className="mx-1 flex items-center gap-1">
+        {aligns.map((a) => (
+          <button
+            key={a}
+            type="button"
+            onClick={() => onPatch({ align: a })}
+            title={a}
+            className={`rounded-md border px-2 py-1 text-xs ${
+              el.align === a
+                ? "border-orange-400 bg-orange-50 text-orange-700"
+                : "border-slate-300 text-slate-500 hover:bg-slate-50"
+            }`}
+          >
+            {a === "left" ? "◧" : a === "center" ? "◫" : "◨"}
+          </button>
+        ))}
+      </span>
+      <span className="mx-1 flex items-center gap-1">
+        <input
+          type="color"
+          value={el.color}
+          onChange={(e) => onPatch({ color: e.target.value })}
+          className="h-7 w-7 cursor-pointer rounded border border-slate-300 bg-white p-0.5"
+          aria-label="Text color"
+          title="Text color"
+        />
+        {PDF_EDITOR_COLORS.map((c) => (
+          <button
+            key={c}
+            type="button"
+            onClick={() => onPatch({ color: c })}
+            className={`h-4 w-4 rounded-full border ${
+              el.color.toLowerCase() === c
+                ? "border-orange-500 ring-1 ring-orange-300"
+                : "border-slate-200"
+            }`}
+            style={{ background: c }}
+            aria-label={`Use color ${c}`}
+            title={`Text color ${c}`}
+          />
+        ))}
+      </span>
+    </div>
   );
 }
 
@@ -1344,14 +1868,7 @@ function Inspector({
   ) as PdfEditorFontId[];
   const kinds: PdfEditorElementKind[] = ["text", "heading", "tagline", "paragraph", "textbox"];
   const aligns: PdfEditorAlign[] = ["left", "center", "right"];
-  const detectedFontName = el.source === "extracted"
-    ? (() => {
-        const ordinal = Number((el.sourceFontName ?? "").match(/\d+$/)?.[0] ?? 0);
-        const pageFonts = pageFontsCache.get(el.pageNumber) ?? [];
-        const match = pageFonts.find((f) => f.ordinal === ordinal);
-        return match?.base?.replace(/^[A-Z]{6}\+/, "") || el.sourceFontLabel || el.sourceFontName || "";
-      })()
-    : "";
+  const detectedFontName = detectedFontNameFor(el, pageFontsCache);
   return (
     <div className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -1536,6 +2053,22 @@ function Inspector({
                 />
               </label>
             </div>
+            {el.source === "new" && (
+              <label className={`${labelCls} mt-2`}>
+                Rotation °
+                <input
+                  type="number"
+                  min={0}
+                  max={359}
+                  step={1}
+                  value={Math.round(normalizeDegrees(el.rotation ?? 0))}
+                  onChange={(e) =>
+                    onPatch({ rotation: normalizeDegrees(Number(e.target.value) || 0) })
+                  }
+                  className={inputCls}
+                />
+              </label>
+            )}
           </div>
 
           <label className={`${labelCls} mt-3`}>
@@ -1550,7 +2083,8 @@ function Inspector({
           </label>
 
           <p className="mt-3 text-xs text-slate-400">
-            Drag to move · Handles to resize · Delete key or button to remove. PDFs are static — animation and text effects cannot be exported.
+            Drag to move · Handles to resize · pull the knob above new text to rotate · Delete key or
+            button to remove. PDFs are static — animation and text effects cannot be exported.
           </p>
         </>
       )}

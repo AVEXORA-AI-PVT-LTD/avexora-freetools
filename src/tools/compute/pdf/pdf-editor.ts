@@ -1,4 +1,4 @@
-import { PDFString } from "pdf-lib";
+import { PDFString, popGraphicsState, pushGraphicsState, rotateDegrees, translate } from "pdf-lib";
 /**
  * Compute helpers for the PDF Editor tool.
  *
@@ -44,6 +44,7 @@ export type PdfEditorElementKind =
   | "textbox";
 
 export type PdfEditorAlign = "left" | "center" | "right";
+export type Corner = "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w";
 /**
  * `original` is a special id used only by extracted elements: it means "reuse
  * the typography detected from the PDF itself" (original embedded font program
@@ -167,6 +168,294 @@ export function createElementId(): string {
 
 export function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
+}
+
+/** Wrap any angle into [0, 360) degrees. */
+export function normalizeDegrees(deg: number): number {
+  const v = ((deg % 360) + 360) % 360;
+  return Number.isFinite(v) ? v : 0;
+}
+
+/**
+ * Snap a normalized angle to the nearest cardinal (0/90/180/270) when within
+ * `snap` degrees of it. Used by the rotation handle so straight alignments are
+ * easy to hit; returns a whole degree value in [0, 360).
+ */
+export function snapDegrees(deg: number, snap = 3): number {
+  const n = normalizeDegrees(deg);
+  for (const cardinal of [0, 90, 180, 270, 360]) {
+    if (Math.abs(n - cardinal) <= snap) return cardinal % 360;
+  }
+  return Math.round(n);
+}
+
+/**
+ * Glyph-safe padding around a text bounding box (PDF points, proportional to
+ * font size). A bounding box spans roughly the em box; real glyph ink hangs
+ * outside it — ascenders rise above cap height, descenders drop below the
+ * baseline, italic arms overhang the advance width. A white cover drawn at the
+ * exact box therefore leaves slivers of the original text visible, which reads
+ * as a duplicated/overlapping copy. Both the export and the on-canvas overlay
+ * must erase the same padded area so preview matches the written PDF.
+ */
+export function coverPad(fontSize: number): { x: number; top: number; bottom: number } {
+  return { x: fontSize * 0.06, top: fontSize * 0.18, bottom: fontSize * 0.08 };
+}
+
+/** Expand a text rect (PDF points, y = top edge) so a cover fully hides its glyph ink. */
+export function paddedCoverRect(
+  rect: { x: number; y: number; width: number; height: number },
+  fontSize: number,
+): { x: number; y: number; width: number; height: number } {
+  const p = coverPad(fontSize);
+  return {
+    x: rect.x - p.x,
+    y: rect.y + p.top,
+    width: rect.width + p.x * 2,
+    height: rect.height + p.top + p.bottom,
+  };
+}
+
+/** Geometry-safe: collapse NaN / Infinity / undefined to a sane fallback. */
+export function finiteOr(v: number, fallback = 0): number {
+  return Number.isFinite(v) ? v : fallback;
+}
+
+export interface PageRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Single, deterministic coordinate transform between PDF user-space and browser
+ * CSS pixels. Built from the 6-element affine matrix produced by pdf.js's
+ * `page.getViewport({ scale }).transform`. Provides the inverse mapping needed
+ * by the pointer-drag handlers, plus the precomputed `scale` (CSS px per PDF
+ * point along the displayed x-axis) so the UI never needs to derive it from
+ * sample points.
+ */
+export interface PdfViewportTransform {
+  fromPdfPoint(x: number, y: number): [number, number];
+  toPdfPoint(x: number, y: number): [number, number];
+  /**
+   * Convert a DISPLAY-PACE DELTA (e.g. a pointer drag of N CSS pixels) into the
+   * equivalent PDF-space delta. This is the linear part of `toPdfPoint` ONLY —
+   * a full affine inverse would add the viewport's fixed offset to every drag
+   * (an extra `pageHeight` in PDF points for portrait pages), which made text
+   * jump to the top and blew resizes up to the full page.
+   */
+  deltaToPdf(dx: number, dy: number): [number, number];
+  scale: number;
+  cssWidth: number;
+  cssHeight: number;
+}
+
+export function buildViewportTransform(
+  transform: readonly [number, number, number, number, number, number],
+  css: { width: number; height: number },
+): PdfViewportTransform {
+  const [a, b, c, d, e, f] = transform;
+  const det = a * d - b * c;
+  const invertible = Number.isFinite(det) && det !== 0;
+  return {
+    fromPdfPoint: (x: number, y: number): [number, number] => [
+      a * x + c * y + e,
+      b * x + d * y + f,
+    ],
+    toPdfPoint: (x: number, y: number): [number, number] => {
+      if (!invertible) return [0, 0];
+      const dx = x - e;
+      const dy = y - f;
+      return [(d * dx - c * dy) / det, (-b * dx + a * dy) / det];
+    },
+    deltaToPdf: (dx: number, dy: number): [number, number] => {
+      if (!invertible) return [0, 0];
+      return [(d * dx - c * dy) / det, (-b * dx + a * dy) / det];
+    },
+    scale: Math.max(1e-6, Math.hypot(a, b)),
+    cssWidth: Math.max(1, css.width),
+    cssHeight: Math.max(1, css.height),
+  };
+}
+
+/**
+ * Validate and clamp a rect so it is always finite, never has negative or
+ * zero-sized dimensions, and stays inside the page. Used by every geometry
+ * write so a bad pointer delta, stale state or NaN can never make an object
+ * disappear or jump off the page.
+ */
+export function sanitizeRect(
+  rect: PageRect,
+  page: { width: number; height: number },
+  minSize = PDF_EDITOR_MIN_ELEMENT_SIZE,
+): PageRect {
+  const width = clamp(
+    finiteOr(rect.width, minSize),
+    minSize,
+    Math.max(minSize, page.width),
+  );
+  const height = clamp(
+    finiteOr(rect.height, minSize),
+    minSize,
+    Math.max(minSize, page.height),
+  );
+  const x = clamp(finiteOr(rect.x, 0), 0, Math.max(0, page.width - width));
+  const y = clamp(finiteOr(rect.y, 0), 0, Math.max(0, page.height));
+  return { x, y, width, height };
+}
+
+/**
+ * Move a rect by a PDF-space delta, keeping the whole box inside the page and
+ * both X and Y updated. `dy` follows PDF orientation (y grows upward), so the
+ * two axes are handled symmetrically.
+ */
+export function moveElementRect(
+  orig: PageRect,
+  dx: number,
+  dy: number,
+  page: { width: number; height: number },
+  minSize = PDF_EDITOR_MIN_ELEMENT_SIZE,
+): PageRect {
+  const width = clamp(finiteOr(orig.width, minSize), minSize, page.width);
+  const height = clamp(finiteOr(orig.height, minSize), minSize, page.height);
+  const x = clamp(
+    finiteOr(orig.x, 0) + finiteOr(dx, 0),
+    0,
+    Math.max(0, page.width - width),
+  );
+  const y = clamp(finiteOr(orig.y, 0) + finiteOr(dy, 0), 0, page.height);
+  return { x, y, width, height };
+}
+
+/**
+ * Resize a rect by a PDF-space pointer delta, anchored on the edge opposite
+ * the grabbed handle. Growth is constrained BEFORE it is applied so dragging
+ * a handle past the page edge can never:
+ *   - inflate the box to the whole page and pin it in a corner,
+ *   - pull the anchored (opposite) edge outside the page,
+ *   - produce a negative or zero-sized box,
+ *   - change X/Y unexpectedly when only a size handle is grabbed.
+ */
+export function resizeElementRect(
+  orig: PageRect,
+  dx: number,
+  dy: number,
+  corner: Corner,
+  page: { width: number; height: number },
+  minSize = PDF_EDITOR_MIN_ELEMENT_SIZE,
+): PageRect {
+  let x = finiteOr(orig.x, 0);
+  let y = finiteOr(orig.y, 0);
+  let width = clamp(finiteOr(orig.width, minSize), minSize, page.width);
+  let height = clamp(finiteOr(orig.height, minSize), minSize, page.height);
+
+  if (corner.includes("e")) {
+    width = clamp(width + finiteOr(dx, 0), minSize, Math.max(minSize, page.width - x));
+  } else if (corner.includes("w")) {
+    const nx = clamp(x + finiteOr(dx, 0), 0, Math.max(0, x + width - minSize));
+    width = Math.max(minSize, x + width - nx);
+    x = nx;
+  }
+
+  if (corner.includes("s")) {
+    // Bottom edge grows downward (PDF y decreases); it can never pass the page
+    // bottom, so the box can never grow taller than its top edge.
+    height = clamp(height - finiteOr(dy, 0), minSize, Math.max(minSize, y));
+  } else if (corner.includes("n")) {
+    // Dragging the top edge upward (positive PDF y) stretches the box; the
+    // bottom edge (y - height) stays anchored and in-page. The top edge is
+    // clamped between the bottom edge (+ the minimum size) and the page top,
+    // so it can never shrink the box below the minimum or grow it past the
+    // page.
+    const bottom = y - height;
+    const ny = clamp(y + finiteOr(dy, 0), bottom + minSize, page.height);
+    height = Math.max(minSize, ny - bottom);
+    y = ny;
+  }
+
+  return sanitizeRect({ x, y, width, height }, page, minSize);
+}
+
+/** The wrapped lines an element's text occupies at its current box width. */
+export function replacementLines(
+  el: PdfEditorElement,
+  page?: { width: number; height: number },
+): string[] {
+  if (el.removed || el.text.trim() === "") return [""];
+  const maxWidth = Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE * 2, elementWrapWidth(el, page));
+  return wrapText(el.text, maxWidth, el.fontSize, el.font);
+}
+
+/**
+ * PDF-space height of the actual rendered glyph content — the tight box
+ * covering the first baseline through the last baseline plus one line's
+ * ascender — NOT the full leading box.  For a single line this is exactly
+ * `fontSize`; for n > 1 lines it is `(n − 1) × fontSize × lineHeight + fontSize`.
+ * Used by the UI frame (so selection handles hug the text), the editor
+ * auto-grow, and the geometry tests.
+ */
+export function elementContentHeight(
+  fontSize: number,
+  lineHeight: number,
+  lineCount: number,
+): number {
+  const single = Math.max(0, fontSize);
+  const n = Math.max(1, Math.floor(lineCount));
+  return n === 1 ? single : (n - 1) * fontSize * lineHeight + single;
+}
+
+/**
+ * Effective wrap width for preview/export.
+ *
+ * Multi-line kinds (paragraph / textbox) wrap to the stored box width.
+ * Single-line kinds (text / heading / tagline) widen to their content so that
+ * a line originally single in the PDF never needlessly breaks into two just
+ * because the box width estimate is slightly off. The extra width is absorbed
+ * by the cover (erasure) and does not visually alter single-line text at the
+ * default left alignment.
+ */
+export function elementWrapWidth(
+  el: PdfEditorElement,
+  page?: { width: number; height: number },
+): number {
+  if (el.kind === "paragraph" || el.kind === "textbox") {
+    return Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, finiteOr(el.width, 0));
+  }
+  const adv = Math.max(2, PDF_EDITOR_ADVANCE_EM[el.font] * el.fontSize);
+  const contentWidth = el.text.length * adv + el.fontSize * 0.5;
+  let w = Math.max(finiteOr(el.width, 0), contentWidth);
+  if (page && page.width > 0) w = Math.min(w, page.width);
+  return Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, w);
+}
+
+/**
+ * Glyph-safe cover for a *replacement*: the same width/padding as
+ * `paddedCoverRect` but tall enough for every wrapped line the replacement
+ * paints, so multi-line replacements never leave the original PDF text peeking
+ * out underneath the extra rows.
+ */
+export function replacementCoverRect(el: PdfEditorElement, page?: { width: number; height: number }): PageRect {
+  const p = coverPad(el.fontSize);
+  const step = el.fontSize * el.lineHeight;
+  const lineCount = Math.max(1, replacementLines(el, page).length);
+  const wrapW = elementWrapWidth(el, page);
+  const rect: PageRect = {
+    x: finiteOr(el.x, 0) - p.x,
+    y: finiteOr(el.y, 0) + p.top,
+    width: wrapW + p.x * 2,
+    height: lineCount * step + p.top + p.bottom,
+  };
+  if (page) {
+    return sanitizeRect(rect, page);
+  }
+  return {
+    x: rect.x,
+    y: rect.y,
+    width: Math.max(PDF_EDITOR_MIN_ELEMENT_SIZE, rect.width),
+    height: rect.height,
+  };
 }
 
 export function hexToRgb(hex: string): { r: number; g: number; b: number } {
@@ -334,21 +623,6 @@ function lookReadableLabel(fontName: string): string {
   return "";
 }
 
-/**
- * A text item as returned by pdf.js `page.getTextContent()`.
- * `transform` maps text space to PDF user space; `width`/`height` are already
- * expressed in user-space points (the width is the advance of the glyph run,
- * the height the font size).
- */
-export interface PdfSourceTextItem {
-  str: string;
-  transform: number[];
-  width: number;
-  height: number;
-  fontName?: string;
-  fontSize?: number;
-}
-
 /** A pdf.js `TextStyle` (from `TextContent.styles`, keyed by font name). */
 export interface PdfSourceTextStyle {
   fontFamily?: string;
@@ -379,7 +653,7 @@ export function elementFromTextItem(
   const detectedSize = Math.hypot(item.transform?.[0] ?? 0, item.transform?.[1] ?? 0)
     || item.height || box.height;
   const fontSize = clamp(
-    Math.round(detectedSize),
+    detectedSize,
     PDF_EDITOR_MIN_FONT_SIZE,
     PDF_EDITOR_MAX_FONT_SIZE,
   );
@@ -1035,38 +1309,61 @@ export async function buildEditedPdf(
           : await getFont(el.font, el.weight, el.italic);
       const col = hexToRgb(el.color);
 
-      const originalCover =
+      const originalRect =
         el.source === "extracted"
           ? (el.coverRect ?? { x: el.x, y: el.y, width: el.width, height: el.height })
           : null;
+      // Erase glyph-safe padded areas (never the tight bbox) so no sliver of
+      // the original text survives a replacement — same rect the overlay uses.
+      const originalCover = originalRect ? paddedCoverRect(originalRect, el.fontSize) : null;
 
       if (el.removed) {
         if (originalCover) drawCover(page, originalCover);
-        drawCover(page, el);
+        drawCover(page, replacementCoverRect(el, page.getSize()));
         continue;
       }
       if (el.text.trim() === "") continue;
 
       if (el.source === "extracted") {
+        // Erase exactly what the replacement covers: the original text area
+        // AND the full (possibly multi-line) replacement area. Covering the
+        // replacement area even when the element has not moved stops extra
+        // wrapped rows from painting over neighbouring canvas content.
         if (originalCover) drawCover(page, originalCover);
-        if (
-          originalCover &&
-          (originalCover.x !== el.x ||
-            originalCover.y !== el.y ||
-            originalCover.width !== el.width ||
-            originalCover.height !== el.height)
-        ) {
-          drawCover(page, el);
-        }
+        drawCover(page, replacementCoverRect(el, page.getSize()));
       }
 
-      const autoWrap = el.kind === "paragraph" || el.kind === "textbox";
-      const lines = autoWrap
-        ? wrapText(el.text, el.width, el.fontSize, el.font)
-        : el.text.split("\n");
+      // Single-line kinds widen to fit their content (elementWrapWidth), so
+      // the original text is never needlessly split across two lines just
+      // because the stored box width is slightly short. Multi-line kinds
+      // (paragraph / textbox) still wrap to the stored box width.  A
+      // replacement that grows longer than the original never spills outside
+      // its box or collides with the text beside it.
+      const lines = replacementLines(el, page.getSize());
       const step = el.fontSize * el.lineHeight;
-      let baseline = el.y - el.fontSize * 0.82;
+
+      /*
+       * Rotation (new text only; extracted elements always export unrotated).
+       * The pre-view rotates around the element centre, so the export does the
+       * same: translate the user space origin to the centre, rotate there, draw
+       * the wrapped lines in that local frame, then restore. A screen-clockwise
+       * CSS angle must be mirrored (360 - rot) because PDF user space grows y
+       * upward while the on-canvas preview does not.
+       */
+      const rot = el.source === "extracted" ? 0 : normalizeDegrees(el.rotation ?? 0);
+      const hasRot = Math.abs(rot) > 0.01;
+      const center = { x: el.x + el.width / 2, y: el.y - el.height / 2 };
+      if (hasRot) {
+        page.pushOperators(
+          pushGraphicsState(),
+          translate(center.x, center.y),
+          rotateDegrees(360 - rot),
+        );
+      }
+
       const textOpacity = el.opacity ?? 1;
+
+      let baseline = el.y - el.fontSize * 0.82;
 
       for (const line of lines) {
         const trimmed = line.trim();
@@ -1078,10 +1375,11 @@ export async function buildEditedPdf(
         let x = el.x;
         if (el.align === "center") x = el.x + (el.width - lineWidth) / 2;
         else if (el.align === "right") x = el.x + el.width - lineWidth;
-        const tx = Math.max(0, x);
+        const textX = hasRot ? x - center.x : Math.max(0, x);
+        const textY = hasRot ? baseline - center.y : baseline;
         page.drawText(trimmed, {
-          x: tx,
-          y: baseline,
+          x: textX,
+          y: textY,
           size: el.fontSize,
           font,
           color: rgb(col.r / 255, col.g / 255, col.b / 255),
@@ -1089,16 +1387,20 @@ export async function buildEditedPdf(
           opacity: textOpacity,
         });
         if (el.underline) {
-          const lineY = baseline - el.fontSize * 0.06;
+          const lineY = textY - el.fontSize * 0.06;
           page.drawLine({
-            start: { x: tx, y: lineY },
-            end: { x: tx + lineWidth, y: lineY },
+            start: { x: textX, y: lineY },
+            end: { x: textX + lineWidth, y: lineY },
             thickness: Math.max(0.5, el.fontSize * 0.04),
             color: rgb(col.r / 255, col.g / 255, col.b / 255),
             opacity: textOpacity,
           });
         }
         baseline -= step;
+      }
+
+      if (hasRot) {
+        page.pushOperators(popGraphicsState());
       }
 
       if (el.link && el.text.trim() !== "") {
