@@ -32,18 +32,25 @@ model Lead {
 // ---------------------------------------------------------------------------
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  name             String?
+  email            String    @unique
+  emailVerified    DateTime?
+  image            String?
+  role             String?   @default("user") // "user" | "admin" | "superadmin"
+  isOnboarded      Boolean   @default(false)
+  phone            String?
+  companyName      String?
+  jobRole          String?
+  referralCodeUsed String?
+  createdAt        DateTime  @default(now())
 
   accounts      Account[]
   sessions      Session[]
   brands        Brand[]
   subscription  Subscription?
   usageCounters UsageCounter[]
+  toolUsages    ToolUsage[]
 }
 
 model Account {
@@ -129,16 +136,16 @@ model Brand {
 /// The generated design system. `palette`, `typography` and `logoSpec` are
 /// stored as JSON so the engine's token shapes can evolve without migrations.
 model BrandKit {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  brandId    String @unique @db.ObjectId
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  brandId    String  @unique @db.ObjectId
   paletteId  String
   fontPairId String
   markStyle  String
   markSeed   Int
-  logoLayout String @default("horizontal")
+  logoLayout String  @default("horizontal")
   tagline    String?
   tokens     Json
-  version    Int    @default(1)
+  version    Int     @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -149,8 +156,8 @@ model BrandKit {
 /// A generated artifact. `spec` holds the inputs needed to re-render it, not
 /// the rendered bytes — output is always regenerated from the engine.
 model Asset {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  brandId String @db.ObjectId
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  brandId String  @db.ObjectId
   type    String // logo | letterhead | envelope | business-card | id-card | social-post | ad | email-signature
   variant String?
   spec    Json
@@ -219,7 +226,7 @@ model Subscription {
   cycle  String @default("monthly") // monthly | yearly
 
   razorpayCustomerId     String?
-  razorpaySubscriptionId String? @unique
+  razorpaySubscriptionId String?   @unique
   currentPeriodEnd       DateTime?
   cancelAtPeriodEnd      Boolean   @default(false)
 
@@ -241,4 +248,23 @@ model UsageCounter {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, period, metric])
+}
+
+// ---------------------------------------------------------------------------
+// Tool Usage Tracking (for Analytics and Admin Panel)
+// ---------------------------------------------------------------------------
+
+model ToolUsage {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String   @db.ObjectId
+  toolSlug String
+  useCount Int      @default(1)
+  lastUsed DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Ek user ka ek tool ke liye ek hi record hoga, count update hoga
+  @@unique([userId, toolSlug])
+  // Ranking ke liye index taaki sabse zyada use hone wale tools jaldi fetch ho sakein
+  @@index([toolSlug, useCount(sort: Desc)])
 }

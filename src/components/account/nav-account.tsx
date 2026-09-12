@@ -112,6 +112,13 @@ export function NavAccount() {
               >
                 Pricing
               </Link>
+              <Link
+                href="/studio/account"
+                className="block w-full rounded px-3 py-1.5 text-left text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                onClick={() => setOpen(false)}
+              >
+                Account
+              </Link>
             </div>
 
             <div className="border-t p-1">

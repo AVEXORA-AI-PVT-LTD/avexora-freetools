@@ -50,7 +50,6 @@ export function AuthCard({
     error: undefined,
   });
   const [clientError, setClientError] = useState<string | null>(null);
-  const [showReferral, setShowReferral] = useState(false);
   
   const inlineEmailError = clientError ?? (state.error ? EMAIL_ERROR_MESSAGE[state.error] : null);
 
@@ -119,35 +118,10 @@ export function AuthCard({
               )}
             </div>
 
-            {showReferral ? (
-              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
-                <label htmlFor="referral" className="block text-sm font-medium text-slate-700">
-                  Referral Code
-                </label>
-                <input
-                  id="referral"
-                  name="referral"
-                  type="text"
-                  placeholder="Enter code"
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 sm:py-2.5"
-                />
-              </div>
-            ) : (
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => setShowReferral(true)}
-                  className="text-xs font-medium text-orange-600 hover:text-orange-700 hover:underline"
-                >
-                  Have a referral code?
-                </button>
-              </div>
-            )}
-            
             <div>
               <EmailSubmitButton pending={pending} />
               <p className="mt-2 text-center text-xs text-slate-500">
-                We&apos;ll email you a secure sign-in link.
+                We'll email you a secure sign-in link.
               </p>
             </div>
           </form>
