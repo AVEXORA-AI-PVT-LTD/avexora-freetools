@@ -2,7 +2,6 @@
 
 import { useState, useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import Link from "next/link";
 import { GoogleIcon, FacebookIcon } from "@/components/account/provider-icons";
 import type { MagicLinkStatusArg } from "@/server/auth-actions";
 
@@ -26,7 +25,7 @@ type SendMagicLinkAction = (
 ) => Promise<MagicLinkStatusArg>;
 
 interface AuthCardProps {
-  mode: "signin" | "signup";
+  mode: "signin" | "signup"; // Kept to avoid breaking existing page imports, but ignored for unified UI
   next: string;
   emailEnabled: boolean;
   googleEnabled: boolean;
@@ -38,7 +37,6 @@ interface AuthCardProps {
 }
 
 export function AuthCard({
-  mode,
   next,
   emailEnabled,
   googleEnabled,
@@ -48,14 +46,13 @@ export function AuthCard({
   signInWithGoogle,
   signInWithFacebook,
 }: AuthCardProps) {
-  const isSignIn = mode === "signin";
   const [state, formAction, pending] = useActionState(sendMagicLink, {
     error: undefined,
   });
   const [clientError, setClientError] = useState<string | null>(null);
+  const [showReferral, setShowReferral] = useState(false);
+  
   const inlineEmailError = clientError ?? (state.error ? EMAIL_ERROR_MESSAGE[state.error] : null);
-
-  const crossHref = `${isSignIn ? "/studio/signup" : "/studio/signin"}?next=${encodeURIComponent(next)}`;
 
   function handleEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
     const email = String(new FormData(e.currentTarget).get("email") ?? "");
@@ -76,7 +73,7 @@ export function AuthCard({
     <div className="mx-auto w-full max-w-md px-4 py-16 sm:py-24">
       <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          {isSignIn ? "Sign in to Avex" : "Create your Avex account"}
+          Sign in to Avex
         </h1>
         <p className="mt-2 text-sm text-slate-600">
           One account for Avex Tools and Brand Studio.
@@ -95,22 +92,6 @@ export function AuthCard({
           <form action={formAction} onSubmit={handleEmailSubmit} noValidate className="space-y-4">
             <input type="hidden" name="next" value={next} />
             
-            {!isSignIn && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  placeholder="John Doe"
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 sm:py-2.5"
-                />
-              </div>
-            )}
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700">
                 Email
@@ -137,9 +118,34 @@ export function AuthCard({
                 </p>
               )}
             </div>
+
+            {showReferral ? (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+                <label htmlFor="referral" className="block text-sm font-medium text-slate-700">
+                  Referral Code
+                </label>
+                <input
+                  id="referral"
+                  name="referral"
+                  type="text"
+                  placeholder="Enter code"
+                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 sm:py-2.5"
+                />
+              </div>
+            ) : (
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={() => setShowReferral(true)}
+                  className="text-xs font-medium text-orange-600 hover:text-orange-700 hover:underline"
+                >
+                  Have a referral code?
+                </button>
+              </div>
+            )}
             
             <div>
-              <EmailSubmitButton pending={pending} isSignIn={isSignIn} />
+              <EmailSubmitButton pending={pending} />
               <p className="mt-2 text-center text-xs text-slate-500">
                 We&apos;ll email you a secure sign-in link.
               </p>
@@ -193,18 +199,6 @@ export function AuthCard({
             )}
           </div>
         )}
-
-        <div className="mt-8 text-center text-sm">
-          <span className="text-slate-600">
-            {isSignIn ? "Don't have an account?" : "Already have an account?"}{" "}
-          </span>
-          <Link
-            href={crossHref}
-            className="font-semibold text-orange-700 hover:text-orange-800 hover:underline"
-          >
-            {isSignIn ? "Sign up" : "Sign in"}
-          </Link>
-        </div>
       </div>
     </div>
   );
@@ -233,7 +227,7 @@ function ProviderSubmitButton({
   );
 }
 
-function EmailSubmitButton({ pending, isSignIn }: { pending: boolean; isSignIn: boolean }) {
+function EmailSubmitButton({ pending }: { pending: boolean }) {
   return (
     <button
       type="submit"
@@ -241,7 +235,7 @@ function EmailSubmitButton({ pending, isSignIn }: { pending: boolean; isSignIn: 
       aria-busy={pending}
       className="mt-2 flex h-11 w-full items-center justify-center rounded-md bg-orange-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
     >
-      {pending ? "Sending…" : (isSignIn ? "Sign in with Email" : "Create Account")}
+      {pending ? "Sending…" : "Continue with Email"}
     </button>
   );
 }
