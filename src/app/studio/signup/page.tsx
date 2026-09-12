@@ -11,11 +11,11 @@ import { authErrorMessage } from "@/components/account/auth-errors";
 import { AuthCard } from "@/components/account/auth-card";
 
 export const metadata: Metadata = {
-  title: "Sign in to Avex",
+  title: "Create your account",
   robots: { index: false },
 };
 
-export default async function SignInPage({
+export default async function SignUpPage({
   searchParams,
 }: {
   searchParams: Promise<{ next?: string; error?: string }>;
@@ -23,6 +23,8 @@ export default async function SignInPage({
   const { next, error } = await searchParams;
   const safeNext = safeRedirectPath(next, "/studio/app");
   const session = await auth();
+  // An already-authenticated visitor must not create a second account through
+  // the normal UI — send them to their intended destination instead.
   if (session?.user) redirect(safeNext);
 
   const authReady = emailEnabled || googleEnabled || facebookEnabled;
@@ -32,7 +34,7 @@ export default async function SignInPage({
     return (
       <main className="mx-auto max-w-md px-4 py-16">
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-semibold">Sign-in is not configured yet.</p>
+          <p className="font-semibold">Sign-up is not configured yet.</p>
           <p className="mt-1">
             Set <code className="font-mono">AUTH_SECRET</code> plus either{" "}
             <code className="font-mono">AUTH_RESEND_KEY</code> and{" "}
@@ -47,7 +49,7 @@ export default async function SignInPage({
 
   return (
     <AuthCard
-      mode="signin"
+      mode="signup"
       next={safeNext}
       emailEnabled={emailEnabled}
       googleEnabled={googleEnabled}

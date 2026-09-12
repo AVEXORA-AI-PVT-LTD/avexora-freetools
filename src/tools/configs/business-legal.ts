@@ -74,7 +74,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateNda,
     submitLabel: "Generate NDA",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A non-disclosure agreement is usually the first legal document exchanged before two parties start sharing anything sensitive — a business idea before a partnership discussion, financial data before a due-diligence process, source code before a contractor starts work. Without one, information shared in good faith has no formal protection if the relationship sours or a counterpart talks to a competitor. This generator produces a complete NDA in the format that lawyers and business partners immediately recognise.",
       "Choose mutual (both parties may share confidential information and both are bound to protect what they receive — the standard choice for partnership and collaboration discussions) or one-way (only one party discloses, the other simply receives and protects — typical when a company shares information with a contractor or vendor). The generated document covers what counts as confidential information, the receiving party's obligations, standard carve-outs (information already known, publicly available, independently developed, or required to be disclosed by law), the term of the agreement, and governing law.",
@@ -117,7 +117,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePrivacyPolicy,
     submitLabel: "Generate privacy policy",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A privacy policy isn't optional decoration on a website — it's legally required in most jurisdictions the moment you collect any personal information, and app stores, payment gateways and ad platforms all check for one before letting you use their services. Writing one from scratch means researching what clauses are actually required and phrasing them correctly; this generator produces a complete policy from a handful of checkboxes describing what your site actually does.",
       "The generated policy adapts to your answers: it includes a payments clause only if you collect payment information, a cookies section only if you use cookies, and an analytics mention only if you run analytics tools — so the document matches your site instead of listing irrelevant boilerplate. It covers what data you collect, how you use it, who you share it with, data security, user rights (access, correction, deletion), children's privacy, and how you'll communicate policy changes.",
@@ -159,7 +159,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateTerms,
     submitLabel: "Generate terms and conditions",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "Terms and conditions are the rulebook that governs the relationship between your website and everyone who uses it — what they're allowed to do, what you're not responsible for, and what happens if something goes wrong. Without clear terms, disputes default to general consumer law with no contractual protection tailored to your specific business; with them, you have a documented, agreed basis for handling account misuse, refund disagreements, and liability questions.",
       "This generator produces a complete T&Cs document covering the clauses every online business needs: acceptable use of the site, account responsibilities, intellectual property ownership, order and payment terms, prohibited conduct, disclaimer of warranties, limitation of liability, indemnification, termination rights, and governing law — customisable to your business type and jurisdiction.",
@@ -202,7 +202,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateRefundPolicy,
     submitLabel: "Generate refund policy",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A clear refund policy does double duty: it sets honest expectations that reduce disputes before they happen, and it's required by most payment gateways and marketplaces before they'll process transactions for your store. Customers specifically look for it before an unfamiliar purchase — its absence is itself a small red flag that costs conversions.",
       "This generator builds a policy around your specific return window and product type, with the framing adjusted for physical versus digital goods — digital products (courses, software, downloads) typically warrant a narrower refund scope since delivery is instant and \"unused\" isn't a meaningful condition, while physical products get the standard unused-and-original-packaging eligibility language. The policy covers the return window, eligibility conditions, how to request a refund, the refund process and timeline, non-refundable exceptions, and who bears shipping costs.",
@@ -246,7 +246,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateDisclaimer,
     submitLabel: "Generate disclaimer",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A disclaimer sets the legal boundary around what your content promises — it clarifies that your blog post, guide or resource is informational, not professional advice, and that you're not liable for decisions readers make based on it. This matters most for sites touching finance, health, legal or other advice-adjacent topics, where a reader could reasonably (but incorrectly) treat your content as personalised professional guidance.",
       "This generator adjusts its language based on your topic: sites that explicitly touch financial, legal or medical subjects get a stronger \"not a substitute for professional advice\" clause; general content sites get a lighter no-liability framing. It also includes an external-links disclaimer (you're not responsible for third-party sites you link to) and, if relevant, an affiliate disclosure — a legally required disclosure in most jurisdictions (including under FTC-style rules that many countries' consumer protection frameworks mirror) whenever you earn commission from links you share.",
@@ -290,7 +290,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateRentAgreement,
     submitLabel: "Generate rent agreement",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "The 11-month leave-and-license agreement is the standard rental arrangement across most Indian cities — chosen deliberately at under a year to avoid the compulsory registration and stamp duty that longer leases trigger under the Registration Act. This generator produces exactly that document, with the rent, deposit and duration you specify, in the format landlords and tenants across India already recognise.",
       "The agreement covers what actually causes disputes when left unwritten: the exact rent and due date, the security deposit amount and refund timeline (30 days after vacating, net of damages and dues), who handles maintenance versus major repairs, utility responsibility, subletting restrictions, notice period for termination, and the landlord's inspection rights. Setting these expectations in writing upfront resolves most disagreements before they start.",
@@ -335,7 +335,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateFreelanceContract,
     submitLabel: "Generate freelance contract",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "Most freelance disputes trace back to the same root cause: scope, payment or ownership was never written down clearly, so each side remembers the verbal agreement differently once money or deadlines are at stake. A short, clear contract prevents almost all of this — this generator produces one covering exactly the terms that matter: scope of work, timeline, fee and payment schedule, IP ownership, confidentiality, revision limits, and termination.",
       "The intellectual-property clause deserves particular attention because it's the one freelancers and clients most often assume differently: this template transfers IP to the client only upon full payment, and explicitly preserves the freelancer's right to reuse general skills and pre-existing tools and to showcase the work in a portfolio (unless the client requests confidentiality) — a fair, standard default that protects both sides. The revision clause (two rounds included in the quoted fee, more billed separately) heads off the classic scope-creep spiral where \"one more small tweak\" repeats indefinitely.",
@@ -379,7 +379,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateEmploymentContract,
     submitLabel: "Generate employment contract",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "An employment contract is the formal legal document underlying the employment relationship — distinct from (though often confused with) the appointment letter, and in many companies the two are combined into one. This generator produces a standalone contract covering position and duties, compensation, probation, working hours, leave, confidentiality, non-solicitation and termination terms.",
       "Two clauses here do more legal work than they might appear to: the confidentiality clause protects company information both during and after employment, and the non-solicitation clause (restricting the employee from poaching colleagues or clients for 12 months after leaving) is a common protective term, though its enforceability varies — Indian courts are generally cautious about restraints on trade, so keep such clauses reasonable in scope and duration rather than sweeping.",
@@ -423,7 +423,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateLoanAgreement,
     submitLabel: "Generate loan agreement",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "Money lent between friends, family or business acquaintances without paperwork is a common source of both financial loss and damaged relationships — memories of \"how much\" and \"by when\" diverge remarkably fast once a repayment is late. A simple, signed loan agreement fixes the terms in writing before any disagreement can start: the amount, the interest rate (zero is fine, and common between family), and the repayment schedule.",
       "This generator produces exactly that: principal amount, annual interest rate (set to 0% for an interest-free family loan, or a market rate for a formal arrangement), repayment period in months with an estimated monthly instalment, prepayment rights, and what happens on default — the lender's right to demand the full outstanding balance after 15 days' notice following a missed payment.",
@@ -469,7 +469,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePartnershipDeed,
     submitLabel: "Generate partnership deed",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "Two people starting a business together without a written partnership deed are relying entirely on the default rules of the Indian Partnership Act, 1932 — which assume equal profit-sharing and equal say regardless of what was actually agreed verbally, and which won't reflect any of the specific arrangements partners actually intend. A partnership deed replaces those defaults with your actual terms in writing.",
       "This generator produces a deed for a two-partner firm covering the firm name and business address, the capital each partner contributes, the profit-and-loss sharing ratio (which the tool validates sums to 100%), duties and decision-making, banking arrangements, and the process for admitting or retiring partners and for dissolution. These are exactly the questions that cause partnership disputes when left unwritten — especially profit-sharing once the business is actually making money.",

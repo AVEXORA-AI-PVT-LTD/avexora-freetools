@@ -366,7 +366,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePayslip,
     submitLabel: "Generate payslip",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A payslip is a simple document that carries real weight: employees need it for loan applications, visa processing, rental agreements and their own tax filing, and small businesses without a full payroll system often need a fast, professional way to produce one every month without spreadsheet gymnastics. This generator builds a clean, itemised payslip from the numbers you enter — earnings section, deductions section, and net pay computed automatically so it's never wrong by hand-arithmetic mistake.",
       "The structure follows what every payslip needs: basic salary, HRA and special allowance broken out (plus optional other allowances), followed by PF deduction, professional tax and any other deductions, with the total earnings, total deductions and net pay clearly labelled. It's formatted as plain, aligned text — readable on any device, easy to paste into an email, and simple to convert to PDF via your browser's print function if you need a more formal document.",
@@ -410,7 +410,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateOfferLetter,
     submitLabel: "Generate offer letter",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "The offer letter is the first formal document a candidate receives from your company, and its tone and clarity set expectations for the whole relationship ahead. Writing one from scratch means remembering every standard clause — position, compensation, joining date, probation, confidentiality, acceptance — and getting the legal-sounding parts phrased correctly. This generator produces a complete, professional offer letter from a handful of fields.",
       "The output covers the clauses every Indian offer letter should include: the position and location (with a note that the company may require work at other locations, standard flexibility language), compensation stated as annual CTC with a note that a detailed break-up follows in the appointment letter, the proposed joining date with a list of documents to bring, a standard six-month probation period, a confidentiality clause, and a clear acceptance section for the candidate to sign. If you name a reporting manager, that's woven in naturally.",
@@ -454,7 +454,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateAppointmentLetter,
     submitLabel: "Generate appointment letter",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "Where the offer letter gets a candidate to say yes, the appointment letter is the fuller, more formal document issued on or around the joining date that actually governs the employment relationship — the one referenced in disputes, audits and background checks years later. It needs to be thorough and correctly worded, which is exactly the kind of document that's easy to get subtly wrong when written in a hurry.",
       "This generator produces the standard clause set: position and place of work (with the conventional transfer clause giving the company flexibility), the effective date of appointment, remuneration stated as CTC with a note on statutory deductions, a six-month probation period with the company's right to extend it, the notice period you specify for post-confirmation termination, a reference to the leave policy, confidentiality and return-of-property obligations, and a jurisdiction clause tied to your work location. It closes with a proper acceptance block for the employee's signature.",
@@ -507,7 +507,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateExperienceLetter,
     submitLabel: "Generate experience letter",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "An experience letter (also called a relieving letter or service certificate) is the document that proves someone actually worked where they claim to have — every subsequent employer's background check and every visa application asks for it, and a delayed or missing one can genuinely hold up a former employee's next opportunity. It's a short document, but getting it out promptly and correctly matters more than its length suggests.",
       "This generator produces the standard \"to whomsoever it may concern\" format: confirmation of the employee's name, designation, and the exact period of employment, a short conduct remark drawn from your selection (excellent, good or satisfactory — each phrased professionally rather than as a bare adjective), a statement that all dues are settled and exit formalities complete, and a closing note of thanks. It's the format background-verification agencies and HR departments universally recognise.",

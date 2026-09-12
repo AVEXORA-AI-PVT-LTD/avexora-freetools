@@ -72,7 +72,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateQuotation,
     submitLabel: "Generate quotation",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A quotation is the first document a prospective customer sees before committing to buy — it needs to look professional enough to build confidence while making the price and scope unambiguous. This generator produces a clean, itemised quotation from your business details, customer name, and a simple line-item list, ready to send or print.",
       "Enter each item as a single line — description, quantity, rate — and the generator computes line totals and the grand total automatically, formatted as a clean aligned table. Add a validity date so the customer knows the quoted prices aren't open-ended, which protects you if your costs change before they decide.",
@@ -116,7 +116,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateProformaInvoice,
     submitLabel: "Generate proforma invoice",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A proforma invoice sits between a quotation and a final tax invoice — used when a customer needs a formal-looking document to arrange payment (an advance, a letter of credit, an import declaration) before the actual sale and tax invoice are finalised. It looks like an invoice but explicitly isn't one for accounting or GST purposes.",
       "This generator produces exactly that: your business and customer details, line items with computed totals, and a clear statement that this is a proforma document, not a tax invoice or a demand for payment under GST law. It's commonly requested by customers making advance payments, and by customs authorities for cross-border shipments where the actual tax invoice will follow later.",
@@ -173,7 +173,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateReceipt,
     submitLabel: "Generate receipt",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A receipt is simple but important — it's the customer's proof that a specific payment was made and accepted, and it's what they'll ask for when reconciling their own books or resolving any later dispute about whether they paid. This generator produces a clean receipt with the amount, method, purpose and date, ready to hand over or email immediately after receiving payment.",
       "Fill in who paid, how much, by what method, and what it was for (referencing the original invoice number keeps your paper trail connected), and the receipt is ready. It's deliberately simple — no line items or tax breakdown, since that detail belongs on the invoice being paid, not the receipt confirming payment.",
@@ -218,7 +218,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateCreditNote,
     submitLabel: "Generate credit note",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A credit note reduces the amount a customer owes you against a previous invoice — issued when goods are returned, an invoice was overbilled, or you're granting a post-sale discount. It's a formal accounting document, not just an apology email, and it keeps both your books and your customer's straight on what's actually still owed.",
       "This generator references the original invoice number (so the correction is traceable), states the reason clearly, and lists the specific items or amounts being credited with computed totals. That reason field matters more than it might seem — under GST, credit notes need a documented reason, and auditors or your accountant will want it on record.",
@@ -263,7 +263,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateDebitNote,
     submitLabel: "Generate debit note",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A debit note is the mirror image of a credit note, issued from the buyer's side: when you return goods to a supplier, receive a short shipment, or need to correct an undercharge on their invoice, a debit note formally records that you're claiming back money or adjusting what you owe them.",
       "This generator references the supplier's original invoice number, records the reason for the adjustment, and lists the specific items or amounts involved with computed totals. As with credit notes, keeping a clear, documented reason matters for both your internal records and GST compliance.",
@@ -309,7 +309,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePurchaseOrder,
     submitLabel: "Generate purchase order",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A purchase order is your formal, documented commitment to buy specific goods at specific terms — sending one instead of a verbal or email agreement protects you if a supplier later disputes quantities, prices, or delivery expectations, and it gives your own accounts team a clean record to match against the eventual supplier invoice.",
       "This generator produces a complete PO: supplier details, order and required delivery dates, the delivery address, and itemised quantities and rates with computed totals. Any established supplier relationship should run on POs rather than ad-hoc ordering — it's the paper trail that makes three-way matching (PO, delivery receipt, invoice) possible before you pay a supplier invoice.",
@@ -355,7 +355,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateDeliveryChallan,
     submitLabel: "Generate delivery challan",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A delivery challan travels with goods, not with the sale — it's the document a transporter or delivery vehicle carries to prove what's being moved, where it's going, and (under GST e-way bill rules) is often required alongside or in place of an invoice for certain movement types like job work, returns, or goods sent for approval before a sale is finalised.",
       "This generator produces exactly that: consignee details, vehicle number, delivery address, and an itemised list of what's being transported with quantities (deliberately without pricing detail the way an invoice has, since a challan documents movement, not a sale). An optional approximate value field supports e-way bill and transport documentation needs without turning the challan into a priced commercial document.",
@@ -408,7 +408,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePaymentReminder,
     submitLabel: "Generate reminder",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "Chasing late payments is uncomfortable, and that discomfort is exactly why so many small businesses let overdue invoices sit far longer than they should. Having a ready-made message for each stage of the conversation removes the awkward blank-page moment and makes it easy to actually send the reminder promptly — which is the single biggest factor in getting paid faster.",
       "The tone escalates deliberately across three stages: friendly for the first, gentle nudge (assumes it might simply be an oversight), firm for a second reminder after the friendly one is ignored (states a clear 7-day deadline and mentions late charges), and final notice for a last attempt before considering suspension of services or collections (a clear 3-day deadline and explicit consequences). Escalating tone this way, rather than staying friendly forever or going straight to threats, is both more professional and more effective.",

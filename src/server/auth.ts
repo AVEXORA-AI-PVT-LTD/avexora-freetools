@@ -1,6 +1,7 @@
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
+import Facebook from "next-auth/providers/facebook";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "@/server/db";
 
@@ -15,6 +16,9 @@ import { prisma } from "@/server/db";
 
 export const googleEnabled = Boolean(
   process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+);
+export const facebookEnabled = Boolean(
+  process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET,
 );
 export const emailEnabled = Boolean(
   process.env.AUTH_RESEND_KEY && process.env.EMAIL_FROM,
@@ -34,6 +38,15 @@ if (googleEnabled) {
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
+  );
+}
+
+if (facebookEnabled) {
+  providers.push(
+    Facebook({
+      clientId: process.env.AUTH_FACEBOOK_ID,
+      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
     }),
   );
 }
