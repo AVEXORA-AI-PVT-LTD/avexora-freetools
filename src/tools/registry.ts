@@ -10,7 +10,7 @@ import { tools as textDataTools } from "./configs/text-data-tools";
 import { tools as businessLegal } from "./configs/business-legal";
 import { tools as developerWeb } from "./configs/developer-web";
 
-export const toolsByCategory: Record<CategorySlug, ToolConfig[]> = {
+const rawToolsByCategory: Record<CategorySlug, ToolConfig[]> = {
   "finance-calculators": financeCalculators,
   "invoicing-billing": invoicingBilling,
   "hr-payroll": hrPayroll,
@@ -22,6 +22,13 @@ export const toolsByCategory: Record<CategorySlug, ToolConfig[]> = {
   "business-legal": businessLegal,
   "developer-web": developerWeb,
 };
+
+export const toolsByCategory = Object.fromEntries(
+  Object.entries(rawToolsByCategory).map(([cat, tools]) => [
+    cat,
+    [...tools].sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999)),
+  ])
+) as Record<CategorySlug, ToolConfig[]>;
 
 export const allTools: ToolConfig[] = Object.values(toolsByCategory).flat();
 

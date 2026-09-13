@@ -115,6 +115,8 @@ interface ToolBase {
   faq: FaqItem[];
   /** Slugs of related tools for internal linking. */
   related: string[];
+  /** Explicit sort order for this tool (lower numbers appear first). If unset, defaults to 999. */
+  priority?: number;
   /** Require an email before download/copy of produced documents. */
   emailGate?: boolean;
   /**

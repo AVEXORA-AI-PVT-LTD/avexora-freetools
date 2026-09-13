@@ -17,6 +17,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "salary-calculator",
     category: "hr-payroll",
+    priority: 1,
     name: "In-Hand Salary Calculator",
     tagline: "See your monthly take-home pay from your annual CTC.",
     seoDescription:
@@ -73,6 +74,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "gratuity-calculator",
     category: "hr-payroll",
+    priority: 8,
     name: "Gratuity Calculator",
     tagline: "Calculate gratuity payable under the Payment of Gratuity Act.",
     seoDescription:
@@ -127,6 +129,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "pf-calculator",
     category: "hr-payroll",
+    priority: 6,
     name: "EPF Calculator",
     tagline: "Project your Employees' Provident Fund corpus at retirement.",
     seoDescription:
@@ -185,6 +188,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "hra-exemption-calculator",
     category: "hr-payroll",
+    priority: 7,
     name: "HRA Exemption Calculator",
     tagline: "Work out how much of your House Rent Allowance is tax-exempt.",
     seoDescription:
@@ -241,6 +245,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "leave-encashment-calculator",
     category: "hr-payroll",
+    priority: 10,
     name: "Leave Encashment Calculator",
     tagline: "Calculate the cash value of your unused earned leave.",
     seoDescription:
@@ -295,6 +300,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "bonus-calculator",
     category: "hr-payroll",
+    priority: 11,
     name: "Statutory Bonus Calculator",
     tagline: "Calculate the statutory bonus payable under the Payment of Bonus Act.",
     seoDescription:
@@ -350,6 +356,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "overtime-calculator",
     category: "hr-payroll",
+    priority: 12,
     name: "Overtime Pay Calculator",
     tagline: "Calculate overtime pay at the statutory double-rate.",
     seoDescription:
@@ -405,6 +412,7 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "notice-period-recovery-calculator",
     category: "hr-payroll",
+    priority: 9,
     name: "Notice Period Recovery Calculator",
     tagline: "Calculate the salary recovery for notice period shortfall.",
     seoDescription:
@@ -460,6 +468,7 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "payslip-generator",
     category: "hr-payroll",
+    priority: 2,
     name: "Payslip Generator",
     tagline: "Create a clean, itemised payslip in seconds.",
     seoDescription:
@@ -531,6 +540,7 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "offer-letter-generator",
     category: "hr-payroll",
+    priority: 3,
     name: "Offer Letter Generator",
     tagline: "Create a professional job offer letter in minutes.",
     seoDescription:
@@ -596,6 +606,7 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "appointment-letter-generator",
     category: "hr-payroll",
+    priority: 4,
     name: "Appointment Letter Generator",
     tagline: "Generate a complete appointment letter with standard employment terms.",
     seoDescription:
@@ -661,6 +672,7 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "experience-letter-generator",
     category: "hr-payroll",
+    priority: 5,
     name: "Experience Letter Generator",
     tagline: "Generate a professional experience/relieving certificate.",
     seoDescription:
