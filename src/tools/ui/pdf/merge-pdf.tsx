@@ -5,7 +5,7 @@ import {
   useAuthDownload,
   useRestoredDownload,
 } from "@/components/account/use-auth-download";
-import { primaryBtn, secondaryBtn } from "./pdf-shared";
+import { pdfUploadLimitError, primaryBtn, secondaryBtn } from "./pdf-shared";
 
 interface PickedFile {
   file: File;
@@ -34,16 +34,21 @@ export default function MergePdf() {
   }, [restored]);
 
   const addFiles = (list: FileList | null) => {
-    if (!list) return;
+    if (!list || list.length === 0) return;
     setError(null);
-    const picked = Array.from(list)
-      .filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"))
-      .map((file) => ({ file, id: crypto.randomUUID() }));
-    if (picked.length === 0) {
+    const all = Array.from(list).filter(
+      (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"),
+    );
+    if (all.length === 0) {
       setError("Please choose PDF files.");
       return;
     }
-    setFiles((prev) => [...prev, ...picked]);
+    const oversized = all.find((f) => pdfUploadLimitError(f) !== null);
+    if (oversized) {
+      setError(pdfUploadLimitError(oversized)!);
+      return;
+    }
+    setFiles((prev) => [...prev, ...all.map((file) => ({ file, id: crypto.randomUUID() }))]);
   };
 
   const move = (i: number, dir: -1 | 1) =>
