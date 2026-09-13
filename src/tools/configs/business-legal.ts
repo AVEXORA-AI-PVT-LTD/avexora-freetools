@@ -27,6 +27,22 @@ export const tools: ToolConfig[] = [
       "Limited liability partnerships carry a parallel duty. Section 21 of the Limited Liability Partnership Act 2008 requires an LLP to ensure that its invoices, correspondence and official publications bear its name, the address of its registered office and its LLP Identification Number. Partnership firms and sole proprietorships have no CIN or LLPIN and therefore no equivalent obligation, though a business registered under GST must still display its GSTIN on every tax invoice it issues.",
       "This checker runs your entity type and identifiers against those rules and tells you, document by document, what is present and what is missing. It validates the structure of your CIN, verifies your GSTIN against its mod-36 check digit so a typo is caught rather than trusted, and cross-checks that the company class encoded in your CIN matches the entity type you selected. Each finding cites the provision it comes from so you can take the report to your company secretary or chartered accountant rather than take our word for it. Nothing you enter is transmitted or stored \u2014 the entire check runs in your browser.",
     ],
+    directAnswer: "Use our Letterhead Compliance Checker to instantly verify if your company or LLP letterhead meets Section 12(3)(c) of the Companies Act 2013 requirements.",
+    example: "A company prints a letterhead missing its CIN. Under Section 12(3)(c), this default attracts a penalty of ₹1,000 per day until corrected, up to ₹1,00,000.",
+    steps: [
+      {
+        title: "Select Entity Type",
+        description: "Choose between Company or LLP to apply the correct statutory rules.",
+      },
+      {
+        title: "Enter Identifiers",
+        description: "Input your CIN/LLPIN, GSTIN, and registered address.",
+      },
+      {
+        title: "Check Compliance",
+        description: "The tool instantly validates your inputs against legal requirements.",
+      },
+    ],
     faq: [
       {
         question: "What exactly has to appear on a company letterhead in India?",
@@ -80,6 +96,22 @@ export const tools: ToolConfig[] = [
       "Choose mutual (both parties may share confidential information and both are bound to protect what they receive — the standard choice for partnership and collaboration discussions) or one-way (only one party discloses, the other simply receives and protects — typical when a company shares information with a contractor or vendor). The generated document covers what counts as confidential information, the receiving party's obligations, standard carve-outs (information already known, publicly available, independently developed, or required to be disclosed by law), the term of the agreement, and governing law.",
       "An NDA is meant to be signed before the sensitive conversation happens, not after — its protective value depends on being in place before anything confidential changes hands. Have a lawyer review the term length and confidentiality scope against your specific situation, particularly for high-stakes discussions like M&A or significant IP disclosure, where a generic template may need sharper language.",
     ],
+    directAnswer: "Quickly generate a legally binding Non-Disclosure Agreement (NDA) to protect your confidential information before business discussions.",
+    example: "Two companies exploring a joint venture sign a mutual NDA. This ensures neither party can misuse or disclose the other's trade secrets without facing legal consequences.",
+    steps: [
+      {
+        title: "Provide Party Details",
+        description: "Enter the names of both the disclosing and receiving parties.",
+      },
+      {
+        title: "Define the Scope",
+        description: "Set the purpose of disclosure, agreement term, and whether it is a mutual or one-way NDA.",
+      },
+      {
+        title: "Generate Document",
+        description: "Review and download your customised non-disclosure agreement.",
+      },
+    ],
     faq: [
       {
         question: "Mutual or one-way NDA — which do I need?",
@@ -95,6 +127,11 @@ export const tools: ToolConfig[] = [
         question: "Does an NDA protect information shared before it's signed?",
         answer:
           "Generally no — an NDA only protects information disclosed after it takes effect, unless it explicitly states otherwise. Sign the NDA before sharing anything sensitive.",
+      },
+      {
+        question: "Who should sign the NDA?",
+        answer:
+          "The NDA should be signed by authorized representatives of both parties involved in the confidential discussion, such as directors or authorized signatories for companies, or the individuals themselves if acting personally.",
       },
     ],
     related: ["freelance-contract-generator", "employment-contract-generator", "terms-and-conditions-generator", "privacy-policy-generator"],
@@ -123,6 +160,22 @@ export const tools: ToolConfig[] = [
       "The generated policy adapts to your answers: it includes a payments clause only if you collect payment information, a cookies section only if you use cookies, and an analytics mention only if you run analytics tools — so the document matches your site instead of listing irrelevant boilerplate. It covers what data you collect, how you use it, who you share it with, data security, user rights (access, correction, deletion), children's privacy, and how you'll communicate policy changes.",
       "Treat this as a strong starting draft, not a finished legal document: fill in the \"[Date]\" placeholder, review every clause against what your business actually does (a policy that promises something you don't deliver, or omits something you do, creates real legal risk), and if you operate internationally or handle sensitive data (health, financial, biometric), have a privacy lawyer review it against the specific regimes that apply — India's DPDP Act, GDPR for EU visitors, or others depending on your audience.",
     ],
+    directAnswer: "Create a complete, tailored privacy policy for your website or app to comply with data protection laws and third-party requirements.",
+    example: "An e-commerce store needs a privacy policy to explain how it handles customer data. Using this tool, they generate a policy that covers payment processing, cookies, and user rights.",
+    steps: [
+      {
+        title: "Enter Business Details",
+        description: "Provide your company name, website URL, and privacy contact email.",
+      },
+      {
+        title: "Select Data Practices",
+        description: "Specify if you collect payments, use cookies, or run analytics.",
+      },
+      {
+        title: "Generate Policy",
+        description: "Download the tailored privacy policy document for your website.",
+      },
+    ],
     faq: [
       {
         question: "Do I legally need a privacy policy?",
@@ -138,6 +191,11 @@ export const tools: ToolConfig[] = [
         question: "What should I do with the \"[Date]\" placeholder?",
         answer:
           "Replace it with the date you publish the policy, and update it again whenever you make material changes to your data practices.",
+      },
+      {
+        question: "Where should I display my privacy policy?",
+        answer:
+          "Link it in your website footer, app menus, checkout pages, and signup forms so users can easily find and review it before providing their data.",
       },
     ],
     related: ["terms-and-conditions-generator", "disclaimer-generator", "refund-policy-generator", "meta-tag-generator"],
@@ -166,6 +224,22 @@ export const tools: ToolConfig[] = [
       "The limitation-of-liability and indemnification clauses are doing real legal work here, so this document deserves more scrutiny before publishing than a simple template swap: have it reviewed by a lawyer if your business handles significant transaction volume, sells regulated products, or operates across multiple countries with different consumer protection regimes. For a smaller business or early-stage site, this gives you a solid, standard-form foundation to launch with.",
       "Publish the terms at a stable, linkable URL (most sites use /terms) and reference that link from your footer, checkout flow and signup form — a document nobody can actually find when they need it offers little real protection, however well it's worded.",
     ],
+    directAnswer: "Generate customized Terms and Conditions to establish clear rules for using your website, limiting your liability and protecting your business.",
+    example: "A SaaS company uses terms and conditions to dictate acceptable user behavior and limit liability for service downtime, protecting them against potential lawsuits.",
+    steps: [
+      {
+        title: "Input Company Information",
+        description: "Provide your business name, URL, and contact details.",
+      },
+      {
+        title: "Define Business Context",
+        description: "Specify your business type and governing jurisdiction for disputes.",
+      },
+      {
+        title: "Generate Terms",
+        description: "Review and publish your custom terms and conditions document.",
+      },
+    ],
     faq: [
       {
         question: "What's the difference between Terms and Conditions and a Privacy Policy?",
@@ -181,6 +255,11 @@ export const tools: ToolConfig[] = [
         question: "Is a limitation of liability clause actually enforceable?",
         answer:
           "Generally yes in commercial contexts, though enforceability varies by jurisdiction and can be limited for certain types of harm (e.g. gross negligence, statutory consumer rights). Have a lawyer confirm this clause holds up under the laws that apply to your business.",
+      },
+      {
+        question: "Where should I put the Terms and Conditions on my site?",
+        answer:
+          "Like your privacy policy, link to your Terms and Conditions in your website's footer and during checkout or account registration processes to ensure users agree to them.",
       },
     ],
     related: ["privacy-policy-generator", "refund-policy-generator", "disclaimer-generator", "freelance-contract-generator"],
@@ -209,6 +288,22 @@ export const tools: ToolConfig[] = [
       "Set a return window you can genuinely honour — a generous window builds trust and rarely gets abused in practice, while a policy that looks generous on paper but is enforced stingily damages your reputation faster than a shorter, honestly-enforced window would. Review the final document against your actual operational process (who processes refunds, how fast) before publishing.",
       "Place a link to this policy near your checkout button and on every product page, not just buried in a footer — most payment gateways require it to be genuinely discoverable, not merely present somewhere on the site, and customers who can see the policy before buying are measurably more likely to complete the purchase.",
     ],
+    directAnswer: "Create a customized refund and return policy for your e-commerce store to build trust and meet payment gateway requirements.",
+    example: "An online boutique offers a 14-day return window. The refund policy clarifies that items must be unworn and in original packaging to qualify for a full refund.",
+    steps: [
+      {
+        title: "Enter Store Details",
+        description: "Provide your company name, support email, and product type.",
+      },
+      {
+        title: "Set Refund Rules",
+        description: "Define the return window in days and specify if you sell digital goods.",
+      },
+      {
+        title: "Generate Policy",
+        description: "Download a clear, professional refund policy ready for your website.",
+      },
+    ],
     faq: [
       {
         question: "What return window should I set?",
@@ -224,6 +319,11 @@ export const tools: ToolConfig[] = [
         question: "Is a no-refunds policy legal?",
         answer:
           "It depends on your jurisdiction and product type — many consumer protection laws mandate some refund rights regardless of your stated policy, particularly for defective goods. A blanket \"no refunds\" policy carries legal risk; consult a lawyer before adopting one.",
+      },
+      {
+        question: "Why do payment gateways care about my refund policy?",
+        answer:
+          "Payment processors like Stripe or PayPal require clear refund policies to manage chargeback risks and ensure fair consumer practices on platforms they support.",
       },
     ],
     related: ["terms-and-conditions-generator", "invoice-generator", "payment-reminder-generator", "discount-calculator"],
@@ -252,6 +352,22 @@ export const tools: ToolConfig[] = [
       "This generator adjusts its language based on your topic: sites that explicitly touch financial, legal or medical subjects get a stronger \"not a substitute for professional advice\" clause; general content sites get a lighter no-liability framing. It also includes an external-links disclaimer (you're not responsible for third-party sites you link to) and, if relevant, an affiliate disclosure — a legally required disclosure in most jurisdictions (including under FTC-style rules that many countries' consumer protection frameworks mirror) whenever you earn commission from links you share.",
       "A disclaimer reduces risk but doesn't eliminate it — genuinely harmful or negligent advice isn't shielded just because a disclaimer exists below it. Place this prominently (a footer link, or directly above advice-heavy content) rather than burying it, and if your site gives specific financial, legal or medical guidance rather than general information, that's a signal to have a professional review your content approach more broadly, not just the disclaimer wording.",
     ],
+    directAnswer: "Generate a professional website disclaimer to limit your liability, state that your content is not professional advice, and disclose affiliate links.",
+    example: "A personal finance blog uses a disclaimer to clarify that its articles are for informational purposes only and not a substitute for certified financial advice.",
+    steps: [
+      {
+        title: "Provide Site Information",
+        description: "Enter your website name, URL, and contact details.",
+      },
+      {
+        title: "Select Disclosures",
+        description: "Specify if you provide professional advice-style content or use affiliate links.",
+      },
+      {
+        title: "Generate Disclaimer",
+        description: "Download your custom disclaimer and publish it on your site.",
+      },
+    ],
     faq: [
       {
         question: "Do I need an affiliate disclosure?",
@@ -267,6 +383,11 @@ export const tools: ToolConfig[] = [
         question: "Does a disclaimer protect me from all liability?",
         answer:
           "No — a disclaimer reduces risk by setting expectations, but it doesn't excuse genuinely negligent, false or harmful advice. It's a risk-reduction tool, not a liability shield.",
+      },
+      {
+        question: "Is this a substitute for professional legal advice?",
+        answer:
+          "While a general disclaimer is a great starting point for most blogs, if your site offers specific medical, legal, or financial guidance, consult a lawyer to review your content approach.",
       },
     ],
     related: ["privacy-policy-generator", "terms-and-conditions-generator", "ai-blog-outline-generator", "refund-policy-generator"],
@@ -297,6 +418,22 @@ export const tools: ToolConfig[] = [
       "Two things vary meaningfully by state and are worth checking locally: some states require even 11-month agreements to be notarised or e-registered (a fast, low-cost online process in several states now), and rent control laws differ significantly by state in ways that can override contractual terms. Have the agreement reviewed against your specific state's requirements before signing, and register it where local law requires.",
       "Both landlord and tenant should keep a signed copy, along with photographs of the property's condition at move-in — a simple habit that prevents most deposit-refund disputes at the end of the tenancy, since it gives an objective baseline for what counts as normal wear and tear versus actual damage.",
     ],
+    directAnswer: "Create a standard 11-month residential leave-and-license agreement specifying rent, security deposit, and tenancy rules.",
+    example: "A landlord renting out an apartment uses this tool to clearly define that the tenant must provide 30 days notice before vacating and pay rent by the 5th of every month.",
+    steps: [
+      {
+        title: "Enter Party Details",
+        description: "Input the landlord's and tenant's names and the property address.",
+      },
+      {
+        title: "Set Rental Terms",
+        description: "Specify the monthly rent, security deposit, start date, and duration.",
+      },
+      {
+        title: "Generate Agreement",
+        description: "Download the formatted agreement ready for printing and signing.",
+      },
+    ],
     faq: [
       {
         question: "Why are rent agreements typically 11 months, not 12?",
@@ -312,6 +449,11 @@ export const tools: ToolConfig[] = [
         question: "When must the security deposit be refunded?",
         answer:
           "Standard practice (and reflected in this template) is within 30 days of the tenant vacating, after deducting any damages beyond normal wear and tear and unpaid utility bills. Some states have specific statutory timelines — check local tenancy law.",
+      },
+      {
+        question: "Can rent be increased during the 11-month period?",
+        answer:
+          "Generally, no. The rent is fixed for the duration of the agreement unless a specific clause allows for an increase, which is rare in 11-month contracts.",
       },
     ],
     related: ["hra-exemption-calculator", "invoice-due-date-calculator", "nda-generator", "loan-agreement-generator"],
@@ -341,6 +483,22 @@ export const tools: ToolConfig[] = [
       "The intellectual-property clause deserves particular attention because it's the one freelancers and clients most often assume differently: this template transfers IP to the client only upon full payment, and explicitly preserves the freelancer's right to reuse general skills and pre-existing tools and to showcase the work in a portfolio (unless the client requests confidentiality) — a fair, standard default that protects both sides. The revision clause (two rounds included in the quoted fee, more billed separately) heads off the classic scope-creep spiral where \"one more small tweak\" repeats indefinitely.",
       "Whether you're the freelancer or the client, send this before work begins, not after a dispute starts — a signed contract is a prevention tool, not a repair tool. For larger engagements or anything involving significant IP value, have a lawyer review the specific fee structure, IP terms and liability cap against your situation.",
     ],
+    directAnswer: "Generate a clear, professional freelance contract covering scope of work, payment schedules, and intellectual property rights.",
+    example: "A freelance web developer uses this contract to ensure they retain ownership of the source code until the client has paid the final 50% milestone invoice.",
+    steps: [
+      {
+        title: "Input Details",
+        description: "Enter client and freelancer names along with the project scope.",
+      },
+      {
+        title: "Set Terms",
+        description: "Define the total fee, payment structure, and expected timeline.",
+      },
+      {
+        title: "Generate Contract",
+        description: "Review and download your customized freelance agreement.",
+      },
+    ],
     faq: [
       {
         question: "When does IP transfer to the client?",
@@ -356,6 +514,11 @@ export const tools: ToolConfig[] = [
         question: "Is the freelancer an employee under this contract?",
         answer:
           "No — the contract explicitly establishes an independent contractor relationship, meaning the freelancer handles their own taxes and isn't entitled to employee benefits. Misclassifying an actual employee as a freelancer carries legal risk regardless of what the contract says.",
+      },
+      {
+        question: "What if the client cancels the project halfway?",
+        answer:
+          "The contract typically includes a termination clause detailing that the freelancer is compensated for work completed up to the date of cancellation.",
       },
     ],
     related: ["invoice-generator", "nda-generator", "payment-reminder-generator", "gst-calculator"],
@@ -386,6 +549,22 @@ export const tools: ToolConfig[] = [
       "If your company already issues a combined offer-and-appointment letter (see the HR & Payroll category for both), you may not need this as a separate document — use whichever single, clear document your company's process calls for, rather than issuing overlapping paperwork that could contradict itself. Have your legal team confirm this aligns with your state's specific Shops & Establishments Act requirements before using it at scale.",
       "Keep a signed copy on file for every employee for the full duration of their employment and beyond — it's the document referenced in almost every employment dispute, PF/ESI inspection, or background verification request, and a missing or unsigned contract weakens your position considerably if a disagreement ever needs to be resolved formally.",
     ],
+    directAnswer: "Create a comprehensive employment contract detailing compensation, probation periods, and confidentiality terms for new hires.",
+    example: "An IT company generates a contract for a new Software Engineer, explicitly stating a 30-day notice period and a 6-month non-solicitation clause after termination.",
+    steps: [
+      {
+        title: "Employee Details",
+        description: "Enter the company and employee names, along with the designation.",
+      },
+      {
+        title: "Define Compensation",
+        description: "Input the annual CTC, start date, work location, and notice period.",
+      },
+      {
+        title: "Generate Contract",
+        description: "Download the formal employment contract ready for signatures.",
+      },
+    ],
     faq: [
       {
         question: "How is this different from an appointment letter?",
@@ -401,6 +580,11 @@ export const tools: ToolConfig[] = [
         question: "What notice period should I use?",
         answer:
           "30 days is common for junior-to-mid roles, 60-90 for senior roles. Match it to what your company will actually enforce — use the notice period recovery calculator to model the buyout implications of your chosen period.",
+      },
+      {
+        question: "Do I need to sign a physical copy?",
+        answer:
+          "While digital signatures are legally valid for most contracts in India, many companies still prefer physically signed copies for employee records.",
       },
     ],
     related: ["offer-letter-generator", "appointment-letter-generator", "nda-generator", "salary-calculator"],
@@ -430,6 +614,22 @@ export const tools: ToolConfig[] = [
       "One practical note for India: loan agreements above certain thresholds may attract stamp duty and, in some states, require registration to be fully enforceable in court — the requirements vary by state and loan size, so check locally before relying on an unregistered agreement for a significant amount. For smaller, informal loans between individuals, a signed (even if unregistered) agreement is still far better evidence than no paperwork at all.",
       "Both lender and borrower should keep a signed copy, and settling repayments through a traceable channel like bank transfer (rather than cash) creates a cleaner paper trail alongside the agreement itself — useful if either party ever needs to demonstrate the loan and its repayment history to a bank, an auditor, or in a dispute.",
     ],
+    directAnswer: "Generate a legally sound loan agreement for personal or business lending, outlining the principal amount, interest rate, and repayment schedule.",
+    example: "A small business owner borrows ₹2,00,000 from a friend. They use this tool to create a formal agreement with a 5% interest rate to be repaid over 12 months.",
+    steps: [
+      {
+        title: "Input Names",
+        description: "Provide the names of both the lender and the borrower.",
+      },
+      {
+        title: "Set Loan Terms",
+        description: "Specify the principal amount, interest rate, and repayment timeline.",
+      },
+      {
+        title: "Generate Agreement",
+        description: "Review and download your structured loan document.",
+      },
+    ],
     faq: [
       {
         question: "Can I set the interest rate to 0%?",
@@ -445,6 +645,11 @@ export const tools: ToolConfig[] = [
         question: "What happens if the borrower doesn't repay?",
         answer:
           "Per this template, if a payment is missed and remains unpaid 15 days after written notice, the lender may declare the entire outstanding balance immediately due. Recovering the amount may still require legal proceedings if the borrower doesn't pay voluntarily.",
+      },
+      {
+        question: "Can the borrower prepay the loan?",
+        answer:
+          "Yes, this standard template typically permits the borrower to prepay the outstanding balance without facing prepayment penalties.",
       },
     ],
     related: ["simple-interest-calculator", "compound-interest-calculator", "emi-calculator", "partnership-deed-generator"],
@@ -475,6 +680,22 @@ export const tools: ToolConfig[] = [
       "This generator produces a deed for a two-partner firm covering the firm name and business address, the capital each partner contributes, the profit-and-loss sharing ratio (which the tool validates sums to 100%), duties and decision-making, banking arrangements, and the process for admitting or retiring partners and for dissolution. These are exactly the questions that cause partnership disputes when left unwritten — especially profit-sharing once the business is actually making money.",
       "For a firm intending to operate formally (open a current bank account, take business loans, sign leases as a firm), register this deed with the Registrar of Firms in your state — registration isn't mandatory to form a valid partnership, but an unregistered firm can't sue third parties to enforce a contract, which is a serious practical limitation. Have a chartered accountant or lawyer review the capital and profit-sharing structure against your actual tax planning before finalising.",
     ],
+    directAnswer: "Create a formal partnership deed that details capital contributions, profit-sharing ratios, and operational rules for a two-partner firm.",
+    example: "Two founders starting an agency use this deed to legally record that while one contributes 70% of the capital, they split profits 50/50.",
+    steps: [
+      {
+        title: "Firm Details",
+        description: "Enter the firm's name and registered business address.",
+      },
+      {
+        title: "Partner Information",
+        description: "Input both partners' names and their respective profit-sharing percentages.",
+      },
+      {
+        title: "Generate Deed",
+        description: "Set the initial capital amount and download the partnership deed.",
+      },
+    ],
     faq: [
       {
         question: "Is registering a partnership deed mandatory?",
@@ -490,6 +711,11 @@ export const tools: ToolConfig[] = [
         question: "Can this deed support more than two partners?",
         answer:
           "This generator is built for a two-partner firm. For three or more partners, use the generated text as a starting structure and add each additional partner's details and profit share manually, ensuring all shares still sum to 100%.",
+      },
+      {
+        question: "Does the deed outline what happens if a partner leaves?",
+        answer:
+          "Yes, a standard partnership deed includes dissolution and retirement clauses to handle scenarios where a partner wants to exit the firm.",
       },
     ],
     related: ["loan-agreement-generator", "gst-calculator", "working-capital-calculator", "nda-generator"],

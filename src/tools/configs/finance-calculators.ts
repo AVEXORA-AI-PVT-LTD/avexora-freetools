@@ -28,6 +28,18 @@ export const tools: ToolConfig[] = [
       "Add or remove GST from any amount and see the CGST/SGST/IGST split instantly.",
     seoDescription:
       "Free online GST calculator for India. Calculate GST inclusive or exclusive amounts at 0.25%, 3%, 5%, 12%, 18% and 28% with instant CGST, SGST and IGST breakup.",
+    directAnswer:
+      "A GST calculator for India that adds or removes GST at the current slab rates (0.25%, 3%, 5%, 12%, 18%, 28%) and shows the CGST/SGST/IGST breakup instantly.",
+    formula:
+      "Add GST: GST = amount × rate ÷ 100, total = amount + GST. Remove GST: base = amount ÷ (1 + rate ÷ 100), GST = amount − base.",
+    example:
+      "Example: ₹10,000 excluding 18% GST → GST = ₹1,800, total = ₹11,800 (CGST ₹900 + SGST ₹900 within a state, or IGST ₹1,800 inter-state). On an inclusive ₹11,800, the base is ₹10,000 and GST is ₹1,800.",
+    steps: [
+      "Enter the base amount or total amount.",
+      "Select the applicable GST slab rate.",
+      "Choose whether the amount includes or excludes GST.",
+      "View the final breakup of CGST, SGST, and IGST."
+    ],
     fields: [
       {
         name: "amount",
@@ -91,6 +103,11 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — it's completely free, requires no sign-up, and runs instantly in your browser.",
       },
+      {
+        question: "Do I need to calculate GST on shipping charges?",
+        answer:
+          "Yes, shipping or freight charges are generally subject to GST. If they are included in the same invoice as the goods, they often attract the same GST rate as the principal supply.",
+      },
     ],
     related: ["tds-calculator", "margin-calculator", "income-tax-calculator", "invoice-generator"],
   },
@@ -102,6 +119,18 @@ export const tools: ToolConfig[] = [
     tagline: "Work out your monthly loan instalment, total interest and total repayment in seconds.",
     seoDescription:
       "Free EMI calculator for home, car and personal loans. Enter loan amount, interest rate and tenure to get your monthly EMI, total interest and total payment.",
+    directAnswer:
+      "An EMI (Equated Monthly Instalment) calculator works out the fixed monthly repayment on a home, car or personal loan — plus total interest and total payment — using the standard reducing-balance formula.",
+    formula:
+      "EMI = P × r × (1 + r)ⁿ ÷ ((1 + r)ⁿ − 1), where P is the principal, r the monthly interest rate (annual rate ÷ 12 ÷ 100) and n the number of monthly instalments.",
+    example:
+      "Example: a ₹25,00,000 loan at 8.5% for 20 years (240 months) → monthly EMI ₹21,695.58, total interest ₹27,06,939.40, total payment ₹52,06,939.40. At 8%, the EMI is ₹20,911.00.",
+    steps: [
+      "Enter the total loan amount.",
+      "Input the annual interest rate.",
+      "Specify the loan tenure in years.",
+      "View your calculated EMI, total interest, and total payment amounts."
+    ],
     fields: [
       { name: "loanAmount", label: "Loan amount", type: "number", placeholder: "2500000", min: 0, unit: "₹" },
       { name: "annualRate", label: "Interest rate (per year)", type: "number", placeholder: "8.5", min: 0, max: 60, step: 0.05, unit: "%" },
@@ -135,6 +164,11 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes. The EMI formula is identical for all reducing-balance loans; only the typical rates and tenures differ.",
       },
+      {
+        question: "Are processing fees included in this EMI calculation?",
+        answer:
+          "No, this calculator strictly works out the EMI on the principal amount. Processing fees are usually deducted upfront from the loan disbursement or added to the initial payment.",
+      },
     ],
     related: ["simple-interest-calculator", "compound-interest-calculator", "income-tax-calculator", "late-fee-calculator"],
   },
@@ -146,6 +180,18 @@ export const tools: ToolConfig[] = [
     tagline: "See what your monthly mutual-fund SIP could grow to over time.",
     seoDescription:
       "Free SIP calculator. Enter your monthly investment, expected return and period to see your maturity corpus, total invested and estimated returns instantly.",
+    directAnswer:
+      "A SIP calculator projects how a fixed monthly mutual-fund investment grows over time, using the standard SIP future-value formula with monthly compounding.",
+    formula:
+      "FV = A × ((1 + i)ⁿ − 1) ÷ i × (1 + i), where A is the monthly investment, i the monthly rate (expected annual return ÷ 12 ÷ 100) and n the number of instalments.",
+    example:
+      "Example: ₹10,000 invested monthly at a 12% expected annual return for 15 years → corpus ₹50,45,760 on ₹18,00,000 invested, i.e. estimated returns of ₹32,45,760.",
+    steps: [
+      "Enter the monthly investment amount.",
+      "Input your expected annual return.",
+      "Specify the investment period in years.",
+      "See your estimated corpus and total returns."
+    ],
     fields: [
       { name: "monthlyInvestment", label: "Monthly investment", type: "number", placeholder: "10000", min: 0, unit: "₹" },
       { name: "annualReturn", label: "Expected annual return", type: "number", placeholder: "12", min: 0, max: 40, step: 0.5, unit: "%" },
@@ -159,6 +205,7 @@ export const tools: ToolConfig[] = [
       "Treat the expected-return field honestly: equity funds have historically delivered 10–14% over long periods, but returns are not guaranteed and vary year to year. Run the calculation at 10% and 12% to see a realistic band rather than a single number. Nothing you enter is stored.",
     ],
     faq: [
+
       {
         question: "What return should I assume for a SIP?",
         answer:
@@ -174,6 +221,14 @@ export const tools: ToolConfig[] = [
         answer:
           "No — the corpus shown is pre-tax and in future rupees. Equity fund gains above ₹1.25 lakh a year attract LTCG tax at 12.5% currently. Consider both when setting targets.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["fd-calculator", "rd-calculator", "compound-interest-calculator", "roi-calculator"],
   },
@@ -185,6 +240,17 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate FD maturity value with monthly, quarterly, half-yearly or yearly compounding.",
     seoDescription:
       "Free fixed deposit calculator for Indian banks. Enter deposit, interest rate, tenure and compounding frequency to see FD maturity amount and interest earned.",
+    directAnswer:
+      "A fixed deposit calculator tells you the exact maturity amount and total interest of an FD for any deposit, rate, tenure and compounding frequency (monthly, quarterly, half-yearly or yearly).",
+    formula:
+      "M = P × (1 + r/m)^(m×t), where P is the deposit, r the annual rate (÷ 100), m the compounding periods per year and t the tenure in years.",
+    example:
+      "Example: ₹1,00,000 at 7% for 5 years with quarterly compounding → maturity ₹1,41,477.82, interest ₹41,477.82.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "principal", label: "Deposit amount", type: "number", placeholder: "100000", min: 0, unit: "₹" },
       { name: "annualRate", label: "Interest rate (per year)", type: "number", placeholder: "7", min: 0, max: 15, step: 0.05, unit: "%" },
@@ -210,6 +276,7 @@ export const tools: ToolConfig[] = [
       "Use it to plan ladders too: instead of one large FD, split the amount across tenures of 1–5 years so a deposit matures regularly, giving liquidity without breaking an FD early (which usually costs a 0.5–1% penalty on the rate). Remember that FD interest is fully taxable at your slab rate, and banks deduct TDS at 10% once interest crosses ₹40,000 a year (₹50,000 for senior citizens) — factor that into post-tax comparisons with debt funds.",
     ],
     faq: [
+
       {
         question: "How do banks compound FD interest?",
         answer:
@@ -225,6 +292,14 @@ export const tools: ToolConfig[] = [
         answer:
           "The bank recalculates interest at the rate applicable for the period the deposit actually ran, usually minus a 0.5–1% premature-withdrawal penalty. Laddering several smaller FDs avoids this.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["rd-calculator", "sip-calculator", "compound-interest-calculator", "tds-calculator"],
   },
@@ -236,6 +311,17 @@ export const tools: ToolConfig[] = [
     tagline: "See the maturity value of a monthly recurring deposit at any bank rate.",
     seoDescription:
       "Free RD calculator. Enter your monthly deposit, interest rate and tenure to see the recurring deposit maturity amount and interest, using the standard bank formula.",
+    directAnswer:
+      "A recurring deposit calculator works out the maturity value of a monthly RD (bank or post office) using the standard quarterly-compounding RD formula.",
+    formula:
+      "Each monthly instalment compounds quarterly for the quarters remaining until maturity; the maturity value is the sum of all instalments' compounded values (standard bank/Post Office RD formula).",
+    example:
+      "Example: ₹5,000 deposited monthly at 6.8% for 36 months → maturity ₹2,00,058.97 on ₹1,80,000 deposited, so ₹20,058.97 in interest.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "monthlyDeposit", label: "Monthly deposit", type: "number", placeholder: "5000", min: 0, unit: "₹" },
       { name: "annualRate", label: "Interest rate (per year)", type: "number", placeholder: "6.8", min: 0, max: 15, step: 0.05, unit: "%" },
@@ -249,6 +335,7 @@ export const tools: ToolConfig[] = [
       "Compare the result against a SIP in a debt or hybrid fund for the same monthly amount: the RD's return is guaranteed and fixed, the fund's is market-linked but historically somewhat higher. Many savers run both — an RD for must-have goals and a SIP for growth. RD interest, like FD interest, is taxable at your slab rate and subject to TDS above the annual threshold.",
     ],
     faq: [
+
       {
         question: "How is RD interest calculated?",
         answer:
@@ -264,6 +351,14 @@ export const tools: ToolConfig[] = [
         answer:
           "An RD gives a guaranteed, fixed return and suits short-term, must-achieve goals. A SIP into a mutual fund is market-linked — historically higher over long periods but not guaranteed. Many savers use both for different goals.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["fd-calculator", "sip-calculator", "simple-interest-calculator", "compound-interest-calculator"],
   },
@@ -275,6 +370,17 @@ export const tools: ToolConfig[] = [
     tagline: "Compare your tax under the new and old regimes and see which saves you more.",
     seoDescription:
       "Free income tax calculator for FY 2025-26 (AY 2026-27). Compare new vs old regime tax on your salary with standard deduction, 87A rebate and cess included.",
+    directAnswer:
+      "An income tax calculator for FY 2025-26 (AY 2026-27) that compares your tax under the new and old regimes — with standard deduction, the §87A rebate and 4% health-and-education cess — so you can see which regime saves you more.",
+    formula:
+      "New regime (FY 2025-26): taxable income minus ₹75,000 standard deduction (salaried) → slab tax at 0%/5%/10%/15%/20%/25%/30% (nil to ₹4L, then 5% to ₹8L, 10% to ₹12L, 15% to ₹16L, 20% to ₹20L, 25% to ₹24L, 30% above) → §87A rebate (zero tax up to ₹12L) → + 4% cess. Old regime: ₹50,000 standard deduction then 5/20/30% slabs and rebate up to ₹5L.",
+    example:
+      "Example: ₹15,00,000 salary → new regime tax ₹97,500 (taxable ₹14,25,000 after ₹75,000 standard deduction) vs old regime ₹2,57,400 (taxable ₹14,50,000). New regime saves ₹1,59,900.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "annualIncome", label: "Annual income", type: "number", placeholder: "1500000", min: 0, unit: "₹" },
       {
@@ -298,6 +404,7 @@ export const tools: ToolConfig[] = [
       "The calculator compares gross tax under both regimes assuming no old-regime deductions beyond the standard deduction — if you claim large deductions (HRA, 80C, home-loan interest), the old regime's real position improves by your slab rate times the deduction amount, so treat the comparison as a starting point. Surcharge on incomes above ₹50 lakh is not modelled.",
     ],
     faq: [
+
       {
         question: "Which regime is better for FY 2025-26?",
         answer:
@@ -318,6 +425,10 @@ export const tools: ToolConfig[] = [
         answer:
           "Only the ₹50,000 standard deduction for salaried taxpayers. Add your own 80C/80D/HRA/home-loan deductions mentally: each ₹1 of deduction saves tax at your marginal slab rate.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
     ],
     related: ["tds-calculator", "advance-tax-calculator", "freelance-tds-calculator", "salary-calculator", "hra-exemption-calculator", "gst-calculator"],
   },
@@ -329,6 +440,17 @@ export const tools: ToolConfig[] = [
     tagline: "Work out TDS to deduct on contractor, professional, rent, commission and interest payments.",
     seoDescription:
       "Free TDS calculator for sections 194C, 194J, 194I, 194H and 194A. Enter the payment amount and section to get the TDS to deduct and net amount payable.",
+    directAnswer:
+      "A TDS calculator that applies the correct tax-at-source rate for the most common sections (194C contractors, 194J professional fees, 194I rent, 194H commission, 194A interest) and shows the TDS amount and net payment.",
+    formula:
+      "TDS = payment amount × section rate, deducted from what you pay the party. Rates: 194C 1% (individual/HUF payee) or 2% (company/firm); 194J 10%; 194I 10% (land/building) or 2% (plant & machinery); 194H 2%; 194A 10%. The calculator assumes a valid PAN (otherwise 20% under section 206AA).",
+    example:
+      "Example: a ₹1,00,000 professional-fee payment under 194J → TDS ₹10,000, net amount payable to the vendor ₹90,000.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "amount", label: "Payment amount", type: "number", placeholder: "100000", min: 0, unit: "₹" },
       {
@@ -355,6 +477,7 @@ export const tools: ToolConfig[] = [
       "Remember two general rules: if the payee doesn't give you a PAN, TDS jumps to 20% under section 206AA, and TDS is deducted on the amount excluding GST when the GST is shown separately in the invoice — see the [GST calculator](/finance-calculators/gst-calculator) to work out the tax on the invoice amount. This calculator assumes a valid PAN and applies the rate to the amount you enter.",
     ],
     faq: [
+
       {
         question: "When do I need to deduct TDS as a business?",
         answer:
@@ -375,6 +498,10 @@ export const tools: ToolConfig[] = [
         answer:
           "Common ones (FY 2025-26): 194C — ₹30,000 per contract or ₹1,00,000 aggregate per year; 194J — ₹50,000 per year; 194I — ₹6,00,000 per year; 194H — ₹20,000 per year; 194A — ₹10,000 (₹1,00,000 for senior citizens at banks). Below these, deduct nothing.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
     ],
     related: ["gst-calculator", "income-tax-calculator", "advance-tax-calculator", "freelance-tds-calculator", "salary-calculator", "invoice-generator"],
   },
@@ -387,6 +514,17 @@ export const tools: ToolConfig[] = [
       "Estimate your annual income tax for AY 2027-28 and see exactly how much advance tax to pay and when.",
     seoDescription:
       "Free advance tax calculator for FY 2026-27 (AY 2027-28). Estimate your income tax under the new or old regime, subtract TDS and advance tax already paid, and see the quarterly advance tax instalment schedule with due dates.",
+    directAnswer:
+      "An advance tax calculator that estimates your income tax for FY 2026-27 (AY 2027-28), subtracts TDS and advance tax already paid, and converts the balance into the exact quarterly instalments due on 15 June, 15 September, 15 December and 15 March.",
+    formula:
+      "Estimated annual tax (new or old regime slabs + 4% cess, surcharge above ₹50 lakh) − TDS credited to PAN − advance tax already paid = remaining advance tax, payable in instalments of 15% by 15 June, 45% by 15 September, 75% by 15 December and 100% by 15 March (single 15 March instalment for 44AD/44ADA).",
+    example:
+      "Example: ₹15,00,000 professional profit + ₹50,000 other income under the new regime → annual tax ₹1,17,000; minus ₹80,000 TDS → ₹37,000 remains, due as ₹5,550 on 15 June, ₹11,100 on 15 September, ₹11,100 on 15 December and ₹9,250 on 15 March.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       {
         name: "taxYear",
@@ -498,6 +636,17 @@ export const tools: ToolConfig[] = [
       "Section 194J TDS on professional and technical fees — see what your client deducts and the net you receive.",
     seoDescription:
       "Free Section 194J TDS calculator for freelancers and consultants (Tax Year 2026-27, Income-tax Act 2025). Enter your fee, category and annual payments to see the applicable TDS rate (10% professional / 2% technical), the TDS deducted and your net receivable.",
+    directAnswer:
+      "A freelancer TDS calculator that works out the Section 194J (now 393(1)) deduction a client withholds from your professional or technical fees — 10% or 2% — including the ₹50,000 annual threshold, the payer-type rules and the 20% no-PAN rate.",
+    formula:
+      "TDS = gross fee × rate (10% professional services, 2% fees for technical services). No TDS below ₹50,000 aggregate per category per tax year; once crossed, TDS applies to the full payment. Without a valid PAN the rate becomes 20%.",
+    example:
+      "Example: a ₹1,00,000 professional fee with ₹1,00,000 already paid to you in that category this year → the ₹50,000 threshold is crossed, so TDS = 10% of ₹1,00,000 = ₹10,000, and your net receivable is ₹90,000.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "amount", label: "Payment / invoice amount (fee only)", type: "number", placeholder: "100000", min: 0, step: 0.01, unit: "₹", help: "Enter the fee excluding GST — when GST is shown separately on the invoice, TDS applies to the fee only." },
       {
@@ -583,6 +732,17 @@ export const tools: ToolConfig[] = [
     tagline: "See how money grows when interest earns interest.",
     seoDescription:
       "Free compound interest calculator. Enter principal, rate, time and compounding frequency to see the maturity amount and total interest earned instantly.",
+    directAnswer:
+      "A compound interest calculator that shows how much a principal grows when interest earns interest, for any rate, period and compounding frequency (yearly, half-yearly, quarterly or monthly).",
+    formula:
+      "A = P × (1 + r/m)^(m×t), where P is the principal, r the annual rate (÷ 100), m the compounding periods per year and t the time in years.",
+    example:
+      "Example: ₹1,00,000 at 8% for 10 years → ₹2,15,892.50 (interest ₹1,15,892.50) compounded yearly, but ₹2,21,964.02 (interest ₹1,21,964.02) compounded monthly.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "principal", label: "Principal amount", type: "number", placeholder: "100000", min: 0, unit: "₹" },
       { name: "annualRate", label: "Interest rate (per year)", type: "number", placeholder: "8", min: 0, max: 50, step: 0.1, unit: "%" },
@@ -608,6 +768,7 @@ export const tools: ToolConfig[] = [
       "Two practical uses. First, comparing products: banks quote nominal rates with different compounding — converting them to maturity values makes offers directly comparable. Second, appreciating time: at 8%, money doubles roughly every 9 years (the rule of 72 — divide 72 by the rate). Starting ten years earlier doesn't add a little, it roughly doubles the outcome. Play with the time field and watch how disproportionately the final amount responds — that's the argument for starting to invest now rather than at a 'better' time.",
     ],
     faq: [
+
       {
         question: "What's the difference between simple and compound interest?",
         answer:
@@ -623,6 +784,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes, though moderately. More frequent compounding gives a higher effective yield for the same nominal rate — 8% compounded monthly is an effective 8.30% a year. Always compare effective yields, not headline rates.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["simple-interest-calculator", "fd-calculator", "sip-calculator", "roi-calculator"],
   },
@@ -634,6 +803,17 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate interest charged only on the principal — the SI = P×R×T formula.",
     seoDescription:
       "Free simple interest calculator. Enter principal, annual rate and time to get the interest and total amount using the SI = P × R × T ÷ 100 formula.",
+    directAnswer:
+      "A simple interest calculator that computes interest charged only on the principal (no compounding) and the total amount repayable, using the SI = P × R × T ÷ 100 formula.",
+    formula:
+      "SI = P × R × T ÷ 100, where P is the principal, R the annual rate in percent and T the time in years. Total amount = P + SI.",
+    example:
+      "Example: ₹50,000 at 10% per year for 3 years → SI = 50,000 × 10 × 3 ÷ 100 = ₹15,000; total amount repayable ₹65,000.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "principal", label: "Principal amount", type: "number", placeholder: "50000", min: 0, unit: "₹" },
       { name: "annualRate", label: "Interest rate (per year)", type: "number", placeholder: "10", min: 0, max: 60, step: 0.1, unit: "%" },
@@ -647,6 +827,7 @@ export const tools: ToolConfig[] = [
       "When you're offered a loan, always confirm whether the quoted rate is simple or compounded (and if compounded, how often). For the same headline rate, simple interest is always cheaper for the borrower. Compare the two side by side with our compound interest calculator: ₹1 lakh at 12% for 5 years costs ₹60,000 in simple interest but ₹76,234 compounded annually. On short tenures the gap is small; over years it becomes the difference between a fair deal and an expensive one.",
     ],
     faq: [
+
       {
         question: "What is the simple interest formula?",
         answer:
@@ -662,6 +843,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — convert months to years (6 months = 0.5 years, 18 months = 1.5) and enter the fraction in the time field.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["compound-interest-calculator", "emi-calculator", "late-fee-calculator", "fd-calculator"],
   },
@@ -673,6 +862,17 @@ export const tools: ToolConfig[] = [
     tagline: "Find how many units you must sell before your business stops losing money.",
     seoDescription:
       "Free break-even calculator. Enter fixed costs, price per unit and variable cost to get break-even units, revenue and contribution margin instantly.",
+    directAnswer:
+      "A break-even calculator that finds how many units you must sell before total revenue covers total costs — break-even units, break-even revenue and contribution margin ratio in one go.",
+    formula:
+      "Break-even units = fixed costs ÷ (selling price − variable cost per unit). Break-even revenue = break-even units × selling price. Contribution margin per unit = selling price − variable cost; ratio = contribution ÷ price.",
+    example:
+      "Example: ₹2,00,000 fixed costs, ₹500 selling price and ₹300 variable cost per unit → contribution ₹200/unit → 1,000 units (₹5,00,000 revenue) to break even, with a 40% contribution margin ratio.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "fixedCosts", label: "Total fixed costs (per period)", type: "number", placeholder: "200000", min: 0, unit: "₹" },
       { name: "pricePerUnit", label: "Selling price per unit", type: "number", placeholder: "500", min: 0, unit: "₹" },
@@ -686,6 +886,7 @@ export const tools: ToolConfig[] = [
       "Use the calculator to stress-test decisions before making them: What if I raise the price by ₹50? What if a supplier increase pushes variable cost up 10%? What does hiring one more person (higher fixed costs) do to my required volume? The contribution-margin ratio shown alongside tells you what share of every rupee of sales is available to cover fixed costs — a quick health indicator to compare products against each other. If your variable cost is at or above your price, no volume will ever save you; the calculator will tell you that too.",
     ],
     faq: [
+
       {
         question: "What counts as a fixed cost vs a variable cost?",
         answer:
@@ -701,6 +902,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Three levers: raise the price (if the market allows), cut variable cost per unit (better sourcing, packaging), or cut fixed costs (cheaper premises, leaner payroll). Small changes in contribution per unit often move the break-even volume dramatically.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["margin-calculator", "markup-calculator", "working-capital-calculator", "roi-calculator", "profit-margin-markup-calculator"],
   },
@@ -712,6 +921,17 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate your gross profit and margin percentage from cost and revenue.",
     seoDescription:
       "Free profit margin calculator. Enter cost and revenue to get gross profit, profit margin percentage and equivalent markup — know what you really earn per sale.",
+    directAnswer:
+      "A profit margin calculator that turns cost and revenue into gross profit, the margin percentage on the selling price, and the equivalent markup on cost.",
+    formula:
+      "Profit = revenue − cost. Margin % = profit ÷ revenue × 100. Markup % = profit ÷ cost × 100.",
+    example:
+      "Example: cost ₹700, revenue ₹1,000 → profit ₹300, profit margin 30%, equivalent markup 42.86%.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "cost", label: "Cost", type: "number", placeholder: "700", min: 0, unit: "₹" },
       { name: "revenue", label: "Revenue (selling price)", type: "number", placeholder: "1000", min: 0, unit: "₹" },
@@ -724,6 +944,7 @@ export const tools: ToolConfig[] = [
       "Track margin at two levels: per product, to decide what to promote, reprice or drop; and blended across the business, to watch the trend — a slowly eroding margin usually means input costs are creeping up faster than your prices. Typical gross margins vary hugely by industry: grocery retail runs on 15–25%, apparel 40–60%, restaurants 60–70% on food (before heavy fixed costs), and software much higher. Compare yourself with your industry, not with a universal number.",
     ],
     faq: [
+
       {
         question: "What is the difference between margin and markup?",
         answer:
@@ -739,6 +960,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Gross — it considers only the direct cost of the goods sold. Net margin also subtracts overheads like rent, salaries and marketing from the profit before dividing by revenue.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["markup-calculator", "break-even-calculator", "gst-calculator", "discount-calculator", "profit-margin-markup-calculator"],
   },
@@ -750,6 +979,17 @@ export const tools: ToolConfig[] = [
     tagline: "Work out your markup percentage on cost — and the margin it translates to.",
     seoDescription:
       "Free markup calculator. Enter cost price and selling price to get markup percentage on cost, profit per unit and the equivalent profit margin.",
+    directAnswer:
+      "A markup calculator that works out the percentage you add to cost to reach a selling price, plus the equivalent profit margin — you buy at a cost, mark up, and see both perspectives on the same profit.",
+    formula:
+      "Markup % = (selling price − cost) ÷ cost × 100. Equivalent margin % = (selling price − cost) ÷ selling price × 100.",
+    example:
+      "Example: cost ₹700, selling price ₹1,000 → markup 42.86% on cost, profit ₹300 per unit, equivalent margin 30%.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "cost", label: "Cost price", type: "number", placeholder: "700", min: 0, unit: "₹" },
       { name: "sellingPrice", label: "Selling price", type: "number", placeholder: "1000", min: 0, unit: "₹" },
@@ -762,6 +1002,7 @@ export const tools: ToolConfig[] = [
       "Common practice: keystone pricing in retail is a 100% markup (doubling cost, a 50% margin); food service often marks up ingredients 200–300%; commodity trading may survive on single-digit markups with volume. Whatever your norm, sanity-check it against your fixed costs with the break-even calculator — a markup that looks healthy per unit can still be too thin if your volumes are low relative to rent and salaries.",
     ],
     faq: [
+
       {
         question: "How do I convert markup to margin?",
         answer:
@@ -777,6 +1018,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Use markup when you start from cost and want a price. Use margin when you start from a target share of revenue. They're two views of the same profit — this calculator shows both so nothing is lost in translation.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["margin-calculator", "break-even-calculator", "discount-calculator", "gst-calculator", "profit-margin-markup-calculator"],
   },
@@ -789,6 +1038,17 @@ export const tools: ToolConfig[] = [
       "See your true profit on every sale after marketplace fees, shipping, packaging and other costs.",
     seoDescription:
       "Free profit margin and markup calculator for Indian marketplace sellers. Enter selling price, product cost, marketplace fee (percentage or fixed) and shipping to get gross profit, net profit, margin %, markup % and the amount you actually receive — instantly.",
+    directAnswer:
+      "A marketplace seller profit calculator that works backwards from the customer price to the rupees that actually land with you — net of product cost, marketplace fee, shipping, packaging and other costs — and reports both margin (on price) and markup (on cost).",
+    formula:
+      "Total cost = cost price + shipping + packaging + other costs + marketplace fee. Net profit = selling price − total cost. Margin % = net profit ÷ selling price × 100. Markup % = net profit ÷ cost price × 100. Amount after marketplace fee = selling price − fee.",
+    example:
+      "Example: sell at ₹1,000 a product costing ₹600, with ₹50 shipping, ₹10 packaging, ₹20 other costs and no marketplace fee → total cost ₹680, net profit ₹320, margin 32%, markup 53.33%.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "sellingPrice", label: "Selling price", type: "number", placeholder: "1000", min: 0, unit: "₹" },
       { name: "cost", label: "Cost price (product cost)", type: "number", placeholder: "600", min: 0, unit: "₹" },
@@ -884,6 +1144,17 @@ export const tools: ToolConfig[] = [
     tagline: "Measure total and annualized return on any investment.",
     seoDescription:
       "Free ROI calculator. Enter initial investment, final value and holding period to get total ROI, net gain and annualized return (CAGR) instantly.",
+    directAnswer:
+      "An ROI calculator that measures the total return on an investment, the rupee gain or loss, and the annualized return (CAGR) that makes investments with different holding periods comparable.",
+    formula:
+      "Total ROI % = (final value − initial investment) ÷ initial investment × 100. CAGR % = ((final ÷ initial) ^ (1/years)) − 1 × 100.",
+    example:
+      "Example: ₹1,00,000 invested becomes ₹1,80,000 in 5 years → total ROI 80%, net gain ₹80,000, annualized return (CAGR) 12.47%.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "initialInvestment", label: "Initial investment", type: "number", placeholder: "100000", min: 0, unit: "₹" },
       { name: "finalValue", label: "Final value", type: "number", placeholder: "180000", min: 0, unit: "₹" },
@@ -897,6 +1168,7 @@ export const tools: ToolConfig[] = [
       "Use it for more than stocks: property (include purchase costs and improvements in the initial amount), gold, a business you invested in, a course that raised your salary, or marketing spend against the revenue it produced. For honest numbers, add incidental costs — brokerage, stamp duty, taxes on exit — to the initial investment or subtract them from the final value. The calculator handles losses too: a final value below the initial simply shows a negative ROI.",
     ],
     faq: [
+
       {
         question: "What is the difference between ROI and CAGR?",
         answer:
@@ -912,6 +1184,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes, for real-world accuracy: add purchase costs (brokerage, stamp duty, registration) to the initial investment and subtract exit costs and taxes from the final value. The pre-cost figure flatters every investment.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["sip-calculator", "compound-interest-calculator", "fd-calculator", "roas-calculator"],
   },
@@ -923,6 +1203,17 @@ export const tools: ToolConfig[] = [
     tagline: "Straight-line and written-down-value depreciation with year-wise book values.",
     seoDescription:
       "Free depreciation calculator with straight-line and WDV (reducing balance) methods. Get annual depreciation and year-wise book value for any business asset.",
+    directAnswer:
+      "A depreciation calculator that spreads an asset's cost over its useful life using either straight-line (SLM) or written-down value (WDV) method, with the year-wise book value for each year.",
+    formula:
+      "SLM: annual depreciation = (asset cost − salvage value) ÷ useful life. WDV: depreciation = current book value × WDV rate, applied to the reducing balance each year.",
+    example:
+      "Example: ₹5,00,000 asset, ₹50,000 salvage, 5-year life → SLM charges ₹90,000 each year (book value ₹4,10,000 after year 1). WDV at 25% on the same asset charges ₹1,25,000 in year 1, and the book value falls to ₹2,10,937.50 by year 3.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "assetCost", label: "Asset cost", type: "number", placeholder: "500000", min: 0, unit: "₹" },
       { name: "salvageValue", label: "Salvage value at end of life", type: "number", placeholder: "50000", min: 0, unit: "₹", defaultValue: 0 },
@@ -947,6 +1238,7 @@ export const tools: ToolConfig[] = [
       "Choose the method the context requires: your accountant may keep SLM books and a WDV tax computation for the same asset. The WDV view here lists the book value at the end of each year of the asset's life so you can see the declining balance at a glance.",
     ],
     faq: [
+
       {
         question: "Which method does Indian income tax use?",
         answer:
@@ -962,6 +1254,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Neither is universally better. SLM gives smooth, predictable book expenses; WDV front-loads the deduction, which matches the faster early loss of value in most equipment and gives earlier tax relief. Tax law usually decides for you: WDV in India.",
       },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
+      },
     ],
     related: ["working-capital-calculator", "roi-calculator", "break-even-calculator", "income-tax-calculator"],
   },
@@ -973,6 +1273,17 @@ export const tools: ToolConfig[] = [
     tagline: "Check your business's short-term financial health: net working capital and current ratio.",
     seoDescription:
       "Free working capital calculator. Enter current assets and current liabilities to get net working capital and current ratio — your short-term liquidity health check.",
+    directAnswer:
+      "A working capital calculator that measures a business's short-term liquidity: net working capital (current assets minus current liabilities) and the current ratio.",
+    formula:
+      "Net working capital = current assets − current liabilities. Current ratio = current assets ÷ current liabilities.",
+    example:
+      "Example: ₹12,00,000 current assets and ₹8,00,000 current liabilities → net working capital ₹4,00,000 and a current ratio of 1.5 — in the conventionally healthy 1.5–2 range.",
+    steps: [
+      "Enter your basic details in the fields provided.",
+      "Select the appropriate options from the dropdowns.",
+      "View your precise calculation results instantly."
+    ],
     fields: [
       { name: "currentAssets", label: "Current assets", type: "number", placeholder: "1200000", min: 0, unit: "₹", help: "Cash, bank balances, receivables, inventory, other assets convertible within a year" },
       { name: "currentLiabilities", label: "Current liabilities", type: "number", placeholder: "800000", min: 0, unit: "₹", help: "Payables, short-term loans, taxes due, other obligations payable within a year" },
@@ -985,6 +1296,7 @@ export const tools: ToolConfig[] = [
       "Profitable companies fail on working capital surprisingly often: sales grow, but the cash is trapped in receivables and stock while salaries and suppliers must be paid now. Watch the trend monthly, not just the level. The practical levers are collecting receivables faster (shorter credit periods, payment reminders — see the payment reminder generator), negotiating longer supplier terms, and right-sizing inventory. Banks assess exactly these numbers when pricing working-capital loans and cash-credit limits, so knowing yours before the meeting puts you ahead.",
     ],
     faq: [
+
       {
         question: "What counts as current assets and current liabilities?",
         answer:
@@ -999,6 +1311,14 @@ export const tools: ToolConfig[] = [
         question: "Can a profitable business have negative working capital?",
         answer:
           "Yes — profit is an accounting result, cash is a timing reality. If customers pay in 90 days but suppliers demand 30, growth itself consumes cash. Some models (supermarkets, subscriptions) deliberately run negative working capital because customers pay upfront.",
+      },
+      {
+        question: "Is my financial data secure?",
+        answer: "Absolutely. All calculations happen entirely in your browser and none of your inputs are saved or sent to any server.",
+      },
+      {
+        question: "Can I use this for official tax filing?",
+        answer: "While highly accurate for planning and estimation, always consult your CA or tax professional for final official filings.",
       },
     ],
     related: ["break-even-calculator", "margin-calculator", "invoice-due-date-calculator", "payment-reminder-generator"],

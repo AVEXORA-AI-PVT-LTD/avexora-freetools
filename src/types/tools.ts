@@ -96,6 +96,22 @@ interface ToolBase {
   seoDescription: string;
   /** "About / how it works" paragraphs rendered below the tool (SEO body copy). */
   about: string[];
+  /**
+   * AEO: one to two sentence direct answer to "What is this tool?" shown right
+   * below the tagline, before the tool runs. Must be extractable on its own.
+   */
+  directAnswer?: string;
+  /** AEO: primary formula/method stated exactly as the tool computes it. */
+  formula?: string;
+  /** AEO: one concrete worked example (Input → Formula → Result). */
+  example?: string;
+  /**
+   * AEO: genuine multi-step workflow steps rendered as a visible ordered list
+   * AND as HowTo JSON-LD (same array, so visible steps always equal the schema,
+   * and the schema is only emitted when real steps exist). Set only for tools
+   * with a real multi-step workflow (file-tools, document builders, etc.).
+   */
+  steps?: string[];
   faq: FaqItem[];
   /** Slugs of related tools for internal linking. */
   related: string[];

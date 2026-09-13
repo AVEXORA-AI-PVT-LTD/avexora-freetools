@@ -133,7 +133,8 @@ describe("§46 SEO acceptance: structured data", () => {
   it.each(allTools)("tool $slug JSON-LD is valid and uses tool facts + production URLs", (tool) => {
     const cat = categories.find((c) => c.slug === tool.category)!;
     const ld = toolJsonLd(tool, cat);
-    expect(ld).toHaveLength(3);
+    const hasSteps = tool.steps && tool.steps.length > 0;
+    expect(ld).toHaveLength(hasSteps ? 4 : 3);
     const software = ld[0] as Record<string, unknown>;
     const faq = ld[1] as { mainEntity: unknown[] };
     const breadcrumb = ld[2] as { itemListElement: Array<{ item: string }> };

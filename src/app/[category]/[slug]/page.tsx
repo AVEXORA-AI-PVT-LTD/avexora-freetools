@@ -6,6 +6,7 @@ import { allTools, getTool, toolsByCategory } from "@/tools/registry";
 import { toolJsonLd, toolMetadata } from "@/lib/seo";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { ToolAboutText } from "@/components/tools/tool-about-text";
+import { ToolAeoBlocks } from "@/components/tools/tool-aeo";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 
@@ -67,9 +68,24 @@ export default async function ToolPage({
       </h1>
       <p className="mt-2 text-slate-600 print:hidden">{tool.tagline}</p>
 
+      {tool.directAnswer && (
+        <p
+          data-aeo="direct-answer"
+          className="mt-4 rounded-lg border-l-4 border-orange-500 bg-orange-50 px-4 py-3 text-[15px] leading-relaxed text-slate-800 print:hidden"
+        >
+          {tool.directAnswer}
+        </p>
+      )}
+
       <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm print:border-none print:p-0 print:shadow-none">
         <ToolRunner category={tool.category} slug={tool.slug} aiEnabled={aiEnabled} />
       </div>
+
+      {(tool.steps?.length || tool.formula || tool.example) ? (
+        <div className="mt-8 space-y-8 print:hidden">
+          <ToolAeoBlocks tool={tool} />
+        </div>
+      ) : null}
 
       <div className="mt-10 space-y-10 print:hidden">
         <CtaBlock

@@ -68,7 +68,7 @@ export function categoryMetadata(cat: CategoryDef): Metadata {
 
 export function toolJsonLd(tool: ToolConfig, cat: CategoryDef): object[] {
   const url = canonicalUrl(tool);
-  return [
+  const nodes: object[] = [
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
@@ -98,6 +98,21 @@ export function toolJsonLd(tool: ToolConfig, cat: CategoryDef): object[] {
       ],
     },
   ];
+  if (tool.steps && tool.steps.length > 0) {
+    nodes.push({
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      name: tool.name,
+      description: tool.seoDescription,
+      step: tool.steps.map((step, i) => ({
+        "@type": "HowToStep",
+        position: i + 1,
+        name: step,
+        text: step,
+      })),
+    });
+  }
+  return nodes;
 }
 
 export function categoryJsonLd(cat: CategoryDef): object[] {

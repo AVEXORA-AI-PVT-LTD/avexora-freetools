@@ -22,6 +22,18 @@ export const tools: ToolConfig[] = [
       "Count words, characters, sentences and reading time as you type.",
     seoDescription:
       "Free online word counter. Instantly count words, characters (with and without spaces), sentences, paragraphs, reading time and speaking time for any text.",
+    directAnswer:
+      "A word counter that gives live counts for words, characters (with and without spaces), sentences, paragraphs, and the estimated reading and speaking time — all recomputed as you type.",
+    formula:
+      "Words = whitespace-separated tokens. Reading time ≈ word count ÷ 225 WPM; speaking time ≈ word count ÷ 130 WPM. Characters counted with and without spaces.",
+    example:
+      "Example: pasting a ~225-word draft into the box shows roughly 1 minute of reading time and about 1 min 44 s of speaking time at average speeds.",
+    steps: [
+      "Paste or type your text directly into the input area.",
+      "Watch the word count, character count, and other metrics update instantly as you type.",
+      "Check the estimated reading and speaking times below the text.",
+      "Clear the text box to start fresh with a new document.",
+    ],
     fields: [
       {
         name: "text",
@@ -55,6 +67,16 @@ export const tools: ToolConfig[] = [
         answer:
           "It uses the widely accepted average of 225 words per minute for silent reading. Actual speed varies by reader and content difficulty, so treat it as a good approximation.",
       },
+      {
+        question: "Does the character count include spaces?",
+        answer:
+          "Yes, the tool provides two separate character counts: one that includes spaces and another that excludes them, so you can easily verify limits for various platforms.",
+      },
+      {
+        question: "Can I use this word counter on my mobile phone?",
+        answer:
+          "Absolutely! The word counter is completely responsive and works flawlessly on your mobile browser, making it convenient to check your text on the go.",
+      },
     ],
     related: ["character-counter", "case-converter", "text-diff-checker", "ai-blog-outline-generator"],
   },
@@ -66,6 +88,18 @@ export const tools: ToolConfig[] = [
     tagline: "Count characters with and without spaces, live as you type.",
     seoDescription:
       "Free character counter. Count characters with and without spaces, words and lines instantly — perfect for SMS, tweets, meta descriptions and ad copy limits.",
+    directAnswer:
+      "A character counter that reports characters with and without spaces, plus word and line counts, live as you type — with the numbers that actually matter for character-limited fields.",
+    formula:
+      "Characters = every code point in the text. Characters (no spaces) = characters − space count. Words and lines counted alongside for platform limits.",
+    example:
+      "Example: \"Buy organic masala online — flat 20% off today\" is 46 characters and 8 words, comfortably inside X's 280-character limit and a 30-character Google Ads headline needs a tighter rephrase.",
+    steps: [
+      "Paste or type your text into the input area.",
+      "See the character count (with and without spaces) update live.",
+      "Check the word and line counts alongside the characters.",
+      "Ensure your text stays within your required platform limits.",
+    ],
     fields: [
       { name: "text", label: "Your text", type: "textarea", placeholder: "Paste or type your text here…", rows: 8, optional: true },
     ],
@@ -91,6 +125,16 @@ export const tools: ToolConfig[] = [
         question: "Is my text stored anywhere?",
         answer: "No — counting happens entirely in your browser and your text never leaves your device.",
       },
+      {
+        question: "Are line breaks counted as characters?",
+        answer:
+          "Yes, typically line breaks (Enter/Return) count as one or two characters depending on the platform, and our tool accounts for them accordingly.",
+      },
+      {
+        question: "Can I count characters for Google Ads headlines?",
+        answer:
+          "Definitely! This counter is perfect for making sure your headlines stay under Google's 30-character limit and your descriptions stay under 90 characters.",
+      },
     ],
     related: ["word-counter", "case-converter", "find-and-replace", "meta-tag-generator"],
   },
@@ -102,6 +146,16 @@ export const tools: ToolConfig[] = [
     tagline: "Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case and more.",
     seoDescription:
       "Free online case converter. Change text to uppercase, lowercase, title case, sentence case, camelCase, PascalCase, snake_case or kebab-case in one click.",
+    directAnswer:
+      "A case converter that transforms any text into eight cases in one click — UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, snake_case and kebab-case — splitting on spaces, punctuation and existing camelCase humps.",
+    steps: [
+      "Paste the text to convert into the input box.",
+      "Choose the target case: lower, upper, title, sentence, camel, pascal, snake or kebab.",
+      "Click Convert to apply the case transformation.",
+      "Copy the converted text and use it in your document, code or URL.",
+    ],
+    example:
+      "Example: converting \"hello world\" to Title Case yields \"Hello World\", or to snake_case yields \"hello_world\".",
     fields: [
       { name: "text", label: "Your text", type: "textarea", placeholder: "Paste the text to convert…", rows: 6 },
       {
@@ -144,6 +198,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — paste one identifier per line and convert; the case is applied line by line since line breaks are punctuation boundaries. For project-wide renames, use your IDE's refactoring tools instead.",
       },
+      {
+        question: "Does this tool work with special characters or accents?",
+        answer:
+          "Yes, it preserves most punctuation and accented characters while properly transforming the alphabetic characters according to your chosen case style.",
+      },
+      {
+        question: "Can I undo a case conversion?",
+        answer:
+          "Once converted, you can simply select a different case format and click convert again to try another style, or use your browser's undo shortcut to revert the text box.",
+      },
     ],
     related: ["word-counter", "find-and-replace", "text-sorter", "slug-generator"],
   },
@@ -155,6 +219,16 @@ export const tools: ToolConfig[] = [
     tagline: "Pretty-print, validate or minify JSON instantly in your browser.",
     seoDescription:
       "Free JSON formatter and validator. Pretty-print JSON with 2 or 4-space indentation, minify it for production, and get clear error messages for invalid JSON.",
+    directAnswer:
+      "A JSON formatter and validator that pretty-prints JSON with 2 or 4-space indentation, minifies it for production, and surfaces the parser's exact error message and position when the input is invalid.",
+    steps: [
+      "Paste the JSON you want to format or validate.",
+      "Pick the output mode: pretty-print with 2 or 4 spaces, or minify.",
+      "Click Format to parse and pretty-print; invalid JSON raises the parser's exact error message and position.",
+      "Copy the output, or download it as a .json file when it's large.",
+    ],
+    example:
+      "Example: pasting '{\"key\":\"value\"}' and selecting Pretty-print (2 spaces) outputs a multi-line formatted JSON block, making it easy to read.",
     fields: [
       { name: "json", label: "JSON input", type: "textarea", placeholder: '{"name":"Avexora","tools":120}', rows: 10 },
       {
@@ -192,6 +266,16 @@ export const tools: ToolConfig[] = [
         answer:
           "For production traffic and storage: minified JSON strips all whitespace, cutting payload size meaningfully on large documents. Keep the pretty version for humans, ship the minified one to machines.",
       },
+      {
+        question: "Can this formatter handle very large JSON files?",
+        answer:
+          "Yes, it is designed to handle large JSON documents efficiently. For exceptionally large files, you can format them and then download the result directly to avoid clipboard limitations.",
+      },
+      {
+        question: "Does it fix common JSON errors automatically?",
+        answer:
+          "It acts as a strict validator and will highlight exactly where an error occurs, but it won't guess your intent to automatically fix issues like missing quotes or trailing commas.",
+      },
     ],
     related: ["csv-to-json", "json-to-csv", "json-to-typescript", "base64-encoder-decoder", "jwt-decoder"],
   },
@@ -203,6 +287,17 @@ export const tools: ToolConfig[] = [
     tagline: "Turn spreadsheet CSV data into a clean JSON array.",
     seoDescription:
       "Free CSV to JSON converter. Paste CSV with comma, semicolon or tab delimiters and get a JSON array — handles quoted fields and header rows correctly.",
+    directAnswer:
+      "A CSV to JSON converter that turns spreadsheet data into a JSON array, correctly handling quoted fields containing commas and line breaks, header-row keys, and comma, semicolon or tab delimiters.",
+    steps: [
+      "Paste your CSV data into the input box.",
+      "Select the delimiter your file uses — comma, semicolon or tab.",
+      "Decide whether the first row is a header (on by default — it becomes the JSON keys).",
+      "Click Convert to produce the JSON array, with data rows as objects and quoted fields kept intact.",
+      "Copy the JSON output or download it for use in code or APIs.",
+    ],
+    example:
+      "Example: a CSV with 'name,age' on the first row and 'Alice,30' on the second converts to [{\"name\":\"Alice\",\"age\":\"30\"}].",
     fields: [
       { name: "csv", label: "CSV input", type: "textarea", placeholder: "name,email,city\nAsha,asha@example.com,Pune", rows: 8 },
       {
@@ -241,6 +336,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Locales that use the comma as a decimal separator (much of Europe) export CSV with semicolons instead. Pick the semicolon delimiter and it converts identically.",
       },
+      {
+        question: "Is this tool safe for confidential business data?",
+        answer:
+          "Absolutely. All parsing and conversion run strictly locally within your browser. No data is ever sent to or stored on our servers.",
+      },
+      {
+        question: "Can it handle tab-separated values (TSV)?",
+        answer:
+          "Yes, simply select 'Tab' as your delimiter and the converter will handle TSV files just as flawlessly as regular CSV files.",
+      },
     ],
     related: ["json-to-csv", "json-formatter", "text-sorter", "remove-duplicate-lines"],
   },
@@ -252,6 +357,16 @@ export const tools: ToolConfig[] = [
     tagline: "Flatten a JSON array into spreadsheet-ready CSV.",
     seoDescription:
       "Free JSON to CSV converter. Paste a JSON array of objects and get CSV with a header row — properly quoted for Excel and Google Sheets.",
+    directAnswer:
+      "A JSON to CSV converter that flattens a JSON array of objects into spreadsheet-ready CSV, building the header row from the union of all keys, filling missing values with blanks, and quoting fields containing commas or quotes.",
+    steps: [
+      "Paste a JSON array of objects into the input box.",
+      "Click Convert to build the CSV.",
+      "Review the header row, which is assembled from the union of all object keys.",
+      "Copy the CSV, or download it and open directly in Excel, Google Sheets or LibreOffice.",
+    ],
+    example:
+      "Example: pasting [{\"id\":1,\"role\":\"admin\"}] generates a CSV with headers 'id,role' and a row with '1,admin'.",
     fields: [
       { name: "json", label: "JSON array input", type: "textarea", placeholder: '[{"name":"Asha","city":"Pune"},{"name":"Ravi","city":"Delhi"}]', rows: 8 },
     ],
@@ -278,6 +393,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — fields containing commas, quotes or line breaks are quoted and escaped per the CSV standard that Excel, Google Sheets and LibreOffice all follow.",
       },
+      {
+        question: "Can I use this for JSON files exported from my database?",
+        answer:
+          "Yes, as long as the exported JSON is formatted as an array of objects, the converter will cleanly transform it into a CSV file for spreadsheet analysis.",
+      },
+      {
+        question: "Is my data secure during the conversion?",
+        answer:
+          "Completely. The JSON to CSV conversion is performed entirely in your browser using JavaScript, meaning your data never touches our servers.",
+      },
     ],
     related: ["csv-to-json", "json-formatter", "text-diff-checker", "word-counter"],
   },
@@ -289,6 +414,16 @@ export const tools: ToolConfig[] = [
     tagline: "Compare two texts line by line and see exactly what changed.",
     seoDescription:
       "Free text diff checker. Paste two versions of any text and see a line-by-line comparison with additions and removals clearly marked — all in your browser.",
+    directAnswer:
+      "A text diff checker that compares two versions line by line using the longest-common-subsequence algorithm, marking removed lines with a minus and added lines with a plus so you see exactly what changed — including small insertions in the middle of long documents.",
+    steps: [
+      "Paste the original text into the first box and the new version into the second.",
+      "Click Compare to align the two texts and compute the minimal set of changes.",
+      "Read the diff: unchanged lines plain, added lines prefixed with +, removed lines prefixed with −.",
+      "Copy the report or the merged text for your records.",
+    ],
+    example:
+      "Example: comparing 'Hello world' with 'Hello beautiful world' highlights 'beautiful' as an addition (+).",
     fields: [
       { name: "original", label: "Original text", type: "textarea", placeholder: "Paste the original version…", rows: 8 },
       { name: "changed", label: "Changed text", type: "textarea", placeholder: "Paste the new version…", rows: 8 },
@@ -316,6 +451,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — the comparison runs entirely in your browser. Neither version of your text is uploaded or stored anywhere.",
       },
+      {
+        question: "Can I compare code snippets as well as plain text?",
+        answer:
+          "Yes! The diff checker works perfectly for source code, configuration files, and plain text, marking additions and removals just like Git.",
+      },
+      {
+        question: "Is there a limit to how much text I can compare?",
+        answer:
+          "Because it runs in your browser, the only limit is your device's memory. However, extremely large files (like tens of thousands of lines) might take a few seconds to process.",
+      },
     ],
     related: ["word-counter", "remove-duplicate-lines", "find-and-replace", "case-converter"],
   },
@@ -327,6 +472,16 @@ export const tools: ToolConfig[] = [
     tagline: "Generate placeholder text by paragraphs, sentences or words.",
     seoDescription:
       "Free lorem ipsum generator. Create classic placeholder text by paragraphs, sentences or words for mockups, designs and templates — copy or download instantly.",
+    directAnswer:
+      "A lorem ipsum generator that produces the classic placeholder text starting with \"Lorem ipsum dolor sit amet\" in exact quantities — by paragraphs, sentences or words — for mockups, designs and CMS templates, with copy or download output.",
+    steps: [
+      "Set how much text you need — the count, and the unit: paragraphs, sentences or words.",
+      "Click Generate to produce the classic lorem ipsum starting with \"Lorem ipsum dolor sit amet\".",
+      "Copy the output, or download it as a text file.",
+      "Paste it into your Figma file, WordPress draft or email template.",
+    ],
+    example:
+      "Example: generating '2 sentences' creates a concise block of dummy text perfect for a short product description or card UI.",
     fields: [
       { name: "count", label: "How many", type: "number", defaultValue: 3, min: 1, max: 20 },
       {
@@ -364,6 +519,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Slightly more than the design comfortably fits. Real content tends to run longer than mockup text, so testing with generous amounts reveals overflow and truncation issues early.",
       },
+      {
+        question: "Can I generate just a few words for a title?",
+        answer:
+          "Yes, you can select 'words' as the unit and generate exactly the number you need for headlines, buttons, or short labels.",
+      },
+      {
+        question: "Is the generated text always exactly the same?",
+        answer:
+          "While it always begins with the classic 'Lorem ipsum dolor sit amet', the subsequent text follows standard patterns to ensure it looks like natural, varied prose.",
+      },
     ],
     related: ["word-counter", "character-counter", "case-converter", "ai-blog-outline-generator"],
   },
@@ -375,6 +540,16 @@ export const tools: ToolConfig[] = [
     tagline: "Create strong random passwords with cryptographically secure randomness.",
     seoDescription:
       "Free strong password generator. Create random passwords from 4 to 128 characters with uppercase, lowercase, numbers and symbols — generated locally, never sent anywhere.",
+    directAnswer:
+      "A strong password generator that creates random passwords of 4–128 characters from your chosen character sets, using the browser's cryptographically secure random API with biased-free rejection sampling — so nothing is ever sent over a network.",
+    steps: [
+      "Choose the password length (16 is a strong default; 20+ for email and banking).",
+      "Tick the character sets you want — uppercase, lowercase, numbers, symbols.",
+      "Click Generate password — it's created locally with cryptographic randomness, never sent to a server.",
+      "Copy it straight into your password manager.",
+    ],
+    example:
+      "Example: a 16-character password with all sets enabled produces a highly secure string like 'K9#vP$2mA!qL7zXc'.",
     fields: [
       { name: "length", label: "Password length", type: "number", defaultValue: 16, min: 4, max: 128 },
       { name: "uppercase", label: "Include uppercase letters (A–Z)", type: "checkbox", defaultValue: true },
@@ -410,6 +585,11 @@ export const tools: ToolConfig[] = [
         answer:
           "Some sites restrict which symbols they accept or cap the length. Regenerate with symbols off or a shorter length to fit their rules — and consider that such restrictions say something about the site's security hygiene.",
       },
+      {
+        question: "Should I memorize my generated passwords?",
+        answer:
+          "No, the goal of random passwords is that they are mathematically unguessable and unmemorable. You should store them in a secure, reputable password manager.",
+      },
     ],
     related: ["hash-generator", "uuid-generator", "base64-encoder-decoder", "word-counter"],
   },
@@ -421,6 +601,17 @@ export const tools: ToolConfig[] = [
     tagline: "De-duplicate any list while keeping the original order.",
     seoDescription:
       "Free duplicate line remover. Paste any list and remove duplicate lines instantly, with optional case-insensitive matching and whitespace trimming.",
+    directAnswer:
+      "A duplicate line remover that strips repeat lines from any list while preserving the first occurrence and the original order, with case-insensitive matching and whitespace trimming to catch near-duplicates that look identical.",
+    steps: [
+      "Paste your list with one item per line.",
+      "Toggle case-insensitive matching if case doesn't matter (e.g. email addresses).",
+      "Enable whitespace trimming to ignore stray spaces and tabs that hide duplicates.",
+      "Click Remove duplicates — the first occurrence of each line is kept, in order.",
+      "Copy the cleaned list or download it as a text file.",
+    ],
+    example:
+      "Example: pasting 'apple', 'Banana', and 'apple' returns just 'apple' and 'Banana' in that exact order.",
     fields: [
       { name: "text", label: "Your lines", type: "textarea", placeholder: "Paste one item per line…", rows: 10 },
       { name: "caseInsensitive", label: "Ignore case (treat \"Apple\" and \"apple\" as duplicates)", type: "checkbox" },
@@ -449,6 +640,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Almost always invisible whitespace — a trailing space or tab on one of them. Enable the trim option and they'll match.",
       },
+      {
+        question: "Can I use this for a very long list of URLs or keywords?",
+        answer:
+          "Absolutely. It is optimized to handle large datasets natively in your browser without any server delays.",
+      },
+      {
+        question: "What happens to blank lines?",
+        answer:
+          "By default, the tool will treat blank lines just like any other content, meaning multiple blank lines will be reduced to a single blank line.",
+      },
     ],
     related: ["text-sorter", "text-diff-checker", "find-and-replace", "csv-to-json"],
   },
@@ -460,6 +661,17 @@ export const tools: ToolConfig[] = [
     tagline: "Sort lines alphabetically, by length, or in natural numeric order.",
     seoDescription:
       "Free text sorter. Sort lines A to Z, Z to A, by length, or in natural numeric order (file2 before file10), with optional case-insensitive sorting.",
+    directAnswer:
+      "A text sorter that orders lines A→Z, Z→A, by length, or in natural numeric order — so file2 sorts before file10 — with stable, case-insensitive sorting by default.",
+    steps: [
+      "Paste the lines you want to sort into the box.",
+      "Pick the sort order: A→Z, Z→A, natural numeric, shortest first or longest first.",
+      "Decide whether to ignore case (on by default for dictionary-style order).",
+      "Click Sort to rearrange the lines.",
+      "Copy the ordered list or download it as a text file.",
+    ],
+    example:
+      "Example: using Natural sort on 'file10, file2, file1' returns 'file1, file2, file10' instead of standard alphabetical order.",
     fields: [
       { name: "text", label: "Lines to sort", type: "textarea", placeholder: "Paste one item per line…", rows: 10 },
       {
@@ -500,6 +712,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — use natural order so 9 sorts before 82 and 100. Alphabetical order would sort them as strings: 100, 82, 9.",
       },
+      {
+        question: "What does sorting by length do?",
+        answer:
+          "It orders your list based purely on the number of characters in each line, which is useful when organizing CSS classes or visual text layouts.",
+      },
+      {
+        question: "Does sorting remove duplicate lines?",
+        answer:
+          "No, sorting will just group duplicates together. If you want to remove them, use the Remove Duplicate Lines tool first.",
+      },
     ],
     related: ["remove-duplicate-lines", "text-diff-checker", "case-converter", "csv-to-json"],
   },
@@ -511,6 +733,17 @@ export const tools: ToolConfig[] = [
     tagline: "Bulk find-and-replace with whole-word, case and regex options.",
     seoDescription:
       "Free online find and replace tool. Replace text in bulk with case-sensitive, whole-word and regular-expression modes — runs entirely in your browser.",
+    directAnswer:
+      "A find and replace tool that makes bulk edits to any pasted text, with case-sensitive, whole-word and regex modes — including capture-group replacements like $1 — all running entirely in the browser.",
+    steps: [
+      "Paste the text to modify into the box.",
+      "Enter the search string and its replacement.",
+      "Set the switches that describe the match: case-sensitive, whole-word, or regex mode.",
+      "Click Replace to apply the change in plain-text or regex mode.",
+      "Review the output and copy it back to your document or file.",
+    ],
+    example:
+      "Example: enabling Regex and finding 'cat(s)?' to replace with 'dog$1' changes 'cat' to 'dog' and 'cats' to 'dogs'.",
     fields: [
       { name: "text", label: "Your text", type: "textarea", placeholder: "Paste the text to modify…", rows: 10 },
       { name: "find", label: "Find", type: "text", placeholder: "old text" },
@@ -541,6 +774,16 @@ export const tools: ToolConfig[] = [
         question: "Why did my replacement with a $ sign behave oddly?",
         answer:
           "In regex mode, $ sequences in the replacement are special ($1, $&). Use plain-text mode for literal replacements — there the replacement string is inserted exactly as typed.",
+      },
+      {
+        question: "Does the search replace all occurrences?",
+        answer:
+          "Yes, it acts globally and replaces every instance of the match in your text across all lines.",
+      },
+      {
+        question: "Can I use this to remove text instead of replacing it?",
+        answer:
+          "Absolutely. Simply enter the text you want to find and leave the 'Replace with' field completely blank. All matches will be erased.",
       },
     ],
     related: ["case-converter", "remove-duplicate-lines", "text-sorter", "regex-tester"],

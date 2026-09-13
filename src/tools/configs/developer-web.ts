@@ -23,6 +23,17 @@ export const tools: ToolConfig[] = [
     tagline: "Create a QR code for any URL or text and download it as a PNG.",
     seoDescription:
       "Free QR code generator. Turn any URL or text into a QR code with selectable size and error correction, and download it as a high-resolution PNG.",
+    directAnswer:
+      "A QR code generator that turns any URL or text into a scannable QR code with selectable size (512, 1024) and error-correction level (L/M/Q/H), generated entirely in your browser, with PNG download.",
+    example:
+      "Example: Paste \"https://example.com\", select 512px and M error correction, and you'll get a scannable QR code ready to download.",
+    steps: [
+      "Paste the URL or text you want to encode.",
+      "Choose the size — 512 px for screen, 1024 px for print.",
+      "Pick an error-correction level: M (15%) is the typical default, H (30%) if you'll overlay a logo or the code may get scuffed.",
+      "Generate the code and preview it.",
+      "Download it as a PNG, then print or place it — keep it at least 2 × 2 cm for close-range scanning.",
+    ],
     component: QrCodeGenerator,
     about: [
       "QR codes are the fastest bridge from the physical world to a URL: on a shop counter, a restaurant table, a poster, a business card, a product label or an invoice, one scan replaces typing an address. This generator creates a scannable code for any text or link in a second — choose a size, pick an error-correction level, generate, and download a crisp PNG ready for print or screen.",
@@ -49,6 +60,10 @@ export const tools: ToolConfig[] = [
         question: "Is my content uploaded to a server?",
         answer: "No — the code is generated entirely in your browser and only exists on your device until you download it.",
       },
+      {
+        question: "Can I add a logo to the center of my QR code?",
+        answer: "Yes, you can overlay a logo after downloading. Make sure to use the High (H) error correction level so the QR code remains scannable even with the logo covering the center."
+      }
     ],
     related: ["barcode-generator", "url-encoder-decoder", "slug-generator", "utm-builder", "base64-encoder-decoder"],
   },
@@ -60,6 +75,17 @@ export const tools: ToolConfig[] = [
     tagline: "Generate EAN-13, UPC-A and Code 128 barcodes with real check-digit validation.",
     seoDescription:
       "Free barcode generator. Create EAN-13, UPC-A and Code 128 barcodes with proper check-digit validation, live preview, and crisp PNG or vector SVG download for print.",
+    directAnswer:
+      "A barcode generator that produces real, scannable EAN-13, UPC-A and Code 128 barcodes in your browser — with genuine Modulo-10 check-digit validation for EAN/UPC (invalid numbers are never encoded), live preview, and PNG or vector SVG export.",
+    example:
+      "Example: Enter \"123456789012\" for an EAN-13 barcode, and the tool will automatically calculate the 13th check digit.",
+    steps: [
+      "Choose a barcode type: EAN-13, UPC-A or Code 128.",
+      "Enter the value — EAN-13 needs 12 digits (the 13th check digit is calculated for you), UPC-A needs 11, Code 128 takes any printable ASCII.",
+      "The tool validates the check digit and rejects invalid numbers before encoding.",
+      "Generate a live preview of the barcode.",
+      "Download as PNG or SVG and place it on packaging or labels with good contrast and quiet zones.",
+    ],
     component: BarcodeGenerator,
     about: [
       "EAN-13, UPC-A and Code 128 are the everyday identifiers of retail packaging, product labels and shipping. This generator produces real, scannable barcodes in your browser — not placeholder images — with genuine validation for each format: EAN-13 and UPC-A check digits are calculated per their official Modulo-10 algorithms, so an invalid number is never encoded.",
@@ -103,6 +129,18 @@ export const tools: ToolConfig[] = [
     tagline: "Percent-encode text for URLs, or decode an encoded URL back to plain text.",
     seoDescription:
       "Free URL encoder and decoder. Percent-encode text for query strings or decode %20-style URLs back to readable text — with component and full-URI modes.",
+    directAnswer:
+      "A URL encoder/decoder that percent-encodes text for use in URLs or decodes %20-style URLs back to readable text, with two modes — value-safe component encoding and structure-preserving full-URI encoding.",
+    formula:
+      "Encode: reserved characters become %HH (space → %20, & → %26, = → %3D). Decode: %HH sequences are converted back to their characters. Component mode encodes &, = and /; full-URI mode leaves those structural characters intact.",
+    example:
+      "Example: \"name=Ravi Kumar&city=New Delhi\" in component-encode returns name=Ravi%20Kumar%26city%3DNew%20Delhi — a query value stays one parameter. Decoding that back yields the original text.",
+    steps: [
+      "Paste your text or URL into the input box.",
+      "Choose whether you want to Encode or Decode.",
+      "Select the mode: Component for query parameters, or Full URI for whole URLs.",
+      "Click Convert to get your percent-encoded or decoded string."
+    ],
     fields: [
       { name: "text", label: "Text or URL", type: "textarea", placeholder: "name=Ravi Kumar&city=New Delhi", rows: 5 },
       {
@@ -149,6 +187,14 @@ export const tools: ToolConfig[] = [
         answer:
           "The input contains a % that isn't followed by two hexadecimal digits — usually a URL that was already partially decoded or hand-edited. Fix or remove the stray % and decode again.",
       },
+      {
+        question: "Can I encode just the query parameters of a URL?",
+        answer: "If you have a full URL but only want to encode the query string values, it's best to extract the values, encode them using Component mode, and then reassemble the URL. Using Full URI mode will encode spaces and special characters but leave structural ones like '&' and '=' untouched."
+      },
+      {
+        question: "Does this tool support Unicode characters?",
+        answer: "Yes, it fully supports Unicode. Characters like emojis or non-English text are first converted to their UTF-8 byte representation before being percent-encoded."
+      }
     ],
     related: ["base64-encoder-decoder", "html-entity-encoder-decoder", "utm-builder", "slug-generator"],
   },
@@ -160,6 +206,18 @@ export const tools: ToolConfig[] = [
     tagline: "Convert text to base64 and back — Unicode-safe, in your browser.",
     seoDescription:
       "Free base64 encoder and decoder. Convert any text to base64 or decode base64 back to text, with full Unicode support — runs entirely in your browser.",
+    directAnswer:
+      "A Unicode-safe base64 encoder/decoder that converts text to base64 (UTF-8 aware, so Hindi, emoji and ₹ work) and decodes base64 back to text — with the understanding that base64 is an encoding, not encryption.",
+    formula:
+      "Base64 = 6-bit chunks of the input's UTF-8 bytes mapped to A–Z a–z 0–9 + /, padded to groups of 3 bytes with one or two = characters.",
+    example:
+      "Example: \"Hello, world!\" encodes to SGVsbG8sIHdvcmxkIQ== — decoding it returns the original text, including Unicode like नमस्ते and ₹500.",
+    steps: [
+      "Paste the text or Base64 string you want to convert.",
+      "Select 'Encode to base64' or 'Decode from base64' from the dropdown.",
+      "Click Convert to process the string.",
+      "Copy the resulting base64 or decoded text."
+    ],
     fields: [
       { name: "text", label: "Input", type: "textarea", placeholder: "Hello, world!  —or—  SGVsbG8sIHdvcmxkIQ==", rows: 6 },
       {
@@ -196,6 +254,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Padding. Base64 works in 3-byte groups; when the input isn't a multiple of 3 bytes, one or two = characters pad the final group. Decoders need them (this one restores missing padding automatically).",
       },
+      {
+        question: "Is there a limit on how much text I can encode?",
+        answer: "The tool runs entirely in your browser, so it can handle large strings easily. However, massive files might cause the browser to slow down."
+      },
+      {
+        question: "Can I use base64 in URLs?",
+        answer: "Standard base64 includes '+' and '/' characters, which have special meaning in URLs. For URLs, you should use a 'base64url' variant, which replaces them with '-' and '_'."
+      }
     ],
     related: ["url-encoder-decoder", "jwt-decoder", "hash-generator", "html-entity-encoder-decoder"],
   },
@@ -207,6 +273,16 @@ export const tools: ToolConfig[] = [
     tagline: "Generate one or a hundred random v4 UUIDs with one click.",
     seoDescription:
       "Free UUID v4 generator. Create 1 to 100 cryptographically random UUIDs instantly — copy them or download as a text file for IDs, keys and test data.",
+    directAnswer:
+      "A UUID generator that produces cryptographically random version 4 UUIDs instantly in your browser. Choose how many you need (1 to 100), generate them, and copy or download them for your project.",
+    example:
+      "Example: Enter 5 in the count field to generate five unique IDs like 550e8400-e29b-41d4-a716-446655440000.",
+    steps: [
+      "Enter the number of UUIDs you want to generate (between 1 and 100).",
+      "Click 'Generate UUIDs' to create them instantly.",
+      "Copy the generated UUIDs individually, or copy the entire list.",
+      "Alternatively, download the UUIDs as a text file."
+    ],
     fields: [
       { name: "count", label: "How many UUIDs", type: "number", defaultValue: 5, min: 1, max: 100 },
     ],
@@ -233,6 +309,14 @@ export const tools: ToolConfig[] = [
         answer:
           "They're generated with a cryptographically secure RNG, but UUIDs are identifiers, not credentials — they often leak into logs and URLs. Use a dedicated secret/token generator for authentication material.",
       },
+      {
+        question: "Why should I use UUIDs instead of auto-incrementing integers?",
+        answer: "UUIDs allow distributed systems to generate identifiers without needing a central database to assign the next ID. They also hide your data volume (unlike user ID #152)."
+      },
+      {
+        question: "Is it safe to generate UUIDs here for production?",
+        answer: "Yes. The generation happens entirely in your browser using the Web Crypto API, meaning the UUIDs are never sent to a server and are completely private."
+      }
     ],
     related: ["password-generator", "hash-generator", "base64-encoder-decoder", "timestamp-converter"],
   },
@@ -244,6 +328,16 @@ export const tools: ToolConfig[] = [
     tagline: "Compute SHA-1, SHA-256 and SHA-512 hashes of any text.",
     seoDescription:
       "Free SHA hash generator. Compute SHA-1, SHA-256 and SHA-512 hex digests of any text instantly in your browser — nothing is ever uploaded.",
+    directAnswer:
+      "A hash generator that computes SHA-1, SHA-256 and SHA-512 cryptographic hashes for any text entirely in your browser using the Web Crypto API.",
+    example:
+      "Example: Enter 'hello world' and select SHA-256 to get its hash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9'.",
+    steps: [
+      "Paste or type the text you want to hash.",
+      "Select the hashing algorithm(s) you need: SHA-256 is the recommended modern default.",
+      "The tool calculates the hash instantly as you type.",
+      "Copy the hex digest for your use."
+    ],
     component: HashGenerator,
     about: [
       "A cryptographic hash is a fixed-length fingerprint of data: feed in any text and you get a digest — 64 hex characters for SHA-256 — that changes completely if even one character of the input changes, and can't be reversed back into the original. That one-way fingerprint property powers file-integrity checks, cache keys, deduplication, content addressing in git, checksums on download pages, and (with proper salting and stretching) password storage.",
@@ -271,6 +365,10 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — that's the defining property. The digest depends only on the exact bytes of input, so watch out for invisible differences like trailing newlines or different line endings.",
       },
+      {
+        question: "How is the hash calculated safely?",
+        answer: "This tool uses your browser's native Web Crypto API, meaning all hashing happens locally. Your text never leaves your device, making it safe for hashing sensitive strings."
+      }
     ],
     related: ["password-generator", "uuid-generator", "base64-encoder-decoder", "jwt-decoder"],
   },
@@ -282,6 +380,16 @@ export const tools: ToolConfig[] = [
     tagline: "Test regular expressions against sample text and inspect every match and group.",
     seoDescription:
       "Free regex tester. Try JavaScript regular expressions against sample text and see every match with its index and capture groups — with clear error messages.",
+    directAnswer:
+      "A regex tester that lets you test JavaScript regular expressions against sample text to see matches, indices, and capture groups in real-time.",
+    example:
+      "Example: Enter the pattern '\\b\\d{6}\\b', flag 'g', and text 'My PIN is 110001'. The tester will highlight '110001' as a match.",
+    steps: [
+      "Enter your regular expression pattern in the Pattern field (without the leading/trailing slashes).",
+      "Optionally add flags like 'g' for global or 'i' for case-insensitive.",
+      "Paste the text you want to test into the Test text field.",
+      "Click 'Test pattern' to view all matches, their positions, and captured groups."
+    ],
     fields: [
       { name: "pattern", label: "Pattern", type: "text", placeholder: "\\b\\d{6}\\b" },
       { name: "flags", label: "Flags", type: "text", placeholder: "gi", optional: true, help: "g, i, m, s, u, y" },
@@ -310,6 +418,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Usually a greedy quantifier: .* grabs as much as possible. Use the lazy form .*? or a more specific character class like [^,]* to stop at the right boundary.",
       },
+      {
+        question: "What does the 'g' flag do?",
+        answer: "The 'g' (global) flag tells the regex engine to find all matches in the text, rather than stopping after the first match. The tester automatically displays all occurrences found."
+      },
+      {
+        question: "Is it safe to paste private logs here?",
+        answer: "Yes, testing happens entirely in your browser using the local JavaScript engine. No patterns or text are ever sent to a server."
+      }
     ],
     related: ["find-and-replace", "text-diff-checker", "case-converter", "markdown-to-html"],
   },
@@ -321,6 +437,16 @@ export const tools: ToolConfig[] = [
     tagline: "Convert any colour between HEX, RGB and HSL formats.",
     seoDescription:
       "Free color converter. Paste a colour as HEX, RGB or HSL and instantly get all three formats — perfect for CSS, design handoffs and brand palettes.",
+    directAnswer:
+      "A fast color converter that translates any color between HEX, RGB, and HSL formats instantly, helping you bridge the gap between design tools and CSS.",
+    example:
+      "Example: Enter '#4f46e5' and the converter will instantly return rgb(79, 70, 229) and hsl(243, 75%, 59%).",
+    steps: [
+      "Paste or type your color in the input box. It can be HEX, RGB, or HSL format.",
+      "The tool automatically detects the format.",
+      "Click Convert to view the equivalents in all three formats.",
+      "Copy the format you need for your CSS or design tool."
+    ],
     fields: [
       { name: "color", label: "Colour", type: "text", placeholder: "#4f46e5  or  rgb(79, 70, 229)  or  hsl(243, 75%, 59%)" },
     ],
@@ -347,6 +473,14 @@ export const tools: ToolConfig[] = [
         answer:
           "HSL values are conventionally rounded to whole degrees and percentages, which can shift the RGB result by a point or two — imperceptible in practice.",
       },
+      {
+        question: "Do I need to include the '#' for hex codes?",
+        answer: "No, the converter will understand standard 3-digit or 6-digit hex codes even if you omit the '#'."
+      },
+      {
+        question: "Is this tool safe for branded colors?",
+        answer: "Yes, the conversion happens entirely on your local machine, so your brand color values aren't tracked or stored anywhere."
+      }
     ],
     related: ["css-gradient-generator", "image-color-picker", "favicon-generator", "meta-tag-generator"],
   },
@@ -358,6 +492,16 @@ export const tools: ToolConfig[] = [
     tagline: "Build linear and radial CSS gradients and copy the code.",
     seoDescription:
       "Free CSS gradient generator. Pick two colours, choose linear (with angle) or radial, and copy clean modern CSS gradient code with a solid-colour fallback.",
+    directAnswer:
+      "A CSS gradient generator that lets you build linear and radial gradients visually. It produces clean, modern CSS with a solid-color fallback for older browsers.",
+    example:
+      "Example: Pick #4f46e5 (start) and #9333ea (end), choose 'Linear' at 135 degrees, and get `background: linear-gradient(135deg, #4f46e5, #9333ea);`.",
+    steps: [
+      "Select your starting and ending colors (hex format).",
+      "Choose the gradient type: Linear or Radial.",
+      "If Linear, adjust the angle (e.g., 135° for diagonal).",
+      "Click 'Generate CSS' and copy the resulting code."
+    ],
     fields: [
       { name: "from", label: "Start colour (hex)", type: "text", placeholder: "#4f46e5" },
       { name: "to", label: "End colour (hex)", type: "text", placeholder: "#9333ea" },
@@ -396,6 +540,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Colours far apart on the colour wheel pass through desaturated territory when interpolated. Choose closer hues, or add a vivid intermediate colour stop at 50%.",
       },
+      {
+        question: "What is the solid color fallback for?",
+        answer: "Older or specialized browsers that don't support CSS gradients will ignore the gradient rule. The solid fallback ensures your background is still visible and readable."
+      },
+      {
+        question: "Does this generate cross-browser prefixes?",
+        answer: "Modern browsers support standard CSS gradients natively, so vendor prefixes (-webkit-, -moz-) are generally no longer required for basic gradients."
+      }
     ],
     related: ["color-converter", "favicon-generator", "meta-tag-generator", "image-color-picker"],
   },
@@ -407,6 +559,16 @@ export const tools: ToolConfig[] = [
     tagline: "Escape text for HTML, or decode &amp;-style entities back to characters.",
     seoDescription:
       "Free HTML entity encoder and decoder. Escape <, >, & and quotes for safe HTML display, or decode named and numeric entities back into readable text.",
+    directAnswer:
+      "An HTML entity encoder/decoder that escapes special characters (like <, >, &) for safe rendering in HTML, and decodes entity-riddled text back into readable characters.",
+    example:
+      "Example: Encoding `if (a < b && c > d)` results in `if (a &lt; b &amp;&amp; c &gt; d)`. Decoding the latter returns the original code.",
+    steps: [
+      "Paste your text or HTML code into the input area.",
+      "Select 'Encode' to escape special characters for HTML, or 'Decode' to revert entities back to text.",
+      "Click Convert.",
+      "Copy the processed output."
+    ],
     fields: [
       { name: "text", label: "Input", type: "textarea", placeholder: "if (a < b && c > d) …   —or—   if (a &lt; b &amp;&amp; c &gt; d)", rows: 6 },
       {
@@ -443,6 +605,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Entity-encoding untrusted text before inserting it into HTML content is a core XSS defence, but the escaping must match the context — attribute, URL and JavaScript contexts each need their own rules. Use a templating engine's auto-escaping where possible.",
       },
+      {
+        question: "Does decoding handle named entities like &nbsp;?",
+        answer: "Yes, the decoder supports common named entities like &nbsp; (non-breaking space), &copy; (copyright), as well as numeric and hex entities."
+      },
+      {
+        question: "Should I encode text before saving it to a database?",
+        answer: "Usually, no. It's best practice to store data in its raw, unencoded form in the database, and only encode it when rendering it into an HTML template."
+      }
     ],
     related: ["url-encoder-decoder", "base64-encoder-decoder", "markdown-to-html", "regex-tester"],
   },
@@ -454,6 +624,16 @@ export const tools: ToolConfig[] = [
     tagline: "Decode a JSON Web Token and inspect its header, payload and expiry.",
     seoDescription:
       "Free JWT decoder. Paste a JSON Web Token to see its header and payload as formatted JSON, with issued-at and expiry timestamps translated to readable dates.",
+    directAnswer:
+      "A JWT decoder that unpacks the header and payload of a JSON Web Token into formatted JSON, and translates its standard unix timestamps (like exp and iat) into human-readable dates.",
+    example:
+      "Example: Paste a token starting with `eyJhbGciOi...`, and see exactly what claims it holds, including when it expires.",
+    steps: [
+      "Paste your JSON Web Token into the input field.",
+      "Click 'Decode' to parse the token.",
+      "View the decoded Header (algorithm, type) and Payload (claims, timestamps).",
+      "Check the translated timestamps to see if the token is expired."
+    ],
     fields: [
       { name: "token", label: "JWT", type: "textarea", placeholder: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.…", rows: 5 },
     ],
@@ -485,6 +665,10 @@ export const tools: ToolConfig[] = [
         answer:
           "No — payloads are readable by anyone holding the token (as this tool demonstrates). Keep secrets server-side; use the payload for identifiers and non-sensitive claims only.",
       },
+      {
+        question: "Can I edit the JWT and encode it again?",
+        answer: "You can modify the payload and base64-encode it, but the new token will be rejected by the server because the cryptographic signature will no longer match the modified payload."
+      }
     ],
     related: ["base64-encoder-decoder", "hash-generator", "timestamp-converter", "json-formatter"],
   },
@@ -496,6 +680,16 @@ export const tools: ToolConfig[] = [
     tagline: "Convert markdown into clean HTML you can paste anywhere.",
     seoDescription:
       "Free markdown to HTML converter. Turn headings, lists, links, bold, code blocks and quotes into clean HTML — with raw HTML safely escaped.",
+    directAnswer:
+      "A fast converter that translates standard Markdown into clean, semantic HTML. It safely escapes raw HTML to prevent injection, and outputs unstyled tags ready to inherit your site's CSS.",
+    example:
+      "Example: Converting `**bold** and [link](http://x.com)` results in `<strong>bold</strong> and <a href=\"http://x.com\">link</a>`.",
+    steps: [
+      "Paste your Markdown text into the input area.",
+      "Click 'Convert' to parse the Markdown into HTML.",
+      "Review the generated HTML code.",
+      "Copy the HTML to paste into your CMS, email, or source code."
+    ],
     fields: [
       { name: "markdown", label: "Markdown input", type: "textarea", placeholder: "# Heading\n\nSome **bold** text with a [link](https://example.com).\n\n- item one\n- item two", rows: 10 },
     ],
@@ -522,6 +716,14 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes, by design — the converter emits unstyled semantic tags (h2, p, ul), so the HTML picks up the destination page's existing CSS instead of overriding it.",
       },
+      {
+        question: "Is this compliant with CommonMark?",
+        answer: "This converter supports a broad, practical subset of standard Markdown features suitable for everyday tasks, though it isn't a strict, fully-compliant CommonMark parser."
+      },
+      {
+        question: "Can I convert large documents?",
+        answer: "Yes, the conversion runs locally in your browser, so you can safely convert large README files or documentation instantly without uploading them."
+      }
     ],
     related: ["html-entity-encoder-decoder", "case-converter", "word-counter", "ai-blog-outline-generator"],
   },
@@ -533,6 +735,16 @@ export const tools: ToolConfig[] = [
     tagline: "Turn a JSON sample into clean TypeScript interfaces or type aliases.",
     seoDescription:
       "Free JSON to TypeScript converter. Turn any JSON sample into clean TypeScript interfaces or type aliases — nested objects, arrays, union types, null and quoted keys all handled automatically.",
+    directAnswer:
+      "A JSON to TypeScript generator that turns a JSON sample into clean TypeScript interfaces or type aliases automatically handling nested objects, arrays, and unions.",
+    example:
+      "Example: Provide `{\"id\": 1, \"name\": \"A\"}` and get an interface with `id: number;` and `name: string;`.",
+    steps: [
+      "Paste a sample JSON payload into the input area.",
+      "Enter a Root type name (e.g., 'User') to name the top-level interface.",
+      "Choose to generate either 'Interfaces' or 'Type aliases'.",
+      "Click 'Generate TypeScript' and copy the resulting code."
+    ],
     fields: [
       {
         name: "json",
@@ -589,6 +801,10 @@ export const tools: ToolConfig[] = [
         answer:
           "No — conversion runs entirely in your browser. Nothing is sent to a server, which is what makes this safe to use with real API responses and internal data while you build types.",
       },
+      {
+        question: "Does it detect optional fields?",
+        answer: "If you provide an array of objects where some fields are missing in some objects, the tool will mark those missing fields as optional using the `?` syntax in the resulting type."
+      }
     ],
     related: ["json-formatter", "csv-to-json", "json-to-csv", "base64-encoder-decoder"],
   },
@@ -600,6 +816,15 @@ export const tools: ToolConfig[] = [
     tagline: "Convert between unix timestamps and human-readable dates, with IST built in.",
     seoDescription:
       "Free unix timestamp converter. Convert epoch seconds or milliseconds to readable UTC and IST dates — or paste an ISO date to get its unix timestamp.",
+    directAnswer:
+      "A timestamp converter that translates between unix epochs (seconds or milliseconds) and human-readable UTC/IST dates instantly.",
+    example:
+      "Example: Enter '1783247400' to instantly see it corresponds to '2026-07-05T10:30:00Z'. Type 'now' to get the current timestamp.",
+    steps: [
+      "Type or paste a Unix timestamp (seconds or milliseconds) or an ISO date string.",
+      "Alternatively, type 'now' or leave the field blank for the current time.",
+      "The tool automatically determines the format and displays equivalent times in UTC, IST, and relative terms."
+    ],
     fields: [
       {
         name: "input",
@@ -633,6 +858,14 @@ export const tools: ToolConfig[] = [
         answer:
           "IST is UTC+5:30 — the half-hour offset defeats quick mental conversion that works for whole-hour zones, which is why UTC-configured servers and IST-thinking humans so often disagree by exactly one boundary.",
       },
+      {
+        question: "How do I get the current timestamp?",
+        answer: "Simply type 'now' or leave the input blank. The converter will display the current time in Unix seconds, milliseconds, and readable date formats."
+      },
+      {
+        question: "Can I convert dates to timestamps?",
+        answer: "Yes, you can paste an ISO date string (like '2026-07-05T10:30:00Z') into the input field, and the tool will instantly convert it to Unix seconds and milliseconds."
+      }
     ],
     related: ["uuid-generator", "jwt-decoder", "invoice-due-date-calculator", "word-counter"],
   },
