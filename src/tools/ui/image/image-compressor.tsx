@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  ImagePicker, canvasToBlob, compressionCandidates, downloadBlob, drawToCanvas,
-  encodePngCandidates, imageCompressionType, labelCls, primaryBtn, useImageFile,
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
+import {
+  ImagePicker, canvasToBlob, compressionCandidates, drawToCanvas,
+  encodePngCandidates, imageCompressionType, labelCls, primaryBtn, secondaryBtn, useImageFile,
 } from "./image-shared";
 
 function fmtSize(bytes: number): string {
@@ -27,11 +31,28 @@ export function outputName(name: string, type: string): string {
 }
 
 export default function ImageCompressor() {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("downloaded_file");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
   const { file, image, error, setError, pick } = useImageFile();
   const [quality, setQuality] = useState("80");
   const [busy, setBusy] = useState(false);
   const [report, setReport] = useState<string | null>(null);
   const [reportKind, setReportKind] = useState<"success" | "notice">("success");
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+      setReportKind("success");
+      setReport("Your compressed image is ready — sign in to download.");
+    });
+  }, [restored]);
 
   const compress = async () => {
     if (!file || !image) return;
@@ -80,7 +101,7 @@ export default function ImageCompressor() {
           `Compressed from ${fmtSize(original)} to ${fmtSize(bestBlob.size)}` +
             ` (${Math.round((saved / original) * 100)}% smaller).`,
         );
-        downloadBlob(bestBlob, outputName(file.name, type));
+        setResultUrl(URL.createObjectURL(bestBlob)); setResultFilename(outputName(file.name, type)); setResultBlob(bestBlob);
       } else {
         setReportKind("notice");
         setReport(
@@ -116,9 +137,37 @@ export default function ImageCompressor() {
           {report}
         </p>
       )}
-      <button type="button" onClick={compress} disabled={!image || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Compressing…" : "Compress & download"}
+      
+      <button
+        type="button"
+        disabled={busy || !image}
+        onClick={compress}
+        className={primaryBtn}
+      >
+        {busy ? "Processing..." : "Compress Image"}
       </button>
+
+      {resultUrl && resultBlob && (
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => void downloadOne(resultBlob, resultFilename)}
+              className={primaryBtn}
+              data-lead-action="download"
+            >
+              Download Compressed Image
+            </button>
+            <button
+              type="button"
+              onClick={() => { pick(null); setResultUrl(null); setResultBlob(null); setReport(null); }}
+              className={secondaryBtn}
+            >
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

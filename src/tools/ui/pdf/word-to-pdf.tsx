@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { iconBtn, primaryBtn, secondaryBtn } from "./pdf-shared";
+import { useAuthDownload } from "@/components/account/use-auth-download";
 import {
   buildWordPrintCss,
   extractWordPageSetup,
@@ -35,6 +36,7 @@ export default function WordToPdf() {
   const [pageSetup, setPageSetup] = useState(WORD_PAGE_DEFAULTS);
   const [currentPage, setCurrentPage] = useState(1);
   const [dragging, setDragging] = useState(false);
+  const { requireAuth } = useAuthDownload();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const previewShellRef = useRef<HTMLDivElement>(null);
@@ -341,7 +343,7 @@ export default function WordToPdf() {
             Output filename: <span className="font-medium text-slate-900">{result.outName}</span>
           </div>
           <div className="flex flex-wrap gap-3 print:hidden">
-            <button type="button" onClick={download} className={primaryBtn}>
+            <button type="button" onClick={() => requireAuth(download)} className={primaryBtn}>
               Download PDF
             </button>
             <button type="button" onClick={reset} className={secondaryBtn}>

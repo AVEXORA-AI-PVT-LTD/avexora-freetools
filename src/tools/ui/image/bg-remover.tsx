@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import {
   ImagePicker,
   canvasToBlob,
-  downloadBlob,
   drawToCanvas,
   labelCls,
   primaryBtn,
@@ -20,6 +19,8 @@ import {
   safeOutputDims,
 } from "@/tools/compute/image/background-removal";
 import { releaseBgSegmentationSession, predictBgMask } from "@/tools/compute/image/bg-removal-engine";
+import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
+import { RestoredDownload } from "@/components/account/restored-download";
 
 /** Checkerboard shown behind the transparent result — preview only, never baked in. */
 const CHECKERBOARD = {
@@ -65,6 +66,8 @@ export default function ImageBackgroundRemover() {
   const [notice, setNotice] = useState<string | null>(null);
   const [webpSupported] = useState(() => webpEncoderAvailable());
   const statusRef = useRef<HTMLParagraphElement>(null);
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
 
   const removeBackground = async () => {
     if (!file || !image || busy) return;
@@ -169,9 +172,9 @@ export default function ImageBackgroundRemover() {
     try {
       if (outputFormat === "webp") {
         const blob = await canvasToBlob(result.canvas, "image/webp", 1);
-        downloadBlob(blob, `${base}-removed-bg.webp`);
+        downloadOne(blob, `${base}-removed-bg.webp`);
       } else {
-        downloadBlob(result.pngBlob, `${base}-removed-bg.png`);
+        downloadOne(result.pngBlob, `${base}-removed-bg.png`);
       }
     } catch {
       setError("The download could not be generated in this browser.");
@@ -203,6 +206,7 @@ export default function ImageBackgroundRemover() {
 
   return (
     <div className="space-y-4">
+      <RestoredDownload restored={restored} />
       <ImagePicker file={file} image={image} onPick={handlePick} />
 
       {error && (

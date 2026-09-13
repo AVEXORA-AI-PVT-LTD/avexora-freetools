@@ -1,7 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { PdfPicker, downloadBytes, primaryBtn, secondaryBtn, usePdfFile } from "./pdf-shared";
+import { useEffect, useRef, useState } from "react";
+import { PdfPicker, primaryBtn, secondaryBtn, usePdfFile } from "./pdf-shared";
+import {
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
 import {
   convertPdfToWord,
   PdfToWordError,
@@ -18,11 +22,27 @@ function getPdfJs(): Promise<typeof import("pdfjs-dist")> {
 }
 
 export default function PdfToWord() {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
   const { file, pageCount, error, setError, pick } = usePdfFile();
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [result, setResult] = useState<{ filename: string; warnings: string[] } | null>(null);
   const statusRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+      setResult({ filename: restored.filename, warnings: [] });
+    });
+  }, [restored]);
 
   const convert = async () => {
     if (!file) return;
@@ -34,11 +54,12 @@ export default function PdfToWord() {
       const pdf = await getPdfJs();
       const res = await convertPdfToWord(await file.arrayBuffer(), pdf, setStatus);
       const filename = sanitizeDocxFilename(file.name);
-      downloadBytes(
-        res.docx,
-        filename,
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      );
+      const blob = new Blob([res.docx as BlobPart], {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      });
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(filename);
+      setResultBlob(blob);
       setResult({ filename, warnings: res.warnings });
     } catch (e) {
       setError(
@@ -57,6 +78,8 @@ export default function PdfToWord() {
     setStatus(null);
     setResult(null);
     setError(null);
+    setResultUrl(null);
+    setResultBlob(null);
     pick(null);
   };
 
@@ -79,18 +102,28 @@ export default function PdfToWord() {
         </p>
       )}
 
-      {result && !busy && (
+      {resultUrl && resultBlob && (
         <div className="space-y-2">
-          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">
-            Saved as <span className="font-medium">{result.filename}</span> — an editable Word
-            document that preserves the text, page order, headings, lists, alignment and simple
-            tables from your PDF.
-          </p>
-          {result.warnings.map((w) => (
+          {result && (
+            <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">
+              Saved as <span className="font-medium">{result.filename}</span> — an editable Word
+              document that preserves the text, page order, headings, lists, alignment and simple
+              tables from your PDF.
+            </p>
+          )}
+          {result?.warnings.map((w) => (
             <p key={w} className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
               {w}
             </p>
           ))}
+          <button
+            type="button"
+            onClick={() => void downloadOne(resultBlob, resultFilename)}
+            className={primaryBtn}
+            data-lead-action="download"
+          >
+            Download Word Document
+          </button>
         </div>
       )}
 
@@ -100,7 +133,6 @@ export default function PdfToWord() {
           onClick={convert}
           disabled={!file || busy}
           className={primaryBtn}
-          data-lead-action="download"
         >
           {busy ? "Converting…" : "Convert to Word"}
         </button>

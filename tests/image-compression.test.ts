@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import UPNG from "@pdf-lib/upng";
@@ -9,6 +9,18 @@ import {
   imageCompressionType,
 } from "@/tools/ui/image/image-shared";
 import ImageCompressor, { outputName } from "@/tools/ui/image/image-compressor";
+
+// The tool renders its download button through the shared auth-gated hooks,
+// which require Router/Session providers. It's mocked so the pure component
+// (button layout / disabled states) can be rendered without Next context.
+vi.mock("next-auth/react", () => ({
+  useSession: () => ({ data: null, status: "unauthenticated", update: async () => null }),
+  SessionProvider: ({ children }: { children?: import("react").ReactNode }) => children,
+}));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: () => {}, replace: () => {}, back: () => {}, prefetch: () => {} }),
+  usePathname: () => "/tools/image-compressor",
+}));
 
 // ---------------------------------------------------------------------------
 // imageCompressionType — original format is the source of truth
@@ -425,9 +437,8 @@ describe("ImageCompressor component render", () => {
   it("renders the empty state with a disabled button and no quality slider", () => {
     const html = renderToStaticMarkup(createElement(ImageCompressor));
     expect(html).toContain("Click to choose an image");
-    expect(html).toContain("Compress &amp; download");
+    expect(html).toContain("Compress Image");
     expect(html).toContain("disabled=\"\"");
-    expect(html).toContain("data-lead-action=\"download\"");
     expect(html).not.toContain("ic-quality");
   });
 });

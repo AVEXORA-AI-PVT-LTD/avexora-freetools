@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
 import { inputCls, labelCls, primaryBtn, secondaryBtn } from "@/tools/ui/ui-tokens";
+import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
+import { RestoredDownload } from "@/components/account/restored-download";
 import {
   BULK_PREVIEW_COUNT,
   MAX_BULK_QTY,
@@ -153,6 +155,8 @@ export default function BarcodeGenerator() {
   const [bulkState, setBulkState] = useState<"idle" | "generating" | "ready">("idle");
   const [bulkStatus, setBulkStatus] = useState<string | null>(null);
   const generatedIdsRef = useRef<Set<string>>(new Set());
+  const { download: gateDownload, downloadOne: gateDownloadOne, requireAuth } = useAuthDownload();
+  const { restored } = useRestoredDownload();
 
   const meta = FORMATS.find((f) => f.value === format)!;
   const newIsEanUpc = product.format === "ean13" || product.format === "upca";
@@ -213,14 +217,9 @@ export default function BarcodeGenerator() {
   const download = () => {
     if (!preview || !previewReady) return;
     const base = baseFilename(format, preview.value);
-    const a = document.createElement("a");
     if (outputFormat === "svg") {
       const blob = new Blob([preview.svg], { type: "image/svg+xml" });
-      const url = URL.createObjectURL(blob);
-      a.href = url;
-      a.download = `${base}.svg`;
-      a.click();
-      URL.revokeObjectURL(url);
+      gateDownloadOne(blob, `${base}.svg`);
       return;
     }
     const canvas = document.createElement("canvas");
@@ -234,9 +233,13 @@ export default function BarcodeGenerator() {
         background: "#ffffff",
         lineColor: "#000000",
       });
-      a.href = canvas.toDataURL("image/png");
-      a.download = `${base}.png`;
-      a.click();
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          setGenerationError("This value cannot be rendered as a downloadable PNG. Check the input and try again.");
+          return;
+        }
+        gateDownloadOne(blob, `${base}.png`);
+      }, "image/png");
     } catch {
       setGenerationError("This value cannot be rendered as a downloadable PNG. Check the input and try again.");
     }
@@ -350,10 +353,12 @@ export default function BarcodeGenerator() {
       const zipped = buildLabelZip(files);
       const copy = new Uint8Array(zipped.byteLength);
       copy.set(zipped);
-      triggerDownload(
-        new Blob([copy], { type: "application/zip" }),
-        `${sanitizeFilenameSegment(lastNorm.identifier)}-barcodes.zip`,
-      );
+      gateDownload([
+        {
+          blob: new Blob([copy], { type: "application/zip" }),
+          filename: `${sanitizeFilenameSegment(lastNorm.identifier)}-barcodes.zip`,
+        },
+      ]);
       setBulkState("ready");
       setBulkStatus(
         resultSpecs.length === 1
@@ -368,57 +373,63 @@ export default function BarcodeGenerator() {
 
   const downloadCsv = () => {
     if (!lastNorm || !resultSpecs) return;
-    triggerDownload(
-      new Blob([buildProductsCsv(lastNorm, resultSpecs, outputFormat)], { type: "text/csv" }),
-      `${sanitizeFilenameSegment(lastNorm.identifier)}-products.csv`,
-    );
+    gateDownload([
+      {
+        blob: new Blob([buildProductsCsv(lastNorm, resultSpecs, outputFormat)], { type: "text/csv" }),
+        filename: `${sanitizeFilenameSegment(lastNorm.identifier)}-products.csv`,
+      },
+    ]);
   };
 
-  const openPrintSheet = async () => {
-    if (!resultSpecs || bulkState === "generating") return;
-    setBulkState("generating");
-    setBulkStatus("Preparing printable sheet…");
-    try {
-      const cells: LabelSheetCell[] = [];
-      for (let i = 0; i < resultSpecs.length; i++) {
-        const spec = resultSpecs[i];
-        const svg = await renderLabelSvg(spec);
-        const lines: string[] = [];
-        if (lastNorm) {
-          if (lastNorm.brand) lines.push(lastNorm.brand);
-          if (lastNorm.variant) lines.push(lastNorm.variant);
-          if (lastNorm.mrp) lines.push(`MRP ${lastNorm.mrp}`);
-          if (lastNorm.price) lines.push(`Price ${lastNorm.price}`);
-          if (lastNorm.batchNo) lines.push(`Batch ${lastNorm.batchNo}`);
-          if (lastNorm.expiry) lines.push(`Expiry ${lastNorm.expiry}`);
+  const openPrintSheet = () => {
+    requireAuth(() => {
+      void (async () => {
+        if (!resultSpecs || bulkState === "generating") return;
+        setBulkState("generating");
+        setBulkStatus("Preparing printable sheet…");
+        try {
+          const cells: LabelSheetCell[] = [];
+          for (let i = 0; i < resultSpecs.length; i++) {
+            const spec = resultSpecs[i];
+            const svg = await renderLabelSvg(spec);
+            const lines: string[] = [];
+            if (lastNorm) {
+              if (lastNorm.brand) lines.push(lastNorm.brand);
+              if (lastNorm.variant) lines.push(lastNorm.variant);
+              if (lastNorm.mrp) lines.push(`MRP ${lastNorm.mrp}`);
+              if (lastNorm.price) lines.push(`Price ${lastNorm.price}`);
+              if (lastNorm.batchNo) lines.push(`Batch ${lastNorm.batchNo}`);
+              if (lastNorm.expiry) lines.push(`Expiry ${lastNorm.expiry}`);
+            }
+            cells.push({ name: lastNorm?.name ?? spec.identifier, lines, svg, identifier: spec.identifier });
+            if ((i + 1) % 50 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+          }
+          const html = buildLabelSheetHtml(cells);
+          const windowRef = window.open("", "_blank");
+          if (!windowRef) {
+            setBulkState("ready");
+            setBulkStatus("The browser blocked the printable sheet — allow pop-ups and try again.");
+            return;
+          }
+          windowRef.document.write(html);
+          windowRef.document.close();
+          windowRef.focus();
+          windowRef.print();
+          setBulkState("ready");
+          setBulkStatus("Printable label sheet opened in a new tab.");
+        } catch {
+          setBulkState("ready");
+          setBulkStatus("The printable sheet could not be prepared.");
         }
-        cells.push({ name: lastNorm?.name ?? spec.identifier, lines, svg, identifier: spec.identifier });
-        if ((i + 1) % 50 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
-      }
-      const html = buildLabelSheetHtml(cells);
-      const windowRef = window.open("", "_blank");
-      if (!windowRef) {
-        setBulkState("ready");
-        setBulkStatus("The browser blocked the printable sheet — allow pop-ups and try again.");
-        return;
-      }
-      windowRef.document.write(html);
-      windowRef.document.close();
-      windowRef.focus();
-      windowRef.print();
-      setBulkState("ready");
-      setBulkStatus("Printable label sheet opened in a new tab.");
-    } catch {
-      setBulkState("ready");
-      setBulkStatus("The printable sheet could not be prepared.");
-    }
+      })();
+    });
   };
 
   const downloadOne = async (spec: LabelSpec) => {
     if (bulkState === "generating") return;
     try {
       const blob = await renderLabelFile(spec, outputFormat);
-      triggerDownload(blob, `${spec.filenameBody}.${outputFormat}`);
+      gateDownloadOne(blob, `${spec.filenameBody}.${outputFormat}`);
     } catch {
       setBulkStatus("That label could not be downloaded — try again.");
     }
@@ -446,17 +457,9 @@ export default function BarcodeGenerator() {
     />
   );
 
-  function triggerDownload(blob: Blob, filename: string) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
   return (
     <div className="space-y-4">
+      <RestoredDownload restored={restored} />
       <div>
         <span className={labelCls}>Workflow</span>
         <Segment

@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  downloadBytes,
   iconBtn,
   inputCls,
   labelCls,
   primaryBtn,
   secondaryBtn,
 } from "./pdf-shared";
+import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
+import { RestoredDownload } from "@/components/account/restored-download";
 import {
   PDF_SIGNATURE_MAX_BYTES,
   PDF_SIGNATURE_MAX_PAGES,
@@ -96,6 +97,8 @@ const ZOOM_STEPS = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
 
 export default function PdfSignature() {
   const [busy, setBusy] = useState(false);
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -635,9 +638,11 @@ export default function PdfSignature() {
         };
       });
       const out = await buildSignedPdf(pdfBytes, placements);
-      downloadBytes(out, sanitizeSignedFilename(fileName));
-      setStatus("Signed PDF downloaded.");
-      window.setTimeout(() => setStatus(null), 4000);
+      setStatus(null);
+      downloadOne(
+        new Blob([out as BlobPart], { type: "application/pdf" }),
+        sanitizeSignedFilename(fileName),
+      );
     } catch (err) {
       setError(
         err instanceof Error && "code" in err
@@ -647,7 +652,7 @@ export default function PdfSignature() {
     } finally {
       setBusy(false);
     }
-  }, [pdfBytes, pageMeta, signatures, assets, fileName]);
+  }, [pdfBytes, pageMeta, signatures, assets, fileName, downloadOne]);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -677,6 +682,7 @@ export default function PdfSignature() {
     <div>
       {!loaded ? (
         <div className="space-y-4">
+          <RestoredDownload restored={restored} />
           <input
             ref={pdfInputRef}
             type="file"

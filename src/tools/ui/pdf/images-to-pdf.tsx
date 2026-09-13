@@ -1,7 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { downloadBytes, primaryBtn } from "./pdf-shared";
+import { useEffect, useRef, useState } from "react";
+import { primaryBtn, secondaryBtn } from "./pdf-shared";
+import {
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
 
 interface Picked {
   file: File;
@@ -10,10 +14,25 @@ interface Picked {
 
 /** Shared implementation for jpg-to-pdf and png-to-pdf. */
 function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("images.pdf");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
   const [files, setFiles] = useState<Picked[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
 
   const accept = format === "jpg" ? "image/jpeg,.jpg,.jpeg" : "image/png,.png";
   const label = format === "jpg" ? "JPG images" : "PNG images";
@@ -40,7 +59,11 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
         const page = doc.addPage([image.width, image.height]);
         page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
       }
-      downloadBytes(await doc.save(), "images.pdf");
+      const bytes = await doc.save();
+      const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename("images.pdf");
+      setResultBlob(blob);
     } catch {
       setError(`One of the files could not be read as a ${format.toUpperCase()} image.`);
     } finally {
@@ -94,9 +117,36 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
         </ul>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={convert} disabled={files.length === 0 || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Converting…" : `Convert ${files.length || ""} image${files.length === 1 ? "" : "s"} to PDF`}
-      </button>
+      {!resultUrl ? (
+        <button type="button" onClick={convert} disabled={files.length === 0 || busy} className={primaryBtn}>
+          {busy ? "Converting…" : `Convert ${files.length || ""} image${files.length === 1 ? "" : "s"} to PDF`}
+        </button>
+      ) : (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            PDF ready — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {resultUrl && resultBlob && (
+              <button
+                type="button"
+                onClick={() => void downloadOne(resultBlob, resultFilename)}
+                className={primaryBtn}
+                data-lead-action="download"
+              >
+                Download PDF
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => { setFiles([]); setResultUrl(null); setResultBlob(null); }}
+              className={secondaryBtn}
+            >
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

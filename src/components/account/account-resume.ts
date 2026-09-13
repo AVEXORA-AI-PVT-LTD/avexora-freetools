@@ -1,16 +1,19 @@
 /**
  * Minimal, dependency-free persistence for the sign-in download resume flow.
  *
- * When a visitor on an auth-required tool clicks "Download" the generator
- * shape writes the generated document into sessionStorage (same-origin,
- * per-tab) and then sends them to /studio/signin. After signing in, Auth.js
- * redirects back to the same tool URL; the shape reads the saved document on
- * mount and restores it so the download can continue without regenerating.
+ * Three kinds of resume are supported, matched to the result shape:
  *
- * Everything here is a pure function over a `Storage`-like object so it can be
- * unit-tested without a browser, and every call is wrapped so a private-mode
- * browser (or server render) that throws on sessionStorage access degrades to
- * a no-op instead of crashing the tool.
+ * 1. `text` — generated text documents (generator shape). Stored in
+ *    sessionStorage (JSON string of the document), rehydrated on mount.
+ * 2. `state` — arbitrary small JSON state (e.g. barcode generation inputs)
+ *    that a tool needs to restore after returning from sign-in. Stored in
+ *    sessionStorage under a per-path key.
+ * 3. `blob` — real binary results (PDF/image/archive blobs). Stored in
+ *    IndexedDB because sessionStorage cannot serialise Blobs and is too small
+ *    for large files. Consumed asynchronously.
+ *
+ * Everything here is wrapped so a private-mode browser (or a server render
+ * that lacks the APIs) degrades to a no-op instead of crashing the tool.
  */
 
 export interface DownloadResume {
@@ -20,6 +23,7 @@ export interface DownloadResume {
 }
 
 export const RESUME_KEY = "ft_resume_download";
+export const STATE_RESUME_PREFIX = "ft_resume_state_";
 
 type StorageLike = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
@@ -81,6 +85,146 @@ export function consumeDownloadResume(path: string, storage?: StorageLike): Down
     if (!parsed || parsed.path !== path) return null;
     s.removeItem(RESUME_KEY);
     return parsed;
+  } catch {
+    return null;
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * State resume — small JSON serialised to sessionStorage.
+ * Used for tools whose "result" is re-derivable from lightweight inputs
+ * (e.g. barcode specs, lastNorm) where serialising a Blob is unnecessary.
+ * --------------------------------------------------------------------- */
+
+function stateKey(path: string): string {
+  return STATE_RESUME_PREFIX + path;
+}
+
+/** Persist an arbitrary JSON-serialisable state blob for this path. */
+export function saveStateResume(state: unknown, path: string, storage?: StorageLike): boolean {
+  const s = resolveStorage(storage);
+  if (!s) return false;
+  try {
+    s.setItem(stateKey(path), JSON.stringify(state));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Consume (read + clear) saved state for this path. Returns null when nothing is found. */
+export function consumeStateResume<T = unknown>(path: string, storage?: StorageLike): T | null {
+  const s = resolveStorage(storage);
+  if (!s) return null;
+  try {
+    const raw = s.getItem(stateKey(path));
+    if (!raw) return null;
+    s.removeItem(stateKey(path));
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * Blob resume — real binary files (PDF / image / archive) stored in
+ * IndexedDB so large blobs do not hit sessionStorage limits and are not
+ * serialised.  IndexedDB is asynchronous; all functions here are
+ * Promise-based.
+ * --------------------------------------------------------------------- */
+
+export interface BlobDownloadResume {
+  path: string;
+  blob: Blob;
+  filename: string;
+  /** Secondary files that belong to the same download (e.g. split PDF parts two). */
+  extras?: Array<{ blob: Blob; filename: string }>;
+}
+
+const BLOB_DB = "avex_tools";
+const BLOB_DB_VERSION = 1;
+const BLOB_STORE = "download_resume";
+
+function openBlobDb(): Promise<IDBDatabase | null> {
+  return new Promise((resolve) => {
+    try {
+      if (typeof indexedDB === "undefined") { resolve(null); return; }
+      const req = indexedDB.open(BLOB_DB, BLOB_DB_VERSION);
+      req.onupgradeneeded = () => {
+        try {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(BLOB_STORE)) {
+            db.createObjectStore(BLOB_STORE, { keyPath: "path" });
+          }
+        } catch { /* swallow — readonly upgrade handler */ }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+function idbTx(db: IDBDatabase, mode: IDBTransactionMode = "readonly"): IDBObjectStore {
+  return db.transaction(BLOB_STORE, mode).objectStore(BLOB_STORE);
+}
+
+function idbPut(db: IDBDatabase, entry: BlobDownloadResume): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const req = idbTx(db, "readwrite").put(entry);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function idbGet(db: IDBDatabase, path: string): Promise<BlobDownloadResume | null> {
+  return new Promise((resolve) => {
+    const req = idbTx(db).get(path);
+    req.onsuccess = () => resolve((req.result as BlobDownloadResume) ?? null);
+    req.onerror = () => resolve(null);
+  });
+}
+
+function idbDelete(db: IDBDatabase, path: string): Promise<void> {
+  return new Promise((resolve) => {
+    const req = idbTx(db, "readwrite").delete(path);
+    req.onsuccess = () => resolve();
+    req.onerror = () => resolve();
+  });
+}
+
+/** Persist a blob for later download after sign-in. Returns false on failure. */
+export async function saveBlobDownloadResume(entry: BlobDownloadResume): Promise<boolean> {
+  const db = await openBlobDb();
+  if (!db) return false;
+  try {
+    await idbPut(db, entry);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Consume (read + delete) the blob for this path. Returns null when nothing is found. */
+export async function consumeBlobDownloadResume(path: string): Promise<BlobDownloadResume | null> {
+  const db = await openBlobDb();
+  if (!db) return null;
+  try {
+    const entry = await idbGet(db, path);
+    if (entry) await idbDelete(db, path);
+    return entry;
+  } catch {
+    return null;
+  }
+}
+
+/** Peek (read without deleting) the blob for this path. */
+export async function peekBlobDownloadResume(path: string): Promise<BlobDownloadResume | null> {
+  const db = await openBlobDb();
+  if (!db) return null;
+  try {
+    return await idbGet(db, path);
   } catch {
     return null;
   }

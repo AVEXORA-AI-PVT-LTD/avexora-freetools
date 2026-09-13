@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ImagePicker, useImageFile } from "./image-shared";
+import { ImagePicker, primaryBtn, useImageFile } from "./image-shared";
+import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
+import { RestoredDownload } from "@/components/account/restored-download";
 
 export function ImageToBase64() {
   const { file, image, error, pick } = useImageFile();
@@ -45,6 +47,8 @@ export function Base64ToImage() {
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
 
   const decode = () => {
     setError(null);
@@ -58,17 +62,16 @@ export function Base64ToImage() {
     img.src = dataUrl;
   };
 
-  const download = () => {
+  const download = async () => {
     if (!previewUrl) return;
-    const a = document.createElement("a");
-    a.href = previewUrl;
+    const blob = await (await fetch(previewUrl)).blob();
     const ext = previewUrl.match(/^data:image\/(\w+);/)?.[1] ?? "png";
-    a.download = `image.${ext === "jpeg" ? "jpg" : ext}`;
-    a.click();
+    downloadOne(blob, `image.${ext === "jpeg" ? "jpg" : ext}`);
   };
 
   return (
     <div className="space-y-4">
+      <RestoredDownload restored={restored} />
       <div>
         <label htmlFor="b64-input" className="mb-1 block text-sm font-medium text-slate-700">
           Base64 string (with or without the data:image/… prefix)
@@ -88,8 +91,7 @@ export function Base64ToImage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={previewUrl} alt="Decoded preview" className="max-w-full rounded-lg border border-slate-200" />
           <button type="button" onClick={download}
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            data-lead-action="download">
+            className={primaryBtn} data-lead-action="download">
             Download image
           </button>
         </div>

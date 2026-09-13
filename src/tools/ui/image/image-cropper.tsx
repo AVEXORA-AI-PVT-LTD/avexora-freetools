@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ImagePicker, canvasToBlob, downloadBlob, primaryBtn, useImageFile } from "./image-shared";
+import {
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
+import { ImagePicker, canvasToBlob, primaryBtn, secondaryBtn, useImageFile } from "./image-shared";
 import {
   clientToImagePoint,
   computeCropRect,
@@ -12,6 +16,21 @@ import {
 } from "@/tools/compute/image/crop-coords";
 
 export default function ImageCropper() {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("cropped_image");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
+
   const { file, image, error, setError, pick } = useImageFile();
   const [box, setBox] = useState<CropBox>({ x: 0, y: 0, w: 0, h: 0 });
   const [overlay, setOverlay] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
@@ -100,7 +119,9 @@ export default function ImageCropper() {
 
       const type = file.type === "image/png" ? "image/png" : "image/jpeg";
       const blob = await canvasToBlob(canvas, type, 0.92);
-      downloadBlob(blob, file.name.replace(/\.\w+$/, "") + "-cropped" + (type === "image/png" ? ".png" : ".jpg"));
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(file.name.replace(/\.\w+$/, "") + "-cropped" + (type === "image/png" ? ".png" : ".jpg"));
+      setResultBlob(blob);
     } catch {
       setError("Something went wrong while cropping this image.");
     } finally {
@@ -142,7 +163,7 @@ export default function ImageCropper() {
             <span className="font-medium text-slate-600">{file?.name}</span>
             {box.w >= 2 && box.h >= 2 ? (
               <span>
-                Selected {Math.round(box.w)} × {Math.round(box.h)}px — Crop &amp; download below
+                Selected {Math.round(box.w)} × {Math.round(box.h)}px — Crop image below
               </span>
             ) : (
               <span>Drag across the image to select the area to crop</span>
@@ -151,9 +172,26 @@ export default function ImageCropper() {
         </figure>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={crop} disabled={!image || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Cropping…" : "Crop & download"}
+      <button type="button" onClick={crop} disabled={!image || busy} className={primaryBtn}>
+        {busy ? "Cropping…" : "Crop image"}
       </button>
+      {resultUrl && resultBlob && (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            Cropped image ready — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => void downloadOne(resultBlob, resultFilename)}
+              className={primaryBtn} data-lead-action="download">
+              Download cropped image
+            </button>
+            <button type="button" onClick={() => { onPick(null); setResultUrl(null); setResultBlob(null); }}
+              className={secondaryBtn}>
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

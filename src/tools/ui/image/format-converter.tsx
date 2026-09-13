@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { ImagePicker, canvasToBlob, downloadBlob, drawToCanvas, primaryBtn, useImageFile } from "./image-shared";
+import { useEffect, useState } from "react";
+import {
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
+import { ImagePicker, canvasToBlob, drawToCanvas, primaryBtn, secondaryBtn, useImageFile } from "./image-shared";
 
 /** Shared implementation for png-to-jpg, jpg-to-png, and webp-converter. */
 function FormatConverter({
@@ -15,6 +19,20 @@ function FormatConverter({
 }) {
   const { file, image, error, setError, pick } = useImageFile();
   const [busy, setBusy] = useState(false);
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("converted_image");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
 
   const convert = async () => {
     if (!file || !image) return;
@@ -22,6 +40,7 @@ function FormatConverter({
     setError(null);
     try {
       const canvas = drawToCanvas(image, image.naturalWidth, image.naturalHeight);
+      let blob: Blob;
       if (toType === "image/jpeg") {
         // JPEG has no alpha channel; flatten onto white first.
         const ctx = canvas.getContext("2d")!;
@@ -33,10 +52,13 @@ function FormatConverter({
         fctx.fillRect(0, 0, flattened.width, flattened.height);
         fctx.drawImage(canvas, 0, 0);
         void ctx;
-        downloadBlob(await canvasToBlob(flattened, toType, 0.92), file.name.replace(/\.\w+$/, "") + extension);
+        blob = await canvasToBlob(flattened, toType, 0.92);
       } else {
-        downloadBlob(await canvasToBlob(canvas, toType, 0.92), file.name.replace(/\.\w+$/, "") + extension);
+        blob = await canvasToBlob(canvas, toType, 0.92);
       }
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(file.name.replace(/\.\w+$/, "") + extension);
+      setResultBlob(blob);
     } catch {
       setError("Something went wrong while converting this image.");
     } finally {
@@ -48,9 +70,26 @@ function FormatConverter({
     <div className="space-y-4">
       <ImagePicker file={file} image={image} onPick={pick} accept={accept} />
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={convert} disabled={!image || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Converting…" : `Convert & download`}
+      <button type="button" onClick={convert} disabled={!image || busy} className={primaryBtn}>
+        {busy ? "Converting…" : "Convert"}
       </button>
+      {resultUrl && resultBlob && (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            Converted image ready — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => void downloadOne(resultBlob, resultFilename)}
+              className={primaryBtn} data-lead-action="download">
+              Download image
+            </button>
+            <button type="button" onClick={() => { pick(null); setResultUrl(null); setResultBlob(null); }}
+              className={secondaryBtn}>
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

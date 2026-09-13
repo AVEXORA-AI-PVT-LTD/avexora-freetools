@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties, PointerEvent as RPointerEvent } from "react";
 import {
-  downloadBytes,
   iconBtn,
   inputCls,
   labelCls,
   primaryBtn,
   secondaryBtn,
 } from "./pdf-shared";
+import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
+import { RestoredDownload } from "@/components/account/restored-download";
 import {
   PDF_EDITOR_ADVANCE_EM,
   PDF_EDITOR_COLORS,
@@ -233,6 +234,8 @@ function detectedFontNameFor(
 
 export default function PdfEditor() {
   const [busy, setBusy] = useState(false);
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -898,9 +901,11 @@ export default function PdfEditor() {
         return;
       }
       const out = await buildEditedPdf(pdfBytes, edits, { fontLoader });
-      downloadBytes(out, sanitizeEditedFilename(fileName));
-      setStatus("Edited PDF downloaded.");
-      window.setTimeout(() => setStatus(null), 4000);
+      setStatus(null);
+      downloadOne(
+        new Blob([out as BlobPart], { type: "application/pdf" }),
+        sanitizeEditedFilename(fileName),
+      );
     } catch (err) {
       setError(
         err instanceof Error && "code" in err
@@ -910,7 +915,7 @@ export default function PdfEditor() {
     } finally {
       setBusy(false);
     }
-  }, [pdfBytes, fileName]);
+  }, [pdfBytes, fileName, downloadOne]);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -963,6 +968,7 @@ export default function PdfEditor() {
     <div>
       {!loaded ? (
         <div className="space-y-4">
+          <RestoredDownload restored={restored} />
           <input
             ref={pdfInputRef}
             type="file"

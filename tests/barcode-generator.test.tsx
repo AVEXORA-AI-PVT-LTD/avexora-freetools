@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import JsBarcode from "jsbarcode";
@@ -37,6 +37,18 @@ import {
   modulePxOfRuns,
   runsToModules,
 } from "./helpers/barcode-decode";
+
+// The tool routes downloads through the shared auth-gated hooks, which require
+// Router/Session providers. Mocked so the pure component can be rendered
+// without Next context (the tests drive the compute layer directly).
+vi.mock("next-auth/react", () => ({
+  useSession: () => ({ data: null, status: "unauthenticated", update: async () => null }),
+  SessionProvider: ({ children }: { children?: import("react").ReactNode }) => children,
+}));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: () => {}, replace: () => {}, back: () => {}, prefetch: () => {} }),
+  usePathname: () => "/tools/barcode-generator",
+}));
 
 // JsBarcode measures text through a scratch <canvas> 2d context when
 // displayValue is enabled. js-dom has no canvas implementation, so stub the
