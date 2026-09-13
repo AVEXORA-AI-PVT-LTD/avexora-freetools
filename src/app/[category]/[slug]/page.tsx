@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ebosCtaUrl, getCategory, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
+import { ebosCtaUrl, getCategory } from "@/tools/categories";
 import { allTools, getTool, toolsByCategory } from "@/tools/registry";
+import { toolJsonLd, toolMetadata } from "@/lib/seo";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
+import { ToolAboutText } from "@/components/tools/tool-about-text";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 
@@ -21,27 +23,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const tool = getTool(slug);
   if (!tool) return {};
-  const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
-  const title = `${tool.name} — Avex Online Tool`;
-  return {
-    title,
-    description: tool.seoDescription,
-    alternates: { canonical },
-    openGraph: {
-      title: `${title} | ${SITE_NAME}`,
-      description: tool.seoDescription,
-      url: canonical,
-      siteName: SITE_NAME,
-      type: "website",
-      images: [SITE_OG_IMAGE],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${title} | ${SITE_NAME}`,
-      description: tool.seoDescription,
-      images: [SITE_OG_IMAGE],
-    },
-  };
+  const cat = getCategory(tool.category);
+  return cat ? toolMetadata(tool, cat) : {};
 }
 
 export default async function ToolPage({
@@ -54,42 +37,12 @@ export default async function ToolPage({
   const cat = getCategory(category);
   if (!tool || !cat || tool.category !== cat.slug) notFound();
 
-  const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
   const related = tool.related
     .map((s) => getTool(s))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
   const aiEnabled = tool.kind === "ai-writer" && Boolean(process.env.ANTHROPIC_API_KEY);
 
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: tool.name,
-      description: tool.seoDescription,
-      url: canonical,
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: tool.faq.map((f) => ({
-        "@type": "Question",
-        name: f.question,
-        acceptedAnswer: { "@type": "Answer", text: f.answer },
-      })),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/${cat.slug}` },
-        { "@type": "ListItem", position: 3, name: tool.name, item: canonical },
-      ],
-    },
-  ];
+  const jsonLd = toolJsonLd(tool, cat);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -134,7 +87,9 @@ export default async function ToolPage({
           </h2>
           <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-slate-700">
             {tool.about.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i}>
+                <ToolAboutText text={p} />
+              </p>
             ))}
           </div>
         </section>

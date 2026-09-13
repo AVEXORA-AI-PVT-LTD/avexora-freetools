@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { categories, getCategory, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
+import { categories, getCategory } from "@/tools/categories";
 import { toolsByCategory } from "@/tools/registry";
+import { categoryJsonLd, categoryMetadata } from "@/lib/seo";
 
 export const dynamicParams = false;
 
@@ -18,25 +19,7 @@ export async function generateMetadata({
   const { category } = await params;
   const cat = getCategory(category);
   if (!cat) return {};
-  return {
-    title: `${cat.name} — Avex Online Tools`,
-    description: cat.description,
-    alternates: { canonical: `${SITE_URL}/${cat.slug}` },
-    openGraph: {
-      type: "website",
-      siteName: SITE_NAME,
-      title: `${cat.name} — Avex Online Tools`,
-      description: cat.description,
-      url: `${SITE_URL}/${cat.slug}`,
-      images: [SITE_OG_IMAGE],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${cat.name} — Avex Online Tools`,
-      description: cat.description,
-      images: [SITE_OG_IMAGE],
-    },
-  };
+  return categoryMetadata(cat);
 }
 
 export default async function CategoryPage({
@@ -48,9 +31,14 @@ export default async function CategoryPage({
   const cat = getCategory(category);
   if (!cat) notFound();
   const tools = toolsByCategory[cat.slug];
+  const jsonLd = categoryJsonLd(cat);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="text-sm text-slate-500">
         <Link href="/" className="hover:text-orange-800">
           Avex Tools

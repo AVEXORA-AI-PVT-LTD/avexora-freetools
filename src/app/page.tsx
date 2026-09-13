@@ -1,16 +1,37 @@
 import Link from "next/link";
-import { categories } from "@/tools/categories";
+import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { DISPLAYED_TOOL_COUNT, toolsByCategory } from "@/tools/registry";
 import { buildSearchItems, type SearchItem } from "@/components/tools/search-items";
 import { ToolSearch } from "@/components/tools/tool-search";
 import { STUDIO_ASSETS } from "@/studio/assets";
 import { PLANS, formatINR } from "@/server/studio/plans";
 
+const homepageJsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description:
+      "Free calculators, generators, PDF & image utilities and AI writing tools for your business.",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Avexora",
+    url: EBOS_URL,
+  },
+];
+
 export default function HomePage() {
   const searchItems: SearchItem[] = buildSearchItems(categories, toolsByCategory);
 
   return (
     <div className="mx-auto max-w-6xl px-4">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
+      />
       <section className="py-16 text-center">
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
           Avex Tools that run your business faster
