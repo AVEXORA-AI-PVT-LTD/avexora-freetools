@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
-import { categories, EBOS_URL, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
+import { EBOS_URL, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
+import { getEffectiveCategories } from "@/server/categories";
 import { DISPLAYED_TOOL_COUNT } from "@/tools/registry";
 import AccountProviders from "@/components/account/providers";
 import { NavAccount } from "@/components/account/nav-account";
@@ -45,11 +46,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const effectiveCategories = await getEffectiveCategories();
+
   return (
     <html
       lang="en"
@@ -85,7 +90,7 @@ export default function RootLayout({
           <footer className="border-t border-slate-200 bg-slate-50 print:hidden">
             <div className="mx-auto max-w-6xl px-4 py-10">
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-                {categories.map((c) => (
+                {effectiveCategories.map((c) => (
                   <div key={c.slug}>
                     <Link
                       href={`/${c.slug}`}

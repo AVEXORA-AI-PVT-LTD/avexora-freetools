@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeAll } from "vitest";
 import { allTools, TOTAL_ACTIVE_TOOLS } from "@/tools/registry";
 import { categories, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
 import { canonicalUrl, categoryJsonLd, categoryMetadata, categoryUrl, ogImageUrl, toolJsonLd, toolMetadata } from "@/lib/seo";
@@ -74,7 +74,12 @@ describe("§46 SEO acceptance: canonical + metadata", () => {
 });
 
 describe("§46 SEO acceptance: sitemap", () => {
-  const urls = sitemap().map((e) => e.url);
+  let urls: string[] = [];
+
+  beforeAll(async () => {
+    const sm = await sitemap();
+    urls = sm.map((e: any) => e.url);
+  });
 
   it("references the production domain only", () => {
     for (const u of urls) {
@@ -99,7 +104,7 @@ describe("§46 SEO acceptance: sitemap", () => {
       "/studio/onboarding",
     ];
     for (const p of privatePaths) {
-      expect(urls.some((u) => u.includes(p))).toBe(false);
+      expect(urls.some((u: any) => u.includes(p))).toBe(false);
     }
   });
 

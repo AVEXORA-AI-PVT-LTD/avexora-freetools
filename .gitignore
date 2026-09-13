@@ -47,3 +47,5 @@ prisma/dev.db-journal
 
 # custom local files
 changes.md
+admin-panel.md
+admin.md

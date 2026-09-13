@@ -268,3 +268,28 @@ model ToolUsage {
   // Ranking ke liye index taaki sabse zyada use hone wale tools jaldi fetch ho sakein
   @@index([toolSlug, useCount(sort: Desc)])
 }
+
+// ---------------------------------------------------------------------------
+// Admin Panel Configurations
+// ---------------------------------------------------------------------------
+
+model CategoryConfig {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug             String   @unique
+  status           Boolean  @default(true)
+  priority         Int?
+  displayOrder     Int      @default(0)
+  metadataOverride Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+model ToolConfig {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug     String   @unique
+  categorySlug String
+  status       Boolean  @default(true)
+  priority     Int      @default(0)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

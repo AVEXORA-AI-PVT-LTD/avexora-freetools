@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { DISPLAYED_TOOL_COUNT, toolsByCategory } from "@/tools/registry";
 import { buildSearchItems, type SearchItem } from "@/components/tools/search-items";
 import { ToolSearch } from "@/components/tools/tool-search";
+import { getEffectiveCategories } from "@/server/categories";
 import { STUDIO_ASSETS } from "@/studio/assets";
 import { PLANS, formatINR } from "@/server/studio/plans";
 
@@ -23,8 +24,14 @@ const homepageJsonLd = [
   },
 ];
 
-export default function HomePage() {
-  const searchItems: SearchItem[] = buildSearchItems(categories, toolsByCategory);
+
+
+import { getEffectiveToolsByCategory } from "@/server/tools";
+
+export default async function HomePage() {
+  const effectiveCategories = await getEffectiveCategories();
+  const effectiveToolsByCategory = await getEffectiveToolsByCategory();
+  const searchItems: SearchItem[] = buildSearchItems(effectiveCategories, effectiveToolsByCategory);
 
   return (
     <div className="mx-auto max-w-6xl px-4">
@@ -95,8 +102,8 @@ export default function HomePage() {
 
       <section id="categories" className="pb-20">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((c) => {
-            const tools = toolsByCategory[c.slug];
+          {effectiveCategories.map((c) => {
+            const tools = effectiveToolsByCategory[c.slug] || [];
             return (
               <div
                 key={c.slug}

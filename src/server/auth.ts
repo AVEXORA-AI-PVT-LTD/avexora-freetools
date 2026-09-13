@@ -60,10 +60,26 @@ if (emailEnabled) {
   );
 }
 
+const useSecureCookies = process.env.NODE_ENV === "production";
+const cookiePrefix = useSecureCookies ? "__Secure-" : "";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers,
   session: { strategy: "database" },
+  cookies: {
+    sessionToken: {
+      name: `${cookiePrefix}authjs.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: useSecureCookies,
+        // Share cookies across subdomains (e.g. admin.localhost or admin.tools.avexora.in)
+        domain: process.env.NODE_ENV === "production" ? ".avexora.in" : ".localhost",
+      },
+    },
+  },
   pages: {
     signIn: "/studio/signin",
     verifyRequest: "/studio/signin/check-email",
@@ -71,7 +87,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     session({ session, user }) {
-      if (session.user) session.user.id = user.id;
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = (user as any).role;
+      }
       return session;
     },
   },

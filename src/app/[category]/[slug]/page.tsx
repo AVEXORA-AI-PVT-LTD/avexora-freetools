@@ -10,10 +10,15 @@ import { ToolAeoBlocks } from "@/components/tools/tool-aeo";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 
-export const dynamicParams = false;
+import { getEffectiveCategory } from "@/server/categories";
+import { getEffectiveTool, getEffectiveToolsByCategory } from "@/server/tools";
 
-export function generateStaticParams() {
-  return allTools.map((t) => ({ category: t.category, slug: t.slug }));
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const { getEffectiveTools } = await import("@/server/tools");
+  const tools = await getEffectiveTools();
+  return tools.map((t) => ({ category: t.category, slug: t.slug }));
 }
 
 export async function generateMetadata({
@@ -22,9 +27,9 @@ export async function generateMetadata({
   params: Promise<{ category: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const tool = getTool(slug);
+  const tool = await getEffectiveTool(slug);
   if (!tool) return {};
-  const cat = getCategory(tool.category);
+  const cat = await getEffectiveCategory(tool.category);
   return cat ? toolMetadata(tool, cat) : {};
 }
 
@@ -34,12 +39,15 @@ export default async function ToolPage({
   params: Promise<{ category: string; slug: string }>;
 }) {
   const { category, slug } = await params;
-  const tool = getTool(slug);
-  const cat = getCategory(category);
+  const tool = await getEffectiveTool(slug);
+  const cat = await getEffectiveCategory(category);
   if (!tool || !cat || tool.category !== cat.slug) notFound();
 
+  const effectiveToolsByCategory = await getEffectiveToolsByCategory();
+  const catTools = effectiveToolsByCategory[cat.slug] || [];
+
   const related = tool.related
-    .map((s) => getTool(s))
+    .map((s) => catTools.find(t => t.slug === s) || getTool(s))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
   const aiEnabled = tool.kind === "ai-writer" && Boolean(process.env.ANTHROPIC_API_KEY);
 
@@ -151,7 +159,7 @@ export default async function ToolPage({
             More {cat.name.toLowerCase()}
           </h2>
           <div className="mt-2 flex flex-wrap gap-2">
-            {toolsByCategory[cat.slug]
+            {catTools
               .filter((t) => t.slug !== tool.slug)
               .map((t) => (
                 <Link

@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { categories, getCategory } from "@/tools/categories";
 import { toolsByCategory } from "@/tools/registry";
 import { categoryJsonLd, categoryMetadata } from "@/lib/seo";
 
-export const dynamicParams = false;
+import { getEffectiveCategory, getEffectiveCategories } from "@/server/categories";
+import { getEffectiveToolsByCategory } from "@/server/tools";
 
-export function generateStaticParams() {
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const categories = await getEffectiveCategories();
   return categories.map((c) => ({ category: c.slug }));
 }
 
@@ -17,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category } = await params;
-  const cat = getCategory(category);
+  const cat = await getEffectiveCategory(category);
   if (!cat) return {};
   return categoryMetadata(cat);
 }
@@ -28,9 +31,10 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  const cat = getCategory(category);
+  const cat = await getEffectiveCategory(category);
   if (!cat) notFound();
-  const tools = toolsByCategory[cat.slug];
+  const effectiveToolsByCategory = await getEffectiveToolsByCategory();
+  const tools = effectiveToolsByCategory[cat.slug] || [];
   const jsonLd = categoryJsonLd(cat);
 
   return (
