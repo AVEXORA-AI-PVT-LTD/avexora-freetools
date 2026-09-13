@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_NAME, SITE_URL } from "@/tools/categories";
+import { SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
 import { PLANS, PLAN_ORDER, annualSavingMonths, formatINR } from "@/server/studio/plans";
 import { razorpayEnabled } from "@/server/billing/razorpay";
 import { UpgradeButton } from "@/components/studio/upgrade-button";
@@ -12,7 +12,20 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: `${SITE_URL}/studio/pricing` },
-  openGraph: { title: `${title} | ${SITE_NAME}`, description },
+  openGraph: {
+    title: `${title} | ${SITE_NAME}`,
+    description,
+    url: `${SITE_URL}/studio/pricing`,
+    siteName: SITE_NAME,
+    type: "website",
+    images: [SITE_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${title} | ${SITE_NAME}`,
+    description,
+    images: [SITE_OG_IMAGE],
+  },
 };
 
 export default function PricingPage() {

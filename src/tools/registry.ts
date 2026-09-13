@@ -25,6 +25,16 @@ export const toolsByCategory: Record<CategorySlug, ToolConfig[]> = {
 
 export const allTools: ToolConfig[] = Object.values(toolsByCategory).flat();
 
+export const TOTAL_ACTIVE_TOOLS = allTools.length;
+
+export const MARKETING_TOOL_COUNT_FLOOR = 130;
+
+export function displayedToolCount(actualCount: number): number {
+  return Math.max(Math.floor(actualCount / 10) * 10, MARKETING_TOOL_COUNT_FLOOR);
+}
+
+export const DISPLAYED_TOOL_COUNT = displayedToolCount(TOTAL_ACTIVE_TOOLS);
+
 const bySlug = new Map(allTools.map((t) => [t.slug, t]));
 
 export function getTool(slug: string): ToolConfig | undefined {

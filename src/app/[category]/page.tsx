@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { categories, getCategory, SITE_URL } from "@/tools/categories";
+import { categories, getCategory, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
 import { toolsByCategory } from "@/tools/registry";
 
 export const dynamicParams = false;
@@ -22,6 +22,20 @@ export async function generateMetadata({
     title: `${cat.name} — Avex Online Tools`,
     description: cat.description,
     alternates: { canonical: `${SITE_URL}/${cat.slug}` },
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      title: `${cat.name} — Avex Online Tools`,
+      description: cat.description,
+      url: `${SITE_URL}/${cat.slug}`,
+      images: [SITE_OG_IMAGE],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${cat.name} — Avex Online Tools`,
+      description: cat.description,
+      images: [SITE_OG_IMAGE],
+    },
   };
 }
 

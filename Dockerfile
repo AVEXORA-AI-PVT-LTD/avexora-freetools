@@ -1,4 +1,4 @@
-# Production image for freetools.avexora.in (free tools + Brand Studio).
+# Production image for tools.avexora.in (free tools + Brand Studio).
 #
 # Deliberately no `# syntax=` directive: it makes BuildKit pull a frontend image
 # before it reads line 2, and nothing here needs one.

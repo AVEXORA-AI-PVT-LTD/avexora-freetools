@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { categories } from "@/tools/categories";
-import { allTools, toolsByCategory } from "@/tools/registry";
+import { DISPLAYED_TOOL_COUNT, toolsByCategory } from "@/tools/registry";
 import { ToolSearch, type SearchItem } from "@/components/tools/tool-search";
 import { STUDIO_ASSETS } from "@/studio/assets";
 import { PLANS, formatINR } from "@/server/studio/plans";
@@ -22,11 +22,11 @@ export default function HomePage() {
           Avex Tools that run your business faster
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-          {allTools.length}+ calculators, generators, PDF &amp; image utilities and AI
+          {DISPLAYED_TOOL_COUNT}+ calculators, generators, PDF &amp; image utilities and AI
           writers. No sign-up. No cost. Built by the team behind Enterprise Business OS.
         </p>
         <div className="mt-8">
-          <ToolSearch items={searchItems} />
+          <ToolSearch items={searchItems} displayCount={DISPLAYED_TOOL_COUNT} />
         </div>
       </section>
 

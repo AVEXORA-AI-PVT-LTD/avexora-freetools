@@ -11,7 +11,13 @@ export interface SearchItem {
   categoryName: string;
 }
 
-export function ToolSearch({ items }: { items: SearchItem[] }) {
+export function ToolSearch({
+  items,
+  displayCount,
+}: {
+  items: SearchItem[];
+  displayCount: number;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -60,7 +66,7 @@ export function ToolSearch({ items }: { items: SearchItem[] }) {
         aria-controls="search-listbox"
         aria-autocomplete="list"
         aria-activedescendant={activeId}
-        placeholder={`Search ${items.length} Avex tools…`}
+        placeholder={`Search ${displayCount} Avex tools…`}
         className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm shadow-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
       />
       {matches.length > 0 && (

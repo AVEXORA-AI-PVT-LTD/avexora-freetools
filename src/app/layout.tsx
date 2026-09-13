@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
-import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { categories, EBOS_URL, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
+import { DISPLAYED_TOOL_COUNT } from "@/tools/registry";
 import AccountProviders from "@/components/account/providers";
 import { NavAccount } from "@/components/account/nav-account";
 import "./globals.css";
@@ -20,11 +21,28 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — 120+ Avex Business Tools`,
+    default: `${SITE_NAME} — ${DISPLAYED_TOOL_COUNT}+ Avex Business Tools`,
     template: `%s | ${SITE_NAME}`,
   },
   description:
     "Free calculators, generators, PDF & image utilities and AI writing tools for your business. Free to use — by Avexora, makers of Enterprise Business OS.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — ${DISPLAYED_TOOL_COUNT}+ Avex Business Tools`,
+    description:
+      "Free calculators, generators, PDF & image utilities and AI writing tools for your business. Free to use — by Avexora, makers of Enterprise Business OS.",
+    url: "/",
+    images: [SITE_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — ${DISPLAYED_TOOL_COUNT}+ Avex Business Tools`,
+    description:
+      "Free calculators, generators, PDF & image utilities and AI writing tools for your business. Free to use — by Avexora, makers of Enterprise Business OS.",
+    images: [SITE_OG_IMAGE],
+  },
 };
 
 export default function RootLayout({
@@ -93,7 +111,7 @@ export default function RootLayout({
                 </div>
               </div>
               <p className="mt-8 text-xs text-slate-500">
-                © {new Date().getFullYear()} Avexora · avextools.avexora.in — avex
+                © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — avex
                 business tools by the makers of{" "}
                 <a href={EBOS_URL} className="underline hover:text-slate-700">
                   Enterprise Business OS

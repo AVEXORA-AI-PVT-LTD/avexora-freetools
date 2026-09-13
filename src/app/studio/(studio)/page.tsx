@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SITE_NAME, SITE_URL } from "@/tools/categories";
+import { SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
 import { PLANS, PLAN_ORDER, formatINR } from "@/server/studio/plans";
 
 const title = "Brand Studio — compliance-ready business stationery for Indian startups";
@@ -17,8 +17,14 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/studio`,
     siteName: SITE_NAME,
     type: "website",
+    images: [SITE_OG_IMAGE],
   },
-  twitter: { card: "summary_large_image", title, description },
+  twitter: {
+    card: "summary_large_image",
+    title: `${title} | ${SITE_NAME}`,
+    description,
+    images: [SITE_OG_IMAGE],
+  },
 };
 
 const ASSETS = [

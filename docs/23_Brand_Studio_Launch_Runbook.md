@@ -151,7 +151,7 @@ that makes the quota upsert atomic. Nothing needs creating by hand.
 
 ```bash
 npx auth secret            # writes AUTH_SECRET
-export AUTH_URL="https://freetools.avexora.in"
+export AUTH_URL="https://tools.avexora.in"
 ```
 
 Then **at least one** provider — the sign-in page hides whichever is unset, and
@@ -160,7 +160,7 @@ says so plainly if neither is configured:
 - **Magic link:** `AUTH_RESEND_KEY` and `EMAIL_FROM` (both, or neither works).
   The sending domain must be verified in Resend first.
 - **Google:** `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`, with
-  `https://freetools.avexora.in/api/auth/callback/google` registered as an
+  `https://tools.avexora.in/api/auth/callback/google` registered as an
   authorised redirect URI.
 
 > **Check:** sign in end to end. A `User` and a `Session` row appear. If the
@@ -197,7 +197,7 @@ the real SDK, including that the `notes` written at checkout are what the webhoo
 later reads to attribute the payment. What a live account adds is confirmation
 that Razorpay behaves as documented — chiefly that it echoes `notes` back intact.
 
-Register the webhook at `https://freetools.avexora.in/api/studio/webhooks/razorpay`
+Register the webhook at `https://tools.avexora.in/api/studio/webhooks/razorpay`
 subscribed to `subscription.activated`, `.charged`, `.halted`, `.cancelled`,
 `.completed`, `.paused`, `.resumed`, `.pending`.
 

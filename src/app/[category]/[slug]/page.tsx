@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ebosCtaUrl, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { ebosCtaUrl, getCategory, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
 import { allTools, getTool, toolsByCategory } from "@/tools/registry";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { CtaBlock } from "@/components/lead/cta-block";
@@ -33,11 +33,13 @@ export async function generateMetadata({
       url: canonical,
       siteName: SITE_NAME,
       type: "website",
+      images: [SITE_OG_IMAGE],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: `${title} | ${SITE_NAME}`,
       description: tool.seoDescription,
+      images: [SITE_OG_IMAGE],
     },
   };
 }
