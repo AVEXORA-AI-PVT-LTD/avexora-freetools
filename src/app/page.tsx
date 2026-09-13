@@ -34,11 +34,10 @@ export default function HomePage() {
       />
       <section className="py-16 text-center">
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          Avex Tools that run your business faster
+          Avexora Tools
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-          {DISPLAYED_TOOL_COUNT}+ calculators, generators, PDF &amp; image utilities and AI
-          writers. No sign-up. No cost. Built by the team behind Enterprise Business OS.
+          Avexora Tools, by Avexora, provides {DISPLAYED_TOOL_COUNT}+ practical online calculators, generators, PDF utilities, image utilities, AI writing tools, and business utilities for everyday work.
         </p>
         <div className="mt-8">
           <ToolSearch items={searchItems} displayCount={DISPLAYED_TOOL_COUNT} />

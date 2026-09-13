@@ -111,8 +111,7 @@ export default function RootLayout({
                 </div>
               </div>
               <p className="mt-8 text-xs text-slate-500">
-                © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — avex
-                business tools by the makers of{" "}
+                © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — Avexora Tools, by Avexora, provides practical online business tools. By the makers of{" "}
                 <a href={EBOS_URL} className="underline hover:text-slate-700">
                   Enterprise Business OS
                 </a>
