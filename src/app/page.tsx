@@ -1,19 +1,13 @@
 import Link from "next/link";
 import { categories } from "@/tools/categories";
 import { DISPLAYED_TOOL_COUNT, toolsByCategory } from "@/tools/registry";
-import { ToolSearch, type SearchItem } from "@/components/tools/tool-search";
+import { buildSearchItems, type SearchItem } from "@/components/tools/search-items";
+import { ToolSearch } from "@/components/tools/tool-search";
 import { STUDIO_ASSETS } from "@/studio/assets";
 import { PLANS, formatINR } from "@/server/studio/plans";
 
 export default function HomePage() {
-  const searchItems: SearchItem[] = categories.flatMap((c) =>
-    toolsByCategory[c.slug].map((t) => ({
-      name: t.name,
-      slug: t.slug,
-      category: c.slug,
-      categoryName: c.shortName,
-    })),
-  );
+  const searchItems: SearchItem[] = buildSearchItems(categories, toolsByCategory);
 
   return (
     <div className="mx-auto max-w-6xl px-4">
