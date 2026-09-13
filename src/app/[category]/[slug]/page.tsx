@@ -45,9 +45,11 @@ export default async function ToolPage({
 
   const effectiveToolsByCategory = await getEffectiveToolsByCategory();
   const catTools = effectiveToolsByCategory[cat.slug] || [];
+  
+  const allEffectiveToolsList = Object.values(effectiveToolsByCategory).flat();
 
   const related = tool.related
-    .map((s) => catTools.find(t => t.slug === s) || getTool(s))
+    .map((s) => allEffectiveToolsList.find(t => t.slug === s))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
   const aiEnabled = tool.kind === "ai-writer" && Boolean(process.env.ANTHROPIC_API_KEY);
 
@@ -86,7 +88,7 @@ export default async function ToolPage({
       )}
 
       <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm print:border-none print:p-0 print:shadow-none">
-        <ToolRunner category={tool.category} slug={tool.slug} aiEnabled={aiEnabled} />
+        <ToolRunner category={tool.category} slug={tool.slug} aiEnabled={aiEnabled} isDynamic={tool.isDynamic} />
       </div>
 
       {(tool.steps?.length || tool.formula || tool.example) ? (

@@ -66,14 +66,14 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
 
 export function hasPermission(userRole: string | null | undefined, permission: Permission): boolean {
   if (!userRole) return false;
-  const role = userRole.toLowerCase() as Role;
+  const role = userRole.toLowerCase().replace('_', '') as Role;
   if (!ROLE_PERMISSIONS[role]) return false;
   return ROLE_PERMISSIONS[role].includes(permission);
 }
 
 export function isHigherOrEqualRole(actorRole: string | null | undefined, targetRole: string | null | undefined): boolean {
   if (!actorRole) return false;
-  const actorLevel = ROLE_HIERARCHY[actorRole.toLowerCase() as Role] || 0;
-  const targetLevel = targetRole ? (ROLE_HIERARCHY[targetRole.toLowerCase() as Role] || 0) : 0;
+  const actorLevel = ROLE_HIERARCHY[actorRole.toLowerCase().replace('_', '') as Role] || 0;
+  const targetLevel = targetRole ? (ROLE_HIERARCHY[targetRole.toLowerCase().replace('_', '') as Role] || 0) : 0;
   return actorLevel >= targetLevel;
 }

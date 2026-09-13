@@ -1,9 +1,9 @@
 "use client";
 
 import { useTransition, useState } from "react";
-import { updateCategoryStatus } from "@/app/admin/(protected)/categories/actions";
+import { updateToolStatus } from "@/app/admin/(protected)/tools/actions";
 
-export function CategoryToggle({ slug, initialStatus }: { slug: string; initialStatus: boolean }) {
+export function ToolToggle({ slug, initialStatus }: { slug: string; initialStatus: boolean }) {
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState(initialStatus);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +14,7 @@ export function CategoryToggle({ slug, initialStatus }: { slug: string; initialS
     setError(null);
 
     startTransition(async () => {
-      const result = await updateCategoryStatus(slug, newStatus);
+      const result = await updateToolStatus(slug, newStatus);
       if (!result.success) {
         setStatus(!newStatus);
         setError(result.error || "Failed to update status");

@@ -33,6 +33,8 @@ export async function updateCategoryStatus(slug: string, status: boolean) {
     revalidatePath("/");
     revalidatePath(`/${slug}`);
     revalidatePath("/(public)", "layout"); // For header/navigation
+    revalidatePath("/admin/categories");
+    revalidatePath("/admin/tools");
 
     return { success: true };
   } catch (error) {

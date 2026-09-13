@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 
-export function ToolActions({ slug }: { slug: string }) {
+export function CategoryActions({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +22,7 @@ export function ToolActions({ slug }: { slug: string }) {
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
-        aria-label={`Tool actions for ${slug}`}
+        aria-label={`Category actions for ${slug}`}
         aria-expanded={open}
       >
         <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

@@ -1,5 +1,6 @@
 import { requireAdminAuth } from "@/server/admin-auth";
 import { getAllCategoriesWithConfig } from "@/server/categories";
+import { CategoryActions } from "@/components/admin/CategoryActions";
 import { CategoryToggle } from "@/components/admin/CategoryToggle";
 import Link from "next/link";
 
@@ -17,7 +18,7 @@ export default async function AdminCategoriesPage() {
         </div>
         <Link
           href="/admin/categories/reorder"
-          className="inline-flex justify-center items-center px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-medium hover:bg-slate-800 transition-colors"
+          className="inline-flex justify-center items-center px-4 py-2 bg-zinc-900 text-white rounded-md text-sm font-medium hover:bg-zinc-800 transition-colors shadow-sm"
         >
           Reorder Categories
         </Link>
@@ -28,8 +29,9 @@ export default async function AdminCategoriesPage() {
           <thead>
             <tr className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 text-sm font-medium">
               <th className="px-6 py-4">Category Name</th>
+              <th className="px-6 py-4">Toggle</th>
               <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Actions</th>
+              <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200">
@@ -40,24 +42,27 @@ export default async function AdminCategoriesPage() {
                   <div className="text-xs text-zinc-400 font-mono mt-0.5">{cat.slug}</div>
                 </td>
                 <td className="px-6 py-4">
+                  <CategoryToggle slug={cat.slug} initialStatus={cat.status} />
+                </td>
+                <td className="px-6 py-4">
                   <span
                     className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${
                       cat.status
-                        ? "bg-green-50 text-green-700 ring-green-600/20"
+                        ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
                         : "bg-zinc-50 text-zinc-600 ring-zinc-500/10"
                     }`}
                   >
                     {cat.status ? "Active" : "Disabled"}
                   </span>
                 </td>
-                <td className="px-6 py-4">
-                  <CategoryToggle slug={cat.slug} initialStatus={cat.status} />
+                <td className="px-6 py-4 text-right">
+                  <CategoryActions slug={cat.slug} />
                 </td>
               </tr>
             ))}
             {effectiveCategories.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-6 py-8 text-center text-zinc-500">
+                <td colSpan={4} className="px-6 py-8 text-center text-zinc-500">
                   No categories found.
                 </td>
               </tr>

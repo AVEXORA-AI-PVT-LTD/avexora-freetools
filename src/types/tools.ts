@@ -119,13 +119,14 @@ interface ToolBase {
   priority?: number;
   /** Require an email before download/copy of produced documents. */
   emailGate?: boolean;
-  /**
-   * Require a signed-in account before downloading produced documents. When
+  /** Require a signed-in account before downloading produced documents. When
    * set, sign-in replaces the anonymous email gate for downloads and only the
    * declarative generator shape honours it (custom `component` tools are left
    * to their own gating).
    */
   requireAuth?: boolean;
+  /** True if the tool was dynamically created via the Admin Panel and lacks a hardcoded client implementation. */
+  isDynamic?: boolean;
 }
 
 export interface CalculatorTool extends ToolBase {

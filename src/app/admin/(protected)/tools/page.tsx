@@ -2,6 +2,7 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { getAllToolsWithConfig } from "@/server/tools";
 import { getAllCategoriesWithConfig } from "@/server/categories";
 import { ToolActions } from "@/components/admin/ToolActions";
+import { ToolToggle } from "@/components/admin/ToolToggle";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -12,87 +13,85 @@ export const metadata = {
 export default async function AdminToolsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; status?: string; page?: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const user = await requireAdminAuth();
-  if (user.role !== "SUPER_ADMIN" && user.role !== "ADMIN") {
-    redirect("/studio/app");
-  }
+  await requireAdminAuth("tools.view");
 
-  const { q, category, status, page } = await searchParams;
+  const resolvedParams = await searchParams;
+  const q = typeof resolvedParams.q === "string" ? resolvedParams.q : "";
+  const category = typeof resolvedParams.category === "string" ? resolvedParams.category : "";
+  const status = typeof resolvedParams.status === "string" ? resolvedParams.status : "";
+  const page = typeof resolvedParams.page === "string" ? parseInt(resolvedParams.page, 10) : 1;
+
   const tools = await getAllToolsWithConfig();
   const categories = await getAllCategoriesWithConfig();
 
-  let filtered = tools;
+  const filtered = tools.filter((t) => {
+    if (q && !t.name.toLowerCase().includes(q.toLowerCase())) return false;
+    if (category && t.category !== category) return false;
+    if (status === "enabled" && !(t as any).status) return false;
+    if (status === "disabled" && (t as any).status) return false;
+    return true;
+  });
 
-  if (q) {
-    const lower = q.toLowerCase();
-    filtered = filtered.filter(
-      (t) => t.name.toLowerCase().includes(lower) || t.slug.toLowerCase().includes(lower)
-    );
-  }
-
-  if (category) {
-    filtered = filtered.filter((t) => t.category === category);
-  }
-
-  if (status) {
-    const isEnabled = status === "enabled";
-    filtered = filtered.filter((t) => (t as any).status === isEnabled);
-  }
-
-  const pageSize = 25;
-  const currentPage = parseInt(page || "1", 10) || 1;
+  const pageSize = 20;
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
-  const validPage = Math.min(Math.max(1, currentPage), totalPages);
+  const validPage = Math.max(1, Math.min(page, totalPages));
   
   const paginated = filtered.slice((validPage - 1) * pageSize, validPage * pageSize);
 
-  const buildQuery = (updates: Record<string, string | undefined>) => {
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (category) params.set("category", category);
-    if (status) params.set("status", status);
-    if (validPage > 1) params.set("page", validPage.toString());
+  const buildQuery = (updates: Record<string, string>) => {
+    const p = new URLSearchParams();
+    if (q) p.set("q", q);
+    if (category) p.set("category", category);
+    if (status) p.set("status", status);
+    if (validPage > 1) p.set("page", validPage.toString());
     
-    for (const [k, v] of Object.entries(updates)) {
-      if (v === undefined) params.delete(k);
-      else params.set(k, v);
-    }
+    Object.entries(updates).forEach(([k, v]) => {
+      if (v) p.set(k, v);
+      else p.delete(k);
+    });
     
-    const str = params.toString();
-    return str ? `?${str}` : "?";
+    return `?${p.toString()}`;
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-slate-900">Tool Management</h1>
-        <Link
-          href="/admin/tools/reorder"
-          className="inline-flex justify-center items-center px-4 py-2 bg-slate-900 text-white rounded-md text-sm font-medium hover:bg-slate-800 transition-colors"
-        >
-          Reorder Tools
-        </Link>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold text-slate-900">Tools</h1>
+        <div className="flex items-center gap-3">
+          <Link 
+            href="/admin/tools/reorder"
+            className="rounded-md bg-white border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 shadow-sm"
+          >
+            Reorder Tools
+          </Link>
+          <Link 
+            href="/admin/tools/new"
+            className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 shadow-sm"
+          >
+            Add New Tool
+          </Link>
+        </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <form className="flex flex-wrap gap-4 items-end">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <form className="flex flex-wrap items-end gap-4" action="/admin/tools">
           <div className="flex-1 min-w-[200px]">
-            <label htmlFor="search" className="block text-sm font-medium text-slate-700 mb-1">
+            <label htmlFor="q" className="mb-1 block text-sm font-medium text-slate-700">
               Search
             </label>
             <input
               type="text"
-              id="search"
+              id="q"
               name="q"
               defaultValue={q}
-              placeholder="Search tools by name or slug..."
+              placeholder="Search tools..."
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
           </div>
           <div className="w-48">
-            <label htmlFor="category" className="block text-sm font-medium text-slate-700 mb-1">
+            <label htmlFor="category" className="mb-1 block text-sm font-medium text-slate-700">
               Category
             </label>
             <select
@@ -110,7 +109,7 @@ export default async function AdminToolsPage({
             </select>
           </div>
           <div className="w-40">
-            <label htmlFor="status" className="block text-sm font-medium text-slate-700 mb-1">
+            <label htmlFor="status" className="mb-1 block text-sm font-medium text-slate-700">
               Status
             </label>
             <select
@@ -156,17 +155,20 @@ export default async function AdminToolsPage({
                   Priority
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Toggle
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th scope="col" className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Actions
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 bg-white">
               {paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
                     No tools found matching your filters.
                   </td>
                 </tr>
@@ -184,13 +186,16 @@ export default async function AdminToolsPage({
                       {(tool as any).priority}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
+                      <ToolToggle slug={tool.slug} initialStatus={(tool as any).status} />
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span className={`inline-block h-2.5 w-2.5 rounded-full ${(tool as any).status ? "bg-green-500" : "bg-slate-300"}`}></span>
                         <span className="text-sm font-medium text-slate-700">{(tool as any).status ? "Enabled" : "Disabled"}</span>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                      <ToolActions slug={tool.slug} initialStatus={(tool as any).status} />
+                      <ToolActions slug={tool.slug} />
                     </td>
                   </tr>
                 ))

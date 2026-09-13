@@ -6,10 +6,11 @@ export async function requireAdminAuth(permission?: Permission) {
   const session = await auth();
   
   if (!session || !session.user) {
-    redirect("/studio/signin?callbackUrl=/");
+    redirect("/studio/signin?next=/");
   }
 
-  const role = session.user.role as Role | undefined;
+  const rawRole = session.user.role as string | undefined;
+  const role = rawRole ? rawRole.toLowerCase().replace('_', '') as Role : undefined;
   
   // Must be at least editor to enter the admin panel
   if (!role || (ROLE_HIERARCHY[role] || 0) < ROLE_HIERARCHY["editor"]) {

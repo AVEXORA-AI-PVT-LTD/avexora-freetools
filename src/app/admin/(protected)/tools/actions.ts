@@ -34,6 +34,8 @@ export async function updateToolStatus(slug: string, status: boolean) {
     revalidatePath(`/${tool.category}`);
     revalidatePath(`/${tool.category}/${tool.slug}`);
     revalidatePath("/(public)", "layout"); // For search updates if any
+    revalidatePath("/admin/tools");
+    revalidatePath("/admin/categories");
 
     return { success: true };
   } catch (error) {

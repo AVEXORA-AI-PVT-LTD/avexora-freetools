@@ -18,10 +18,10 @@ export const metadata: Metadata = {
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; callbackUrl?: string; error?: string }>;
 }) {
-  const { next, error } = await searchParams;
-  const safeNext = safeRedirectPath(next, "/studio/app");
+  const { next, callbackUrl, error } = await searchParams;
+  const safeNext = safeRedirectPath(next || callbackUrl, "/studio/app");
   const session = await auth();
   if (session?.user) redirect(safeNext);
 

@@ -7,20 +7,29 @@ export default async function AdminDashboardPage() {
   const stats = await getDashboardStats();
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-zinc-500 mt-2">
-          Welcome back, <span className="font-semibold text-zinc-900">{user.name || user.email}</span>
-        </p>
-        <p className="text-sm text-zinc-400">
-          Role: <span className="uppercase text-zinc-600 font-medium">{user.role}</span>
-        </p>
+    <div className="space-y-10">
+      <div>
+        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900">Admin Dashboard</h1>
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-2 text-zinc-600">
+          <p className="text-lg">
+            Welcome back, <span className="font-semibold text-zinc-900">{user.name || user.email}</span>
+          </p>
+          <span className="hidden sm:inline text-zinc-300">•</span>
+          <p className="text-sm rounded-full bg-zinc-100 px-3 py-1 font-medium text-zinc-700 w-fit">
+            {user.role}
+          </p>
+        </div>
       </div>
 
-      <DashboardMetrics stats={stats} />
+      <div className="space-y-6">
+        <h2 className="text-lg font-semibold text-zinc-900">Overview</h2>
+        <DashboardMetrics stats={stats} />
+      </div>
       
-      <QuickActions role={user.role as string | null} />
+      <div className="space-y-6">
+        <h2 className="text-lg font-semibold text-zinc-900">Quick Actions</h2>
+        <QuickActions role={user.role as string | null} />
+      </div>
     </div>
   );
 }

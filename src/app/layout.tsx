@@ -114,15 +114,25 @@ export default async function RootLayout({
                     Studio pricing
                   </Link>
                 </div>
+                <div className="lg:col-start-5 sm:col-start-2">
+                  <Link
+                    href="/admin"
+                    className="text-sm font-semibold text-slate-400 hover:text-slate-600 tracking-wider text-[10px]"
+                  >
+                    admin panel
+                  </Link>
+                </div>
               </div>
-              <p className="mt-8 text-xs text-slate-500">
-                © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — Avexora Tools, by Avexora, provides practical online business tools. By the makers of{" "}
-                <a href={EBOS_URL} className="underline hover:text-slate-700">
-                  Enterprise Business OS
-                </a>
-                . Tools are provided as-is without warranty; verify important
-                calculations independently.
-              </p>
+              <div className="mt-8 flex flex-col gap-4">
+                <p className="text-xs text-slate-500">
+                  © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — Avexora Tools, by Avexora, provides practical online business tools. By the makers of{" "}
+                  <a href={EBOS_URL} className="underline hover:text-slate-700">
+                    Enterprise Business OS
+                  </a>
+                  . Tools are provided as-is without warranty; verify important
+                  calculations independently.
+                </p>
+              </div>
             </div>
         </footer>
         </AccountProviders>

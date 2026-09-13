@@ -33,9 +33,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(rewriteUrl);
   }
   
-  if (url.pathname.startsWith('/admin') && !isAdminHost) {
-    return NextResponse.rewrite(new URL('/404', request.url)); 
-  }
+  // Remove strict 404 blocking so `/admin` can be accessed directly on localhost:3000
+  // if (url.pathname.startsWith('/admin') && !isAdminHost) {
+  //   return NextResponse.rewrite(new URL('/404', request.url)); 
+  // }
   
   // 2. Studio App Auth Check
   if (url.pathname.startsWith('/studio/app')) {

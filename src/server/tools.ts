@@ -4,10 +4,44 @@ import { getEffectiveCategories } from "@/server/categories";
 import type { ToolConfig, CategorySlug } from "@/types/tools";
 
 export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
-  const toolConfigs = await prisma.toolConfig?.findMany() ?? [];
+  const [toolConfigs, dynamicTools] = await Promise.all([
+    prisma.toolConfig?.findMany().catch(() => []) ?? [],
+    prisma.dynamicTool?.findMany().catch(() => []) ?? [],
+  ]);
+  
   const configMap = new Map(toolConfigs.map((c) => [c.toolSlug, c]));
 
-  return allTools.map((tool) => {
+  // Create fallback renderer configs for dynamic tools
+  const dynamicToolConfigs: ToolConfig[] = dynamicTools.map((dt) => {
+    const base = {
+      slug: dt.slug,
+      category: dt.categorySlug as CategorySlug,
+      name: dt.name,
+      tagline: "This tool is currently under configuration.",
+      seoDescription: `A ${dt.type} tool for ${dt.name}.`,
+      about: ["This tool was registered by an administrator and is awaiting full configuration."],
+      faq: [],
+      related: [],
+      priority: 999,
+      isDynamic: true, // Internal flag
+    };
+
+    if (dt.type === "calculator") {
+      return { ...base, kind: "calculator", fields: [], compute: () => ({ error: "Not configured yet." }) } as ToolConfig;
+    } else if (dt.type === "ai-writer") {
+      return { ...base, kind: "ai-writer", fields: [] } as ToolConfig;
+    } else if (dt.type === "file-tool") {
+      // Fake a component type for type safety, though it shouldn't actually be rendered without proper UI
+      return { ...base, kind: "file-tool", component: () => null } as ToolConfig;
+    } else {
+      // Generator
+      return { ...base, kind: "generator", fields: [], generate: () => ({ error: "Not configured yet." }) } as ToolConfig;
+    }
+  });
+
+  const mergedTools = [...allTools, ...dynamicToolConfigs];
+
+  return mergedTools.map((tool) => {
     const override = configMap.get(tool.slug);
     return {
       ...tool,
