@@ -393,6 +393,14 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free background remover. Remove the background from a photo automatically — get a transparent PNG for product photos, ID photos or graphics. No upload, no watermark, no sign-up.",
     component: BackgroundRemover,
+    howTo: {
+      name: "How to remove a background from a photo",
+      steps: [
+        { name: "Choose your photo", text: "Select the image you want to remove the background from." },
+        { name: "Remove the background", text: "Click remove background — an AI model runs in your browser to separate the subject from the background." },
+        { name: "Download the PNG", text: "Download the result as a transparent PNG, ready to place on any background." },
+      ],
+    },
     about: [
       "Cutting a subject cleanly out of its background used to mean a photo editor and a patient hand with the lasso tool. This tool does it automatically: upload a photo and an AI model identifies the foreground subject and removes everything else, leaving a transparent PNG you can drop onto any background.",
       "It runs an open-source segmentation model entirely inside your browser using WebAssembly — there is no server upload at any point, so a personal or ID photo never leaves your device. The trade-off for that privacy and cost (this is a genuinely capable AI model, running for free) is a short one-time delay the first time you use it: your browser downloads a few megabytes of model data, cached afterward so every subsequent image processes in seconds.",

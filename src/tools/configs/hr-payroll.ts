@@ -412,6 +412,14 @@ export const tools: ToolConfig[] = [
     generate: generateOfferLetter,
     submitLabel: "Generate offer letter",
     emailGate: true,
+    howTo: {
+      name: "How to create an offer letter",
+      steps: [
+        { name: "Enter role and compensation", text: "Add the company name, candidate name, designation, annual CTC and proposed joining date." },
+        { name: "Add location and reporting details", text: "Enter the work location and, optionally, the reporting manager." },
+        { name: "Generate and send", text: "Copy or download the finished offer letter to send to the candidate." },
+      ],
+    },
     about: [
       "The offer letter is the first formal document a candidate receives from your company, and its tone and clarity set expectations for the whole relationship ahead. Writing one from scratch means remembering every standard clause — position, compensation, joining date, probation, confidentiality, acceptance — and getting the legal-sounding parts phrased correctly. This generator produces a complete, professional offer letter from a handful of fields.",
       "The output covers the clauses every Indian offer letter should include: the position and location (with a note that the company may require work at other locations, standard flexibility language), compensation stated as annual CTC with a note that a detailed break-up follows in the appointment letter, the proposed joining date with a list of documents to bring, a standard six-month probation period, a confidentiality clause, and a clear acceptance section for the candidate to sign. If you name a reporting manager, that's woven in naturally.",
@@ -565,6 +573,14 @@ export const tools: ToolConfig[] = [
     generate: generateResume,
     submitLabel: "Generate resume",
     emailGate: true,
+    howTo: {
+      name: "How to build a resume",
+      steps: [
+        { name: "Enter your contact details and summary", text: "Add your name, contact details and a 2-3 sentence professional summary." },
+        { name: "Add skills and experience", text: "List your skills, then your work experience with quantified achievements for each role." },
+        { name: "Add education and generate", text: "Enter your degree and institution, then generate — copy or download the finished resume." },
+      ],
+    },
     about: [
       "A resume that clears applicant-tracking-system (ATS) screening has one job before it ever reaches a human: parse cleanly as plain text, with your name, contact details, skills and dated work history in a predictable order. This builder produces exactly that — a single-column, keyword-scannable resume with no tables, columns, icons or graphics that a parser could choke on or reorder incorrectly.",
       "Fill in your contact details, a two-to-three sentence summary, your skills, up to two roles of work experience with bullet-point achievements, and your education — the generator assembles it into a clean, standard structure recruiters and ATS software both read the same way. Lead each achievement bullet with a number where you have one (\"grew signups 18%\", \"cut processing time from 3 days to 4 hours\") — quantified bullets are read as evidence, plain duty descriptions are read as a job description.",

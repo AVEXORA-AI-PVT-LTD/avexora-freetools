@@ -24,6 +24,14 @@ export const tools: ToolConfig[] = [
       "Free online GST invoice generator for India. Add your business details, line items and GST rates, then print or save a professional tax invoice as PDF in seconds.",
     component: InvoiceGenerator,
     emailGate: true,
+    howTo: {
+      name: "How to create a GST invoice",
+      steps: [
+        { name: "Enter business and customer details", text: "Add your business details, the customer's details and an invoice number." },
+        { name: "Add line items", text: "List each item or service with quantity, rate and GST rate — the totals and CGST/SGST or IGST split calculate automatically." },
+        { name: "Print or save as PDF", text: "Use your browser's print dialog to save the invoice as a PDF or print it directly." },
+      ],
+    },
     about: [
       "Every business needs invoices, but not every business needs invoicing software on day one. This free generator builds a clean, professional GST tax invoice in your browser: enter your business and customer details, add line items with quantity, rate and GST slab, and the invoice preview updates live with the correct CGST/SGST or IGST split.",
       "For sales within your state, GST is split as CGST + SGST; tick “Inter-state (IGST)” for sales to another state and the invoice shows IGST instead. When you're done, hit Print / Save as PDF — your browser's print dialog lets you save a PDF copy to send to your customer.",
@@ -73,6 +81,14 @@ export const tools: ToolConfig[] = [
     generate: generateQuotation,
     submitLabel: "Generate quotation",
     emailGate: true,
+    howTo: {
+      name: "How to create a quotation",
+      steps: [
+        { name: "Enter business and customer details", text: "Add your business name, the customer's name, a quotation number and date." },
+        { name: "List your line items", text: "Add each item as one line — description, quantity and rate — and a validity date." },
+        { name: "Generate and send", text: "Click generate, then copy or download the finished quotation to send to your customer." },
+      ],
+    },
     about: [
       "A quotation is the first document a prospective customer sees before committing to buy — it needs to look professional enough to build confidence while making the price and scope unambiguous. This generator produces a clean, itemised quotation from your business details, customer name, and a simple line-item list, ready to send or print.",
       "Enter each item as a single line — description, quantity, rate — and the generator computes line totals and the grand total automatically, formatted as a clean aligned table. Add a validity date so the customer knows the quoted prices aren't open-ended, which protects you if your costs change before they decide.",

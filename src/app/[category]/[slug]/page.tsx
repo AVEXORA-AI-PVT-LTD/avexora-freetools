@@ -87,6 +87,20 @@ export default async function ToolPage({
         { "@type": "ListItem", position: 3, name: tool.name, item: canonical },
       ],
     },
+    ...(tool.howTo
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            name: tool.howTo.name,
+            step: tool.howTo.steps.map((s) => ({
+              "@type": "HowToStep",
+              name: s.name,
+              text: s.text,
+            })),
+          },
+        ]
+      : []),
   ];
 
   return (

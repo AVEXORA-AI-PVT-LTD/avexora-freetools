@@ -86,6 +86,17 @@ export interface FaqItem {
   answer: string;
 }
 
+export interface HowToStep {
+  name: string;
+  text: string;
+}
+
+/** HowTo JSON-LD for tools that are a genuine multi-step process (not a single-form calculator). */
+export interface HowTo {
+  name: string;
+  steps: HowToStep[];
+}
+
 interface ToolBase {
   slug: string;
   category: CategorySlug;
@@ -99,6 +110,8 @@ interface ToolBase {
   related: string[];
   /** Require an email before download/copy of produced documents. */
   emailGate?: boolean;
+  /** Optional HowTo JSON-LD for tools that are genuinely a multi-step process. */
+  howTo?: HowTo;
 }
 
 export interface CalculatorTool extends ToolBase {

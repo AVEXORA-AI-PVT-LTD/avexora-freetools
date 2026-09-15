@@ -21,6 +21,14 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free online PDF merger. Combine two or more PDF files into a single document in seconds. 100% private: merging happens in your browser and files are never uploaded.",
     component: MergePdf,
+    howTo: {
+      name: "How to merge PDF files",
+      steps: [
+        { name: "Choose your files", text: "Select two or more PDF files from your device." },
+        { name: "Arrange the order", text: "Use the up/down arrows to set the order pages should appear in the merged file." },
+        { name: "Merge and download", text: "Click merge — the combined PDF downloads instantly, processed entirely in your browser." },
+      ],
+    },
     about: [
       "Need to send several PDFs as one document — a proposal with its annexures, scanned pages from your phone, monthly bank statements, or a set of invoices for your accountant? Choose your files, arrange them in the right order with the up and down arrows, and click merge. The combined PDF downloads instantly with every page intact, in exactly the order you set.",
       "Unlike most online PDF tools, this one never uploads your files anywhere. The merging runs entirely in your browser using JavaScript, which means your contracts, financial documents and personal papers stay on your device from start to finish. That matters more than most people realise: a typical online merger sends your files to a remote server, processes them there, and keeps them for some retention period you have no control over. Here there is no server round-trip at all — which also makes merging fast even on a slow connection, because nothing needs to be uploaded or downloaded except your final file.",
@@ -54,6 +62,14 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free online PDF splitter. Split a PDF into two files at any page number, right in your browser. No upload, no watermark, no sign-up.",
     component: SplitPdf,
+    howTo: {
+      name: "How to split a PDF",
+      steps: [
+        { name: "Choose your file", text: "Select the PDF you want to split." },
+        { name: "Pick the split page", text: "Enter the page number where the file should be divided into two." },
+        { name: "Download both parts", text: "Both resulting PDFs download automatically, processed entirely in your browser." },
+      ],
+    },
     about: [
       "Sometimes a single PDF is really two documents stuck together — a contract and its annexures, a report and its appendix, a scanned bundle that should have been two separate files. This tool splits any PDF into two parts at whichever page you choose: everything up to and including that page becomes part one, everything after becomes part two, both downloaded automatically.",
       "Choose your file, see the total page count, and enter the page where the split should happen — page 5 of a 12-page document, for instance, produces a 5-page part one and a 7-page part two. There's no limit on how large the source file can be beyond what your browser's memory allows, and because splitting happens entirely client-side, confidential documents never leave your device.",
@@ -325,6 +341,14 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free PDF watermark tool. Add a custom diagonal text watermark like CONFIDENTIAL or DRAFT across every page of a PDF — entirely in your browser.",
     component: WatermarkPdf,
+    howTo: {
+      name: "How to add a watermark to a PDF",
+      steps: [
+        { name: "Choose your file", text: "Select the PDF you want to watermark." },
+        { name: "Set the watermark text and opacity", text: "Enter your watermark text and adjust its opacity from 5% to 100%." },
+        { name: "Apply and download", text: "Click apply — the watermarked PDF downloads instantly, processed entirely in your browser." },
+      ],
+    },
     about: [
       "A watermark communicates a document's status at a glance — DRAFT before it's final, CONFIDENTIAL before it's shared widely, SAMPLE on a preview you're not ready to hand over as the finished product. This tool stamps your chosen text diagonally across every page of a PDF, sized and angled the way professional watermarks conventionally are.",
       "Type your text (CONFIDENTIAL, DRAFT, and your own company name are all common choices), set the opacity, and apply — the watermark appears in light grey at 45 degrees across the centre of every page, visible enough to communicate status without making the underlying content unreadable. Lower opacity for a subtle mark, higher for one that's impossible to miss.",
@@ -427,6 +451,14 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free PDF to Word converter. Extract a PDF's text and convert it into an editable .docx file, right in your browser — no upload, no sign-up, no watermark.",
     component: PdfToWord,
+    howTo: {
+      name: "How to convert a PDF to Word",
+      steps: [
+        { name: "Choose your PDF", text: "Select the text-based PDF you want to convert." },
+        { name: "Convert", text: "Click convert — pdf.js extracts the real text of each page, in your browser." },
+        { name: "Download the .docx", text: "The editable Word document downloads automatically." },
+      ],
+    },
     about: [
       "Editing a PDF directly is awkward — the format is designed to display a page identically everywhere, not to be reflowed and retyped. The practical fix most people actually need is simpler than full layout conversion: get the words out of the PDF and into an editable Word document you can rewrite, comment on, or paste into another document.",
       "This tool reads your PDF's real text (not an image of it) page by page, using the same rendering engine browsers use to display PDFs, and rebuilds it as a standard .docx file with each page's lines preserved in order. It's an honest \"basic conversion\": paragraph text carries over cleanly, but complex layouts — multi-column pages, tables, and embedded images — are not reconstructed, because faithfully reconstructing those from a PDF's structure genuinely needs a dedicated commercial OCR/layout engine, not a client-side text extractor.",

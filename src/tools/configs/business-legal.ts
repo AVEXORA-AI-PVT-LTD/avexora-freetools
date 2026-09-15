@@ -23,6 +23,14 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free letterhead compliance checker for Indian companies and LLPs. Verify your CIN, LLPIN, GSTIN, registered office address and contact details against Companies Act 2013 s.12(3)(c) requirements.",
     component: LetterheadComplianceChecker,
+    howTo: {
+      name: "How to check letterhead compliance",
+      steps: [
+        { name: "Select your entity type", text: "Choose company, LLP or another entity type, since the required particulars differ." },
+        { name: "Enter your identifiers and address", text: "Add your CIN/LLPIN, GSTIN and registered office address as printed on your stationery." },
+        { name: "Review the findings", text: "See document-by-document findings for your letterhead, invoice, envelope and visiting card, each citing the legal provision it comes from." },
+      ],
+    },
     about: [
       "Section 12(3)(c) of the Companies Act 2013 requires every company registered in India to print its name, the address of its registered office and its Corporate Identity Number \u2014 along with its telephone number and, where they exist, its email and website addresses \u2014 on all its business letters, billheads, letter papers, notices and other official publications. It is one of the most routinely missed compliance requirements in Indian corporate practice, precisely because it looks like a design decision rather than a statutory one. A founder orders letterheads from a printer or builds one in a design tool, nobody involved knows the section exists, and the company operates for years on stationery that is technically in default.",
       "The consequences are not theoretical. Failure to comply attracts a penalty of one thousand rupees for every day the default continues, subject to a maximum of one lakh rupees. Because the penalty accrues daily rather than as a one-time fine, a letterhead printed without a CIN and used for two years represents meaningful exposure. The same obligation extends to invoices and billheads, which is why a GST invoice issued on non-compliant letterhead compounds the problem across every customer you have billed.",
@@ -77,6 +85,14 @@ export const tools: ToolConfig[] = [
     generate: generateNda,
     submitLabel: "Generate NDA",
     emailGate: true,
+    howTo: {
+      name: "How to create an NDA",
+      steps: [
+        { name: "Enter both parties' details", text: "Add both parties' names, the effective date and whether the NDA is mutual or one-way." },
+        { name: "Describe the purpose", text: "State the reason confidential information is being shared and the term of confidentiality." },
+        { name: "Generate and sign", text: "Copy or download the finished NDA and have both parties sign it." },
+      ],
+    },
     about: [
       "A non-disclosure agreement is usually the first legal document exchanged before two parties start sharing anything sensitive — a business idea before a partnership discussion, financial data before a due-diligence process, source code before a contractor starts work. Without one, information shared in good faith has no formal protection if the relationship sours or a counterpart talks to a competitor. This generator produces a complete NDA in the format that lawyers and business partners immediately recognise.",
       "Choose mutual (both parties may share confidential information and both are bound to protect what they receive — the standard choice for partnership and collaboration discussions) or one-way (only one party discloses, the other simply receives and protects — typical when a company shares information with a contractor or vendor). The generated document covers what counts as confidential information, the receiving party's obligations, standard carve-outs (information already known, publicly available, independently developed, or required to be disclosed by law), the term of the agreement, and governing law.",
@@ -293,6 +309,14 @@ export const tools: ToolConfig[] = [
     generate: generateRentAgreement,
     submitLabel: "Generate rent agreement",
     emailGate: true,
+    howTo: {
+      name: "How to create a rent agreement",
+      steps: [
+        { name: "Enter landlord and tenant details", text: "Add both parties' names, the property address and the agreement duration." },
+        { name: "Set the rent terms", text: "Enter monthly rent, security deposit and the notice period for termination." },
+        { name: "Generate and sign", text: "Copy or download the finished agreement, then have both parties sign it (and notarise/register where your state requires it)." },
+      ],
+    },
     about: [
       "The 11-month leave-and-license agreement is the standard rental arrangement across most Indian cities — chosen deliberately at under a year to avoid the compulsory registration and stamp duty that longer leases trigger under the Registration Act. This generator produces exactly that document, with the rent, deposit and duration you specify, in the format landlords and tenants across India already recognise.",
       "The agreement covers what actually causes disputes when left unwritten: the exact rent and due date, the security deposit amount and refund timeline (30 days after vacating, net of damages and dues), who handles maintenance versus major repairs, utility responsibility, subletting restrictions, notice period for termination, and the landlord's inspection rights. Setting these expectations in writing upfront resolves most disagreements before they start.",
