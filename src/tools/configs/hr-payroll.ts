@@ -11,6 +11,7 @@ import { generatePayslip } from "../compute/hr/payslip";
 import { generateOfferLetter } from "../compute/hr/offer-letter";
 import { generateAppointmentLetter } from "../compute/hr/appointment-letter";
 import { generateExperienceLetter } from "../compute/hr/experience-letter";
+import { generateResume } from "../compute/hr/resume";
 
 export const tools: ToolConfig[] = [
   {
@@ -30,7 +31,7 @@ export const tools: ToolConfig[] = [
     compute: computeSalary,
     autoCompute: true,
     about: [
-      "The CTC on your offer letter is never the number that lands in your bank account, and the gap between the two catches almost everyone by surprise on their first payslip. Cost-to-company bundles in the employer's PF contribution, insurance and other benefits that you never actually see as cash; from what's left, your own PF contribution, professional tax and income tax are deducted before the rest reaches you monthly. This calculator walks that whole chain for you.",
+      "In-hand salary is what's left of your CTC after the employer's PF contribution, insurance and other non-cash benefits are stripped out and your own PF contribution, professional tax and income tax are deducted — the number that actually lands in your bank account each month. That gap between CTC and take-home catches almost everyone by surprise on their first payslip. This calculator walks that whole chain for you.",
       "The estimate uses common defaults you can adjust: basic salary at 40% of CTC (a widely used structuring norm), employee and employer PF each at 12% of basic, and income tax computed under the new regime for FY 2025-26 — nil up to ₹4 lakh, rising through 5/10/15/20/25% slabs to 30% above ₹24 lakh, with the §87A rebate zeroing out tax for taxable income up to ₹12 lakh and a ₹75,000 standard deduction applied automatically. Real payslips vary — some companies use a different basic percentage, add HRA and special allowance lines, or offer the old tax regime — so treat this as a close, well-reasoned estimate rather than a payroll-exact figure.",
       "Use it while negotiating an offer to translate a CTC number into what you'll actually bank each month, or to sanity-check your own payslip against the standard structure. If your real basic percentage or professional tax differs, adjust the fields — the effect on your in-hand pay is immediate and visible.",
     ],
@@ -120,7 +121,7 @@ export const tools: ToolConfig[] = [
     compute: computePf,
     autoCompute: true,
     about: [
-      "The Employees' Provident Fund is the default retirement savings vehicle for salaried India, and because contributions are automatic and invisible in the monthly payslip, most people never actually project what it will become. That's a shame — EPF is quietly one of the better-performing, government-backed instruments available, and seeing the compounding at work is motivating on its own.",
+      "The Employees' Provident Fund (EPF) is India's default, government-backed retirement savings scheme for salaried employees, funded by automatic monthly contributions from both employee and employer. Because those contributions are invisible in the monthly payslip, most people never actually project what the fund will become — a shame, since EPF is quietly one of the better-performing instruments available and seeing the compounding at work is motivating on its own.",
       "The mechanics: you contribute 12% of your basic salary every month, matched by your employer's 12% — except of the employer's share, 8.33% is diverted to the Employees' Pension Scheme (EPS) rather than your EPF account, so only 3.67% of the employer's contribution actually reaches your PF balance. Combined with your own 12%, that's 15.67% of basic flowing into EPF each month, compounding monthly at the interest rate the EPFO announces annually (recently around 8.25%).",
       "This calculator projects your corpus to retirement, stepping your basic salary up each year by your expected raise percentage and compounding contributions monthly. Two levers matter most for the final number: starting early (the compounding has more years to work) and your basic salary's actual growth rate, which most people underestimate over a full career. Note that EPF withdrawal before 5 years of continuous service is taxable, and partial withdrawals for specific purposes (medical, housing, marriage) are permitted under EPFO rules but aren't modelled here.",
     ],
@@ -160,7 +161,7 @@ export const tools: ToolConfig[] = [
     compute: computeHra,
     autoCompute: true,
     about: [
-      "House Rent Allowance exemption is one of the largest tax breaks available to salaried tenants under the old tax regime — and one of the most confusing, because it isn't simply \"HRA received is tax-free.\" The exempt amount is the smallest of three separate figures, and most people have never seen all three laid out side by side to understand which one actually binds.",
+      "HRA exemption is the smallest of three separate figures, not simply \"HRA received is tax-free\" — and most people have never seen all three laid out side by side to understand which one actually binds. It's one of the largest tax breaks available to salaried tenants under the old tax regime, and also one of the most confusing.",
       "The three figures: the actual HRA your employer pays you, your annual rent minus 10% of your basic salary (rent below that 10% threshold gives zero exemption — the law assumes you'd pay some rent regardless of any allowance), and 50% of basic salary if you live in a metro (Delhi, Mumbai, Kolkata, Chennai) or 40% elsewhere. Whichever of the three is smallest is what you can claim exempt; the rest of your HRA becomes taxable income. This calculator computes and displays all three so you see exactly which constraint is binding for you.",
       "Two situations trip people up. If you own your home (or live with parents rent-free) and don't pay rent, you can't claim any HRA exemption regardless of the allowance in your salary structure. And this exemption only applies under the old tax regime — the new regime (now the default) offers no HRA exemption at all, so factor that into your regime choice with the income tax calculator. Keep rent receipts and, for annual rent above ₹1 lakh, your landlord's PAN — your employer will ask for both to process the exemption.",
     ],
@@ -203,7 +204,7 @@ export const tools: ToolConfig[] = [
     compute: computeLeaveEncashment,
     autoCompute: true,
     about: [
-      "Most companies let earned leave accumulate and let you convert unused days to cash — commonly at resignation, retirement, or through an annual encashment window many employers offer for leave beyond a certain balance. The math is simple once you know the rate: your monthly salary divided by 30 gives a per-day rate, multiplied by the number of days encashed.",
+      "Leave encashment pays your monthly salary divided by 30 — a per-day rate — multiplied by the number of unused earned leave days you encash. Most companies let this leave accumulate and convert to cash on that basis, commonly at resignation, retirement, or through an annual encashment window many employers offer for leave beyond a certain balance.",
       "This calculator applies exactly that formula to your basic salary plus dearness allowance (the components leave encashment is typically based on — check your company's policy, as some also include other fixed allowances). The result is a straightforward per-day rate times days, useful for estimating what a resignation payout will include or deciding whether to encash accumulated leave now versus carrying it forward.",
       "Tax treatment differs by circumstance and matters for planning: leave encashment received during employment (an annual encashment scheme) is fully taxable as salary income. At retirement or resignation, however, non-government employees get an exemption up to ₹25 lakh (a limit revised upward in recent years) on encashment received at that time, subject to conditions in the Income Tax Act — government employees get full exemption. Factor the tax treatment into whether encashing now or later suits your situation better.",
     ],
@@ -281,7 +282,7 @@ export const tools: ToolConfig[] = [
     compute: computeOvertime,
     autoCompute: true,
     about: [
-      "Overtime pay in India is governed by laws like the Factories Act, 1948 (and analogous state Shops & Establishments Acts) which mandate that hours worked beyond the normal working day be paid at twice the ordinary rate of wages — not time-and-a-half as in some other countries, but double. This calculator applies that statutory multiplier to your actual wages.",
+      "Overtime pay in India is legally double the ordinary wage rate for hours worked beyond the normal working day — not time-and-a-half as in some other countries, but double — mandated under laws like the Factories Act, 1948 and analogous state Shops & Establishments Acts. This calculator applies that statutory multiplier to your actual wages.",
       "The calculation works backward from your monthly wages to an hourly rate, using 26 as the standard divisor for working days in a month (accounting for weekly offs), then dividing by your normal daily working hours to get an ordinary hourly rate. Overtime hours are paid at exactly twice that hourly rate — the statutory floor that applies to workers covered under these Acts, regardless of what a company's informal overtime policy might otherwise offer.",
       "Coverage varies: the Factories Act applies to factory workers, and many white-collar or managerial roles may be exempt from statutory overtime provisions depending on their state's Shops & Establishments Act and the nature of the role. If you're unsure whether your role is covered, check your state's applicable Act or your employment contract — but where the law applies, double-rate overtime is a floor employers cannot legally pay below.",
     ],
@@ -320,7 +321,7 @@ export const tools: ToolConfig[] = [
     compute: computeNoticePeriodRecovery,
     autoCompute: true,
     about: [
-      "Most Indian employment contracts specify a notice period — commonly 30, 60 or 90 days — that either party must give before ending employment. Leave earlier than that (with your employer's approval to buy out the balance, or without it, depending on your contract) and the company typically recovers salary equivalent to the shortfall from your final settlement, often called \"notice pay recovery\" or \"buyout amount.\"",
+      "Notice period recovery — also called \"notice pay recovery\" or \"buyout amount\" — is the salary a company deducts from your final settlement equal to the shortfall between the notice period your contract requires and the days you actually served. Most Indian employment contracts specify a notice period, commonly 30, 60 or 90 days, that either party must give before ending employment; leaving earlier, with or without your employer's approval depending on the contract, triggers this recovery.",
       "The calculation is straightforward: your monthly salary divided by 30 gives a per-day rate, multiplied by the shortfall in days — the gap between what your contract requires and what you actually served. If you served the full required notice, there's no shortfall and no recovery; the calculator correctly shows zero rather than an error in that case.",
       "This is exactly the mirror image of the leave encashment calculation, just working in the opposite direction — money the company owes you for unused leave versus money you owe the company for unserved notice. Whether an employer can actually enforce recovery, and how it's structured (deducted from final salary vs. a separate demand), depends on your specific contract terms; some employers waive the recovery for a smooth transition or accept a shorter notice by mutual agreement.",
     ],
@@ -411,6 +412,14 @@ export const tools: ToolConfig[] = [
     generate: generateOfferLetter,
     submitLabel: "Generate offer letter",
     emailGate: true,
+    howTo: {
+      name: "How to create an offer letter",
+      steps: [
+        { name: "Enter role and compensation", text: "Add the company name, candidate name, designation, annual CTC and proposed joining date." },
+        { name: "Add location and reporting details", text: "Enter the work location and, optionally, the reporting manager." },
+        { name: "Generate and send", text: "Copy or download the finished offer letter to send to the candidate." },
+      ],
+    },
     about: [
       "The offer letter is the first formal document a candidate receives from your company, and its tone and clarity set expectations for the whole relationship ahead. Writing one from scratch means remembering every standard clause — position, compensation, joining date, probation, confidentiality, acceptance — and getting the legal-sounding parts phrased correctly. This generator produces a complete, professional offer letter from a handful of fields.",
       "The output covers the clauses every Indian offer letter should include: the position and location (with a note that the company may require work at other locations, standard flexibility language), compensation stated as annual CTC with a note that a detailed break-up follows in the appointment letter, the proposed joining date with a list of documents to bring, a standard six-month probation period, a confidentiality clause, and a clear acceptance section for the candidate to sign. If you name a reporting manager, that's woven in naturally.",
@@ -456,7 +465,7 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate appointment letter",
     emailGate: true,
     about: [
-      "Where the offer letter gets a candidate to say yes, the appointment letter is the fuller, more formal document issued on or around the joining date that actually governs the employment relationship — the one referenced in disputes, audits and background checks years later. It needs to be thorough and correctly worded, which is exactly the kind of document that's easy to get subtly wrong when written in a hurry.",
+      "The appointment letter is the fuller, more formal document issued on or around the joining date that actually governs the employment relationship — the one referenced in disputes, audits and background checks years later, unlike the offer letter, which only gets a candidate to say yes. It needs to be thorough and correctly worded, which is exactly the kind of document that's easy to get subtly wrong when written in a hurry.",
       "This generator produces the standard clause set: position and place of work (with the conventional transfer clause giving the company flexibility), the effective date of appointment, remuneration stated as CTC with a note on statutory deductions, a six-month probation period with the company's right to extend it, the notice period you specify for post-confirmation termination, a reference to the leave policy, confidentiality and return-of-property obligations, and a jurisdiction clause tied to your work location. It closes with a proper acceptance block for the employee's signature.",
       "This is the document HR and payroll systems reference for compliance, so keep a signed copy on file (physical or digital) for every employee — it's typically requested during PF/ESI inspections, background verification for the employee's next job, and any employment dispute. As with the offer letter, have your legal team review it against your state's specific Shops & Establishments Act requirements and your company's actual policies before use at scale.",
     ],
@@ -531,5 +540,73 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["appointment-letter-generator", "offer-letter-generator", "gratuity-calculator", "leave-encashment-calculator"],
+  },
+  {
+    kind: "generator",
+    slug: "resume-builder",
+    category: "hr-payroll",
+    name: "Resume / CV Builder",
+    tagline: "Build a clean, ATS-friendly resume from a simple form.",
+    seoDescription:
+      "Free resume builder. Enter your details, work experience and education to generate a clean, ATS-friendly resume you can copy or download instantly.",
+    fields: [
+      { name: "fullName", label: "Full name", type: "text", placeholder: "Priya Sharma" },
+      { name: "targetRole", label: "Target job title", type: "text", placeholder: "Product Manager", optional: true },
+      { name: "email", label: "Email", type: "text", placeholder: "priya.sharma@email.com" },
+      { name: "phone", label: "Phone", type: "text", placeholder: "+91 98765 43210" },
+      { name: "location", label: "City", type: "text", placeholder: "Bengaluru", optional: true },
+      { name: "linkedin", label: "LinkedIn / portfolio URL", type: "text", placeholder: "linkedin.com/in/priyasharma", optional: true },
+      { name: "summary", label: "Professional summary (2-3 sentences)", type: "textarea", rows: 3, placeholder: "Product manager with 5 years building B2B SaaS features from discovery to launch." },
+      { name: "skills", label: "Skills (comma-separated)", type: "textarea", rows: 2, placeholder: "Product strategy, SQL, Figma, A/B testing, Agile" },
+      { name: "exp1Company", label: "Most recent employer", type: "text", placeholder: "Avexora Technologies" },
+      { name: "exp1Title", label: "Job title", type: "text", placeholder: "Senior Product Manager" },
+      { name: "exp1Duration", label: "Duration", type: "text", placeholder: "Jan 2022 – Present" },
+      { name: "exp1Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Launched a feature that grew activation by 18%", optional: true },
+      { name: "exp2Company", label: "Previous employer", type: "text", placeholder: "Nimbus Software", optional: true },
+      { name: "exp2Title", label: "Job title", type: "text", placeholder: "Product Analyst", optional: true },
+      { name: "exp2Duration", label: "Duration", type: "text", placeholder: "Jun 2019 – Dec 2021", optional: true },
+      { name: "exp2Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Built the analytics dashboard used company-wide", optional: true },
+      { name: "eduDegree", label: "Degree", type: "text", placeholder: "B.Tech, Computer Science" },
+      { name: "eduInstitution", label: "Institution", type: "text", placeholder: "IIT Bombay" },
+      { name: "eduYear", label: "Year of graduation", type: "text", placeholder: "2019", optional: true },
+    ],
+    generate: generateResume,
+    submitLabel: "Generate resume",
+    emailGate: true,
+    howTo: {
+      name: "How to build a resume",
+      steps: [
+        { name: "Enter your contact details and summary", text: "Add your name, contact details and a 2-3 sentence professional summary." },
+        { name: "Add skills and experience", text: "List your skills, then your work experience with quantified achievements for each role." },
+        { name: "Add education and generate", text: "Enter your degree and institution, then generate — copy or download the finished resume." },
+      ],
+    },
+    about: [
+      "A resume that clears applicant-tracking-system (ATS) screening has one job before it ever reaches a human: parse cleanly as plain text, with your name, contact details, skills and dated work history in a predictable order. This builder produces exactly that — a single-column, keyword-scannable resume with no tables, columns, icons or graphics that a parser could choke on or reorder incorrectly.",
+      "Fill in your contact details, a two-to-three sentence summary, your skills, up to two roles of work experience with bullet-point achievements, and your education — the generator assembles it into a clean, standard structure recruiters and ATS software both read the same way. Lead each achievement bullet with a number where you have one (\"grew signups 18%\", \"cut processing time from 3 days to 4 hours\") — quantified bullets are read as evidence, plain duty descriptions are read as a job description.",
+      "This produces the content and structure, not final visual design — copy the output into your preferred word processor for a formatted, polished layout once the substance is right, or use it as-is for online applications that only accept plain text or paste-in resumes. Keep it to one page for under ten years of experience; two only once your history genuinely needs it.",
+    ],
+    faq: [
+      {
+        question: "Will this resume pass ATS screening?",
+        answer:
+          "The structure is built to be ATS-friendly — single column, standard section headers, no tables or graphics that parsers mishandle. ATS compatibility also depends on matching keywords from the job description in your skills and experience, which you should tailor per application.",
+      },
+      {
+        question: "How many jobs can I add?",
+        answer:
+          "This generator supports two work experience entries. For a longer history, copy the output and add further entries manually in the same format, keeping your most recent role first.",
+      },
+      {
+        question: "Should I quantify every bullet point?",
+        answer:
+          "Wherever you genuinely can — a number (%, ₹, time saved, team size) makes an achievement concrete and is what recruiters scan for first. Where there's truly no number, describe the outcome, not just the task.",
+      },
+      {
+        question: "Is my information stored anywhere?",
+        answer: "No — the resume is generated entirely in your browser from what you type, and nothing is saved once you leave the page.",
+      },
+    ],
+    related: ["offer-letter-generator", "experience-letter-generator", "salary-calculator", "payslip-generator"],
   },
 ];

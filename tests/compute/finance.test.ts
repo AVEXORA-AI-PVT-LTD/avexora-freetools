@@ -15,6 +15,7 @@ import { computeRoi } from "@/tools/compute/finance/roi";
 import { computeDepreciation } from "@/tools/compute/finance/depreciation";
 import { computeWorkingCapital } from "@/tools/compute/finance/working-capital";
 import { computeAdvanceTax, buildSchedule } from "@/tools/compute/finance/advance-tax";
+import { computePercentage } from "@/tools/compute/finance/percentage";
 
 function resultMap(fn: ComputeFn, values: FieldValues) {
   const outcome = fn(values);
@@ -475,5 +476,31 @@ describe("buildSchedule", () => {
         }
       }
     }
+  });
+});
+
+describe("computePercentage", () => {
+  it("computes X% of Y", () => {
+    const r = resultMap(computePercentage, { mode: "of", x: "20", y: "500" });
+    expect(r.get("20% of 500")).toBe("100");
+  });
+  it("computes X is what % of Y", () => {
+    const r = resultMap(computePercentage, { mode: "isWhatPercent", x: "42", y: "50" });
+    expect(r.get("42 is what % of 50")).toBe("84%");
+  });
+  it("computes percentage increase", () => {
+    const r = resultMap(computePercentage, { mode: "change", x: "500", y: "650" });
+    expect(r.get("Difference (Y − X)")).toBe("150");
+    expect(r.get("Percentage increase")).toBe("30%");
+  });
+  it("computes percentage decrease", () => {
+    const r = resultMap(computePercentage, { mode: "change", x: "200", y: "150" });
+    expect(r.get("Percentage decrease")).toBe("25%");
+  });
+  it("rejects a zero starting value for percentage change", () => {
+    expect(computePercentage({ mode: "change", x: "0", y: "10" })).toHaveProperty("error");
+  });
+  it("rejects a zero Y for isWhatPercent", () => {
+    expect(computePercentage({ mode: "isWhatPercent", x: "10", y: "0" })).toHaveProperty("error");
   });
 });

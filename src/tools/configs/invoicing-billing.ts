@@ -24,8 +24,16 @@ export const tools: ToolConfig[] = [
       "Free online GST invoice generator for India. Add your business details, line items and GST rates, then print or save a professional tax invoice as PDF in seconds.",
     component: InvoiceGenerator,
     emailGate: true,
+    howTo: {
+      name: "How to create a GST invoice",
+      steps: [
+        { name: "Enter business and customer details", text: "Add your business details, the customer's details and an invoice number." },
+        { name: "Add line items", text: "List each item or service with quantity, rate and GST rate — the totals and CGST/SGST or IGST split calculate automatically." },
+        { name: "Print or save as PDF", text: "Use your browser's print dialog to save the invoice as a PDF or print it directly." },
+      ],
+    },
     about: [
-      "Every business needs invoices, but not every business needs invoicing software on day one. This free generator builds a clean, professional GST tax invoice in your browser: enter your business and customer details, add line items with quantity, rate and GST slab, and the invoice preview updates live with the correct CGST/SGST or IGST split.",
+      "This free generator builds a clean, professional GST tax invoice in your browser: enter your business and customer details, add line items with quantity, rate and GST slab, and the invoice preview updates live with the correct CGST/SGST or IGST split.",
       "For sales within your state, GST is split as CGST + SGST; tick “Inter-state (IGST)” for sales to another state and the invoice shows IGST instead. When you're done, hit Print / Save as PDF — your browser's print dialog lets you save a PDF copy to send to your customer.",
       "A proper tax invoice needs a few things to be taken seriously — and to keep your GST paperwork clean: your business name, address and GSTIN, the customer's details, a unique invoice number, the invoice date, a clear description of each item or service with quantity and rate, the applicable GST slab per line, and the tax breakup shown separately from the subtotal. This generator lays all of that out in a clean, conventional format that accountants and customers recognise immediately, so you don't have to fight a spreadsheet template into shape.",
       "Your data stays on your device: nothing you type is uploaded or stored on our servers, which makes it safe to use for real customer details. If you raise more than a handful of invoices a month, though, a generator stops being enough — you'll want automatic numbering, saved customer records, GST reports and payment tracking with reminders. That's exactly what the EBOS Billing module does, and your invoices there will look just like the ones you make here.",
@@ -73,6 +81,14 @@ export const tools: ToolConfig[] = [
     generate: generateQuotation,
     submitLabel: "Generate quotation",
     emailGate: true,
+    howTo: {
+      name: "How to create a quotation",
+      steps: [
+        { name: "Enter business and customer details", text: "Add your business name, the customer's name, a quotation number and date." },
+        { name: "List your line items", text: "Add each item as one line — description, quantity and rate — and a validity date." },
+        { name: "Generate and send", text: "Click generate, then copy or download the finished quotation to send to your customer." },
+      ],
+    },
     about: [
       "A quotation is the first document a prospective customer sees before committing to buy — it needs to look professional enough to build confidence while making the price and scope unambiguous. This generator produces a clean, itemised quotation from your business details, customer name, and a simple line-item list, ready to send or print.",
       "Enter each item as a single line — description, quantity, rate — and the generator computes line totals and the grand total automatically, formatted as a clean aligned table. Add a validity date so the customer knows the quoted prices aren't open-ended, which protects you if your costs change before they decide.",
@@ -175,7 +191,7 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate receipt",
     emailGate: true,
     about: [
-      "A receipt is simple but important — it's the customer's proof that a specific payment was made and accepted, and it's what they'll ask for when reconciling their own books or resolving any later dispute about whether they paid. This generator produces a clean receipt with the amount, method, purpose and date, ready to hand over or email immediately after receiving payment.",
+      "A receipt is the customer's proof that a specific payment was made and accepted — it's what they'll ask for when reconciling their own books or resolving any later dispute about whether they paid. This generator produces a clean receipt with the amount, method, purpose and date, ready to hand over or email immediately after receiving payment.",
       "Fill in who paid, how much, by what method, and what it was for (referencing the original invoice number keeps your paper trail connected), and the receipt is ready. It's deliberately simple — no line items or tax breakdown, since that detail belongs on the invoice being paid, not the receipt confirming payment.",
       "Issue a receipt for every payment you accept, even informal or cash payments — it protects both you and the customer, and for cash transactions particularly, a receipt is often the only record either side has. Keep a copy for your own records alongside the invoice it settles.",
       "A receipt is also the fastest way to close out a payment dispute before it becomes one — a customer who has your signed receipt in hand has no room to later claim they never paid, and you have equally clean proof of exactly what you received and when, which matters at tax time and during any bank reconciliation.",
@@ -410,7 +426,7 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate reminder",
     emailGate: true,
     about: [
-      "Chasing late payments is uncomfortable, and that discomfort is exactly why so many small businesses let overdue invoices sit far longer than they should. Having a ready-made message for each stage of the conversation removes the awkward blank-page moment and makes it easy to actually send the reminder promptly — which is the single biggest factor in getting paid faster.",
+      "This generator gives you a ready-made payment reminder message for each stage of chasing a late payment — removing the awkward blank-page moment and making it easy to actually send the reminder promptly, which is the single biggest factor in getting paid faster. Chasing late payments is uncomfortable, and that discomfort is exactly why so many small businesses let overdue invoices sit far longer than they should.",
       "The tone escalates deliberately across three stages: friendly for the first, gentle nudge (assumes it might simply be an oversight), firm for a second reminder after the friendly one is ignored (states a clear 7-day deadline and mentions late charges), and final notice for a last attempt before considering suspension of services or collections (a clear 3-day deadline and explicit consequences). Escalating tone this way, rather than staying friendly forever or going straight to threats, is both more professional and more effective.",
       "Send the first reminder promptly once an invoice is even a few days overdue — waiting weeks before the first nudge signals that your payment terms aren't really enforced, which invites slower payment across your whole customer base. Pair persistent, professional reminders with the late fee calculator to show customers exactly what continued delay will cost them.",
       "Keep a copy of each reminder you send along with its date — a documented, escalating trail is useful if the matter ever needs to go further, and it also shows a genuinely good-faith customer exactly how much notice they were given before things got firm.",
@@ -450,7 +466,7 @@ export const tools: ToolConfig[] = [
     compute: computeLateFee,
     autoCompute: true,
     about: [
-      "Most invoices and contracts specify a late payment charge — commonly 1.5-2% per month — but almost nobody actually calculates what that amounts to on a specific overdue amount for a specific number of days late. This calculator does that arithmetic instantly: enter the invoice amount, the agreed monthly rate, and days overdue, and get the exact late fee and total now due.",
+      "This calculator gives you the exact late fee and total now due on an overdue invoice: enter the invoice amount, the agreed monthly rate, and days overdue. Most invoices and contracts specify a late payment charge — commonly 1.5-2% per month — but almost nobody actually calculates what that amounts to for a specific overdue amount and number of days late.",
       "The calculation converts your monthly rate to a daily rate (monthly rate ÷ 30) and applies it per day overdue — a simple, defensible method that matches how most late-fee clauses are actually worded. This makes the number concrete rather than abstract when you're following up on late payment, which strengthens a payment reminder considerably: \"the late fee is currently ₹1,167 and grows daily\" lands harder than a vague mention of penalties.",
       "Before charging a late fee, confirm your invoice or contract actually specifies one — charging a fee that wasn't agreed upfront is legally shaky and damages the relationship. If you haven't been including a late-fee clause, add one to future invoices and contracts so this calculator has real teeth going forward.",
       "Recalculate as the overdue period grows rather than quoting a stale figure from the first reminder — the fee compounds daily under most clause wordings, so a number quoted three weeks ago understates what's actually owed today. Keeping the figure current also signals to the customer that you're tracking the account closely.",
@@ -543,7 +559,7 @@ export const tools: ToolConfig[] = [
     compute: computeInvoiceDueDate,
     autoCompute: true,
     about: [
-      "\"Net 30\" and similar payment terms are everywhere on invoices, but the actual due date they imply isn't always obvious at a glance, especially when you're juggling many invoices with different terms. This calculator takes the invoice date and payment term and gives you the exact due date, plus a live status showing whether it's still upcoming, due today, or already overdue.",
+      "This calculator takes the invoice date and payment term and gives you the exact due date, plus a live status showing whether it's still upcoming, due today, or already overdue. \"Net 30\" and similar payment terms are everywhere on invoices, but the actual due date they imply isn't always obvious at a glance, especially when you're juggling many invoices with different terms.",
       "Standard net terms (15, 30, 45, 60 or 90 days from the invoice date) cover most business arrangements; select custom for anything non-standard your contract specifies. The calculation is a straightforward date addition, but doing it correctly and consistently across dozens of invoices — rather than eyeballing a calendar each time — avoids the easy mistake of chasing payment too early or too late.",
       "Use this when setting up a new customer relationship (agreeing terms upfront and knowing exactly what date that implies), when building a collections follow-up schedule (know precisely when an invoice crosses into overdue territory), or simply to double-check your own or a supplier's stated due date on an invoice.",
       "The status line updates against today's date, so bookmarking this tool and re-checking it periodically for your open invoices is a quick, low-effort way to spot which accounts have quietly slipped into overdue territory before they've been chased — pairing that with the payment reminder generator turns the check into an actual follow-up in under a minute.",

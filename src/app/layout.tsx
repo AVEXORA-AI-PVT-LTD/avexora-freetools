@@ -15,14 +15,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const DEFAULT_DESCRIPTION =
+  "Free calculators, generators, PDF & image utilities and AI writing tools for your business. No sign-up, no cost — by Avexora, makers of Enterprise Business OS.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: `${SITE_NAME} — 120+ Avex Business Tools`,
     template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Free calculators, generators, PDF & image utilities and AI writing tools for your business. No sign-up, no cost — by Avexora, makers of Enterprise Business OS.",
+  description: DEFAULT_DESCRIPTION,
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    title: `${SITE_NAME} — 120+ Avex Business Tools`,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    type: "website",
+    images: [{ url: "/logo.png", width: 400, height: 100, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — 120+ Avex Business Tools`,
+    description: DEFAULT_DESCRIPTION,
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
@@ -93,7 +110,7 @@ export default function RootLayout({
               </div>
             </div>
             <p className="mt-8 text-xs text-slate-500">
-              © {new Date().getFullYear()} Avexora · avextools.avexora.in — avex
+              © {new Date().getFullYear()} Avexora · tools.avexora.in — avex
               business tools by the makers of{" "}
               <a href={EBOS_URL} className="underline hover:text-slate-700">
                 Enterprise Business OS

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { categories, getCategory, SITE_URL } from "@/tools/categories";
+import { categories, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { toolsByCategory } from "@/tools/registry";
 
 export const dynamicParams = false;
@@ -18,10 +18,24 @@ export async function generateMetadata({
   const { category } = await params;
   const cat = getCategory(category);
   if (!cat) return {};
+  const title = `${cat.name} — Avex Online Tools`;
+  const canonical = `${SITE_URL}/${cat.slug}`;
   return {
-    title: `${cat.name} — Avex Online Tools`,
+    title,
     description: cat.description,
-    alternates: { canonical: `${SITE_URL}/${cat.slug}` },
+    alternates: { canonical },
+    openGraph: {
+      title: `${title} | ${SITE_NAME}`,
+      description: cat.description,
+      url: canonical,
+      siteName: SITE_NAME,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `${title} | ${SITE_NAME}`,
+      description: cat.description,
+    },
   };
 }
 
@@ -34,9 +48,23 @@ export default async function CategoryPage({
   const cat = getCategory(category);
   if (!cat) notFound();
   const tools = toolsByCategory[cat.slug];
+  const canonical = `${SITE_URL}/${cat.slug}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: cat.name, item: canonical },
+    ],
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <nav className="text-sm text-slate-500">
         <Link href="/" className="hover:text-orange-800">
           Avex Tools

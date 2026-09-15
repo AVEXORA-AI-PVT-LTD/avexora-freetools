@@ -12,6 +12,7 @@ import { generatePayslip } from "@/tools/compute/hr/payslip";
 import { generateOfferLetter } from "@/tools/compute/hr/offer-letter";
 import { generateAppointmentLetter } from "@/tools/compute/hr/appointment-letter";
 import { generateExperienceLetter } from "@/tools/compute/hr/experience-letter";
+import { generateResume } from "@/tools/compute/hr/resume";
 
 function resultMap(fn: ComputeFn, values: FieldValues) {
   const out = fn(values);
@@ -231,5 +232,40 @@ describe("generateExperienceLetter", () => {
   });
   it("rejects an unselected conduct value", () => {
     expect(generateExperienceLetter({ companyName: "A", employeeName: "B", designation: "C", joiningDate: "2020-01-01", leavingDate: "2021-01-01", conduct: "" })).toHaveProperty("error");
+  });
+});
+
+describe("generateResume", () => {
+  const base: FieldValues = {
+    fullName: "Priya Sharma",
+    email: "priya@example.com",
+    phone: "+91 98765 43210",
+    summary: "Product manager with 5 years of B2B SaaS experience.",
+    skills: "Product strategy, SQL, Figma",
+    exp1Company: "Avexora",
+    exp1Title: "Senior PM",
+    exp1Duration: "Jan 2022 – Present",
+    exp1Highlights: "Grew activation by 18%\nShipped 3 major features",
+    eduDegree: "B.Tech, CS",
+    eduInstitution: "IIT Bombay",
+  };
+
+  it("includes name, contact, skills and experience", () => {
+    const out = textOf(generateResume, base);
+    expect(out).toContain("PRIYA SHARMA");
+    expect(out).toContain("priya@example.com");
+    expect(out).toContain("Product strategy · SQL · Figma");
+    expect(out).toContain("Senior PM — Avexora (Jan 2022 – Present)");
+    expect(out).toContain("Grew activation by 18%");
+    expect(out).toContain("B.Tech, CS — IIT Bombay");
+  });
+  it("omits the second job block when not provided", () => {
+    const out = textOf(generateResume, base);
+    expect(out).not.toContain("undefined");
+  });
+  it("rejects missing required fields", () => {
+    expect(generateResume({ ...base, fullName: "" })).toHaveProperty("error");
+    expect(generateResume({ ...base, skills: "" })).toHaveProperty("error");
+    expect(generateResume({ ...base, exp1Company: "" })).toHaveProperty("error");
   });
 });

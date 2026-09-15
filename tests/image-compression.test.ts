@@ -122,7 +122,7 @@ describe("compression pipeline (simulated against current source)", () => {
 describe("ImageCompressor component render", () => {
   it("renders the empty state with a disabled button and no quality slider", () => {
     const html = renderToStaticMarkup(createElement(ImageCompressor));
-    expect(html).toContain("Click to choose an image");
+    expect(html).toContain("Click or drag an image here");
     expect(html).toContain("Compress &amp; download"); // JSX text is HTML-escaped in SSR markup
     expect(html).toContain("disabled=\"\"");
     expect(html).toContain("data-lead-action=\"download\"");

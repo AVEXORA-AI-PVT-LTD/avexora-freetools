@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useFileDrop } from "../use-file-drop";
 
 interface PickedFile {
   file: File;
@@ -61,6 +62,8 @@ export default function MergePdf() {
     }
   };
 
+  const { isDragging, dragHandlers } = useFileDrop(addFiles);
+
   return (
     <div className="space-y-4">
       <input
@@ -77,10 +80,15 @@ export default function MergePdf() {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-10 text-center text-sm text-slate-600 hover:border-orange-400 hover:text-orange-700"
+        {...dragHandlers}
+        className={`w-full rounded-lg border-2 border-dashed px-4 py-10 text-center text-sm transition ${
+          isDragging
+            ? "border-orange-500 bg-orange-50/60 text-orange-800"
+            : "border-slate-300 text-slate-600 hover:border-orange-400 hover:text-orange-700"
+        }`}
       >
         <span className="block text-2xl">📄</span>
-        Click to choose PDF files (or add more)
+        {isDragging ? "Drop your PDF files here" : "Click or drag PDF files here (or add more)"}
         <span className="mt-1 block text-xs text-slate-400">
           Files are processed in your browser and never uploaded.
         </span>

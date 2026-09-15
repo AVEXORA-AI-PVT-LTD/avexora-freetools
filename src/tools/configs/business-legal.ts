@@ -1,5 +1,7 @@
 import type { ToolConfig } from "../../types/tools";
 import LetterheadComplianceChecker from "../ui/business-legal/letterhead-compliance-checker";
+import IfscCodeFinder from "../ui/business-legal/ifsc-code-finder";
+import { computeGstinVerification } from "../compute/legal/gstin-verification";
 import { generateNda } from "../compute/legal/nda";
 import { generatePrivacyPolicy } from "../compute/legal/privacy-policy";
 import { generateTerms } from "../compute/legal/terms";
@@ -21,6 +23,14 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free letterhead compliance checker for Indian companies and LLPs. Verify your CIN, LLPIN, GSTIN, registered office address and contact details against Companies Act 2013 s.12(3)(c) requirements.",
     component: LetterheadComplianceChecker,
+    howTo: {
+      name: "How to check letterhead compliance",
+      steps: [
+        { name: "Select your entity type", text: "Choose company, LLP or another entity type, since the required particulars differ." },
+        { name: "Enter your identifiers and address", text: "Add your CIN/LLPIN, GSTIN and registered office address as printed on your stationery." },
+        { name: "Review the findings", text: "See document-by-document findings for your letterhead, invoice, envelope and visiting card, each citing the legal provision it comes from." },
+      ],
+    },
     about: [
       "Section 12(3)(c) of the Companies Act 2013 requires every company registered in India to print its name, the address of its registered office and its Corporate Identity Number \u2014 along with its telephone number and, where they exist, its email and website addresses \u2014 on all its business letters, billheads, letter papers, notices and other official publications. It is one of the most routinely missed compliance requirements in Indian corporate practice, precisely because it looks like a design decision rather than a statutory one. A founder orders letterheads from a printer or builds one in a design tool, nobody involved knows the section exists, and the company operates for years on stationery that is technically in default.",
       "The consequences are not theoretical. Failure to comply attracts a penalty of one thousand rupees for every day the default continues, subject to a maximum of one lakh rupees. Because the penalty accrues daily rather than as a one-time fine, a letterhead printed without a CIN and used for two years represents meaningful exposure. The same obligation extends to invoices and billheads, which is why a GST invoice issued on non-compliant letterhead compounds the problem across every customer you have billed.",
@@ -54,7 +64,7 @@ export const tools: ToolConfig[] = [
           "No. The rules and validators run entirely in your browser. Your CIN, GSTIN and address never leave your device.",
       },
     ],
-    related: ["nda-generator", "privacy-policy-generator", "invoice-generator", "gst-calculator"],
+    related: ["nda-generator", "privacy-policy-generator", "invoice-generator", "gstin-verification"],
   },
   {
     kind: "generator",
@@ -75,8 +85,16 @@ export const tools: ToolConfig[] = [
     generate: generateNda,
     submitLabel: "Generate NDA",
     emailGate: true,
+    howTo: {
+      name: "How to create an NDA",
+      steps: [
+        { name: "Enter both parties' details", text: "Add both parties' names, the effective date and whether the NDA is mutual or one-way." },
+        { name: "Describe the purpose", text: "State the reason confidential information is being shared and the term of confidentiality." },
+        { name: "Generate and sign", text: "Copy or download the finished NDA and have both parties sign it." },
+      ],
+    },
     about: [
-      "A non-disclosure agreement is usually the first legal document exchanged before two parties start sharing anything sensitive — a business idea before a partnership discussion, financial data before a due-diligence process, source code before a contractor starts work. Without one, information shared in good faith has no formal protection if the relationship sours or a counterpart talks to a competitor. This generator produces a complete NDA in the format that lawyers and business partners immediately recognise.",
+      "A non-disclosure agreement (NDA) is a contract that legally binds whoever receives confidential information to keep it secret and use it only for the stated purpose — typically signed before two parties share anything sensitive, such as a business idea before a partnership discussion, financial data before a due-diligence process, or source code before a contractor starts work. Without one, information shared in good faith has no formal protection if the relationship sours or a counterpart talks to a competitor. This generator produces a complete NDA in the format that lawyers and business partners immediately recognise.",
       "Choose mutual (both parties may share confidential information and both are bound to protect what they receive — the standard choice for partnership and collaboration discussions) or one-way (only one party discloses, the other simply receives and protects — typical when a company shares information with a contractor or vendor). The generated document covers what counts as confidential information, the receiving party's obligations, standard carve-outs (information already known, publicly available, independently developed, or required to be disclosed by law), the term of the agreement, and governing law.",
       "An NDA is meant to be signed before the sensitive conversation happens, not after — its protective value depends on being in place before anything confidential changes hands. Have a lawyer review the term length and confidentiality scope against your specific situation, particularly for high-stakes discussions like M&A or significant IP disclosure, where a generic template may need sharper language.",
     ],
@@ -119,7 +137,7 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate privacy policy",
     emailGate: true,
     about: [
-      "A privacy policy isn't optional decoration on a website — it's legally required in most jurisdictions the moment you collect any personal information, and app stores, payment gateways and ad platforms all check for one before letting you use their services. Writing one from scratch means researching what clauses are actually required and phrasing them correctly; this generator produces a complete policy from a handful of checkboxes describing what your site actually does.",
+      "A privacy policy is legally required in most jurisdictions the moment a website collects any personal information, and app stores, payment gateways and ad platforms all check for one before letting you use their services. Writing one from scratch means researching what clauses are actually required and phrasing them correctly; this generator produces a complete policy from a handful of checkboxes describing what your site actually does.",
       "The generated policy adapts to your answers: it includes a payments clause only if you collect payment information, a cookies section only if you use cookies, and an analytics mention only if you run analytics tools — so the document matches your site instead of listing irrelevant boilerplate. It covers what data you collect, how you use it, who you share it with, data security, user rights (access, correction, deletion), children's privacy, and how you'll communicate policy changes.",
       "Treat this as a strong starting draft, not a finished legal document: fill in the \"[Date]\" placeholder, review every clause against what your business actually does (a policy that promises something you don't deliver, or omits something you do, creates real legal risk), and if you operate internationally or handle sensitive data (health, financial, biometric), have a privacy lawyer review it against the specific regimes that apply — India's DPDP Act, GDPR for EU visitors, or others depending on your audience.",
     ],
@@ -291,6 +309,14 @@ export const tools: ToolConfig[] = [
     generate: generateRentAgreement,
     submitLabel: "Generate rent agreement",
     emailGate: true,
+    howTo: {
+      name: "How to create a rent agreement",
+      steps: [
+        { name: "Enter landlord and tenant details", text: "Add both parties' names, the property address and the agreement duration." },
+        { name: "Set the rent terms", text: "Enter monthly rent, security deposit and the notice period for termination." },
+        { name: "Generate and sign", text: "Copy or download the finished agreement, then have both parties sign it (and notarise/register where your state requires it)." },
+      ],
+    },
     about: [
       "The 11-month leave-and-license agreement is the standard rental arrangement across most Indian cities — chosen deliberately at under a year to avoid the compulsory registration and stamp duty that longer leases trigger under the Registration Act. This generator produces exactly that document, with the rent, deposit and duration you specify, in the format landlords and tenants across India already recognise.",
       "The agreement covers what actually causes disputes when left unwritten: the exact rent and due date, the security deposit amount and refund timeline (30 days after vacating, net of damages and dues), who handles maintenance versus major repairs, utility responsibility, subletting restrictions, notice period for termination, and the landlord's inspection rights. Setting these expectations in writing upfront resolves most disagreements before they start.",
@@ -337,7 +363,7 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate freelance contract",
     emailGate: true,
     about: [
-      "Most freelance disputes trace back to the same root cause: scope, payment or ownership was never written down clearly, so each side remembers the verbal agreement differently once money or deadlines are at stake. A short, clear contract prevents almost all of this — this generator produces one covering exactly the terms that matter: scope of work, timeline, fee and payment schedule, IP ownership, confidentiality, revision limits, and termination.",
+      "A freelance contract fixes scope, payment and IP ownership in writing before work starts, which prevents most freelance disputes — these normally trace back to one root cause: terms were never written down clearly, so each side remembers the verbal agreement differently once money or deadlines are at stake. This generator produces one covering exactly the terms that matter: scope of work, timeline, fee and payment schedule, IP ownership, confidentiality, revision limits, and termination.",
       "The intellectual-property clause deserves particular attention because it's the one freelancers and clients most often assume differently: this template transfers IP to the client only upon full payment, and explicitly preserves the freelancer's right to reuse general skills and pre-existing tools and to showcase the work in a portfolio (unless the client requests confidentiality) — a fair, standard default that protects both sides. The revision clause (two rounds included in the quoted fee, more billed separately) heads off the classic scope-creep spiral where \"one more small tweak\" repeats indefinitely.",
       "Whether you're the freelancer or the client, send this before work begins, not after a dispute starts — a signed contract is a prevention tool, not a repair tool. For larger engagements or anything involving significant IP value, have a lawyer review the specific fee structure, IP terms and liability cap against your situation.",
     ],
@@ -425,7 +451,7 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate loan agreement",
     emailGate: true,
     about: [
-      "Money lent between friends, family or business acquaintances without paperwork is a common source of both financial loss and damaged relationships — memories of \"how much\" and \"by when\" diverge remarkably fast once a repayment is late. A simple, signed loan agreement fixes the terms in writing before any disagreement can start: the amount, the interest rate (zero is fine, and common between family), and the repayment schedule.",
+      "A loan agreement is a signed document that fixes a loan's terms in writing — the amount, the interest rate (zero is fine, and common between family), and the repayment schedule — before any disagreement can start. Money lent between friends, family or business acquaintances without paperwork is a common source of both financial loss and damaged relationships, since memories of \"how much\" and \"by when\" diverge remarkably fast once a repayment is late.",
       "This generator produces exactly that: principal amount, annual interest rate (set to 0% for an interest-free family loan, or a market rate for a formal arrangement), repayment period in months with an estimated monthly instalment, prepayment rights, and what happens on default — the lender's right to demand the full outstanding balance after 15 days' notice following a missed payment.",
       "One practical note for India: loan agreements above certain thresholds may attract stamp duty and, in some states, require registration to be fully enforceable in court — the requirements vary by state and loan size, so check locally before relying on an unregistered agreement for a significant amount. For smaller, informal loans between individuals, a signed (even if unregistered) agreement is still far better evidence than no paperwork at all.",
       "Both lender and borrower should keep a signed copy, and settling repayments through a traceable channel like bank transfer (rather than cash) creates a cleaner paper trail alongside the agreement itself — useful if either party ever needs to demonstrate the loan and its repayment history to a bank, an auditor, or in a dispute.",
@@ -471,7 +497,7 @@ export const tools: ToolConfig[] = [
     submitLabel: "Generate partnership deed",
     emailGate: true,
     about: [
-      "Two people starting a business together without a written partnership deed are relying entirely on the default rules of the Indian Partnership Act, 1932 — which assume equal profit-sharing and equal say regardless of what was actually agreed verbally, and which won't reflect any of the specific arrangements partners actually intend. A partnership deed replaces those defaults with your actual terms in writing.",
+      "A partnership deed replaces the default rules of the Indian Partnership Act, 1932 with the partners' actual terms in writing. Without one, two people starting a business together are relying entirely on those defaults — which assume equal profit-sharing and equal say regardless of what was actually agreed verbally, and which won't reflect any of the specific arrangements partners actually intend.",
       "This generator produces a deed for a two-partner firm covering the firm name and business address, the capital each partner contributes, the profit-and-loss sharing ratio (which the tool validates sums to 100%), duties and decision-making, banking arrangements, and the process for admitting or retiring partners and for dissolution. These are exactly the questions that cause partnership disputes when left unwritten — especially profit-sharing once the business is actually making money.",
       "For a firm intending to operate formally (open a current bank account, take business loans, sign leases as a firm), register this deed with the Registrar of Firms in your state — registration isn't mandatory to form a valid partnership, but an unregistered firm can't sue third parties to enforce a contract, which is a serious practical limitation. Have a chartered accountant or lawyer review the capital and profit-sharing structure against your actual tax planning before finalising.",
     ],
@@ -493,5 +519,84 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["loan-agreement-generator", "gst-calculator", "working-capital-calculator", "nda-generator"],
+  },
+  {
+    kind: "calculator",
+    slug: "gstin-verification",
+    category: "business-legal",
+    name: "GSTIN Verification Tool",
+    tagline: "Check whether a GSTIN is correctly formatted, with a valid checksum.",
+    seoDescription:
+      "Free GSTIN verification tool. Check a GST number's format and mod-36 check digit instantly, and decode its state code, embedded PAN and registration number.",
+    fields: [
+      { name: "gstin", label: "GSTIN", type: "text", placeholder: "29AABCU9603R1ZM", maxLength: 15 },
+    ],
+    compute: computeGstinVerification,
+    autoCompute: true,
+    about: [
+      "A GSTIN is 15 characters long and self-describing: the first two digits are a state code, the next ten are the taxpayer's PAN, the thirteenth is a registration/entity number, the fourteenth is always \"Z\", and the fifteenth is a checksum digit computed from the other fourteen using a mod-36 algorithm. This tool decodes all of that and verifies the checksum in one pass, catching a mistyped or fabricated GSTIN before it ends up on an invoice.",
+      "This is a format and checksum check, not a live lookup against the GST portal — it can prove a GSTIN is malformed (wrong length, invalid state code, checksum mismatch), but only the government's own GSTN system can confirm that a well-formed GSTIN belongs to a real, currently-registered taxpayer. For that final confirmation, verify on the official GST portal (services.gst.gov.in) before relying on it for input tax credit.",
+      "Typing errors are the single most common GSTIN problem — a transposed digit or a misread character — and the checksum catches almost all of them instantly, before a wrong GSTIN gets printed on a real invoice or claimed against ITC. Paired with the Letterhead Compliance Checker, this covers the two places a wrong GSTIN causes the most damage: your own stationery, and a vendor's invoice you're about to accept.",
+    ],
+    faq: [
+      {
+        question: "Does this confirm a GSTIN is actually registered with the government?",
+        answer:
+          "No — it verifies that the format and check digit are mathematically valid, which catches typos and fabricated numbers. Only the official GST portal (services.gst.gov.in) can confirm a GSTIN belongs to an active, real registration.",
+      },
+      {
+        question: "What does each part of a GSTIN mean?",
+        answer:
+          "State code (2 digits) + PAN (10 characters) + entity/registration number (1 character, for taxpayers with multiple registrations on the same PAN in a state) + a fixed \"Z\" + a checksum digit (1 character) computed from the first 14 characters.",
+      },
+      {
+        question: "Is my GSTIN sent anywhere when I check it here?",
+        answer: "No — the entire check runs in your browser using a fixed formula. Nothing you type is transmitted or stored.",
+      },
+      {
+        question: "Why did a real-looking GSTIN fail the check?",
+        answer:
+          "The most common reason is a single mistyped or transposed character — the checksum is extremely sensitive to that. Re-check the source document carefully; a genuine GSTIN issued by the GST department will always pass this format check.",
+      },
+    ],
+    related: ["letterhead-compliance-checker", "invoice-generator", "gst-calculator", "ifsc-code-finder"],
+  },
+  {
+    kind: "generator",
+    slug: "ifsc-code-finder",
+    category: "business-legal",
+    name: "IFSC Code Finder",
+    tagline: "Look up any Indian bank branch's IFSC, MICR code and address.",
+    seoDescription:
+      "Free IFSC code finder. Enter any Indian bank's IFSC code to instantly get the branch name, address, MICR code and NEFT/RTGS/IMPS/UPI availability.",
+    component: IfscCodeFinder,
+    about: [
+      "An IFSC (Indian Financial System Code) is an 11-character code that uniquely identifies a bank branch for electronic payments — the first four letters name the bank, a fixed zero comes next, and the last six characters identify the specific branch. Every NEFT, RTGS, IMPS and UPI transfer routes through this code, which is why bank forms, cheque books and payment apps all ask for it.",
+      "Enter any IFSC code and this tool looks up the exact branch it belongs to — bank name, branch name, full address, city, state, MICR code, and which payment networks (NEFT/RTGS/IMPS/UPI) that branch supports — against a public bank-branch directory. It's the fastest way to confirm a code before adding a beneficiary for a bank transfer, without hunting through a cheque leaf or calling the bank.",
+      "Getting an IFSC wrong when adding a payee is a common source of failed or misdirected transfers, so a quick check here before submitting a bank form is worth the ten seconds it takes. If you have the branch's cheque book or passbook, the IFSC is printed on it directly — this tool is most useful when you only have the bank and branch name and need the code itself, or want to double-check one before using it.",
+    ],
+    faq: [
+      {
+        question: "What does an IFSC code look like?",
+        answer:
+          "11 characters: four letters identifying the bank (e.g. HDFC, ICIC, SBIN), a fixed zero as the fifth character, then six characters identifying the specific branch — for example HDFC0000001.",
+      },
+      {
+        question: "Where does this lookup data come from?",
+        answer:
+          "It queries a free, public bank-branch API (originally sourced from RBI data) directly from your browser. Nothing you type is stored by this site.",
+      },
+      {
+        question: "Do I need the IFSC for UPI payments?",
+        answer:
+          "Not for a UPI ID or QR code payment, but you do need it when adding a bank account as a beneficiary for NEFT/RTGS/IMPS, or when someone needs to transfer money directly to your account number.",
+      },
+      {
+        question: "What if my IFSC code isn't found?",
+        answer:
+          "Double-check for typos — a single wrong character will return no match. If it still doesn't resolve, the code may be for a branch that has since merged or been renumbered; check your bank's cheque book or passbook for the current code.",
+      },
+    ],
+    related: ["gstin-verification", "invoice-generator", "letterhead-compliance-checker", "rent-agreement-generator"],
   },
 ];
