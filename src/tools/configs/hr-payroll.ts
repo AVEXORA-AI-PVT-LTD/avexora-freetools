@@ -11,6 +11,7 @@ import { generatePayslip } from "../compute/hr/payslip";
 import { generateOfferLetter } from "../compute/hr/offer-letter";
 import { generateAppointmentLetter } from "../compute/hr/appointment-letter";
 import { generateExperienceLetter } from "../compute/hr/experience-letter";
+import { generateResume } from "../compute/hr/resume";
 
 export const tools: ToolConfig[] = [
   {
@@ -531,5 +532,65 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["appointment-letter-generator", "offer-letter-generator", "gratuity-calculator", "leave-encashment-calculator"],
+  },
+  {
+    kind: "generator",
+    slug: "resume-builder",
+    category: "hr-payroll",
+    name: "Resume / CV Builder",
+    tagline: "Build a clean, ATS-friendly resume from a simple form.",
+    seoDescription:
+      "Free resume builder. Enter your details, work experience and education to generate a clean, ATS-friendly resume you can copy or download instantly.",
+    fields: [
+      { name: "fullName", label: "Full name", type: "text", placeholder: "Priya Sharma" },
+      { name: "targetRole", label: "Target job title", type: "text", placeholder: "Product Manager", optional: true },
+      { name: "email", label: "Email", type: "text", placeholder: "priya.sharma@email.com" },
+      { name: "phone", label: "Phone", type: "text", placeholder: "+91 98765 43210" },
+      { name: "location", label: "City", type: "text", placeholder: "Bengaluru", optional: true },
+      { name: "linkedin", label: "LinkedIn / portfolio URL", type: "text", placeholder: "linkedin.com/in/priyasharma", optional: true },
+      { name: "summary", label: "Professional summary (2-3 sentences)", type: "textarea", rows: 3, placeholder: "Product manager with 5 years building B2B SaaS features from discovery to launch." },
+      { name: "skills", label: "Skills (comma-separated)", type: "textarea", rows: 2, placeholder: "Product strategy, SQL, Figma, A/B testing, Agile" },
+      { name: "exp1Company", label: "Most recent employer", type: "text", placeholder: "Avexora Technologies" },
+      { name: "exp1Title", label: "Job title", type: "text", placeholder: "Senior Product Manager" },
+      { name: "exp1Duration", label: "Duration", type: "text", placeholder: "Jan 2022 – Present" },
+      { name: "exp1Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Launched a feature that grew activation by 18%", optional: true },
+      { name: "exp2Company", label: "Previous employer", type: "text", placeholder: "Nimbus Software", optional: true },
+      { name: "exp2Title", label: "Job title", type: "text", placeholder: "Product Analyst", optional: true },
+      { name: "exp2Duration", label: "Duration", type: "text", placeholder: "Jun 2019 – Dec 2021", optional: true },
+      { name: "exp2Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Built the analytics dashboard used company-wide", optional: true },
+      { name: "eduDegree", label: "Degree", type: "text", placeholder: "B.Tech, Computer Science" },
+      { name: "eduInstitution", label: "Institution", type: "text", placeholder: "IIT Bombay" },
+      { name: "eduYear", label: "Year of graduation", type: "text", placeholder: "2019", optional: true },
+    ],
+    generate: generateResume,
+    submitLabel: "Generate resume",
+    emailGate: true,
+    about: [
+      "A resume that clears applicant-tracking-system (ATS) screening has one job before it ever reaches a human: parse cleanly as plain text, with your name, contact details, skills and dated work history in a predictable order. This builder produces exactly that — a single-column, keyword-scannable resume with no tables, columns, icons or graphics that a parser could choke on or reorder incorrectly.",
+      "Fill in your contact details, a two-to-three sentence summary, your skills, up to two roles of work experience with bullet-point achievements, and your education — the generator assembles it into a clean, standard structure recruiters and ATS software both read the same way. Lead each achievement bullet with a number where you have one (\"grew signups 18%\", \"cut processing time from 3 days to 4 hours\") — quantified bullets are read as evidence, plain duty descriptions are read as a job description.",
+      "This produces the content and structure, not final visual design — copy the output into your preferred word processor for a formatted, polished layout once the substance is right, or use it as-is for online applications that only accept plain text or paste-in resumes. Keep it to one page for under ten years of experience; two only once your history genuinely needs it.",
+    ],
+    faq: [
+      {
+        question: "Will this resume pass ATS screening?",
+        answer:
+          "The structure is built to be ATS-friendly — single column, standard section headers, no tables or graphics that parsers mishandle. ATS compatibility also depends on matching keywords from the job description in your skills and experience, which you should tailor per application.",
+      },
+      {
+        question: "How many jobs can I add?",
+        answer:
+          "This generator supports two work experience entries. For a longer history, copy the output and add further entries manually in the same format, keeping your most recent role first.",
+      },
+      {
+        question: "Should I quantify every bullet point?",
+        answer:
+          "Wherever you genuinely can — a number (%, ₹, time saved, team size) makes an achievement concrete and is what recruiters scan for first. Where there's truly no number, describe the outcome, not just the task.",
+      },
+      {
+        question: "Is my information stored anywhere?",
+        answer: "No — the resume is generated entirely in your browser from what you type, and nothing is saved once you leave the page.",
+      },
+    ],
+    related: ["offer-letter-generator", "experience-letter-generator", "salary-calculator", "payslip-generator"],
   },
 ];

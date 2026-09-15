@@ -16,6 +16,7 @@ import { computeMarkup } from "../compute/finance/markup";
 import { computeRoi } from "../compute/finance/roi";
 import { computeDepreciation } from "../compute/finance/depreciation";
 import { computeWorkingCapital } from "../compute/finance/working-capital";
+import { computePercentage } from "../compute/finance/percentage";
 
 export const tools: ToolConfig[] = [
   {
@@ -905,5 +906,57 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["break-even-calculator", "margin-calculator", "invoice-due-date-calculator", "payment-reminder-generator"],
+  },
+  {
+    kind: "calculator",
+    slug: "percentage-calculator",
+    category: "finance-calculators",
+    name: "Percentage Calculator",
+    tagline: "Find X% of Y, what percent X is of Y, or the percentage change between two numbers.",
+    seoDescription:
+      "Free percentage calculator. Find X% of Y, work out what percent one number is of another, or calculate the percentage increase or decrease between two values.",
+    fields: [
+      {
+        name: "mode",
+        label: "What do you want to work out?",
+        type: "select",
+        defaultValue: "of",
+        options: [
+          { value: "of", label: "X% of Y" },
+          { value: "isWhatPercent", label: "X is what % of Y" },
+          { value: "change", label: "Percentage change from X to Y" },
+        ],
+      },
+      { name: "x", label: "X", type: "number", placeholder: "20" },
+      { name: "y", label: "Y", type: "number", placeholder: "500" },
+    ],
+    compute: computePercentage,
+    autoCompute: true,
+    about: [
+      "X% of Y = (X ÷ 100) × Y. That single formula answers the most common percentage question there is — what is 20% of 500? — and this calculator solves it instantly, along with the two other percentage questions people actually search for: what percent one number is of another, and how much a value has increased or decreased in percentage terms.",
+      "The three calculations use different arithmetic, so mixing them up is the usual source of error. \"X% of Y\" multiplies. \"X is what percent of Y\" divides X by Y and multiplies by 100 — useful for things like \"I scored 42 out of 50, what percent is that?\". \"Percentage change from X to Y\" takes (Y − X) ÷ X × 100 — the formula behind every price-increase, discount and salary-hike calculation, and the one people most often get backwards by dividing by the wrong number.",
+      "Pick the calculation you need from the dropdown, enter your two numbers, and the result updates immediately. For GST-specific percentage math (adding or removing tax from an amount), use the GST Calculator instead — it applies the same core arithmetic but with the CGST/SGST/IGST split built in.",
+    ],
+    faq: [
+      {
+        question: "How do I calculate X% of Y?",
+        answer: "Divide X by 100 and multiply by Y: X% of Y = (X ÷ 100) × Y. For example, 20% of 500 = (20 ÷ 100) × 500 = 100.",
+      },
+      {
+        question: "How do I find what percentage one number is of another?",
+        answer: "Divide the part by the whole and multiply by 100: (part ÷ whole) × 100. For example, 42 out of 50 is (42 ÷ 50) × 100 = 84%.",
+      },
+      {
+        question: "Why did I get a negative result for percentage change?",
+        answer:
+          "A negative percentage change means Y is smaller than X — a decrease. This calculator shows the direction (increase or decrease) explicitly alongside the magnitude, so a negative sign is never the only signal.",
+      },
+      {
+        question: "What's the difference between percentage change and percentage points?",
+        answer:
+          "Percentage change is relative (a rate moving from 10% to 15% is a 50% increase, since 5 ÷ 10 × 100 = 50). Percentage points is the raw difference (that same move is \"5 percentage points\"). This calculator computes percentage change, not percentage points.",
+      },
+    ],
+    related: ["gst-calculator", "margin-calculator", "markup-calculator", "compound-interest-calculator"],
   },
 ];

@@ -7,6 +7,7 @@ import { ImageToBase64, Base64ToImage } from "../ui/image/base64-image";
 import { FaviconGenerator } from "../ui/image/favicon-generator";
 import { ImageColorPicker } from "../ui/image/image-color-picker";
 import { ImageRotatorFlipper } from "../ui/image/image-rotator-flipper";
+import BackgroundRemover from "../ui/image/background-remover";
 
 export const tools: ToolConfig[] = [
   {
@@ -382,5 +383,43 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["image-cropper", "image-resizer", "rotate-pdf", "image-compressor"],
+  },
+  {
+    kind: "file-tool",
+    slug: "background-remover",
+    category: "image-tools",
+    name: "Background Remover",
+    tagline: "Remove the background from any photo, instantly and entirely in your browser.",
+    seoDescription:
+      "Free background remover. Remove the background from a photo automatically — get a transparent PNG for product photos, ID photos or graphics. No upload, no watermark, no sign-up.",
+    component: BackgroundRemover,
+    about: [
+      "Cutting a subject cleanly out of its background used to mean a photo editor and a patient hand with the lasso tool. This tool does it automatically: upload a photo and an AI model identifies the foreground subject and removes everything else, leaving a transparent PNG you can drop onto any background.",
+      "It runs an open-source segmentation model entirely inside your browser using WebAssembly — there is no server upload at any point, so a personal or ID photo never leaves your device. The trade-off for that privacy and cost (this is a genuinely capable AI model, running for free) is a short one-time delay the first time you use it: your browser downloads a few megabytes of model data, cached afterward so every subsequent image processes in seconds.",
+      "Common uses: an e-commerce product photo that needs a clean white or transparent background, a headshot for a passport or ID photo template, or a subject you want to place onto a different background in a design tool. Works best on photos with a clear subject against a reasonably distinct background — very fine detail like loose hair or fur, or a subject that blends closely into its background in color and tone, is harder for any automatic tool (including this one) to get perfectly clean.",
+    ],
+    faq: [
+      {
+        question: "Is my photo uploaded to a server?",
+        answer:
+          "No — the entire background-removal model runs locally in your browser via WebAssembly. Your photo is never sent anywhere; only the (generic, non-identifying) AI model files are downloaded to your browser.",
+      },
+      {
+        question: "Why does the first image take longer than the second?",
+        answer:
+          "The first run downloads the segmentation model to your browser (a few megabytes, cached afterward). Every image after that in the same browser session processes in a few seconds with no further download.",
+      },
+      {
+        question: "What format is the output?",
+        answer:
+          "A PNG with a transparent background, so you can place it over any color, image or design directly without further editing.",
+      },
+      {
+        question: "Will it work perfectly on every photo?",
+        answer:
+          "It handles clear, well-lit subjects against distinct backgrounds very well. Fine detail like flyaway hair, fur, or a subject with colors very close to its background can come out less clean — as with any automatic segmentation tool, not just this one.",
+      },
+    ],
+    related: ["image-cropper", "image-resizer", "favicon-generator", "image-compressor"],
   },
 ];

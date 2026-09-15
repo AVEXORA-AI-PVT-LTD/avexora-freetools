@@ -1,5 +1,7 @@
 import type { ToolConfig } from "../../types/tools";
 import LetterheadComplianceChecker from "../ui/business-legal/letterhead-compliance-checker";
+import IfscCodeFinder from "../ui/business-legal/ifsc-code-finder";
+import { computeGstinVerification } from "../compute/legal/gstin-verification";
 import { generateNda } from "../compute/legal/nda";
 import { generatePrivacyPolicy } from "../compute/legal/privacy-policy";
 import { generateTerms } from "../compute/legal/terms";
@@ -54,7 +56,7 @@ export const tools: ToolConfig[] = [
           "No. The rules and validators run entirely in your browser. Your CIN, GSTIN and address never leave your device.",
       },
     ],
-    related: ["nda-generator", "privacy-policy-generator", "invoice-generator", "gst-calculator"],
+    related: ["nda-generator", "privacy-policy-generator", "invoice-generator", "gstin-verification"],
   },
   {
     kind: "generator",
@@ -493,5 +495,84 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["loan-agreement-generator", "gst-calculator", "working-capital-calculator", "nda-generator"],
+  },
+  {
+    kind: "calculator",
+    slug: "gstin-verification",
+    category: "business-legal",
+    name: "GSTIN Verification Tool",
+    tagline: "Check whether a GSTIN is correctly formatted, with a valid checksum.",
+    seoDescription:
+      "Free GSTIN verification tool. Check a GST number's format and mod-36 check digit instantly, and decode its state code, embedded PAN and registration number.",
+    fields: [
+      { name: "gstin", label: "GSTIN", type: "text", placeholder: "29AABCU9603R1ZM", maxLength: 15 },
+    ],
+    compute: computeGstinVerification,
+    autoCompute: true,
+    about: [
+      "A GSTIN is 15 characters long and self-describing: the first two digits are a state code, the next ten are the taxpayer's PAN, the thirteenth is a registration/entity number, the fourteenth is always \"Z\", and the fifteenth is a checksum digit computed from the other fourteen using a mod-36 algorithm. This tool decodes all of that and verifies the checksum in one pass, catching a mistyped or fabricated GSTIN before it ends up on an invoice.",
+      "This is a format and checksum check, not a live lookup against the GST portal — it can prove a GSTIN is malformed (wrong length, invalid state code, checksum mismatch), but only the government's own GSTN system can confirm that a well-formed GSTIN belongs to a real, currently-registered taxpayer. For that final confirmation, verify on the official GST portal (services.gst.gov.in) before relying on it for input tax credit.",
+      "Typing errors are the single most common GSTIN problem — a transposed digit or a misread character — and the checksum catches almost all of them instantly, before a wrong GSTIN gets printed on a real invoice or claimed against ITC. Paired with the Letterhead Compliance Checker, this covers the two places a wrong GSTIN causes the most damage: your own stationery, and a vendor's invoice you're about to accept.",
+    ],
+    faq: [
+      {
+        question: "Does this confirm a GSTIN is actually registered with the government?",
+        answer:
+          "No — it verifies that the format and check digit are mathematically valid, which catches typos and fabricated numbers. Only the official GST portal (services.gst.gov.in) can confirm a GSTIN belongs to an active, real registration.",
+      },
+      {
+        question: "What does each part of a GSTIN mean?",
+        answer:
+          "State code (2 digits) + PAN (10 characters) + entity/registration number (1 character, for taxpayers with multiple registrations on the same PAN in a state) + a fixed \"Z\" + a checksum digit (1 character) computed from the first 14 characters.",
+      },
+      {
+        question: "Is my GSTIN sent anywhere when I check it here?",
+        answer: "No — the entire check runs in your browser using a fixed formula. Nothing you type is transmitted or stored.",
+      },
+      {
+        question: "Why did a real-looking GSTIN fail the check?",
+        answer:
+          "The most common reason is a single mistyped or transposed character — the checksum is extremely sensitive to that. Re-check the source document carefully; a genuine GSTIN issued by the GST department will always pass this format check.",
+      },
+    ],
+    related: ["letterhead-compliance-checker", "invoice-generator", "gst-calculator", "ifsc-code-finder"],
+  },
+  {
+    kind: "generator",
+    slug: "ifsc-code-finder",
+    category: "business-legal",
+    name: "IFSC Code Finder",
+    tagline: "Look up any Indian bank branch's IFSC, MICR code and address.",
+    seoDescription:
+      "Free IFSC code finder. Enter any Indian bank's IFSC code to instantly get the branch name, address, MICR code and NEFT/RTGS/IMPS/UPI availability.",
+    component: IfscCodeFinder,
+    about: [
+      "An IFSC (Indian Financial System Code) is an 11-character code that uniquely identifies a bank branch for electronic payments — the first four letters name the bank, a fixed zero comes next, and the last six characters identify the specific branch. Every NEFT, RTGS, IMPS and UPI transfer routes through this code, which is why bank forms, cheque books and payment apps all ask for it.",
+      "Enter any IFSC code and this tool looks up the exact branch it belongs to — bank name, branch name, full address, city, state, MICR code, and which payment networks (NEFT/RTGS/IMPS/UPI) that branch supports — against a public bank-branch directory. It's the fastest way to confirm a code before adding a beneficiary for a bank transfer, without hunting through a cheque leaf or calling the bank.",
+      "Getting an IFSC wrong when adding a payee is a common source of failed or misdirected transfers, so a quick check here before submitting a bank form is worth the ten seconds it takes. If you have the branch's cheque book or passbook, the IFSC is printed on it directly — this tool is most useful when you only have the bank and branch name and need the code itself, or want to double-check one before using it.",
+    ],
+    faq: [
+      {
+        question: "What does an IFSC code look like?",
+        answer:
+          "11 characters: four letters identifying the bank (e.g. HDFC, ICIC, SBIN), a fixed zero as the fifth character, then six characters identifying the specific branch — for example HDFC0000001.",
+      },
+      {
+        question: "Where does this lookup data come from?",
+        answer:
+          "It queries a free, public bank-branch API (originally sourced from RBI data) directly from your browser. Nothing you type is stored by this site.",
+      },
+      {
+        question: "Do I need the IFSC for UPI payments?",
+        answer:
+          "Not for a UPI ID or QR code payment, but you do need it when adding a bank account as a beneficiary for NEFT/RTGS/IMPS, or when someone needs to transfer money directly to your account number.",
+      },
+      {
+        question: "What if my IFSC code isn't found?",
+        answer:
+          "Double-check for typos — a single wrong character will return no match. If it still doesn't resolve, the code may be for a branch that has since merged or been renumbered; check your bank's cheque book or passbook for the current code.",
+      },
+    ],
+    related: ["gstin-verification", "invoice-generator", "letterhead-compliance-checker", "rent-agreement-generator"],
   },
 ];

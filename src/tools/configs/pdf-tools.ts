@@ -8,6 +8,7 @@ import { RotatePdf } from "../ui/pdf/rotate-pdf";
 import WatermarkPdf from "../ui/pdf/watermark-pdf";
 import PageNumbersPdf from "../ui/pdf/page-numbers-pdf";
 import PdfMetadataEditor from "../ui/pdf/pdf-metadata-editor";
+import PdfToWord from "../ui/pdf/pdf-to-word";
 
 export const tools: ToolConfig[] = [
   {
@@ -416,5 +417,42 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["compress-pdf", "add-watermark-to-pdf", "merge-pdf", "privacy-policy-generator"],
+  },
+  {
+    kind: "file-tool",
+    slug: "pdf-to-word",
+    category: "pdf-tools",
+    name: "PDF to Word Converter",
+    tagline: "Convert a PDF's text into an editable Word document — entirely in your browser.",
+    seoDescription:
+      "Free PDF to Word converter. Extract a PDF's text and convert it into an editable .docx file, right in your browser — no upload, no sign-up, no watermark.",
+    component: PdfToWord,
+    about: [
+      "Editing a PDF directly is awkward — the format is designed to display a page identically everywhere, not to be reflowed and retyped. The practical fix most people actually need is simpler than full layout conversion: get the words out of the PDF and into an editable Word document you can rewrite, comment on, or paste into another document.",
+      "This tool reads your PDF's real text (not an image of it) page by page, using the same rendering engine browsers use to display PDFs, and rebuilds it as a standard .docx file with each page's lines preserved in order. It's an honest \"basic conversion\": paragraph text carries over cleanly, but complex layouts — multi-column pages, tables, and embedded images — are not reconstructed, because faithfully reconstructing those from a PDF's structure genuinely needs a dedicated commercial OCR/layout engine, not a client-side text extractor.",
+      "If your PDF is a scanned document (a photo or scan saved as PDF, with no real selectable text underneath), this tool has nothing to extract — run it through an OCR tool first to generate real text, then convert that. For text-based PDFs — reports, letters, contracts, articles — this gets you from locked PDF to an editable document in one click, with the file never leaving your device.",
+    ],
+    faq: [
+      {
+        question: "Will this preserve my PDF's exact layout, tables and images?",
+        answer:
+          "No — it extracts the real text in reading order and rebuilds it as a plain, editable document. Multi-column layouts, tables and images are not reconstructed. For text-heavy documents like letters, reports and contracts this is usually exactly what you need; for a design-heavy PDF, expect to reformat after converting.",
+      },
+      {
+        question: "Why did I get an error saying no text was found?",
+        answer:
+          "Your PDF is likely a scanned image (a photo or scan saved as a PDF) rather than real, selectable text. Run it through an OCR tool to generate actual text first, then convert the result.",
+      },
+      {
+        question: "Is my file uploaded anywhere?",
+        answer:
+          "No — the PDF is read and converted entirely in your browser using pdf.js and the docx library. The file never leaves your device.",
+      },
+      {
+        question: "Does this work on password-protected PDFs?",
+        answer: "No — remove the password using your PDF reader first, then convert the unprotected file.",
+      },
+    ],
+    related: ["merge-pdf", "split-pdf", "pdf-metadata-editor", "word-counter"],
   },
 ];
