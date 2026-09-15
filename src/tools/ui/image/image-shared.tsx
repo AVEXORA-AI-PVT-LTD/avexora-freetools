@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { zipSync } from "fflate";
+import { useFileDrop } from "../use-file-drop";
 
 export { inputCls, labelCls, primaryBtn, secondaryBtn, iconBtn, panelCls } from "../ui-tokens";
 
@@ -215,6 +216,7 @@ export function ImagePicker({
   accept?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isDragging, dragHandlers } = useFileDrop((files) => onPick(files[0] ?? null));
   return (
     <div>
       <input
@@ -230,19 +232,26 @@ export function ImagePicker({
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="grid w-full gap-1.5 rounded-lg border-2 border-dashed border-slate-300 px-4 py-5 text-center text-sm text-slate-600 transition hover:border-orange-400 hover:bg-orange-50/40 hover:text-orange-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
+        {...dragHandlers}
+        className={`grid w-full gap-1.5 rounded-lg border-2 border-dashed px-4 py-5 text-center text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 ${
+          isDragging
+            ? "border-orange-500 bg-orange-50/60 text-orange-800"
+            : "border-slate-300 text-slate-600 hover:border-orange-400 hover:bg-orange-50/40 hover:text-orange-800"
+        }`}
       >
         <span aria-hidden="true" className="text-xl leading-none">🖼️</span>
         {file && image ? (
           <>
             <span className="truncate font-medium text-slate-800">{file.name}</span>
             <span className="text-xs text-slate-500">
-              {image.naturalWidth} × {image.naturalHeight}px · click to change
+              {image.naturalWidth} × {image.naturalHeight}px · click or drop to change
             </span>
           </>
         ) : (
           <>
-            <span className="font-medium text-slate-700">Click to choose an image</span>
+            <span className="font-medium text-slate-700">
+              {isDragging ? "Drop your image here" : "Click or drag an image here"}
+            </span>
             <span className="text-xs text-slate-400">
               Processed in your browser — the image never leaves your device.
             </span>

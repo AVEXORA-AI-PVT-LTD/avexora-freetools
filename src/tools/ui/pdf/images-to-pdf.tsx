@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { downloadBytes, primaryBtn } from "./pdf-shared";
+import { useFileDrop } from "../use-file-drop";
 
 interface Picked {
   file: File;
@@ -17,6 +18,13 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
 
   const accept = format === "jpg" ? "image/jpeg,.jpg,.jpeg" : "image/png,.png";
   const label = format === "jpg" ? "JPG images" : "PNG images";
+
+  const addFiles = (list: FileList | null) => {
+    if (!list) return;
+    const picked = Array.from(list).map((file) => ({ file, id: crypto.randomUUID() }));
+    if (picked.length) setFiles((prev) => [...prev, ...picked]);
+  };
+  const { isDragging, dragHandlers } = useFileDrop(addFiles);
 
   const move = (i: number, dir: -1 | 1) =>
     setFiles((prev) => {
@@ -57,21 +65,22 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
         multiple
         className="hidden"
         onChange={(e) => {
-          const picked = Array.from(e.target.files ?? []).map((file) => ({
-            file,
-            id: crypto.randomUUID(),
-          }));
-          if (picked.length) setFiles((prev) => [...prev, ...picked]);
+          addFiles(e.target.files);
           e.target.value = "";
         }}
       />
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-600 hover:border-orange-400 hover:text-orange-700"
+        {...dragHandlers}
+        className={`w-full rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm transition ${
+          isDragging
+            ? "border-orange-500 bg-orange-50/60 text-orange-800"
+            : "border-slate-300 text-slate-600 hover:border-orange-400 hover:text-orange-700"
+        }`}
       >
         <span className="block text-2xl">🖼️</span>
-        Click to choose {label} (or add more)
+        {isDragging ? `Drop your ${label} here` : `Click or drag ${label} here (or add more)`}
         <span className="mt-1 block text-xs text-slate-400">
           Each image becomes one PDF page, in the order listed. Nothing is uploaded.
         </span>
