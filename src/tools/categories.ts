@@ -3,7 +3,7 @@ import type { CategoryDef, CategorySlug } from "../types/tools";
 export const EBOS_URL =
   process.env.NEXT_PUBLIC_EBOS_URL ?? "https://ebos.avexora.in";
 
-export const SITE_URL = "https://avextools.avexora.in";
+export const SITE_URL = "https://tools.avexora.in";
 export const SITE_NAME = "Avexora Tools";
 
 export const categories: CategoryDef[] = [
