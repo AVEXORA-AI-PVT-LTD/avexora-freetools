@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { primaryBtn, secondaryBtn } from "./pdf-shared";
-import {
-  useAuthDownload,
-  useRestoredDownload,
-} from "@/components/account/use-auth-download";
+import { useRef, useState } from "react";
+import { downloadBytes, primaryBtn } from "./pdf-shared";
+import { useFileDrop } from "../use-file-drop";
 
 interface Picked {
   file: File;
@@ -14,28 +11,20 @@ interface Picked {
 
 /** Shared implementation for jpg-to-pdf and png-to-pdf. */
 function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
-  const { downloadOne } = useAuthDownload();
-  const { restored } = useRestoredDownload();
-  const [resultUrl, setResultUrl] = useState<string | null>(null);
-  const [resultFilename, setResultFilename] = useState<string>("images.pdf");
-  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
-
   const [files, setFiles] = useState<Picked[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!restored) return;
-    queueMicrotask(() => {
-      setResultUrl(URL.createObjectURL(restored.blob));
-      setResultFilename(restored.filename);
-      setResultBlob(restored.blob);
-    });
-  }, [restored]);
-
   const accept = format === "jpg" ? "image/jpeg,.jpg,.jpeg" : "image/png,.png";
   const label = format === "jpg" ? "JPG images" : "PNG images";
+
+  const addFiles = (list: FileList | null) => {
+    if (!list) return;
+    const picked = Array.from(list).map((file) => ({ file, id: crypto.randomUUID() }));
+    if (picked.length) setFiles((prev) => [...prev, ...picked]);
+  };
+  const { isDragging, dragHandlers } = useFileDrop(addFiles);
 
   const move = (i: number, dir: -1 | 1) =>
     setFiles((prev) => {
@@ -59,11 +48,7 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
         const page = doc.addPage([image.width, image.height]);
         page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
       }
-      const bytes = await doc.save();
-      const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
-      setResultUrl(URL.createObjectURL(blob));
-      setResultFilename("images.pdf");
-      setResultBlob(blob);
+      downloadBytes(await doc.save(), "images.pdf");
     } catch {
       setError(`One of the files could not be read as a ${format.toUpperCase()} image.`);
     } finally {
@@ -80,21 +65,22 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
         multiple
         className="hidden"
         onChange={(e) => {
-          const picked = Array.from(e.target.files ?? []).map((file) => ({
-            file,
-            id: crypto.randomUUID(),
-          }));
-          if (picked.length) setFiles((prev) => [...prev, ...picked]);
+          addFiles(e.target.files);
           e.target.value = "";
         }}
       />
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="w-full rounded-lg border-2 border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-600 hover:border-orange-400 hover:text-orange-700"
+        {...dragHandlers}
+        className={`w-full rounded-lg border-2 border-dashed px-4 py-8 text-center text-sm transition ${
+          isDragging
+            ? "border-orange-500 bg-orange-50/60 text-orange-800"
+            : "border-slate-300 text-slate-600 hover:border-orange-400 hover:text-orange-700"
+        }`}
       >
         <span className="block text-2xl">🖼️</span>
-        Click to choose {label} (or add more)
+        {isDragging ? `Drop your ${label} here` : `Click or drag ${label} here (or add more)`}
         <span className="mt-1 block text-xs text-slate-400">
           Each image becomes one PDF page, in the order listed. Nothing is uploaded.
         </span>
@@ -117,36 +103,9 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
         </ul>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {!resultUrl ? (
-        <button type="button" onClick={convert} disabled={files.length === 0 || busy} className={primaryBtn}>
-          {busy ? "Converting…" : `Convert ${files.length || ""} image${files.length === 1 ? "" : "s"} to PDF`}
-        </button>
-      ) : (
-        <div className="space-y-2">
-          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
-            PDF ready — review it, then download.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            {resultUrl && resultBlob && (
-              <button
-                type="button"
-                onClick={() => void downloadOne(resultBlob, resultFilename)}
-                className={primaryBtn}
-                data-lead-action="download"
-              >
-                Download PDF
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => { setFiles([]); setResultUrl(null); setResultBlob(null); }}
-              className={secondaryBtn}
-            >
-              Start over
-            </button>
-          </div>
-        </div>
-      )}
+      <button type="button" onClick={convert} disabled={files.length === 0 || busy} className={primaryBtn} data-lead-action="download">
+        {busy ? "Converting…" : `Convert ${files.length || ""} image${files.length === 1 ? "" : "s"} to PDF`}
+      </button>
     </div>
   );
 }

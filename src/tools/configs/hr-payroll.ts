@@ -11,23 +11,17 @@ import { generatePayslip } from "../compute/hr/payslip";
 import { generateOfferLetter } from "../compute/hr/offer-letter";
 import { generateAppointmentLetter } from "../compute/hr/appointment-letter";
 import { generateExperienceLetter } from "../compute/hr/experience-letter";
+import { generateResume } from "../compute/hr/resume";
 
 export const tools: ToolConfig[] = [
   {
     kind: "calculator",
     slug: "salary-calculator",
     category: "hr-payroll",
-    priority: 1,
     name: "In-Hand Salary Calculator",
     tagline: "See your monthly take-home pay from your annual CTC.",
     seoDescription:
       "Free in-hand salary calculator. Enter your annual CTC to get monthly take-home pay, PF deduction and income tax under the new regime (FY 2025-26).",
-    directAnswer:
-      "An in-hand salary calculator that converts your annual CTC into monthly take-home pay — it subtracts the employer's non-cash benefits, your PF contribution, professional tax and income tax to show what actually lands in your account each month.",
-    formula:
-      "In-hand = CTC − employer's non-cash benefits (PF, insurance) − employee PF (12% of basic) − professional tax − income tax (new regime, FY 2025-26, with ₹75,000 standard deduction and §87A rebate). Assumes basic = 40% of CTC.",
-    example:
-      "Example: a ₹12,00,000 annual CTC with 40% basic and ₹200/month professional tax → monthly in-hand ₹90,200 (annual ₹10,82,400), with ₹4,800/month going to employee PF and zero income tax under the new regime.",
     fields: [
       { name: "annualCtc", label: "Annual CTC", type: "number", placeholder: "1200000", min: 0, unit: "₹" },
       { name: "basicPercent", label: "Basic salary (% of CTC)", type: "number", defaultValue: 40, min: 1, max: 100, unit: "%" },
@@ -37,8 +31,8 @@ export const tools: ToolConfig[] = [
     compute: computeSalary,
     autoCompute: true,
     about: [
-      "The CTC on your offer letter is never the number that lands in your bank account, and the gap between the two catches almost everyone by surprise on their first payslip. Cost-to-company bundles in the employer's PF contribution, insurance and other benefits that you never actually see as cash; from what's left, your own PF contribution, professional tax and income tax are deducted before the rest reaches you monthly. This calculator walks that whole chain for you.",
-      "The estimate uses common defaults you can adjust: basic salary at 40% of CTC (a widely used structuring norm), employee and employer PF each at 12% of basic, and income tax computed under the new regime for FY 2025-26 — nil up to ₹4 lakh, rising through 5/10/15/20/25% slabs to 30% above ₹24 lakh, with the §87A rebate zeroing out tax for taxable income up to ₹12 lakh and a ₹75,000 standard deduction applied automatically. Real payslips vary — some companies use a different basic percentage, add HRA and special allowance lines, or offer the old tax regime — so treat this as a close, well-reasoned estimate rather than a payroll-exact figure. If you're on the old regime, combine it with the [income tax calculator](/finance-calculators/income-tax-calculator) and the [HRA exemption calculator](/hr-payroll/hra-exemption-calculator) for the full picture.",
+      "In-hand salary is what's left of your CTC after the employer's PF contribution, insurance and other non-cash benefits are stripped out and your own PF contribution, professional tax and income tax are deducted — the number that actually lands in your bank account each month. That gap between CTC and take-home catches almost everyone by surprise on their first payslip. This calculator walks that whole chain for you.",
+      "The estimate uses common defaults you can adjust: basic salary at 40% of CTC (a widely used structuring norm), employee and employer PF each at 12% of basic, and income tax computed under the new regime for FY 2025-26 — nil up to ₹4 lakh, rising through 5/10/15/20/25% slabs to 30% above ₹24 lakh, with the §87A rebate zeroing out tax for taxable income up to ₹12 lakh and a ₹75,000 standard deduction applied automatically. Real payslips vary — some companies use a different basic percentage, add HRA and special allowance lines, or offer the old tax regime — so treat this as a close, well-reasoned estimate rather than a payroll-exact figure.",
       "Use it while negotiating an offer to translate a CTC number into what you'll actually bank each month, or to sanity-check your own payslip against the standard structure. If your real basic percentage or professional tax differs, adjust the fields — the effect on your in-hand pay is immediate and visible.",
     ],
     faq: [
@@ -62,11 +56,6 @@ export const tools: ToolConfig[] = [
         answer:
           "A small state-levied tax on salaried income, typically ₹200/month in most states (with a lower amount in one month in some states), capped by state law. It varies by state and is deducted directly from your salary.",
       },
-      {
-        question: "Can I use this to calculate my salary under the old tax regime?",
-        answer:
-          "This calculator uses the new tax regime by default. If you need to estimate your take-home pay under the old regime, you'll want to calculate your tax separately using the income tax calculator and subtract it from your gross salary.",
-      },
     ],
     related: ["income-tax-calculator", "hra-exemption-calculator", "pf-calculator", "payslip-generator"],
   },
@@ -74,17 +63,10 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "gratuity-calculator",
     category: "hr-payroll",
-    priority: 8,
     name: "Gratuity Calculator",
     tagline: "Calculate gratuity payable under the Payment of Gratuity Act.",
     seoDescription:
       "Free gratuity calculator for India. Enter your last drawn salary and years of service to calculate gratuity payable under the Payment of Gratuity Act, 1972.",
-    directAnswer:
-      "A gratuity calculator that works out the statutory gratuity payable under the Payment of Gratuity Act, 1972 — 15 days' wages for every completed year of service (with 6-month rounding), capped at ₹20 lakh.",
-    formula:
-      "Gratuity = (15 × last drawn monthly salary × years of service) ÷ 26. Service beyond 6 months in the final year rounds up to a full year; total is capped at ₹20 lakh.",
-    example:
-      "Example: a last drawn monthly salary of ₹50,000 and 8 years of service → 15-day rate of ₹28,846.15 per year → gratuity payable ₹2,30,769.23.",
     fields: [
       { name: "monthlySalary", label: "Last drawn monthly salary (basic + DA)", type: "number", placeholder: "50000", min: 0, unit: "₹" },
       { name: "yearsOfService", label: "Years of service", type: "number", placeholder: "8", min: 0, max: 50, step: 0.1 },
@@ -94,7 +76,7 @@ export const tools: ToolConfig[] = [
     about: [
       "Gratuity is a lump-sum thank-you an employer owes an employee who has stayed at least five years — a statutory right under the Payment of Gratuity Act, 1972, not a discretionary bonus. It's paid on resignation, retirement, termination (other than for misconduct) or death, and the formula is fixed by law: 15 days' wages for every completed year of service, calculated on your last drawn basic salary plus dearness allowance.",
       "The exact formula is (15 × last drawn monthly salary × years of service) ÷ 26 — the 26 representing working days in a month, so it's really 15/26ths of a month's salary per year served. Service beyond six months in your final year rounds up to a full year: 8 years and 7 months counts as 9 years for this calculation, while 8 years and 4 months counts as 8. The law also caps total gratuity at ₹20 lakh regardless of the formula's output — a limit that mainly bites senior employees with long tenure and high salaries.",
-      "Eligibility requires five years of continuous service (this requirement is waived on death or disablement). Below that threshold, no gratuity is payable however good your service was — a rule you should know before resigning just short of your fifth anniversary. Note that gratuity received on retirement is tax-exempt up to ₹20 lakh for private-sector employees; the [income tax calculator](/finance-calculators/income-tax-calculator) shows how exempt statutory benefits like this fit into your overall tax picture — consult a tax advisor for your specific situation.",
+      "Eligibility requires five years of continuous service (this requirement is waived on death or disablement). Below that threshold, no gratuity is payable however good your service was — a rule you should know before resigning just short of your fifth anniversary. Note that gratuity received on retirement is tax-exempt up to ₹20 lakh for private-sector employees; consult a tax advisor for your specific situation.",
     ],
     faq: [
       {
@@ -117,11 +99,6 @@ export const tools: ToolConfig[] = [
         answer:
           "For private-sector employees covered by the Act, gratuity is tax-exempt up to ₹20 lakh (the same statutory cap). Amounts above that, or for employees not covered by the Act, follow different exemption rules.",
       },
-      {
-        question: "What components of my salary are used for this calculation?",
-        answer:
-          "Gratuity calculation is strictly based on your last drawn basic salary plus dearness allowance (DA). Other allowances like HRA, special allowance, or transport allowance are completely excluded from the math.",
-      },
     ],
     related: ["salary-calculator", "leave-encashment-calculator", "pf-calculator", "experience-letter-generator"],
   },
@@ -129,17 +106,10 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "pf-calculator",
     category: "hr-payroll",
-    priority: 6,
     name: "EPF Calculator",
     tagline: "Project your Employees' Provident Fund corpus at retirement.",
     seoDescription:
       "Free EPF calculator. Project your Provident Fund corpus at retirement based on your basic salary, contribution rate, salary growth and EPF interest rate.",
-    directAnswer:
-      "An EPF calculator that projects your Employees' Provident Fund corpus at retirement — it compounds your 12% contribution plus the employer's effective 3.67% into EPF monthly, stepping the basic salary up by your expected annual raise.",
-    formula:
-      "Monthly EPF inflow = 12% (employee) + 3.67% (employer's 12% after 8.33% diverted to EPS) × basic salary, compounded monthly at the EPFO rate. Corpus = accumulated principal + monthly compounding to retirement age, with salary growing annually at the raise %.",
-    example:
-      "Example: ₹30,000 basic salary at age 28, retiring at 58 with 5% annual salary growth and an 8.25% EPF rate → projected EPF corpus ₹37,11,440.69 on total contributions of ₹8,46,180, i.e. ₹28,65,260.69 in interest.",
     fields: [
       { name: "currentAge", label: "Current age", type: "number", placeholder: "28", min: 18, max: 60 },
       { name: "retirementAge", label: "Retirement age", type: "number", defaultValue: 58, min: 19, max: 60 },
@@ -151,13 +121,13 @@ export const tools: ToolConfig[] = [
     compute: computePf,
     autoCompute: true,
     about: [
-      "The Employees' Provident Fund is the default retirement savings vehicle for salaried India, and because contributions are automatic and invisible in the monthly payslip, most people never actually project what it will become. That's a shame — EPF is quietly one of the better-performing, government-backed instruments available, and seeing the compounding at work is motivating on its own.",
-      "The mechanics: you contribute 12% of your basic salary every month, matched by your employer's 12% — except of the employer's share, 8.33% is diverted to the Employees' Pension Scheme (EPS) rather than your EPF account, so only 3.67% of the employer's contribution actually reaches your PF balance. Combined with your own 12%, that's 15.67% of basic flowing into EPF each month, compounding monthly at the interest rate the EPFO announces annually (recently around 8.25%). If you're still working out how much of your CTC actually lands in your account, the [in-hand salary calculator](/hr-payroll/salary-calculator) walks through the full chain.",
+      "The Employees' Provident Fund (EPF) is India's default, government-backed retirement savings scheme for salaried employees, funded by automatic monthly contributions from both employee and employer. Because those contributions are invisible in the monthly payslip, most people never actually project what the fund will become — a shame, since EPF is quietly one of the better-performing instruments available and seeing the compounding at work is motivating on its own.",
+      "The mechanics: you contribute 12% of your basic salary every month, matched by your employer's 12% — except of the employer's share, 8.33% is diverted to the Employees' Pension Scheme (EPS) rather than your EPF account, so only 3.67% of the employer's contribution actually reaches your PF balance. Combined with your own 12%, that's 15.67% of basic flowing into EPF each month, compounding monthly at the interest rate the EPFO announces annually (recently around 8.25%).",
       "This calculator projects your corpus to retirement, stepping your basic salary up each year by your expected raise percentage and compounding contributions monthly. Two levers matter most for the final number: starting early (the compounding has more years to work) and your basic salary's actual growth rate, which most people underestimate over a full career. Note that EPF withdrawal before 5 years of continuous service is taxable, and partial withdrawals for specific purposes (medical, housing, marriage) are permitted under EPFO rules but aren't modelled here.",
     ],
     faq: [
       {
-        question: "Why does only 3.67% of the employer's contribution go to my EPF, not 12%",
+        question: "Why does only 3.67% of the employer's contribution go to my EPF, not 12%?",
         answer:
           "Of the employer's 12% of basic, 8.33% is mandatorily diverted to the Employees' Pension Scheme (EPS), which pays a monthly pension after retirement rather than a lump sum. Only the remaining 3.67% adds to your EPF balance.",
       },
@@ -171,16 +141,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Partial withdrawals are allowed for specific purposes (housing, medical treatment, marriage, education) after certain service milestones, and the full balance can be withdrawn 2 months after leaving employment (with conditions). This calculator projects the full-tenure corpus assuming no withdrawals.",
       },
-      {
-        question: "Is the interest earned on my EPF account taxable?",
-        answer:
-          "Interest earned on employee contributions up to ₹2.5 lakh per financial year is tax-free. If your own contribution exceeds ₹2.5 lakh in a year, the interest earned on the excess amount is taxable at your marginal slab rate.",
-      },
-      {
-        question: "What happens if I change jobs?",
-        answer:
-          "Your EPF account can (and should) be transferred to your new employer using your UAN (Universal Account Number). The compounding continues seamlessly, and the transfer process is now mostly automated through the EPFO portal.",
-      },
     ],
     related: ["salary-calculator", "gratuity-calculator", "sip-calculator", "working-capital-calculator"],
   },
@@ -188,17 +148,10 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "hra-exemption-calculator",
     category: "hr-payroll",
-    priority: 7,
     name: "HRA Exemption Calculator",
     tagline: "Work out how much of your House Rent Allowance is tax-exempt.",
     seoDescription:
       "Free HRA exemption calculator. Enter basic salary, HRA received and rent paid to calculate your tax-exempt HRA under the old tax regime — metro and non-metro.",
-    directAnswer:
-      "An HRA exemption calculator that finds your tax-exempt House Rent Allowance under the old regime — the smallest of actual HRA, rent minus 10% of basic, and 50% (metro) or 40% (non-metro) of basic.",
-    formula:
-      "Exempt HRA = the smallest of: (1) actual HRA received, (2) annual rent − 10% of basic salary, (3) 50% of basic (Delhi, Mumbai, Kolkata, Chennai) or 40% of basic otherwise.",
-    example:
-      "Example: basic ₹6,00,000, HRA received ₹2,40,000, rent ₹3,00,000 in a non-metro city → the binding figure is rent − 10% of basic = ₹3,00,000 − ₹60,000 = ₹2,40,000 (also the 40% cap), so the entire HRA of ₹2,40,000 is exempt.",
     fields: [
       { name: "basicSalary", label: "Annual basic salary", type: "number", placeholder: "600000", min: 0, unit: "₹" },
       { name: "hraReceived", label: "Annual HRA received", type: "number", placeholder: "240000", min: 0, unit: "₹" },
@@ -208,9 +161,9 @@ export const tools: ToolConfig[] = [
     compute: computeHra,
     autoCompute: true,
     about: [
-      "House Rent Allowance exemption is one of the largest tax breaks available to salaried tenants under the old tax regime — and one of the most confusing, because it isn't simply \"HRA received is tax-free.\" The exempt amount is the smallest of three separate figures, and most people have never seen all three laid out side by side to understand which one actually binds.",
+      "HRA exemption is the smallest of three separate figures, not simply \"HRA received is tax-free\" — and most people have never seen all three laid out side by side to understand which one actually binds. It's one of the largest tax breaks available to salaried tenants under the old tax regime, and also one of the most confusing.",
       "The three figures: the actual HRA your employer pays you, your annual rent minus 10% of your basic salary (rent below that 10% threshold gives zero exemption — the law assumes you'd pay some rent regardless of any allowance), and 50% of basic salary if you live in a metro (Delhi, Mumbai, Kolkata, Chennai) or 40% elsewhere. Whichever of the three is smallest is what you can claim exempt; the rest of your HRA becomes taxable income. This calculator computes and displays all three so you see exactly which constraint is binding for you.",
-      "Two situations trip people up. If you own your home (or live with parents rent-free) and don't pay rent, you can't claim any HRA exemption regardless of the allowance in your salary structure. And this exemption only applies under the old tax regime — the new regime (now the default) offers no HRA exemption at all, so factor that into your regime choice by comparing both in the [income tax calculator](/finance-calculators/income-tax-calculator) and checking your total old-regime deductions. Keep rent receipts and, for annual rent above ₹1 lakh, your landlord's PAN — your employer will ask for both to process the exemption.",
+      "Two situations trip people up. If you own your home (or live with parents rent-free) and don't pay rent, you can't claim any HRA exemption regardless of the allowance in your salary structure. And this exemption only applies under the old tax regime — the new regime (now the default) offers no HRA exemption at all, so factor that into your regime choice with the income tax calculator. Keep rent receipts and, for annual rent above ₹1 lakh, your landlord's PAN — your employer will ask for both to process the exemption.",
     ],
     faq: [
       {
@@ -233,11 +186,6 @@ export const tools: ToolConfig[] = [
         answer:
           "No — HRA exemption requires you to actually pay rent for accommodation you occupy. Homeowners cannot claim this exemption, though they may claim home loan interest deductions instead.",
       },
-      {
-        question: "Can I claim HRA if I pay rent to my parents?",
-        answer:
-          "Yes, you can claim HRA by paying rent to your parents, provided they own the property and you actually transfer the rent to them. They will need to declare this rental income in their own tax returns.",
-      },
     ],
     related: ["salary-calculator", "income-tax-calculator", "leave-encashment-calculator", "rent-agreement-generator"],
   },
@@ -245,17 +193,10 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "leave-encashment-calculator",
     category: "hr-payroll",
-    priority: 10,
     name: "Leave Encashment Calculator",
     tagline: "Calculate the cash value of your unused earned leave.",
     seoDescription:
       "Free leave encashment calculator. Enter your monthly salary and earned leave days to calculate the cash amount payable for unused leave.",
-    directAnswer:
-      "A leave encashment calculator that converts unused earned-leave days into cash using the per-day rate of your monthly salary (basic + DA) divided by 30.",
-    formula:
-      "Per-day rate = monthly salary (basic + DA) ÷ 30. Encashment = per-day rate × earned leave days encashed.",
-    example:
-      "Example: monthly salary ₹50,000 and 15 unused leave days → per-day rate ₹1,666.67 → leave encashment ₹25,000.",
     fields: [
       { name: "monthlySalary", label: "Monthly salary (basic + DA)", type: "number", placeholder: "50000", min: 0, unit: "₹" },
       { name: "leaveDays", label: "Earned leave days to encash", type: "number", placeholder: "15", min: 0, max: 365 },
@@ -263,7 +204,7 @@ export const tools: ToolConfig[] = [
     compute: computeLeaveEncashment,
     autoCompute: true,
     about: [
-      "Most companies let earned leave accumulate and let you convert unused days to cash — commonly at resignation, retirement, or through an annual encashment window many employers offer for leave beyond a certain balance. The math is simple once you know the rate: your monthly salary divided by 30 gives a per-day rate, multiplied by the number of days encashed.",
+      "Leave encashment pays your monthly salary divided by 30 — a per-day rate — multiplied by the number of unused earned leave days you encash. Most companies let this leave accumulate and convert to cash on that basis, commonly at resignation, retirement, or through an annual encashment window many employers offer for leave beyond a certain balance.",
       "This calculator applies exactly that formula to your basic salary plus dearness allowance (the components leave encashment is typically based on — check your company's policy, as some also include other fixed allowances). The result is a straightforward per-day rate times days, useful for estimating what a resignation payout will include or deciding whether to encash accumulated leave now versus carrying it forward.",
       "Tax treatment differs by circumstance and matters for planning: leave encashment received during employment (an annual encashment scheme) is fully taxable as salary income. At retirement or resignation, however, non-government employees get an exemption up to ₹25 lakh (a limit revised upward in recent years) on encashment received at that time, subject to conditions in the Income Tax Act — government employees get full exemption. Factor the tax treatment into whether encashing now or later suits your situation better.",
     ],
@@ -283,16 +224,6 @@ export const tools: ToolConfig[] = [
         answer:
           "That depends entirely on your company's leave policy — some cap encashable leave at a fixed number of days per year, others allow encashing the full accumulated balance at exit. Check your employment contract or HR policy.",
       },
-      {
-        question: "Can I encash sick leave or casual leave?",
-        answer:
-          "Usually no. Most employers only allow encashment of earned leave (often called privilege leave). Sick leave and casual leave typically lapse at the end of the year if unused.",
-      },
-      {
-        question: "Why divide by 30 instead of the actual days in the month?",
-        answer:
-          "Dividing by 30 is the standard statutory and payroll convention for calculating the per-day rate for leave encashment, regardless of whether the month has 28, 29, or 31 days.",
-      },
     ],
     related: ["gratuity-calculator", "salary-calculator", "notice-period-recovery-calculator", "experience-letter-generator"],
   },
@@ -300,17 +231,10 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "bonus-calculator",
     category: "hr-payroll",
-    priority: 11,
     name: "Statutory Bonus Calculator",
     tagline: "Calculate the statutory bonus payable under the Payment of Bonus Act.",
     seoDescription:
       "Free statutory bonus calculator for India. Enter your salary, bonus rate and months worked to calculate the bonus payable under the Payment of Bonus Act, 1965.",
-    directAnswer:
-      "A statutory bonus calculator that works out the bonus payable under the Payment of Bonus Act, 1965 — 8.33% to 20% of a salary capped at ₹7,000/month, pro-rated for months worked.",
-    formula:
-      "Bonus = bonus rate × (salary capped at ₹7,000/month or state minimum wage) × (months worked ÷ 12). Eligible salaries up to ₹21,000/month; minimum rate 8.33%, maximum 20%.",
-    example:
-      "Example: ₹15,000/month salary at the 8.33% minimum for a full year → calculation salary capped at ₹7,000 → bonus = 8.33% × 7,000 × 12 ÷ 12 = ₹6,997.20.",
     fields: [
       { name: "monthlySalary", label: "Monthly salary (basic + DA)", type: "number", placeholder: "15000", min: 0, unit: "₹" },
       { name: "bonusRate", label: "Bonus rate", type: "number", defaultValue: 8.33, min: 8.33, max: 20, step: 0.01, unit: "%" },
@@ -339,16 +263,6 @@ export const tools: ToolConfig[] = [
         answer:
           "8.33% is the statutory minimum every eligible employee must receive regardless of company performance. Up to 20% may be paid depending on the company's \"allocable surplus\" (profit-linked formula) under the Act — the actual rate is usually announced by the employer for the accounting year.",
       },
-      {
-        question: "When should the statutory bonus be paid?",
-        answer:
-          "The bonus must legally be paid within 8 months from the close of the accounting year. For companies following the April-March financial year, the deadline is usually November 30.",
-      },
-      {
-        question: "Is performance bonus the same as statutory bonus?",
-        answer:
-          "No. Statutory bonus is a legal mandate under the Payment of Bonus Act for eligible employees based on company profits. A performance bonus is entirely discretionary, paid based on individual or team performance targets.",
-      },
     ],
     related: ["salary-calculator", "overtime-calculator", "leave-encashment-calculator", "payslip-generator"],
   },
@@ -356,17 +270,10 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "overtime-calculator",
     category: "hr-payroll",
-    priority: 12,
     name: "Overtime Pay Calculator",
     tagline: "Calculate overtime pay at the statutory double-rate.",
     seoDescription:
       "Free overtime pay calculator for India. Enter monthly wages, daily working hours and overtime hours to calculate overtime pay at the statutory double rate.",
-    directAnswer:
-      "An overtime calculator that works out statutory overtime pay — hours worked beyond the normal working day are paid at twice the ordinary hourly rate under Indian labour law.",
-    formula:
-      "Ordinary hourly rate = (monthly wages ÷ 26 working days) ÷ normal daily hours. Overtime pay = ordinary hourly rate × 2 × overtime hours.",
-    example:
-      "Example: ₹20,000 monthly wages, 8-hour day and 10 overtime hours → hourly rate ₹96.15, double rate ₹192.31 → overtime pay ₹1,923.08.",
     fields: [
       { name: "monthlyWages", label: "Monthly wages", type: "number", placeholder: "20000", min: 0, unit: "₹" },
       { name: "dailyHours", label: "Normal daily working hours", type: "number", defaultValue: 8, min: 1, max: 24 },
@@ -375,7 +282,7 @@ export const tools: ToolConfig[] = [
     compute: computeOvertime,
     autoCompute: true,
     about: [
-      "Overtime pay in India is governed by laws like the Factories Act, 1948 (and analogous state Shops & Establishments Acts) which mandate that hours worked beyond the normal working day be paid at twice the ordinary rate of wages — not time-and-a-half as in some other countries, but double. This calculator applies that statutory multiplier to your actual wages.",
+      "Overtime pay in India is legally double the ordinary wage rate for hours worked beyond the normal working day — not time-and-a-half as in some other countries, but double — mandated under laws like the Factories Act, 1948 and analogous state Shops & Establishments Acts. This calculator applies that statutory multiplier to your actual wages.",
       "The calculation works backward from your monthly wages to an hourly rate, using 26 as the standard divisor for working days in a month (accounting for weekly offs), then dividing by your normal daily working hours to get an ordinary hourly rate. Overtime hours are paid at exactly twice that hourly rate — the statutory floor that applies to workers covered under these Acts, regardless of what a company's informal overtime policy might otherwise offer.",
       "Coverage varies: the Factories Act applies to factory workers, and many white-collar or managerial roles may be exempt from statutory overtime provisions depending on their state's Shops & Establishments Act and the nature of the role. If you're unsure whether your role is covered, check your state's applicable Act or your employment contract — but where the law applies, double-rate overtime is a floor employers cannot legally pay below.",
     ],
@@ -395,16 +302,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Coverage depends on the applicable Act (Factories Act for factory workers, state Shops & Establishments Acts for others) and often excludes managerial or supervisory roles. Check your state's specific law or employment contract if you're unsure of your coverage.",
       },
-      {
-        question: "What components of my salary count towards the 'ordinary wage rate'?",
-        answer:
-          "Usually, basic salary and dearness allowance (DA) form the ordinary wage rate for overtime calculation. Other allowances are typically excluded, though state-specific laws may have slight variations.",
-      },
-      {
-        question: "Is there a maximum limit on overtime hours?",
-        answer:
-          "Yes, laws restrict maximum working hours (e.g., usually not more than 60 hours a week including overtime, and quarterly limits on total overtime hours) to prevent exploitation and ensure worker health.",
-      },
     ],
     related: ["salary-calculator", "bonus-calculator", "notice-period-recovery-calculator", "payslip-generator"],
   },
@@ -412,17 +309,10 @@ export const tools: ToolConfig[] = [
     kind: "calculator",
     slug: "notice-period-recovery-calculator",
     category: "hr-payroll",
-    priority: 9,
     name: "Notice Period Recovery Calculator",
     tagline: "Calculate the salary recovery for notice period shortfall.",
     seoDescription:
       "Free notice period recovery calculator. Enter your salary, required notice period and days actually served to calculate the recovery amount for a shortfall.",
-    directAnswer:
-      "A notice period recovery calculator that computes the amount an employer can recover when an employee serves fewer notice days than their contract requires — the mirror image of leave encashment.",
-    formula:
-      "Per-day rate = monthly gross salary ÷ 30. Recovery = per-day rate × shortfall days, where shortfall = required notice days − days actually served. Zero if full notice is served.",
-    example:
-      "Example: ₹60,000 monthly salary, 60-day notice period, but only 30 days served → per-day rate ₹2,000 × 30 shortfall days → recovery ₹60,000.",
     fields: [
       { name: "monthlySalary", label: "Monthly gross salary", type: "number", placeholder: "60000", min: 0, unit: "₹" },
       { name: "requiredDays", label: "Notice period required (days)", type: "number", defaultValue: 60, min: 1, max: 180 },
@@ -431,7 +321,7 @@ export const tools: ToolConfig[] = [
     compute: computeNoticePeriodRecovery,
     autoCompute: true,
     about: [
-      "Most Indian employment contracts specify a notice period — commonly 30, 60 or 90 days — that either party must give before ending employment. Leave earlier than that (with your employer's approval to buy out the balance, or without it, depending on your contract) and the company typically recovers salary equivalent to the shortfall from your final settlement, often called \"notice pay recovery\" or \"buyout amount.\"",
+      "Notice period recovery — also called \"notice pay recovery\" or \"buyout amount\" — is the salary a company deducts from your final settlement equal to the shortfall between the notice period your contract requires and the days you actually served. Most Indian employment contracts specify a notice period, commonly 30, 60 or 90 days, that either party must give before ending employment; leaving earlier, with or without your employer's approval depending on the contract, triggers this recovery.",
       "The calculation is straightforward: your monthly salary divided by 30 gives a per-day rate, multiplied by the shortfall in days — the gap between what your contract requires and what you actually served. If you served the full required notice, there's no shortfall and no recovery; the calculator correctly shows zero rather than an error in that case.",
       "This is exactly the mirror image of the leave encashment calculation, just working in the opposite direction — money the company owes you for unused leave versus money you owe the company for unserved notice. Whether an employer can actually enforce recovery, and how it's structured (deducted from final salary vs. a separate demand), depends on your specific contract terms; some employers waive the recovery for a smooth transition or accept a shorter notice by mutual agreement.",
     ],
@@ -451,16 +341,6 @@ export const tools: ToolConfig[] = [
         answer:
           "There's no recovery — the calculator returns zero for the recovery amount since there's no shortfall to recover.",
       },
-      {
-        question: "Is notice pay recovery deducted from gross or net salary?",
-        answer:
-          "Usually, notice pay recovery is calculated on the gross or basic salary (depending on the contract terms) and deducted from your full and final settlement before taxes are finalized.",
-      },
-      {
-        question: "Can I adjust my unused leave against the notice period?",
-        answer:
-          "Often, yes. Many companies allow you to adjust accumulated earned leave against the notice period shortfall, reducing or eliminating the recovery amount. This depends on company policy and manager approval.",
-      },
     ],
     related: ["salary-calculator", "leave-encashment-calculator", "experience-letter-generator", "appointment-letter-generator"],
   },
@@ -468,24 +348,10 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "payslip-generator",
     category: "hr-payroll",
-    priority: 2,
     name: "Payslip Generator",
     tagline: "Create a clean, itemised payslip in seconds.",
     seoDescription:
       "Free payslip generator. Enter earnings and deductions to generate a clean, itemised payslip with automatic net pay calculation — download as a text file.",
-    directAnswer:
-      "A payslip generator that builds a clean, itemised payslip from the numbers you enter — earnings, deductions and automatically computed net pay — ready to download as a text file or print to PDF from your browser.",
-    formula:
-      "Net Pay = Total Earnings (Basic + HRA + Special Allowance + Other Allowances) − Total Deductions (PF + Professional Tax + Other Deductions).",
-    example:
-      "Example: Earnings of Basic ₹30,000, HRA ₹12,000, Special ₹8,000 minus Deductions of PF ₹3,600 and PT ₹200 → Net Pay is automatically computed as ₹46,200.",
-    steps: [
-      "Enter the company name, employee name, designation and payslip month.",
-      "Fill in the earnings: basic salary, house rent allowance, special allowance and any other allowances.",
-      "Fill in the deductions: PF, professional tax and any other deductions.",
-      "Click Generate payslip — net pay is computed automatically.",
-      "Download the payslip as a text file or print the page to PDF when a formal copy is needed.",
-    ],
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "employeeName", label: "Employee name", type: "text", placeholder: "Priya Sharma" },
@@ -501,7 +367,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePayslip,
     submitLabel: "Generate payslip",
-    requireAuth: true,
+    emailGate: true,
     about: [
       "A payslip is a simple document that carries real weight: employees need it for loan applications, visa processing, rental agreements and their own tax filing, and small businesses without a full payroll system often need a fast, professional way to produce one every month without spreadsheet gymnastics. This generator builds a clean, itemised payslip from the numbers you enter — earnings section, deductions section, and net pay computed automatically so it's never wrong by hand-arithmetic mistake.",
       "The structure follows what every payslip needs: basic salary, HRA and special allowance broken out (plus optional other allowances), followed by PF deduction, professional tax and any other deductions, with the total earnings, total deductions and net pay clearly labelled. It's formatted as plain, aligned text — readable on any device, easy to paste into an email, and simple to convert to PDF via your browser's print function if you need a more formal document.",
@@ -523,16 +389,6 @@ export const tools: ToolConfig[] = [
         answer:
           "No — the payslip is generated entirely in your browser and is not stored on our servers. It exists only until you download or close the page.",
       },
-      {
-        question: "How do I print this nicely?",
-        answer:
-          "Once generated, you can use your browser's Print dialog (Ctrl+P or Cmd+P) and select 'Save as PDF'. The layout is optimized to print clearly without background clutter.",
-      },
-      {
-        question: "Does this calculate my taxes automatically?",
-        answer:
-          "No, this generator simply structures the numbers you provide into a formal payslip document. You need to manually enter the correct tax and PF deduction amounts.",
-      },
     ],
     related: ["salary-calculator", "offer-letter-generator", "appointment-letter-generator", "invoice-generator"],
   },
@@ -540,22 +396,10 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "offer-letter-generator",
     category: "hr-payroll",
-    priority: 3,
     name: "Offer Letter Generator",
     tagline: "Create a professional job offer letter in minutes.",
     seoDescription:
       "Free offer letter generator. Enter the position, CTC and joining date to create a professional job offer letter with standard clauses — ready to send.",
-    directAnswer:
-      "An offer letter generator that produces a complete, professional job offer letter from a handful of fields — position, compensation as annual CTC, joining date, probation and confidentiality clauses — ready to send to a candidate.",
-    example:
-      "Example: Enter 'Rahul Verma', 'Product Manager', CTC '1500000', and joining date '15 June 2026' → generates a formal document detailing the role, 6-month probation, and acceptance terms.",
-    steps: [
-      "Enter the company name, candidate name and designation.",
-      "Enter the annual CTC, proposed joining date and work location.",
-      "Optionally add the reporting manager's name.",
-      "Click Generate offer letter to build the full letter with standard clauses.",
-      "Review the output, then copy or download it to send to the candidate for acceptance.",
-    ],
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "candidateName", label: "Candidate name", type: "text", placeholder: "Rahul Verma" },
@@ -567,7 +411,15 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateOfferLetter,
     submitLabel: "Generate offer letter",
-    requireAuth: true,
+    emailGate: true,
+    howTo: {
+      name: "How to create an offer letter",
+      steps: [
+        { name: "Enter role and compensation", text: "Add the company name, candidate name, designation, annual CTC and proposed joining date." },
+        { name: "Add location and reporting details", text: "Enter the work location and, optionally, the reporting manager." },
+        { name: "Generate and send", text: "Copy or download the finished offer letter to send to the candidate." },
+      ],
+    },
     about: [
       "The offer letter is the first formal document a candidate receives from your company, and its tone and clarity set expectations for the whole relationship ahead. Writing one from scratch means remembering every standard clause — position, compensation, joining date, probation, confidentiality, acceptance — and getting the legal-sounding parts phrased correctly. This generator produces a complete, professional offer letter from a handful of fields.",
       "The output covers the clauses every Indian offer letter should include: the position and location (with a note that the company may require work at other locations, standard flexibility language), compensation stated as annual CTC with a note that a detailed break-up follows in the appointment letter, the proposed joining date with a list of documents to bring, a standard six-month probation period, a confidentiality clause, and a clear acceptance section for the candidate to sign. If you name a reporting manager, that's woven in naturally.",
@@ -589,16 +441,6 @@ export const tools: ToolConfig[] = [
         answer:
           "The generated letter covers standard terms; copy the text into a document editor to add clauses specific to your company — non-compete terms, relocation assistance, sign-on bonus, or anything your legal team requires.",
       },
-      {
-        question: "Should I include a salary breakup in the offer letter?",
-        answer:
-          "It's standard practice to state the total annual CTC in the offer letter and mention that the detailed monthly breakup will be provided in the appointment letter. However, if the candidate requests it, you can attach an annexure with the breakup.",
-      },
-      {
-        question: "How long should I give a candidate to accept the offer?",
-        answer:
-          "Usually, employers give candidates 2 to 5 working days to sign and return the offer letter. The generated letter includes a standard clause asking for acceptance by a specific date.",
-      },
     ],
     related: ["appointment-letter-generator", "experience-letter-generator", "payslip-generator", "salary-calculator"],
   },
@@ -606,22 +448,10 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "appointment-letter-generator",
     category: "hr-payroll",
-    priority: 4,
     name: "Appointment Letter Generator",
     tagline: "Generate a complete appointment letter with standard employment terms.",
     seoDescription:
       "Free appointment letter generator. Create a complete appointment letter with position, salary, probation, notice period and confidentiality terms — ready to sign.",
-    directAnswer:
-      "An appointment letter generator that creates the full, formal employment contract document — position, CTC, probation, notice period, confidentiality and jurisdiction clauses — ready for the employee to sign.",
-    example:
-      "Example: entering candidate 'Rahul Verma', joining date '15 June 2026', CTC '1500000', and 60-day notice period will generate a comprehensive contract incorporating these details into standard HR clauses.",
-    steps: [
-      "Enter the company name, employee name and designation.",
-      "Enter the date of joining, annual CTC and work location.",
-      "Set the notice period in days (30–180).",
-      "Click Generate appointment letter to build the standard clause set.",
-      "Review with legal/HR, print or download it, and get the employee's signature on a kept-on-file copy.",
-    ],
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "employeeName", label: "Employee name", type: "text", placeholder: "Rahul Verma" },
@@ -633,9 +463,9 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateAppointmentLetter,
     submitLabel: "Generate appointment letter",
-    requireAuth: true,
+    emailGate: true,
     about: [
-      "Where the offer letter gets a candidate to say yes, the appointment letter is the fuller, more formal document issued on or around the joining date that actually governs the employment relationship — the one referenced in disputes, audits and background checks years later. It needs to be thorough and correctly worded, which is exactly the kind of document that's easy to get subtly wrong when written in a hurry.",
+      "The appointment letter is the fuller, more formal document issued on or around the joining date that actually governs the employment relationship — the one referenced in disputes, audits and background checks years later, unlike the offer letter, which only gets a candidate to say yes. It needs to be thorough and correctly worded, which is exactly the kind of document that's easy to get subtly wrong when written in a hurry.",
       "This generator produces the standard clause set: position and place of work (with the conventional transfer clause giving the company flexibility), the effective date of appointment, remuneration stated as CTC with a note on statutory deductions, a six-month probation period with the company's right to extend it, the notice period you specify for post-confirmation termination, a reference to the leave policy, confidentiality and return-of-property obligations, and a jurisdiction clause tied to your work location. It closes with a proper acceptance block for the employee's signature.",
       "This is the document HR and payroll systems reference for compliance, so keep a signed copy on file (physical or digital) for every employee — it's typically requested during PF/ESI inspections, background verification for the employee's next job, and any employment dispute. As with the offer letter, have your legal team review it against your state's specific Shops & Establishments Act requirements and your company's actual policies before use at scale.",
     ],
@@ -655,16 +485,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes, it's the most common default in Indian appointment letters, though some companies use 3 or 12 months depending on role seniority and industry norms. Edit the generated text if your policy differs.",
       },
-      {
-        question: "Does the employee need to sign every page?",
-        answer:
-          "While it's not legally strictly mandated to sign every page, it is a very strong best practice in HR to have the employee initial each page and sign the final acceptance block to prevent disputes over altered pages later.",
-      },
-      {
-        question: "Can we issue this electronically?",
-        answer:
-          "Yes. An appointment letter signed via a legally valid e-signature (like Aadhaar eSign or other recognized platforms) is perfectly valid in India and increasingly common for remote hires.",
-      },
     ],
     related: ["offer-letter-generator", "experience-letter-generator", "payslip-generator", "notice-period-recovery-calculator"],
   },
@@ -672,22 +492,10 @@ export const tools: ToolConfig[] = [
     kind: "generator",
     slug: "experience-letter-generator",
     category: "hr-payroll",
-    priority: 5,
     name: "Experience Letter Generator",
     tagline: "Generate a professional experience/relieving certificate.",
     seoDescription:
       "Free experience letter generator. Create a professional 'to whomsoever it may concern' experience certificate confirming employment dates and conduct.",
-    directAnswer:
-      "An experience letter generator that produces the standard 'to whomsoever it may concern' service certificate — confirming the employee's designation, period of employment and conduct — the document every background check and visa application asks for.",
-    example:
-      "Example: entering 'Rahul Verma', joining date '01 April 2023', leaving date '15 June 2026', and 'good' conduct → generates a formal service certificate confirming his 3+ years tenure as a Product Manager in good standing.",
-    steps: [
-      "Enter the company name, employee name and designation.",
-      "Enter the date of joining and last working date.",
-      "Choose the conduct remark: excellent, good or satisfactory.",
-      "Click Generate experience letter to build the certificate.",
-      "Download or print it and send it to the (former) employee once dues and exit formalities are settled.",
-    ],
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "employeeName", label: "Employee name", type: "text", placeholder: "Rahul Verma" },
@@ -708,7 +516,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateExperienceLetter,
     submitLabel: "Generate experience letter",
-    requireAuth: true,
+    emailGate: true,
     about: [
       "An experience letter (also called a relieving letter or service certificate) is the document that proves someone actually worked where they claim to have — every subsequent employer's background check and every visa application asks for it, and a delayed or missing one can genuinely hold up a former employee's next opportunity. It's a short document, but getting it out promptly and correctly matters more than its length suggests.",
       "This generator produces the standard \"to whomsoever it may concern\" format: confirmation of the employee's name, designation, and the exact period of employment, a short conduct remark drawn from your selection (excellent, good or satisfactory — each phrased professionally rather than as a bare adjective), a statement that all dues are settled and exit formalities complete, and a closing note of thanks. It's the format background-verification agencies and HR departments universally recognise.",
@@ -730,17 +538,75 @@ export const tools: ToolConfig[] = [
         answer:
           "Use the \"satisfactory\" option, which is professionally neutral without being negative. Indian employment norms generally avoid negative remarks in experience letters — serious issues are documented separately through termination or disciplinary records, not the experience certificate.",
       },
-      {
-        question: "Do I need to mention the employee's salary?",
-        answer:
-          "No, salary details are typically omitted from experience letters. Those belong in the final payslip or a separate salary certificate if requested.",
-      },
-      {
-        question: "Should it be printed on company letterhead?",
-        answer:
-          "Yes, for it to be accepted by background verification agencies and embassies, it must ideally be printed on official company letterhead, stamped, and signed by an authorized signatory.",
-      },
     ],
     related: ["appointment-letter-generator", "offer-letter-generator", "gratuity-calculator", "leave-encashment-calculator"],
+  },
+  {
+    kind: "generator",
+    slug: "resume-builder",
+    category: "hr-payroll",
+    name: "Resume / CV Builder",
+    tagline: "Build a clean, ATS-friendly resume from a simple form.",
+    seoDescription:
+      "Free resume builder. Enter your details, work experience and education to generate a clean, ATS-friendly resume you can copy or download instantly.",
+    fields: [
+      { name: "fullName", label: "Full name", type: "text", placeholder: "Priya Sharma" },
+      { name: "targetRole", label: "Target job title", type: "text", placeholder: "Product Manager", optional: true },
+      { name: "email", label: "Email", type: "text", placeholder: "priya.sharma@email.com" },
+      { name: "phone", label: "Phone", type: "text", placeholder: "+91 98765 43210" },
+      { name: "location", label: "City", type: "text", placeholder: "Bengaluru", optional: true },
+      { name: "linkedin", label: "LinkedIn / portfolio URL", type: "text", placeholder: "linkedin.com/in/priyasharma", optional: true },
+      { name: "summary", label: "Professional summary (2-3 sentences)", type: "textarea", rows: 3, placeholder: "Product manager with 5 years building B2B SaaS features from discovery to launch." },
+      { name: "skills", label: "Skills (comma-separated)", type: "textarea", rows: 2, placeholder: "Product strategy, SQL, Figma, A/B testing, Agile" },
+      { name: "exp1Company", label: "Most recent employer", type: "text", placeholder: "Avexora Technologies" },
+      { name: "exp1Title", label: "Job title", type: "text", placeholder: "Senior Product Manager" },
+      { name: "exp1Duration", label: "Duration", type: "text", placeholder: "Jan 2022 – Present" },
+      { name: "exp1Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Launched a feature that grew activation by 18%", optional: true },
+      { name: "exp2Company", label: "Previous employer", type: "text", placeholder: "Nimbus Software", optional: true },
+      { name: "exp2Title", label: "Job title", type: "text", placeholder: "Product Analyst", optional: true },
+      { name: "exp2Duration", label: "Duration", type: "text", placeholder: "Jun 2019 – Dec 2021", optional: true },
+      { name: "exp2Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Built the analytics dashboard used company-wide", optional: true },
+      { name: "eduDegree", label: "Degree", type: "text", placeholder: "B.Tech, Computer Science" },
+      { name: "eduInstitution", label: "Institution", type: "text", placeholder: "IIT Bombay" },
+      { name: "eduYear", label: "Year of graduation", type: "text", placeholder: "2019", optional: true },
+    ],
+    generate: generateResume,
+    submitLabel: "Generate resume",
+    emailGate: true,
+    howTo: {
+      name: "How to build a resume",
+      steps: [
+        { name: "Enter your contact details and summary", text: "Add your name, contact details and a 2-3 sentence professional summary." },
+        { name: "Add skills and experience", text: "List your skills, then your work experience with quantified achievements for each role." },
+        { name: "Add education and generate", text: "Enter your degree and institution, then generate — copy or download the finished resume." },
+      ],
+    },
+    about: [
+      "A resume that clears applicant-tracking-system (ATS) screening has one job before it ever reaches a human: parse cleanly as plain text, with your name, contact details, skills and dated work history in a predictable order. This builder produces exactly that — a single-column, keyword-scannable resume with no tables, columns, icons or graphics that a parser could choke on or reorder incorrectly.",
+      "Fill in your contact details, a two-to-three sentence summary, your skills, up to two roles of work experience with bullet-point achievements, and your education — the generator assembles it into a clean, standard structure recruiters and ATS software both read the same way. Lead each achievement bullet with a number where you have one (\"grew signups 18%\", \"cut processing time from 3 days to 4 hours\") — quantified bullets are read as evidence, plain duty descriptions are read as a job description.",
+      "This produces the content and structure, not final visual design — copy the output into your preferred word processor for a formatted, polished layout once the substance is right, or use it as-is for online applications that only accept plain text or paste-in resumes. Keep it to one page for under ten years of experience; two only once your history genuinely needs it.",
+    ],
+    faq: [
+      {
+        question: "Will this resume pass ATS screening?",
+        answer:
+          "The structure is built to be ATS-friendly — single column, standard section headers, no tables or graphics that parsers mishandle. ATS compatibility also depends on matching keywords from the job description in your skills and experience, which you should tailor per application.",
+      },
+      {
+        question: "How many jobs can I add?",
+        answer:
+          "This generator supports two work experience entries. For a longer history, copy the output and add further entries manually in the same format, keeping your most recent role first.",
+      },
+      {
+        question: "Should I quantify every bullet point?",
+        answer:
+          "Wherever you genuinely can — a number (%, ₹, time saved, team size) makes an achievement concrete and is what recruiters scan for first. Where there's truly no number, describe the outcome, not just the task.",
+      },
+      {
+        question: "Is my information stored anywhere?",
+        answer: "No — the resume is generated entirely in your browser from what you type, and nothing is saved once you leave the page.",
+      },
+    ],
+    related: ["offer-letter-generator", "experience-letter-generator", "salary-calculator", "payslip-generator"],
   },
 ];

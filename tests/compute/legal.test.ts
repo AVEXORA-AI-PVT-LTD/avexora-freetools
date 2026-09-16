@@ -10,12 +10,35 @@ import { generateFreelanceContract } from "@/tools/compute/legal/freelance-contr
 import { generateEmploymentContract } from "@/tools/compute/legal/employment-contract";
 import { generateLoanAgreement } from "@/tools/compute/legal/loan-agreement";
 import { generatePartnershipDeed } from "@/tools/compute/legal/partnership-deed";
+import { computeGstinVerification } from "@/tools/compute/legal/gstin-verification";
+import type { ComputeFn } from "@/types/tools";
+
+function resultMap(fn: ComputeFn, values: FieldValues) {
+  const outcome = fn(values);
+  if ("error" in outcome) throw new Error(outcome.error);
+  return new Map(outcome.results.map((r) => [r.label, r.value]));
+}
 
 function textOf(fn: GenerateFn, values: FieldValues): string {
   const out = fn(values);
   if ("error" in out) throw new Error(out.error);
   return out.text;
 }
+
+describe("computeGstinVerification", () => {
+  it("accepts a real GSTIN and decodes its state and PAN", () => {
+    const r = resultMap(computeGstinVerification, { gstin: "29AAGCB7383J1Z4" });
+    expect(r.get("Status")).toMatch(/Valid/);
+    expect(r.get("State")).toBe("Karnataka (code 29)");
+    expect(r.get("PAN embedded in GSTIN")).toBe("AAGCB7383J");
+  });
+  it("rejects a GSTIN with a wrong check digit", () => {
+    expect(computeGstinVerification({ gstin: "29AAGCB7383J1Z9" })).toHaveProperty("error");
+  });
+  it("rejects an empty input", () => {
+    expect(computeGstinVerification({ gstin: "" })).toHaveProperty("error");
+  });
+});
 
 describe("generateNda", () => {
   it("includes both party names, purpose and disclaimer", () => {

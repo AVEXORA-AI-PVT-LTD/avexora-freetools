@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { categories, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { toolsByCategory } from "@/tools/registry";
-import { categoryJsonLd, categoryMetadata } from "@/lib/seo";
 
-import { getEffectiveCategory, getEffectiveCategories } from "@/server/categories";
-import { getEffectiveToolsByCategory } from "@/server/tools";
+export const dynamicParams = false;
 
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const categories = await getEffectiveCategories();
+export function generateStaticParams() {
   return categories.map((c) => ({ category: c.slug }));
 }
 
@@ -20,9 +16,27 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category } = await params;
-  const cat = await getEffectiveCategory(category);
+  const cat = getCategory(category);
   if (!cat) return {};
-  return categoryMetadata(cat);
+  const title = `${cat.name} — Avex Online Tools`;
+  const canonical = `${SITE_URL}/${cat.slug}`;
+  return {
+    title,
+    description: cat.description,
+    alternates: { canonical },
+    openGraph: {
+      title: `${title} | ${SITE_NAME}`,
+      description: cat.description,
+      url: canonical,
+      siteName: SITE_NAME,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `${title} | ${SITE_NAME}`,
+      description: cat.description,
+    },
+  };
 }
 
 export default async function CategoryPage({
@@ -31,11 +45,19 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  const cat = await getEffectiveCategory(category);
+  const cat = getCategory(category);
   if (!cat) notFound();
-  const effectiveToolsByCategory = await getEffectiveToolsByCategory();
-  const tools = effectiveToolsByCategory[cat.slug] || [];
-  const jsonLd = categoryJsonLd(cat);
+  const tools = toolsByCategory[cat.slug];
+  const canonical = `${SITE_URL}/${cat.slug}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: cat.name, item: canonical },
+    ],
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">

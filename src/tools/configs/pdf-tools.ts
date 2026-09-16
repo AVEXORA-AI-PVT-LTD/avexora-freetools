@@ -2,16 +2,13 @@ import type { ToolConfig } from "../../types/tools";
 import MergePdf from "../ui/pdf/merge-pdf";
 import SplitPdf from "../ui/pdf/split-pdf";
 import CompressPdf from "../ui/pdf/compress-pdf";
-import PdfToWord from "../ui/pdf/pdf-to-word";
-import WordToPdf from "../ui/pdf/word-to-pdf";
-import PdfSignature from "../ui/pdf/pdf-signature";
-import PdfEditor from "../ui/pdf/pdf-editor";
 import { JpgToPdf, PngToPdf } from "../ui/pdf/images-to-pdf";
 import { PdfPageRemover, ExtractPdfPages, ReorderPdfPages } from "../ui/pdf/page-tools";
 import { RotatePdf } from "../ui/pdf/rotate-pdf";
 import WatermarkPdf from "../ui/pdf/watermark-pdf";
 import PageNumbersPdf from "../ui/pdf/page-numbers-pdf";
 import PdfMetadataEditor from "../ui/pdf/pdf-metadata-editor";
+import PdfToWord from "../ui/pdf/pdf-to-word";
 
 export const tools: ToolConfig[] = [
   {
@@ -24,18 +21,18 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free online PDF merger. Combine two or more PDF files into a single document in seconds. 100% private: merging happens in your browser and files are never uploaded.",
     component: MergePdf,
+    howTo: {
+      name: "How to merge PDF files",
+      steps: [
+        { name: "Choose your files", text: "Select two or more PDF files from your device." },
+        { name: "Arrange the order", text: "Use the up/down arrows to set the order pages should appear in the merged file." },
+        { name: "Merge and download", text: "Click merge — the combined PDF downloads instantly, processed entirely in your browser." },
+      ],
+    },
     about: [
-      "Need to send several PDFs as one document — a proposal with its annexures, scanned pages from your phone, monthly bank statements, or a set of invoices for your accountant? Choose your files, arrange them in the right order with the up and down arrows, and click merge. The combined PDF downloads instantly with every page intact, in exactly the order you set.",
+      "This tool combines multiple PDFs into a single document — a proposal with its annexures, scanned pages from your phone, monthly bank statements, or a set of invoices for your accountant. Choose your files, arrange them in the right order with the up and down arrows, and click merge. The combined PDF downloads instantly with every page intact, in exactly the order you set.",
       "Unlike most online PDF tools, this one never uploads your files anywhere. The merging runs entirely in your browser using JavaScript, which means your contracts, financial documents and personal papers stay on your device from start to finish. That matters more than most people realise: a typical online merger sends your files to a remote server, processes them there, and keeps them for some retention period you have no control over. Here there is no server round-trip at all — which also makes merging fast even on a slow connection, because nothing needs to be uploaded or downloaded except your final file.",
       "There's no file-count limit, no size cap beyond your device's memory, no watermark on the output, and no sign-up. The page order follows the file list, so arrange before merging. Password-protected PDFs can't be merged — remove the password in your PDF reader first, then merge. If you need to combine images into a PDF instead, use the JPG to PDF tool from the related tools below once you're done here.",
-    ],
-    directAnswer: "Merge PDF combines multiple PDF documents into a single file directly in your web browser without uploading anything to a server.",
-    example: "You can combine a signed contract and a scanned appendix into one continuous PDF file for easier sharing.",
-    steps: [
-      "Select or drag and drop the PDF files you want to merge.",
-      "Rearrange the file order using the up and down arrows.",
-      "Click the merge button to combine the files.",
-      "Download your new, combined PDF."
     ],
     faq: [
       {
@@ -53,16 +50,6 @@ export const tools: ToolConfig[] = [
         answer:
           "There is no hard limit. Because processing happens on your device, very large files are limited only by your browser's memory — typically hundreds of megabytes.",
       },
-      {
-        question: "Do I need to sign up or create an account to merge PDFs?",
-        answer:
-          "Not at all. You can merge as many PDFs as you want completely free, with no account registration or sign-up required.",
-      },
-      {
-        question: "Will merging reduce the quality of my original PDFs?",
-        answer:
-          "No, the quality is completely preserved. The tool simply joins the documents together without altering or recompressing the content inside them.",
-      }
     ],
     related: ["split-pdf", "extract-pdf-pages", "reorder-pdf-pages", "jpg-to-pdf"],
   },
@@ -75,19 +62,19 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free online PDF splitter. Split a PDF into two files at any page number, right in your browser. No upload, no watermark, no sign-up.",
     component: SplitPdf,
+    howTo: {
+      name: "How to split a PDF",
+      steps: [
+        { name: "Choose your file", text: "Select the PDF you want to split." },
+        { name: "Pick the split page", text: "Enter the page number where the file should be divided into two." },
+        { name: "Download both parts", text: "Both resulting PDFs download automatically, processed entirely in your browser." },
+      ],
+    },
     about: [
-      "Sometimes a single PDF is really two documents stuck together — a contract and its annexures, a report and its appendix, a scanned bundle that should have been two separate files. This tool splits any PDF into two parts at whichever page you choose: everything up to and including that page becomes part one, everything after becomes part two, both downloaded automatically.",
+      "This tool splits any PDF into two parts at whichever page you choose: everything up to and including that page becomes part one, everything after becomes part two, both downloaded automatically. That's useful when a single PDF is really two documents stuck together — a contract and its annexures, a report and its appendix, a scanned bundle that should have been two separate files.",
       "Choose your file, see the total page count, and enter the page where the split should happen — page 5 of a 12-page document, for instance, produces a 5-page part one and a 7-page part two. There's no limit on how large the source file can be beyond what your browser's memory allows, and because splitting happens entirely client-side, confidential documents never leave your device.",
       "This is the simplest of the page-management tools here; for more control — pulling out a specific non-contiguous set of pages, or removing particular pages rather than splitting at one point — use the extract or remove-pages tools instead. All three share the same private, in-browser processing.",
       "Splitting is often the first step before two documents go their separate ways — one half to accounting, the other to legal, or one part filed and the other emailed on. Because both output files are generated locally and downloaded straight to your device, there's no server copy of either half sitting around afterward, and no waiting on an upload before you can download anything back.",
-    ],
-    directAnswer: "Split PDF divides a single PDF document into two separate files at any page you choose, all running securely in your browser.",
-    example: "If you have a 10-page document where the first 5 pages are a report and the rest are appendices, you can split it into two files at page 5.",
-    steps: [
-      "Select or upload the PDF document you want to split.",
-      "Enter the page number where you want the split to occur.",
-      "Click split to separate the document into two parts.",
-      "Download both resulting PDF files."
     ],
     faq: [
       {
@@ -105,16 +92,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Page content and formatting are preserved exactly; internal links or bookmarks that point across the split point may no longer resolve correctly, since the target page ends up in the other file.",
       },
-      {
-        question: "Is there a limit to how many pages my PDF can have?",
-        answer:
-          "No hard limits exist. Because the tool processes files in your browser, the only limitation is the available memory on your device.",
-      },
-      {
-        question: "Will splitting my PDF alter the formatting?",
-        answer:
-          "No, the original formatting, fonts, and layout are perfectly preserved in both output files. Only the document structure is separated.",
-      }
     ],
     related: ["merge-pdf", "extract-pdf-pages", "pdf-page-remover", "reorder-pdf-pages"],
   },
@@ -128,16 +105,9 @@ export const tools: ToolConfig[] = [
       "Free PDF compressor. Reduce PDF file size with a lossless structural pass — strips redundant metadata and repacks the file — entirely in your browser.",
     component: CompressPdf,
     about: [
-      "PDF files often carry more bytes than their content needs — verbose internal structure, duplicated objects, and metadata fields (author, application version, edit history) that serve no purpose once the document is final. This tool re-saves your PDF with a leaner internal structure and strips that metadata, shrinking the file without touching a single pixel of the visible content.",
+      "This tool re-saves your PDF with a leaner internal structure and strips redundant metadata, shrinking the file without touching a single pixel of the visible content. PDF files often carry more bytes than their content needs — verbose internal structure, duplicated objects, and metadata fields (author, application version, edit history) that serve no purpose once the document is final.",
       "Be clear-eyed about what this does and doesn't do. It's a lossless, structural compression: text stays crisp, vector graphics stay sharp, and nothing is re-rendered or degraded. What it can't do is recompress embedded images — the biggest source of bloat in scan-heavy or photo-heavy PDFs — because that requires decoding, re-encoding and potentially quality loss, which a lossless browser tool won't do without your explicit consent to a lossy trade-off. For a PDF that's mostly text and light graphics, expect a meaningful reduction; for a PDF built from high-resolution photos, expect the report to tell you the structural pass alone won't move the needle much.",
       "The tool shows you the before-and-after size so you know exactly what you gained. Processing happens entirely in your browser, so uploading a confidential contract or financial report to compress it is not something this tool ever does.",
-    ],
-    directAnswer: "Compress PDF shrinks the file size of your PDF documents by removing redundant structure and metadata losslessly in your browser.",
-    example: "You can reduce the file size of an exported PDF report that carries hidden application metadata before uploading it to a portal with size limits.",
-    steps: [
-      "Select the PDF file you want to compress.",
-      "The tool will automatically optimize the document structure in your browser.",
-      "Review the new file size and download your compressed PDF."
     ],
     faq: [
       {
@@ -155,16 +125,6 @@ export const tools: ToolConfig[] = [
         answer:
           "No — compression runs entirely in your browser. Your PDF never leaves your device.",
       },
-      {
-        question: "Why didn't my scanned document get smaller?",
-        answer:
-          "Since this tool performs lossless compression, it doesn't degrade or re-encode heavy images found in scanned PDFs. To compress a scan, you may need a lossy compressor that scales down image resolution.",
-      },
-      {
-        question: "Is the text still searchable after compression?",
-        answer:
-          "Yes, absolutely. Because the visible content and fonts are kept intact, your document remains fully searchable and readable.",
-      }
     ],
     related: ["merge-pdf", "split-pdf", "image-compressor", "pdf-metadata-editor"],
   },
@@ -178,18 +138,10 @@ export const tools: ToolConfig[] = [
       "Free JPG to PDF converter. Combine one or more JPG images into a single PDF document — arrange the order, convert, and download. No upload required.",
     component: JpgToPdf,
     about: [
-      "Scanned receipts, photographed documents, ID cards, whiteboard photos — a lot of paperwork enters your phone as a JPG and needs to leave as a PDF, the format banks, government portals and most businesses actually accept. This tool takes one or more JPG images and combines them into a single PDF, one image per page, in whatever order you arrange them.",
+      "This tool takes one or more JPG images and combines them into a single PDF, one image per page, in whatever order you arrange them. That covers scanned receipts, photographed documents, ID cards, whiteboard photos — a lot of paperwork enters your phone as a JPG and needs to leave as a PDF, the format banks, government portals and most businesses actually accept.",
       "Add images, reorder with the up/down arrows so the pages come out in the right sequence, and convert — each image becomes a full page sized to match its own dimensions, so nothing is stretched or cropped. This is the quickest path from \"I have five photos of receipts\" to \"I have one PDF to email my accountant,\" without opening a scanner app or a desktop editor.",
       "Everything happens locally: your images are never uploaded, which matters when the photos are of ID documents, medical records, or anything else you'd rather not send to a stranger's server. For PNG images (screenshots, graphics with transparency), use the PNG to PDF tool instead — JPG and PNG need slightly different embedding, handled correctly by each dedicated tool.",
       "There's no limit on how many images you can combine, no compression applied to the photos beyond what your camera already did, and no watermark added to the result. If you later need to combine the resulting PDF with other documents, or trim it down to just a few pages, the Merge PDF and Extract PDF Pages tools in this same suite pick up right where this one leaves off.",
-    ],
-    directAnswer: "JPG to PDF converts one or more JPG images into a single PDF document securely on your device.",
-    example: "You can turn photos of your expense receipts into a single, neat PDF file to send to your accounting department.",
-    steps: [
-      "Upload or drop your JPG images into the tool.",
-      "Drag or use arrows to order the images correctly.",
-      "Convert the images to generate the document.",
-      "Download the finished PDF file."
     ],
     faq: [
       {
@@ -207,16 +159,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Use the dedicated PNG to PDF tool — PNGs (which may include transparency) are embedded differently than JPGs, and using the matching tool avoids conversion artifacts.",
       },
-      {
-        question: "Are my photos kept private during the conversion?",
-        answer:
-          "Yes. Everything happens inside your web browser. The JPG images are processed locally and never uploaded to any external server.",
-      },
-      {
-        question: "Is there a limit on how many images I can convert at once?",
-        answer:
-          "There is no set limit. You can combine as many JPGs as your device's memory can handle into a single PDF.",
-      }
     ],
     related: ["png-to-pdf", "merge-pdf", "image-compressor", "png-to-jpg"],
   },
@@ -230,18 +172,10 @@ export const tools: ToolConfig[] = [
       "Free PNG to PDF converter. Combine one or more PNG images into a single PDF document — arrange the order, convert, and download. No upload required.",
     component: PngToPdf,
     about: [
-      "Screenshots, exported graphics, transparent logos, and diagrams saved as PNG often need to become part of a PDF report or submission. This tool combines one or more PNG images into a single PDF, one image per page, sized exactly to each image's own dimensions.",
+      "This tool combines one or more PNG images into a single PDF, one image per page, sized exactly to each image's own dimensions. That's useful for screenshots, exported graphics, transparent logos, and diagrams saved as PNG that need to become part of a PDF report or submission.",
       "PNG's defining feature — lossless compression with optional transparency — is preserved through the conversion in the sense that image quality never degrades; transparent areas are rendered against a white PDF page background, since PDF pages don't support transparent backgrounds themselves. Add your images, arrange them with the up/down controls so the final PDF reads in the right order, and convert.",
       "As with every tool in this PDF suite, processing is entirely local to your browser — your screenshots and graphics are never uploaded anywhere. If your source images are JPGs instead (common for photos and scans), use the JPG to PDF tool, which embeds that format correctly.",
       "This is a common step when assembling a report or submission from a mix of exported charts, UI screenshots and diagrams that started life as separate PNG files. Once combined, the same suite offers page reordering, watermarking and page numbering if the assembled document needs further polish before it goes out.",
-    ],
-    directAnswer: "PNG to PDF allows you to convert one or multiple PNG images into a single PDF document entirely within your browser.",
-    example: "You can combine several PNG screenshots or design mockups into a single presentation PDF to share with your team.",
-    steps: [
-      "Select or drag and drop the PNG images you want to convert.",
-      "Rearrange the images in the desired order.",
-      "Click the convert button to create the document.",
-      "Download your new PDF file."
     ],
     faq: [
       {
@@ -259,173 +193,8 @@ export const tools: ToolConfig[] = [
         answer:
           "Not with a single tool run — each tool handles one image format for correct embedding. Convert your JPGs and PNGs separately, then use Merge PDF to combine the resulting files into one.",
       },
-      {
-        question: "Is there any limit to the number of PNGs I can convert?",
-        answer:
-          "There is no set limit. You can add as many PNG files as you want, bound only by your browser and device memory constraints.",
-      },
-      {
-        question: "Are my PNG files uploaded to the internet?",
-        answer:
-          "No, all processing happens locally on your device in your web browser. Your images are never transmitted or stored on any server.",
-      }
     ],
     related: ["jpg-to-pdf", "merge-pdf", "favicon-generator", "image-compressor"],
-  },
-  {
-    kind: "file-tool",
-    slug: "pdf-to-word-converter",
-    category: "pdf-tools",
-    name: "PDF to Word Converter",
-    tagline: "Convert a PDF into an editable Word document, entirely in your browser.",
-    seoDescription:
-      "Free online PDF to Word converter. Turn a PDF into an editable .docx Word document — text, page order, headings, lists and tables preserved. 100% private: conversion happens in your browser and files are never uploaded.",
-    component: PdfToWord,
-    about: [
-      "Word documents are meant to be edited; PDFs are meant to be final. When you receive a PDF that needs rewriting — a contract you have to amend, a proposal your team must mark up, a report whose numbers changed, a resume someone wants you to update — you need it back in an editable format. This tool reads the text layer of your PDF and rebuilds it as a proper Word (.docx) document: editable paragraphs you can type into, with page breaks preserved so the page order matches the original, and simple layouts carried across.",
-      "The converter does its best to preserve structure, not just words. It detects headings from their size relative to the body text and maps them to Word's Heading 1/2/3 styles, so your document outline survives the trip. It keeps paragraphs and their alignment (left, centre, right), turns bullet and numbered lists into hanging-indent paragraphs, inserts a page break between pages so multi-page files keep their flow, and recognises simple aligned-column tables — a product list, an invoice table, a matrix of numbers — and rebuilds them as real Word tables you can edit in the grid.",
-      "It is also honest about what a text conversion cannot do. Embedded images (photos, logos, signatures) are detected but not embedded in this build, so the Word file contains the extracted text rather than copied graphics. PDFs that are scanned or image-based — no selectable text to read — can't be turned into editable text without OCR, and this tool doesn't run OCR; those pages are reported so you know exactly which parts were skipped rather than receiving a silently empty document. Complex layouts (multi-column newspaper-style pages, free-form design documents) may come across more simply than they appear in the original.",
-      "As with every tool in this suite, the whole conversion runs in your browser — your PDF is parsed and the Word file is assembled on your device, never uploaded. There's a 50 MB / 200-page limit (generous for virtually every real-world document) and a page count you can see before you convert. Password-protected PDFs can't be read, so remove the password with your PDF reader first. If the Word file needs further edits, you can refine it in Word, LibreOffice or Google Docs once it downloads."
-    ],
-    directAnswer: "PDF to Word Converter turns your PDF files into editable .docx Word documents locally on your device, preserving text and structure.",
-    example: "If you receive a PDF contract and need to make amendments, you can convert it to a Word document to easily edit the paragraphs.",
-    steps: [
-      "Select the PDF you wish to convert.",
-      "The tool extracts the text and layout structure.",
-      "Download the resulting editable Word document."
-    ],
-    faq: [
-      {
-        question: "Are my PDF files uploaded to a server?",
-        answer:
-          "No. The PDF is read and converted entirely in your browser using in-page JavaScript, and the Word file is assembled the same way. Your document never leaves your device — which is what makes this safe for contracts, financial papers and other confidential files.",
-      },
-      {
-        question: "What exactly does the Word document preserve?",
-        answer:
-          "The readable text, in the right page order, with page breaks between pages. Headings are mapped to Word's Heading styles, paragraphs keep their alignment, bullet and numbered lists become hanging-indent paragraphs, and simple aligned-column tables are rebuilt as editable Word tables. Embedded images are detected but not copied in this build, and exact fonts or bold/italic styling can't always be recovered from every PDF.",
-      },
-      {
-        question: "My PDF is a scan and the result is empty. Why?",
-        answer:
-          "A scanned PDF is a set of pictures, not selectable text, and converting it to editable words requires OCR (Optical Character Recognition), which this tool doesn't run. Pages with no text layer are detected and reported — OCR the scan with a dedicated tool first, then convert the resulting text-based PDF here.",
-      },
-      {
-        question: "Can I convert a password-protected PDF?",
-        answer:
-          "No. The converter needs to read the text layer to build the Word file, and password-protected PDFs are not readable without the password. Unlock the PDF with your usual reader first, then convert the unlocked copy.",
-      },
-      {
-        question: "Is there a limit on how large the PDF can be?",
-        answer:
-          "Yes, there is a limit of 50 MB or 200 pages. This helps ensure your browser can handle the complex conversion process without crashing.",
-      }
-    ],
-    related: ["word-to-pdf-converter", "pdf-page-remover", "reorder-pdf-pages", "compress-pdf", "pdf-signature"],
-  },
-  {
-    kind: "file-tool",
-    slug: "word-to-pdf-converter",
-    category: "pdf-tools",
-    name: "Word to PDF Converter",
-    tagline: "Turn a Word (.docx) document into a print-ready PDF, entirely in your browser.",
-    seoDescription:
-      "Free online Word to PDF converter. Convert a .docx Word document to a readable, print-ready PDF with text, headings, lists, tables and images preserved. 100% private: conversion happens in your browser and files are never uploaded.",
-    component: WordToPdf,
-    about: [
-      "Word documents are meant to be edited; PDFs are meant to be final. Sending a contract, a proposal, a report or an invoice as a .docx risks someone else's viewer reflowing the page breaks, the fonts or the layout. This tool renders your Word document as-is and turns it into a genuine PDF file — so what you get back reads like the document, on real selectable text, ready to print or send.",
-      "This isn't a text extractor that rebuilds a plain document from words. The .docx is laid out with a real Word-document rendering engine, so paragraphs, headings, font sizes, bold/italic/underline, alignment, bullet and numbered lists, tables, embedded images, page size, orientation, margins and page breaks are all carried across. The final PDF is produced by your browser's own PDF engine at the document's true page size, which means the text stays selectable and searchable and the pages are genuinely print-ready.",
-      "One practical note about downloading: because everything runs on your device, the PDF is created by your browser's printer engine. Clicking “Download PDF” opens the print dialog with the document pre-set to the right paper size — choose “Save as PDF” as the destination (already the default in most browsers) and the file is saved under the original document's name. Nothing is uploaded at any point, which matters when a document is a confidential contract or a financial file with no business sitting on a stranger's server.",
-      "As with every tool here, there's no sign-up and no watermark. The supported format is .docx — legacy .doc and macro-enabled .docm files are rejected, as are password-protected or encrypted Word files (remove the password in Word first). Formatting that depends on fonts not installed on your device falls back to a readable alternative, and advanced Word features such as complex fields, SmartArt or unembedded charts degrade gracefully when they can't be reproduced, but the content itself is always carried across.",
-    ],
-    directAnswer: "Word to PDF Converter transforms your Word documents (.docx) into standard PDF files using your browser's rendering engine.",
-    example: "You can convert a finished business proposal written in Word into a PDF to ensure the formatting stays intact when emailing it to your client.",
-    steps: [
-      "Select your .docx file to process.",
-      "The tool renders the document in your browser.",
-      "Click 'Download PDF', which will open your print dialog.",
-      "Choose 'Save as PDF' to save your new file."
-    ],
-    faq: [
-      {
-        question: "Are my Word documents uploaded to a server?",
-        answer:
-          "No. The .docx is read and rendered entirely in your browser and the PDF is produced by your browser's own printing engine on your device. Your document never leaves your computer, which is what makes this safe for contracts, financial papers and other confidential files.",
-      },
-      {
-        question: "Which Word formats are supported?",
-        answer:
-          "Modern .docx documents are supported. Legacy .doc files, macro-enabled .docm files and password-protected or encrypted Word documents are not — open them in Word, save as .docx (removing any password) and you're set.",
-      },
-      {
-        question: "How faithful is the converted PDF?",
-        answer:
-          "Text, paragraphs, headings, font styles and sizes, alignment, lists, tables, embedded images, page size, orientation, margins and page breaks are preserved. Fonts not installed on your device fall back to a readable replacement, and complex Word features like SmartArt or equations may render in simplified form. Exact pixel-perfect reproduction isn't promised — DOCX and PDF use different rendering systems.",
-      },
-      {
-        question: "Why does “Download PDF” open my print dialog?",
-        answer:
-          "Because the conversion happens entirely on your device, the PDF is generated by your browser's printer engine — the same one used when you print a page. Choose “Save as PDF” as the destination in the dialog and the file is saved with the original document's name. It produces the most faithful, selectable-text result without your file ever leaving your computer.",
-      },
-      {
-        question: "Do I need Microsoft Word installed on my computer?",
-        answer:
-          "No, you do not need Word installed. The conversion engine works independently directly inside your web browser.",
-      }
-    ],
-    related: ["pdf-to-word-converter", "merge-pdf", "compress-pdf", "add-page-numbers-to-pdf", "pdf-signature"],
-  },
-  {
-    kind: "file-tool",
-    slug: "pdf-signature",
-    category: "pdf-tools",
-    name: "PDF Signature / E-Signature",
-    tagline: "Sign a PDF with a typed or uploaded signature, or stamp it with a company seal — placed exactly where you see it.",
-    seoDescription:
-      "Free online PDF signature tool. Sign any PDF with a handwriting-style signature generated from your typed name, an image you upload, or a company seal/stamp — drop it on any page, resize, rotate, and download. 100% private: your PDF never leaves your browser.",
-    component: PdfSignature,
-    about: [
-      "Signing a PDF usually means one of three things: printing it, signing by hand, and scanning it back in; buying a certificate-based digital signature from a CA; or sending your document to an online signing service with a free trial, a watermark, and your file on somebody else's server. This tool is the middle path for everyday business documents — an e-signature stamped onto your PDF, generated in your own browser, with full placement control and nothing uploaded.",
-      "There are three ways to get an element onto your document. Type your name and the tool generates a handwriting-style signature image (four styles, from a classic script to a marker-style print) drawn locally with bundled fonts. Or upload a PNG or JPG of your hand-written signature or your company seal/stamp — transparent PNG backgrounds are preserved exactly, so you never get a white or black box around it. Whichever you choose, the element appears in your live preview and you can add as many signatures and seals as you need, on any pages, each drag-to-move, drag-to-resize, and rotate freely with a drag handle or the angle buttons.",
-      "The placement you set in the preview is the placement you get on the download — positions are stored relative to each page and mapped onto the actual PDF with the same math your browser uses to display it, so the signature or seal lands in exactly the same spot at any zoom level, including on rotated pages. Your original PDF is never rasterized or flattened: the elements are added to the untouched original and the file keeps its text, images, links and quality.",
-      "It is also honest about what this is and isn't: this places an image of your signature or seal onto a PDF. It does not create a certificate-based digital signature, which is a cryptographic seal that requires a certificate authority and is typically used for legally binding e-documents in some jurisdictions — if that's what your document needs, use a dedicated provider. For contracts, invoices, NDA drafts, approvals and internal forms, an image signature is exactly what most people mean by \"sign it.\" Everything runs locally: your PDF and signature never leave your device.",
-    ],
-    directAnswer: "PDF Signature allows you to digitally place a typed signature, drawn signature, or image stamp onto your PDF document.",
-    example: "You can type your name to generate a handwriting-style signature and place it on the signature line of a non-disclosure agreement.",
-    steps: [
-      "Upload the PDF document you need to sign.",
-      "Choose to type your name, draw a signature, or upload a stamp.",
-      "Drag and position the signature where you want it on the page.",
-      "Download your signed document."
-    ],
-    faq: [
-      {
-        question: "Are my PDF and signature uploaded anywhere?",
-        answer:
-          "No. The PDF is rendered for preview with the browser's own PDF engine (pdf.js), the signature is drawn locally, and the signed file is produced with pdf-lib — all on your device. Nothing is ever transmitted, which is what makes this safe for contracts and financial documents.",
-      },
-      {
-        question: "Does the final PDF really have the signature where I placed it in the preview?",
-        answer:
-          "Yes. Signature placement is stored as a position relative to each page (which is why zooming the preview never changes where the signature ends up) and mapped into PDF coordinates with the same viewport math used to render the preview, including correct handling of rotated pages. What you see is what gets written into the file.",
-      },
-      {
-        question: "Will a white or black box appear around my signature?",
-        answer:
-          "No, not for transparent PNG uploads or generated signatures — those keep their transparency, so the signature blends onto the page. JPG uploads never have transparency to begin with, so they are shown as-is.",
-      },
-      {
-        question: "Can I stamp a PDF with a company seal or official stamp?",
-        answer:
-          "Yes. Choose \"Upload Seal / Stamp\" (the first option) and upload a PNG, JPG or WebP of your seal — transparent PNG backgrounds are preserved exactly, ideal for round or rectangular company stamps. Seals are placed on the PDF the same way as signatures: drag to move, pull the corner dots to resize, rotate with the handle or buttons — and you can stamp the same seal on several pages alongside signatures in a single download.",
-      },
-      {
-        question: "Is this the same as a certificate-based digital signature?",
-        answer:
-          "No. This tool stamps an image of your signature onto the PDF — the practical meaning of \"sign this document\" for most business workflows. A certificate-based signature is a cryptographic seal issued by a certificate authority and is a different, heavier process; use a dedicated digital-signature service if your document legally requires that.",
-      },
-    ],
-    related: ["word-to-pdf-converter", "pdf-to-word-converter", "merge-pdf", "compress-pdf"],
   },
   {
     kind: "file-tool",
@@ -437,18 +206,10 @@ export const tools: ToolConfig[] = [
       "Free PDF page remover. Delete one or more pages from a PDF by page number or range — entirely in your browser, no upload required.",
     component: PdfPageRemover,
     about: [
-      "Sometimes a PDF has a page or two you need gone — a blank scanned page, a cover sheet that doesn't belong in the final version, an outdated appendix, or duplicate pages from a rushed scan. This tool removes exactly the pages you specify, leaving everything else untouched and correctly renumbered in the output.",
+      "This tool removes exactly the pages you specify from a PDF, leaving everything else untouched and correctly renumbered in the output. That's useful when a PDF has a page or two you need gone — a blank scanned page, a cover sheet that doesn't belong in the final version, an outdated appendix, or duplicate pages from a rushed scan.",
       "Enter the pages to remove as a comma-separated list of numbers and ranges — \"3\" removes just page 3, \"3, 7-9\" removes page 3 and pages 7 through 9. The tool shows your document's total page count so you know your numbering is right before running it, and it refuses to remove every single page (you'd be left with nothing), catching that mistake before it happens.",
       "This is the mirror image of Extract PDF Pages: removal keeps everything except what you list, while extraction keeps only what you list. Pick whichever framing is more natural for your task — removing 2 pages from a 50-page document is easier to specify than extracting the other 48. Processing is entirely local to your browser, so sensitive documents never leave your device.",
       "The remaining pages keep their original content and quality exactly as they were — nothing is re-rendered or recompressed in the process, only removed. Once you're happy with the trimmed result, it can be fed straight into the merge, reorder or watermark tools in this same suite if the document needs further assembly before it's final.",
-    ],
-    directAnswer: "PDF Page Remover deletes specific pages from your document instantly within your browser, keeping the rest of the file intact.",
-    example: "You can remove a blank page or an outdated cover sheet from a finalized PDF report.",
-    steps: [
-      "Upload the PDF document you want to edit.",
-      "Enter the page numbers or ranges you wish to remove.",
-      "Click the remove button to delete the specified pages.",
-      "Download the shortened PDF."
     ],
     faq: [
       {
@@ -466,16 +227,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Use whichever is fewer to type. Removing 2 pages from a 50-page file is simpler than extracting the other 48 — use Extract PDF Pages when you only need a small subset to keep.",
       },
-      {
-        question: "Will the remaining pages be renumbered automatically?",
-        answer:
-          "Yes, the pages that you keep will be seamlessly joined together and inherently renumbered in the new document structure.",
-      },
-      {
-        question: "Are my documents secure during the removal process?",
-        answer:
-          "Yes. All page removal happens directly on your device, meaning your sensitive documents are never uploaded to any remote server.",
-      }
     ],
     related: ["extract-pdf-pages", "split-pdf", "reorder-pdf-pages", "merge-pdf"],
   },
@@ -489,18 +240,10 @@ export const tools: ToolConfig[] = [
       "Free PDF page extractor. Extract specific pages or ranges from a PDF into a new document — entirely in your browser, no upload required.",
     component: ExtractPdfPages,
     about: [
-      "Often you don't need a whole PDF — just the three pages of a contract that matter, the chapter you're referencing, or the single invoice buried in a long statement. This tool extracts exactly the pages you specify into a new, standalone PDF, leaving the source file untouched.",
+      "This tool extracts exactly the pages you specify from a PDF into a new, standalone PDF, leaving the source file untouched. That's useful when you don't need a whole PDF — just the three pages of a contract that matter, the chapter you're referencing, or the single invoice buried in a long statement.",
       "Enter the pages you want as a comma-separated list of numbers and ranges — \"2, 5-7\" pulls out page 2 plus pages 5 through 7 into the new document, in that order. This is the inverse of the page remover: here you list what to keep, there you list what to discard. Choose whichever framing needs less typing for your case.",
       "A common use: extracting a signature page or a specific clause from a long contract to send separately, pulling one chapter out of a large report, or isolating a single invoice from a multi-page statement PDF. As with every tool here, extraction happens entirely in your browser — nothing is uploaded.",
       "Because the source file is never modified — only read to build the new, smaller document — you can extract the same pages more than once with different selections without worrying about losing anything from the original. Combine the result with Merge PDF afterward if the pages you pulled out need to sit alongside content from another file.",
-    ],
-    directAnswer: "Extract PDF Pages creates a new document by pulling out only the specific pages or ranges you need from an existing PDF.",
-    example: "You can extract just the signature page from a 50-page contract to send to a client for signing.",
-    steps: [
-      "Select the PDF you want to extract pages from.",
-      "Enter the specific page numbers or ranges to keep.",
-      "Click extract to pull out those pages.",
-      "Download the new, smaller PDF file."
     ],
     faq: [
       {
@@ -518,16 +261,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Split PDF divides a document into two parts at one point. Extract Pages pulls out an arbitrary, possibly non-contiguous, set of pages into one new file — more flexible when you need pages 2, 5 and 9 but not the ones in between.",
       },
-      {
-        question: "Can I extract pages from multiple PDFs at once?",
-        answer:
-          "This tool works on one PDF at a time. If you need pages from different files, extract them separately and then use the Merge PDF tool to combine them.",
-      },
-      {
-        question: "Is my original PDF altered or deleted?",
-        answer:
-          "No, your original PDF remains completely untouched. The tool only reads it to generate a brand-new file containing your selected pages.",
-      }
     ],
     related: ["pdf-page-remover", "split-pdf", "reorder-pdf-pages", "merge-pdf"],
   },
@@ -541,18 +274,10 @@ export const tools: ToolConfig[] = [
       "Free PDF page reorder tool. Rearrange the pages of a PDF into any order using simple up/down controls — entirely in your browser, no upload required.",
     component: ReorderPdfPages,
     about: [
-      "Pages sometimes end up in the wrong order — a scanner that fed sheets out of sequence, a report where a section should come before another, a contract where the signature page needs to move to the end. This tool lets you rearrange every page of a PDF into whatever order you need, without retyping or rescanning anything.",
+      "This tool lets you rearrange every page of a PDF into whatever order you need, without retyping or rescanning anything. That fixes pages that end up in the wrong order — a scanner that fed sheets out of sequence, a report where a section should come before another, a contract where the signature page needs to move to the end.",
       "Once you choose your file, every page appears as a numbered slot you can move up or down; the underlying page content never changes, only its position in the final document. Rearrange until the sequence is right, then apply — the output PDF has your exact new order, with page content, formatting and quality fully preserved.",
       "This pairs naturally with the other page tools here: extract the pages you need, reorder them into the right sequence, then merge with other documents if the final assembly needs more than one source file. Everything runs locally in your browser, so reordering a confidential document never means uploading it anywhere.",
       "There's no limit to how many times you can rearrange before applying the change, so it's easy to try a sequence, step back, and try again until the flow reads correctly. The output preserves every page's original quality and formatting — only the order changes, nothing about the content itself.",
-    ],
-    directAnswer: "Reorder PDF Pages lets you change the sequence of pages in your document by simply dragging them into a new order.",
-    example: "If a scanned document has pages out of order, you can easily move them to the correct sequence before saving the final file.",
-    steps: [
-      "Upload the PDF you want to reorder.",
-      "Use the up and down arrows or drag to rearrange the pages.",
-      "Apply the new order to generate the document.",
-      "Download your properly sequenced PDF."
     ],
     faq: [
       {
@@ -570,16 +295,6 @@ export const tools: ToolConfig[] = [
         answer:
           "No — reordering runs entirely in your browser using pdf-lib. Your file never leaves your device.",
       },
-      {
-        question: "Will I lose any quality when saving the reordered PDF?",
-        answer:
-          "No. Since only the page sequence is updated, the internal quality, text, and images of your document remain exactly as they were.",
-      },
-      {
-        question: "Can I delete a page while reordering?",
-        answer:
-          "This tool is specifically designed for reordering. To remove a page, you should use the PDF Page Remover tool before or after.",
-      }
     ],
     related: ["extract-pdf-pages", "pdf-page-remover", "merge-pdf", "rotate-pdf"],
   },
@@ -593,18 +308,10 @@ export const tools: ToolConfig[] = [
       "Free PDF rotation tool. Rotate all pages or specific pages of a PDF by 90, 180 or 270 degrees — entirely in your browser, no upload required.",
     component: RotatePdf,
     about: [
-      "Scanned documents come out sideways or upside-down more often than anyone would like — a phone held the wrong way, a scanner fed a page in landscape when the document is portrait. This tool rotates a PDF's pages by 90°, 180° or 270°, fixing the orientation without needing to rescan anything.",
+      "This tool rotates a PDF's pages by 90°, 180° or 270°, fixing the orientation without needing to rescan anything. Scanned documents come out sideways or upside-down more often than anyone would like — a phone held the wrong way, a scanner fed a page in landscape when the document is portrait.",
       "Every page is shown as a live thumbnail. Use the \"Rotate all\" buttons to spin the whole document, or click individual pages (or select several at once) and rotate just those. Each preview updates immediately to show exactly what will be saved, and rotation stacks on top of whatever orientation a page already has — so you can nudge a sideways page further if one pass isn't enough.",
       "The rotation is a page-level property recognised by every PDF viewer, not a re-render of the content, so text stays sharp and selectable, and file size is essentially unaffected. As always, this runs entirely in your browser — scanned IDs, contracts and reports never leave your device to get straightened out.",
       "This is a quick fix for a problem that otherwise sends people back to a scanner or a phone camera: a handful of sideways pages in an otherwise fine document. Fix the orientation here, then move straight into merging, reordering or numbering if the corrected file needs further assembly.",
-    ],
-    directAnswer: "Rotate PDF easily fixes the orientation of upside-down or sideways pages in your document directly in your browser.",
-    example: "You can straighten a page that was accidentally scanned upside down without needing to rescan the physical document.",
-    steps: [
-      "Upload your PDF document to the tool.",
-      "Click the rotate buttons on individual pages, or rotate the entire document.",
-      "Apply the rotation changes.",
-      "Download the correctly oriented PDF."
     ],
     faq: [
       {
@@ -622,16 +329,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Run the tool again on that page with a different angle — 90° now plus another 90° gives 180° total, so you can nudge orientation in steps until it's correct.",
       },
-      {
-        question: "Are my files uploaded during the rotation process?",
-        answer:
-          "No, everything is processed locally on your device. Your sensitive files are completely safe and never uploaded to any server.",
-      },
-      {
-        question: "Will this fix the orientation permanently?",
-        answer:
-          "Yes. The rotation change is saved into the file properties, so it will open correctly in any standard PDF viewer in the future.",
-      }
     ],
     related: ["reorder-pdf-pages", "extract-pdf-pages", "merge-pdf", "split-pdf"],
   },
@@ -644,19 +341,19 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free PDF watermark tool. Add a custom diagonal text watermark like CONFIDENTIAL or DRAFT across every page of a PDF — entirely in your browser.",
     component: WatermarkPdf,
+    howTo: {
+      name: "How to add a watermark to a PDF",
+      steps: [
+        { name: "Choose your file", text: "Select the PDF you want to watermark." },
+        { name: "Set the watermark text and opacity", text: "Enter your watermark text and adjust its opacity from 5% to 100%." },
+        { name: "Apply and download", text: "Click apply — the watermarked PDF downloads instantly, processed entirely in your browser." },
+      ],
+    },
     about: [
-      "A watermark communicates a document's status at a glance — DRAFT before it's final, CONFIDENTIAL before it's shared widely, SAMPLE on a preview you're not ready to hand over as the finished product. This tool stamps your chosen text diagonally across every page of a PDF, sized and angled the way professional watermarks conventionally are.",
+      "This tool stamps your chosen text diagonally across every page of a PDF, sized and angled the way professional watermarks conventionally are. A watermark communicates a document's status at a glance — DRAFT before it's final, CONFIDENTIAL before it's shared widely, SAMPLE on a preview you're not ready to hand over as the finished product.",
       "Type your text (CONFIDENTIAL, DRAFT, and your own company name are all common choices), set the opacity, and apply — the watermark appears in light grey at 45 degrees across the centre of every page, visible enough to communicate status without making the underlying content unreadable. Lower opacity for a subtle mark, higher for one that's impossible to miss.",
       "This is a deterrent and a status marker, not a security measure — a determined recipient can remove a text watermark from a PDF with the right tools, so don't rely on it to protect genuinely sensitive content; use it to communicate intent (this is a draft, this isn't for redistribution) to a good-faith reader. Everything runs locally in your browser, so the document you're watermarking is never uploaded.",
       "Watermarking pairs naturally with page numbering when a document is circulating for review — CONFIDENTIAL across the page and a page number in the corner give reviewers both the status and a way to reference a specific spot in comments. Both tools apply cleanly to a file you've already merged, reordered or trimmed with the other tools in this suite.",
-    ],
-    directAnswer: "Add Watermark to PDF allows you to stamp diagonal text, like 'DRAFT' or 'CONFIDENTIAL', across every page of your document.",
-    example: "You can apply a 'CONFIDENTIAL' watermark to an unreleased internal memo before distributing it to your team.",
-    steps: [
-      "Upload your PDF document.",
-      "Enter your custom watermark text and choose its opacity.",
-      "Apply the watermark.",
-      "Download the watermarked PDF file."
     ],
     faq: [
       {
@@ -674,16 +371,6 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes, it's applied uniformly across every page of the document at the same size, position and angle.",
       },
-      {
-        question: "Can I add a picture or logo as a watermark?",
-        answer:
-          "This specific tool adds text watermarks. If you need to stamp an image or logo, use our PDF Signature tool, which allows you to place custom image stamps anywhere.",
-      },
-      {
-        question: "Is my document secure while adding a watermark?",
-        answer:
-          "Absolutely. Your document is processed entirely on your own device, meaning it is never uploaded to external servers.",
-      }
     ],
     related: ["add-page-numbers-to-pdf", "pdf-metadata-editor", "merge-pdf", "nda-generator"],
   },
@@ -697,18 +384,10 @@ export const tools: ToolConfig[] = [
       "Free PDF page numbering tool. Add page numbers to every page of a PDF with your choice of position (bottom-centre, bottom-right, top-right) and start number.",
     component: PageNumbersPdf,
     about: [
-      "A multi-page report, contract or manual without page numbers is harder to navigate, harder to reference in a meeting (\"see page 12\" only works if pages are numbered), and looks unfinished. This tool adds numbers to every page of a PDF in one pass, with the position and starting number you choose.",
+      "This tool adds numbers to every page of a PDF in one pass, with the position and starting number you choose. A multi-page report, contract or manual without page numbers is harder to navigate, harder to reference in a meeting (\"see page 12\" only works if pages are numbered), and looks unfinished.",
       "Pick bottom-centre (the most common convention for formal documents), bottom-right, or top-right, and set the starting number if the first page shouldn't be \"1\" — useful when a cover page or table of contents precedes the numbered content and you want numbering to begin at the first real page, or when this PDF is a continuation of another document.",
       "Numbers are added as new text on each page without altering any existing content underneath, so nothing already on the page is affected. As with the rest of this toolset, the whole operation happens in your browser — the document is never uploaded to add something as simple as page numbers.",
       "This is usually one of the last steps before a document ships — after pages are merged, reordered and trimmed to their final sequence, numbering makes the result easy to navigate and reference. Run it right before you send the file, since renumbering after adding or removing pages later would shift everything that follows.",
-    ],
-    directAnswer: "Add Page Numbers to PDF inserts sequential numbering into your document's margins, letting you choose the exact starting number and position.",
-    example: "You can number a 50-page financial report starting from page 5, placing the numbers neatly in the bottom-right corner.",
-    steps: [
-      "Upload the PDF you want to number.",
-      "Select the position for the page numbers and your starting number.",
-      "Click to apply the page numbers.",
-      "Download the newly numbered PDF."
     ],
     faq: [
       {
@@ -726,16 +405,6 @@ export const tools: ToolConfig[] = [
         answer:
           "This tool only adds numbers; to remove ones added incorrectly, use your original (un-numbered) file and start over, or edit the PDF in a full editor to delete the specific text elements.",
       },
-      {
-        question: "Does adding page numbers decrease my file's quality?",
-        answer:
-          "No. The numbers are simply placed as extra text elements on top of the original pages, so everything else remains exactly the same.",
-      },
-      {
-        question: "Are my documents kept private during this process?",
-        answer:
-          "Yes. All modifications occur locally in your browser, ensuring your files are never transmitted to our servers.",
-      }
     ],
     related: ["add-watermark-to-pdf", "merge-pdf", "reorder-pdf-pages", "pdf-metadata-editor"],
   },
@@ -749,18 +418,10 @@ export const tools: ToolConfig[] = [
       "Free PDF metadata editor. View and edit a PDF's title, author, subject and keywords — the properties shown in file browsers and PDF readers — in your browser.",
     component: PdfMetadataEditor,
     about: [
-      "Every PDF carries a small set of metadata fields — title, author, subject, keywords — that don't appear on the page itself but show up in file browsers, PDF reader \"document properties\" panels, and search indexes. Left unedited, these often default to whatever a scanner or export tool auto-filled: a generic \"Untitled,\" the wrong author name, or nothing at all.",
+      "A PDF's metadata is a small set of fields — title, author, subject, keywords — that don't appear on the page itself but show up in file browsers, PDF reader \"document properties\" panels, and search indexes. Left unedited, these often default to whatever a scanner or export tool auto-filled: a generic \"Untitled,\" the wrong author name, or nothing at all.",
       "This tool loads your PDF's current metadata, lets you view and edit each field, and saves an updated copy. Correct metadata matters more than it seems: a properly titled and authored PDF is easier to find later in a folder of similarly-named scans, search engines can index it more usefully if it's ever published online, and a professional document with the right author name looks more polished when a recipient checks its properties.",
       "It's also useful defensively — removing metadata that leaked from an internal template (an old company name, a previous author who's since left) before sending a document externally. As with every tool in this suite, your file is read and edited entirely in your browser; the metadata you're viewing is never transmitted anywhere.",
       "A quick pass with this tool before publishing or sharing a PDF externally takes seconds and closes off a small but real source of accidental information leakage. Pair it with Compress PDF, which also strips redundant metadata as part of its structural cleanup, if file size is a concern too.",
-    ],
-    directAnswer: "PDF Metadata Editor allows you to view and alter the hidden properties of your file, such as the title, author, subject, and keywords.",
-    example: "You can remove your internal company name and author details from a PDF's metadata before publishing it publicly on your website.",
-    steps: [
-      "Select your PDF file to load its current metadata.",
-      "Modify or clear the Title, Author, Subject, or Keyword fields.",
-      "Save your changes to update the file.",
-      "Download the document with its new metadata."
     ],
     faq: [
       {
@@ -778,75 +439,52 @@ export const tools: ToolConfig[] = [
         answer:
           "No — metadata is separate from the page content. Editing title, author, subject or keywords has no effect on what's displayed when the PDF is opened or printed.",
       },
-      {
-        question: "Will editing metadata reduce my file size?",
-        answer:
-          "No, modifying text metadata has almost zero impact on file size. If you want to reduce the size, you should use the Compress PDF tool instead.",
-      },
-      {
-        question: "Is this tool secure for my confidential files?",
-        answer:
-          "Absolutely. Your document's metadata is read and modified directly on your device inside your web browser, never uploaded.",
-      }
     ],
     related: ["compress-pdf", "add-watermark-to-pdf", "merge-pdf", "privacy-policy-generator"],
   },
   {
     kind: "file-tool",
-    slug: "pdf-editor",
+    slug: "pdf-to-word",
     category: "pdf-tools",
-    name: "PDF Editor",
-    tagline: "Edit text and add text boxes, headings and paragraphs to a PDF — in your browser.",
+    name: "PDF to Word Converter",
+    tagline: "Convert a PDF's text into an editable Word document — entirely in your browser.",
     seoDescription:
-      "Free PDF text editor. Edit existing text, and add headings, taglines, paragraphs and text boxes to a PDF right in your browser — then download a real edited PDF. No upload, no watermark, no sign-up.",
-    component: PdfEditor,
+      "Free PDF to Word converter. Extract a PDF's text and convert it into an editable .docx file, right in your browser — no upload, no sign-up, no watermark.",
+    component: PdfToWord,
+    howTo: {
+      name: "How to convert a PDF to Word",
+      steps: [
+        { name: "Choose your PDF", text: "Select the text-based PDF you want to convert." },
+        { name: "Convert", text: "Click convert — pdf.js extracts the real text of each page, in your browser." },
+        { name: "Download the .docx", text: "The editable Word document downloads automatically." },
+      ],
+    },
     about: [
-      "A PDF usually arrives frozen — as if the text on it were permanently baked in. This tool makes the text editable directly in your browser: upload a PDF, and every piece of text the page can detect appears as a small box you can click, edit, restyle or remove. You can also add your own content anywhere on any page — a heading, a tagline, a paragraph, or a free text box — position it with your mouse, choose a font, size and colour, and download a genuinely modified PDF document.",
-      "Adding new content is precise: place a heading for a proposal cover, a tagline under a logo, a paragraph of updated terms, or a text box next to a figure, then drag, resize and restyle it live on the page preview. Paragraphs and text boxes wrap within their width, and alignment, bold/italic, colour and font (sans, serif, monospace or handwriting) are all under your control. Every change is previewed in place, so what you see before clicking download is exactly what lands in the file.",
-      "Existing text is handled honestly, within the real limits of PDF technology: a standard browser can't rewrite the original text stream of an existing page, so replacing an existing piece of text covers the original area with a white rectangle and redraws your replacement on top in the font you pick — ideal on light, plain backgrounds. The original, sum-tested content streams can't be reused unscrambled, so the exact look of a replaced word isn't preserved; everything else on the page — layout, images, and every other line of text — is left byte-for-byte intact. Password-protected PDFs can't be edited and will be rejected rather than opened.",
-      "As with every tool in this suite, processing happens entirely in your browser. The PDF never leaves your device, which makes the editor safe for contracts, invoices and internal documents. There's no watermark, no size-based paywall, and no sign-up — upload, edit and download, done.",
-    ],
-    directAnswer: "PDF Editor lets you modify existing text, or add new text boxes, paragraphs, and headings to your PDF locally in your browser.",
-    example: "You can use it to update an old date or fix a typo on a PDF flyer without needing the original design file.",
-    steps: [
-      "Upload the PDF you need to edit.",
-      "Click existing text to modify it, or use the tools to add new text.",
-      "Style the text with your preferred font, color, and size.",
-      "Download the fully edited PDF document."
+      "The practical fix most people need for editing a PDF is simpler than full layout conversion: get the words out of the PDF and into an editable Word document you can rewrite, comment on, or paste into another document. Editing a PDF directly is awkward — the format is designed to display a page identically everywhere, not to be reflowed and retyped.",
+      "This tool reads your PDF's real text (not an image of it) page by page, using the same rendering engine browsers use to display PDFs, and rebuilds it as a standard .docx file with each page's lines preserved in order. It's an honest \"basic conversion\": paragraph text carries over cleanly, but complex layouts — multi-column pages, tables, and embedded images — are not reconstructed, because faithfully reconstructing those from a PDF's structure genuinely needs a dedicated commercial OCR/layout engine, not a client-side text extractor.",
+      "If your PDF is a scanned document (a photo or scan saved as PDF, with no real selectable text underneath), this tool has nothing to extract — run it through an OCR tool first to generate real text, then convert that. For text-based PDFs — reports, letters, contracts, articles — this gets you from locked PDF to an editable document in one click, with the file never leaving your device.",
     ],
     faq: [
       {
-        question: "Does this tool create real edits in the downloaded file?",
+        question: "Will this preserve my PDF's exact layout, tables and images?",
         answer:
-          "Yes. The download is a real, modified PDF file: new text you add is drawn into the document, and replaced text is covered and redrawn in place. It is not a mock-up or an overlay that only looks right on screen.",
+          "No — it extracts the real text in reading order and rebuilds it as a plain, editable document. Multi-column layouts, tables and images are not reconstructed. For text-heavy documents like letters, reports and contracts this is usually exactly what you need; for a design-heavy PDF, expect to reformat after converting.",
       },
       {
-        question: "What are the limits when editing existing text?",
+        question: "Why did I get an error saying no text was found?",
         answer:
-          "A PDF's existing text stream can't be rewritten by a browser library, so a replaced piece of text is covered with a white rectangle and redrawn in your chosen font on top. Works cleanly on light, plain backgrounds; decorated or dark backgrounds may show a white patch. The original font of a replaced word can't be reused, so the new text uses the font you select.",
+          "Your PDF is likely a scanned image (a photo or scan saved as a PDF) rather than real, selectable text. Run it through an OCR tool to generate actual text first, then convert the result.",
       },
       {
-        question: "Can I edit scanned images or password-protected PDFs?",
+        question: "Is my file uploaded anywhere?",
         answer:
-          "No. A scanned PDF is made of images, not text, so there's nothing to detect or edit — our JPG-to-PDF and PNG-to-PDF converters work the other direction. Password-protected PDFs are rejected rather than opened, and are never bypassed.",
+          "No — the PDF is read and converted entirely in your browser using pdf.js and the docx library. The file never leaves your device.",
       },
       {
-        question: "Does editing change the rest of my document?",
-        answer:
-          "No. Every other page, image, vector graphic and line of text you don't touch is preserved exactly. Only the areas you edit are covered and redrawn.",
+        question: "Does this work on password-protected PDFs?",
+        answer: "No — remove the password using your PDF reader first, then convert the unprotected file.",
       },
-      {
-        question: "Is this tool safe for confidential files?",
-        answer:
-          "Yes. Your PDF is processed locally on your computer inside your web browser. Nothing is sent to our servers, maintaining complete privacy.",
-      }
     ],
-    related: [
-      "pdf-signature",
-      "pdf-to-word-converter",
-      "add-watermark-to-pdf",
-      "add-page-numbers-to-pdf",
-      "merge-pdf",
-    ],
+    related: ["merge-pdf", "split-pdf", "pdf-metadata-editor", "word-counter"],
   },
 ];

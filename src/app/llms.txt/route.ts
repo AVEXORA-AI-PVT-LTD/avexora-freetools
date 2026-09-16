@@ -1,30 +1,33 @@
-import { categories, SITE_URL } from "@/tools/categories";
-import { allTools } from "@/tools/registry";
+import { categories, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { toolsByCategory } from "@/tools/registry";
 
-export const dynamic = "force-static";
+// Follows the llms.txt convention (https://llmstxt.org/) so AI crawlers and
+// answer engines can discover the tool catalog without guessing from HTML.
+export function GET() {
+  const lines: string[] = [];
 
-export async function GET() {
-  let content = `# Avexora Tools\n`;
-  content += `Avexora Tools, by Avexora, provides practical online business tools such as calculators, generators, PDF utilities, image utilities, AI writing tools, developer/web utilities, HR/payroll tools, finance tools, invoicing/billing tools, and business/legal utilities for everyday work.\n\n`;
+  lines.push(`# ${SITE_NAME}`);
+  lines.push("");
+  lines.push(
+    `> Free calculators, generators, PDF & image utilities and AI writing tools for Indian businesses — GST, EMI, HR/payroll, invoicing, legal and marketing tools included. No sign-up, no cost. Built by Avexora, makers of Enterprise Business OS (EBOS).`,
+  );
+  lines.push("");
+  lines.push(`Site: ${SITE_URL}`);
+  lines.push("");
 
-  content += `## Main Categories\n`;
-  categories.forEach((cat) => {
-    content += `- ${cat.name} — ${SITE_URL}/${cat.slug}\n`;
-  });
+  for (const category of categories) {
+    const tools = toolsByCategory[category.slug];
+    if (tools.length === 0) continue;
+    lines.push(`## ${category.name}`);
+    lines.push("");
+    for (const tool of tools) {
+      const url = `${SITE_URL}/${category.slug}/${tool.slug}`;
+      lines.push(`- [${tool.name}](${url}): ${tool.tagline}`);
+    }
+    lines.push("");
+  }
 
-  content += `\n## Important Pages\n`;
-  content += `- Homepage — ${SITE_URL}\n`;
-  content += `- Brand Studio — ${SITE_URL}/studio\n`;
-  content += `- Pricing — ${SITE_URL}/studio/pricing\n`;
-
-  content += `\n## Tool Directory\n`;
-  allTools.forEach((tool) => {
-    content += `- ${tool.name} — ${SITE_URL}/${tool.category}/${tool.slug}\n`;
-  });
-
-  return new Response(content.trim() + "\n", {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-    },
+  return new Response(lines.join("\n"), {
+    headers: { "Content-Type": "text/markdown; charset=utf-8" },
   });
 }
