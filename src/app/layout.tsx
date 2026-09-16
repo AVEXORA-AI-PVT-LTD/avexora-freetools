@@ -5,6 +5,8 @@ import Image from "next/image";
 import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
 import AccountProviders from "@/components/account/providers";
 import { NavAccount } from "@/components/account/nav-account";
+import { getEffectiveNavigation } from "@/server/navigation";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -44,11 +46,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerLinks = await getEffectiveNavigation("HEADER");
+  const footerLinks = await getEffectiveNavigation("FOOTER");
+
   return (
     <html
       lang="en"
@@ -68,6 +73,17 @@ export default function RootLayout({
               >
                 All tools
               </Link>
+                            {headerLinks.map(link => (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  target={link.openInNewTab ? "_blank" : undefined}
+                  rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                  className="hidden text-slate-600 hover:text-slate-900 sm:inline"
+                >
+                  {link.label}
+                </a>
+              ))}
               <NavAccount />
 
               <a
@@ -109,6 +125,21 @@ export default function RootLayout({
                   Studio pricing
                 </Link>
               </div>
+              {footerLinks.length > 0 && (
+                <div>
+                  {footerLinks.map(link => (
+                    <a
+                      key={link.id}
+                      href={link.href}
+                      target={link.openInNewTab ? "_blank" : undefined}
+                      rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                      className="block text-sm font-semibold text-slate-800 hover:text-orange-800 mb-1"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
             <p className="mt-8 text-xs text-slate-500">
               © {new Date().getFullYear()} Avexora · tools.avexora.in — avex

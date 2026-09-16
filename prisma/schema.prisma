@@ -318,3 +318,20 @@ model ContentBlock {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+// ---------------------------------------------------------------------------
+// Navigation Management
+// ---------------------------------------------------------------------------
+
+model NavigationLink {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  label        String
+  href         String
+  location     String   // "HEADER" | "FOOTER"
+  displayOrder Int      @default(0)
+  status       Boolean  @default(true)
+  type         String   @default("CUSTOM") // "INTERNAL" | "EXTERNAL" | "CUSTOM"
+  openInNewTab Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
