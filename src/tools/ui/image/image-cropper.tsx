@@ -1,54 +1,110 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { ImagePicker, canvasToBlob, computeCropRect, downloadBlob, primaryBtn, useImageFile } from "./image-shared";
+import { useEffect, useRef, useState } from "react";
+import {
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
+import { ImagePicker, canvasToBlob, primaryBtn, secondaryBtn, useImageFile } from "./image-shared";
+import {
+  clientToImagePoint,
+  computeCropRect,
+  cropBoxFromPoints,
+  cropOverlayBox,
+  type CropBox,
+  type Rect,
+} from "@/tools/compute/image/crop-coords";
 
 export default function ImageCropper() {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("cropped_image");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
+
   const { file, image, error, setError, pick } = useImageFile();
-  const [box, setBox] = useState({ x: 0, y: 0, w: 0, h: 0 });
+  const [box, setBox] = useState<CropBox>({ x: 0, y: 0, w: 0, h: 0 });
+  const [overlay, setOverlay] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRectRef = useRef<Rect | null>(null);
+  const containerRectRef = useRef<Rect | null>(null);
+
+  const captureRects = () => {
+    if (!imgRef.current || !containerRef.current) return;
+    imageRectRef.current = imgRef.current.getBoundingClientRect();
+    containerRectRef.current = containerRef.current.getBoundingClientRect();
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", captureRects);
+    window.addEventListener("orientationchange", captureRects);
+    return () => {
+      window.removeEventListener("resize", captureRects);
+      window.removeEventListener("orientationchange", captureRects);
+    };
+  }, []);
+
+  const applyBox = (b: CropBox) => {
+    setBox(b);
+    if (b.w > 0 && b.h > 0 && imageRectRef.current && containerRectRef.current) {
+      setOverlay(cropOverlayBox(b, imageRectRef.current, containerRectRef.current));
+    } else {
+      setOverlay(null);
+    }
+  };
 
   const onPick = async (f: File | null) => {
     await pick(f);
-    setBox({ x: 0, y: 0, w: 0, h: 0 });
+    setDragStart(null);
+    applyBox({ x: 0, y: 0, w: 0, h: 0 });
   };
 
-  const toDisplayCoords = (clientX: number, clientY: number) => {
-    const rect = imgRef.current!.getBoundingClientRect();
-    return {
-      x: Math.max(0, Math.min(clientX - rect.left, rect.width)),
-      y: Math.max(0, Math.min(clientY - rect.top, rect.height)),
-    };
-  };
-
-  const onPointerDown = (e: React.PointerEvent) => {
-    const p = toDisplayCoords(e.clientX, e.clientY);
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    captureRects();
+    if (!imageRectRef.current) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // Pointer already released; the drag simply won't capture.
+    }
+    const p = clientToImagePoint(e.clientX, e.clientY, imageRectRef.current);
     setDragStart(p);
-    setBox({ x: p.x, y: p.y, w: 0, h: 0 });
+    applyBox({ x: p.x, y: p.y, w: 0, h: 0 });
   };
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragStart) return;
-    const p = toDisplayCoords(e.clientX, e.clientY);
-    setBox({
-      x: Math.min(dragStart.x, p.x),
-      y: Math.min(dragStart.y, p.y),
-      w: Math.abs(p.x - dragStart.x),
-      h: Math.abs(p.y - dragStart.y),
-    });
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStart || !imageRectRef.current) return;
+    const p = clientToImagePoint(e.clientX, e.clientY, imageRectRef.current);
+    applyBox(cropBoxFromPoints(dragStart, p));
   };
-  const onPointerUp = () => setDragStart(null);
+
+  const onPointerEnd = () => setDragStart(null);
 
   const crop = async () => {
-    if (!file || !image || !imgRef.current || box.w < 2 || box.h < 2) {
+    if (!file || !image || box.w < 2 || box.h < 2) {
       setError("Drag on the image to select a crop area first.");
       return;
     }
     setBusy(true);
     setError(null);
     try {
-      const rect = imgRef.current.getBoundingClientRect();
+      const rect = imageRectRef.current ?? imgRef.current?.getBoundingClientRect();
+      if (!rect) {
+        setError("The image could not be measured. Please reselect the crop area.");
+        return;
+      }
       const cropRect = computeCropRect(box, rect, image.naturalWidth, image.naturalHeight);
       if (!cropRect) {
         setError("The selected crop area is too small. Please select a larger area.");
@@ -63,7 +119,9 @@ export default function ImageCropper() {
 
       const type = file.type === "image/png" ? "image/png" : "image/jpeg";
       const blob = await canvasToBlob(canvas, type, 0.92);
-      downloadBlob(blob, file.name.replace(/\.\w+$/, "") + "-cropped" + (type === "image/png" ? ".png" : ".jpg"));
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(file.name.replace(/\.\w+$/, "") + "-cropped" + (type === "image/png" ? ".png" : ".jpg"));
+      setResultBlob(blob);
     } catch {
       setError("Something went wrong while cropping this image.");
     } finally {
@@ -76,8 +134,14 @@ export default function ImageCropper() {
       <ImagePicker file={file} image={image} onPick={onPick} />
       {image && (
         <figure className="overflow-hidden rounded-lg border border-slate-200">
-          <div className="relative select-none touch-none bg-slate-50 p-3 sm:p-4"
-            onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+          <div
+            ref={containerRef}
+            className="relative select-none touch-none bg-slate-50 p-3 sm:p-4"
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerEnd}
+            onPointerCancel={onPointerEnd}
+          >
             <img
               ref={imgRef}
               src={image.src}
@@ -85,10 +149,10 @@ export default function ImageCropper() {
               className="block max-w-full rounded border border-slate-200 bg-white shadow-sm"
               draggable={false}
             />
-            {box.w > 0 && (
+            {overlay && (
               <div
                 className="pointer-events-none absolute border-2 border-orange-500 bg-orange-500/20"
-                style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
+                style={{ left: overlay.left, top: overlay.top, width: overlay.width, height: overlay.height }}
               />
             )}
           </div>
@@ -99,7 +163,7 @@ export default function ImageCropper() {
             <span className="font-medium text-slate-600">{file?.name}</span>
             {box.w >= 2 && box.h >= 2 ? (
               <span>
-                Selected {Math.round(box.w)} × {Math.round(box.h)}px — Crop &amp; download below
+                Selected {Math.round(box.w)} × {Math.round(box.h)}px — Crop image below
               </span>
             ) : (
               <span>Drag across the image to select the area to crop</span>
@@ -108,9 +172,26 @@ export default function ImageCropper() {
         </figure>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={crop} disabled={!image || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Cropping…" : "Crop & download"}
+      <button type="button" onClick={crop} disabled={!image || busy} className={primaryBtn}>
+        {busy ? "Cropping…" : "Crop image"}
       </button>
+      {resultUrl && resultBlob && (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            Cropped image ready — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => void downloadOne(resultBlob, resultFilename)}
+              className={primaryBtn} data-lead-action="download">
+              Download cropped image
+            </button>
+            <button type="button" onClick={() => { onPick(null); setResultUrl(null); setResultBlob(null); }}
+              className={secondaryBtn}>
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

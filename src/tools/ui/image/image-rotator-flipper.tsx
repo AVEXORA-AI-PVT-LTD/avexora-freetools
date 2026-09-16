@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  ImagePicker, canvasToBlob, downloadBlob, inputCls, labelCls, primaryBtn, rotateFlipGeometry, useImageFile,
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
+import {
+  ImagePicker, canvasToBlob, inputCls, labelCls, primaryBtn, rotateFlipGeometry, secondaryBtn, useImageFile,
 } from "./image-shared";
 
 /** Cap the live preview's longest side so huge images map down without blowing up memory. */
@@ -35,6 +39,21 @@ function drawPreview(
 }
 
 export function ImageRotatorFlipper() {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("edited_image");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
+
   const { file, image, error, setError, pick } = useImageFile();
   const [rotation, setRotation] = useState("0");
   const [flipH, setFlipH] = useState(false);
@@ -67,7 +86,9 @@ export function ImageRotatorFlipper() {
 
       const type = file.type === "image/png" ? "image/png" : "image/jpeg";
       const blob = await canvasToBlob(canvas, type, 0.92);
-      downloadBlob(blob, file.name.replace(/\.\w+$/, "") + "-edited" + (type === "image/png" ? ".png" : ".jpg"));
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(file.name.replace(/\.\w+$/, "") + "-edited" + (type === "image/png" ? ".png" : ".jpg"));
+      setResultBlob(blob);
     } catch {
       setError("Something went wrong while processing this image.");
     } finally {
@@ -126,9 +147,26 @@ export function ImageRotatorFlipper() {
         </div>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={apply} disabled={!image || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Applying…" : "Apply & download"}
+      <button type="button" onClick={apply} disabled={!image || busy} className={primaryBtn}>
+        {busy ? "Applying…" : "Apply changes"}
       </button>
+      {resultUrl && resultBlob && (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            Edited image ready — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => void downloadOne(resultBlob, resultFilename)}
+              className={primaryBtn} data-lead-action="download">
+              Download image
+            </button>
+            <button type="button" onClick={() => { pick(null); setResultUrl(null); setResultBlob(null); }}
+              className={secondaryBtn}>
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

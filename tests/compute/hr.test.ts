@@ -12,7 +12,7 @@ import { generatePayslip } from "@/tools/compute/hr/payslip";
 import { generateOfferLetter } from "@/tools/compute/hr/offer-letter";
 import { generateAppointmentLetter } from "@/tools/compute/hr/appointment-letter";
 import { generateExperienceLetter } from "@/tools/compute/hr/experience-letter";
-import { generateResume } from "@/tools/compute/hr/resume";
+import { buildResumeText, resumeFilename, validateResume, type ResumeInput } from "@/tools/compute/hr/resume";
 
 function resultMap(fn: ComputeFn, values: FieldValues) {
   const out = fn(values);
@@ -235,23 +235,25 @@ describe("generateExperienceLetter", () => {
   });
 });
 
-describe("generateResume", () => {
-  const base: FieldValues = {
+describe("resume builder", () => {
+  const base: ResumeInput = {
     fullName: "Priya Sharma",
+    targetRole: "",
     email: "priya@example.com",
     phone: "+91 98765 43210",
+    location: "",
+    linkedin: "",
     summary: "Product manager with 5 years of B2B SaaS experience.",
     skills: "Product strategy, SQL, Figma",
-    exp1Company: "Avexora",
-    exp1Title: "Senior PM",
-    exp1Duration: "Jan 2022 – Present",
-    exp1Highlights: "Grew activation by 18%\nShipped 3 major features",
-    eduDegree: "B.Tech, CS",
-    eduInstitution: "IIT Bombay",
+    experiences: [
+      { company: "Avexora", title: "Senior PM", duration: "Jan 2022 – Present", highlights: "Grew activation by 18%\nShipped 3 major features" },
+    ],
+    education: [{ degree: "B.Tech, CS", institution: "IIT Bombay", year: "" }],
   };
 
   it("includes name, contact, skills and experience", () => {
-    const out = textOf(generateResume, base);
+    expect(validateResume(base)).toBeNull();
+    const out = buildResumeText(base);
     expect(out).toContain("PRIYA SHARMA");
     expect(out).toContain("priya@example.com");
     expect(out).toContain("Product strategy · SQL · Figma");
@@ -259,13 +261,30 @@ describe("generateResume", () => {
     expect(out).toContain("Grew activation by 18%");
     expect(out).toContain("B.Tech, CS — IIT Bombay");
   });
-  it("omits the second job block when not provided", () => {
-    const out = textOf(generateResume, base);
+  it("supports adding multiple experience and education entries", () => {
+    const withMore: ResumeInput = {
+      ...base,
+      experiences: [
+        ...base.experiences,
+        { company: "Nimbus Software", title: "Product Analyst", duration: "Jun 2019 – Dec 2021", highlights: "" },
+      ],
+      education: [
+        ...base.education,
+        { degree: "MBA", institution: "IIM Ahmedabad", year: "2021" },
+      ],
+    };
+    const out = buildResumeText(withMore);
+    expect(out).toContain("Product Analyst — Nimbus Software (Jun 2019 – Dec 2021)");
+    expect(out).toContain("MBA — IIM Ahmedabad (2021)");
     expect(out).not.toContain("undefined");
   });
   it("rejects missing required fields", () => {
-    expect(generateResume({ ...base, fullName: "" })).toHaveProperty("error");
-    expect(generateResume({ ...base, skills: "" })).toHaveProperty("error");
-    expect(generateResume({ ...base, exp1Company: "" })).toHaveProperty("error");
+    expect(validateResume({ ...base, fullName: "" })).toMatch(/full name/);
+    expect(validateResume({ ...base, skills: "" })).toMatch(/skill/);
+    expect(validateResume({ ...base, experiences: [{ company: "", title: "", duration: "", highlights: "" }] })).toMatch(/experience/);
+    expect(validateResume({ ...base, education: [{ degree: "", institution: "", year: "" }] })).toMatch(/education/);
+  });
+  it("derives a filename from the full name", () => {
+    expect(resumeFilename("Priya Sharma")).toBe("priya-sharma-resume.txt");
   });
 });

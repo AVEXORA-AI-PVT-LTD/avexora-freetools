@@ -1,21 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  ImagePicker, canvasToBlob, downloadBlob, drawToCanvas, inputCls, labelCls, primaryBtn, useImageFile,
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
+import {
+  ImagePicker, canvasToBlob, drawToCanvas, inputCls, labelCls, primaryBtn, secondaryBtn, useImageFile,
 } from "./image-shared";
 
 export default function ImageResizer() {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("downloaded_file");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
   const { file, image, error, setError, pick } = useImageFile();
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
   const [keepAspect, setKeepAspect] = useState(true);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
+
   const onPick = async (f: File | null) => {
     await pick(f);
     setWidth("");
     setHeight("");
+    setResultUrl(null);
+    setResultBlob(null);
   };
 
   const setImageDefaults = (img: HTMLImageElement | null) => {
@@ -51,7 +72,10 @@ export default function ImageResizer() {
       const canvas = drawToCanvas(image, w, h);
       const type = file.type === "image/png" ? "image/png" : "image/jpeg";
       const blob = await canvasToBlob(canvas, type, 0.92);
-      downloadBlob(blob, file.name.replace(/\.\w+$/, "") + `-${w}x${h}` + (type === "image/png" ? ".png" : ".jpg"));
+      if (!blob) throw new Error("Export failed");
+      setResultUrl(URL.createObjectURL(blob));
+      setResultBlob(blob);
+      setResultFilename(file.name.replace(/\.\w+$/, "") + `-${w}x${h}` + (type === "image/png" ? ".png" : ".jpg"));
     } catch {
       setError("Something went wrong while resizing this image.");
     } finally {
@@ -82,9 +106,37 @@ export default function ImageResizer() {
         </div>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={resize} disabled={!image || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Resizing…" : "Resize & download"}
+      
+      <button
+        type="button"
+        disabled={busy || !image}
+        onClick={resize}
+        className={primaryBtn}
+      >
+        {busy ? "Processing..." : "Resize Image"}
       </button>
+
+      {resultUrl && resultBlob && (
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => void downloadOne(resultBlob, resultFilename)}
+            className={primaryBtn}
+            data-lead-action="download"
+          >
+            Download Resized Image
+          </button>
+          <button
+            type="button"
+            onClick={() => onPick(null)}
+            className={secondaryBtn}
+          >
+            Start over
+          </button>
+        </div>
+        </div>
+      )}
     </div>
   );
 }

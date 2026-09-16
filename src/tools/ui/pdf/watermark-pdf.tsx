@@ -1,13 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { PdfPicker, downloadBytes, inputCls, labelCls, primaryBtn, usePdfFile } from "./pdf-shared";
+import { useEffect, useState } from "react";
+import { PdfPicker, inputCls, labelCls, primaryBtn, secondaryBtn, usePdfFile } from "./pdf-shared";
+import {
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
 
 export default function WatermarkPdf() {
-  const { file, pageCount, error, setError, pick } = usePdfFile();
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
   const [text, setText] = useState("CONFIDENTIAL");
   const [opacity, setOpacity] = useState("30");
   const [busy, setBusy] = useState(false);
+  const { file, pageCount, error, setError, pick } = usePdfFile();
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
 
   const apply = async () => {
     if (!file || !text.trim()) {
@@ -41,7 +60,11 @@ export default function WatermarkPdf() {
           rotate: degrees(45),
         });
       }
-      downloadBytes(await doc.save(), file.name.replace(/\.pdf$/i, "") + "-watermarked.pdf");
+      const bytes = await doc.save();
+      const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(file.name.replace(/\.pdf$/i, "") + "-watermarked.pdf");
+      setResultBlob(blob);
     } catch {
       setError("Something went wrong while adding the watermark.");
     } finally {
@@ -67,9 +90,36 @@ export default function WatermarkPdf() {
         </div>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={apply} disabled={!file || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Applying…" : "Add watermark & download"}
-      </button>
+      {!resultUrl ? (
+        <button type="button" onClick={apply} disabled={!file || busy} className={primaryBtn}>
+          {busy ? "Applying…" : "Add watermark"}
+        </button>
+      ) : (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            Watermark added — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {resultUrl && resultBlob && (
+              <button
+                type="button"
+                onClick={() => void downloadOne(resultBlob, resultFilename)}
+                className={primaryBtn}
+                data-lead-action="download"
+              >
+                Download PDF
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => { pick(null); setResultUrl(null); setResultBlob(null); }}
+              className={secondaryBtn}
+            >
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

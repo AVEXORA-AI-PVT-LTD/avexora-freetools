@@ -22,18 +22,23 @@ export const tools: ToolConfig[] = [
       "Create a professional GST invoice and print or save it as PDF — no sign-up needed.",
     seoDescription:
       "Free online GST invoice generator for India. Add your business details, line items and GST rates, then print or save a professional tax invoice as PDF in seconds.",
+    directAnswer:
+      "A free GST tax invoice generator for India that builds a professional invoice in your browser — business and customer details, line items with GST slabs, and a live CGST/SGST or IGST breakup — ready to print or save as PDF without sign-up.",
+    formula:
+      "Per-line GST (intra-state) = line amount × rate ÷ 100, split as CGST = SGST = GST ÷ 2. For inter-state supply: IGST = line amount × rate ÷ 100. Total = subtotal + GST.",
+    example:
+      "Example: You sell software services worth ₹50,000 to a client in another state. The generator calculates 18% IGST (₹9,000) and outputs a clean ₹59,000 invoice ready for printing.",
+    steps: [
+      "Enter your business details (name, address, GSTIN) and the customer's details.",
+      "Add line items with description, quantity, rate and GST slab.",
+      "Tick Inter-state (IGST) if the sale is to another state; otherwise the GST split shows as CGST + SGST.",
+      "Review the live preview — the invoice number, date and tax breakup are shown before printing.",
+      "Click Print / Save as PDF and choose Save as PDF in the browser's print dialog.",
+    ],
     component: InvoiceGenerator,
     emailGate: true,
-    howTo: {
-      name: "How to create a GST invoice",
-      steps: [
-        { name: "Enter business and customer details", text: "Add your business details, the customer's details and an invoice number." },
-        { name: "Add line items", text: "List each item or service with quantity, rate and GST rate — the totals and CGST/SGST or IGST split calculate automatically." },
-        { name: "Print or save as PDF", text: "Use your browser's print dialog to save the invoice as a PDF or print it directly." },
-      ],
-    },
     about: [
-      "This free generator builds a clean, professional GST tax invoice in your browser: enter your business and customer details, add line items with quantity, rate and GST slab, and the invoice preview updates live with the correct CGST/SGST or IGST split.",
+      "Every business needs invoices, but not every business needs invoicing software on day one. This free generator builds a clean, professional GST tax invoice in your browser: enter your business and customer details, add line items with quantity, rate and GST slab, and the invoice preview updates live with the correct CGST/SGST or IGST split — the same [GST calculator](/finance-calculators/gst-calculator) formula you'd use to verify the tax by hand.",
       "For sales within your state, GST is split as CGST + SGST; tick “Inter-state (IGST)” for sales to another state and the invoice shows IGST instead. When you're done, hit Print / Save as PDF — your browser's print dialog lets you save a PDF copy to send to your customer.",
       "A proper tax invoice needs a few things to be taken seriously — and to keep your GST paperwork clean: your business name, address and GSTIN, the customer's details, a unique invoice number, the invoice date, a clear description of each item or service with quantity and rate, the applicable GST slab per line, and the tax breakup shown separately from the subtotal. This generator lays all of that out in a clean, conventional format that accountants and customers recognise immediately, so you don't have to fight a spreadsheet template into shape.",
       "Your data stays on your device: nothing you type is uploaded or stored on our servers, which makes it safe to use for real customer details. If you raise more than a handful of invoices a month, though, a generator stops being enough — you'll want automatic numbering, saved customer records, GST reports and payment tracking with reminders. That's exactly what the EBOS Billing module does, and your invoices there will look just like the ones you make here.",
@@ -59,6 +64,11 @@ export const tools: ToolConfig[] = [
         answer:
           "Charge IGST when the place of supply is in a different state from your registration (inter-state supply). For supplies within the same state, split the tax equally as CGST and SGST.",
       },
+      {
+        question: "Can I add a digital signature or logo to this free invoice?",
+        answer:
+          "This free generator produces a standardized clean format without image uploads. For logos and signatures, you can use comprehensive billing software or sign the printed copy manually.",
+      },
     ],
     related: ["quotation-generator", "gst-calculator", "receipt-generator", "payment-reminder-generator"],
   },
@@ -70,6 +80,17 @@ export const tools: ToolConfig[] = [
     tagline: "Create a professional price quotation with line items and validity date.",
     seoDescription:
       "Free quotation generator. Add your business details, customer, line items and validity date to create a professional price quotation in seconds.",
+    directAnswer:
+      "A quotation generator that creates a clean, itemised price quotation — business and customer details, line items, computed totals and a validity date — a professional estimate, not a tax invoice.",
+    example:
+      "Example: Creating a quote for a website design project? Add line items for 'Design' (₹25,000) and 'Hosting' (₹3,000), set a 15-day validity, and generate a professional PDF estimate.",
+    steps: [
+      "Enter your business name, the customer name and a quotation number.",
+      "Set the quotation date and, optionally, a valid-until date.",
+      "Enter line items — one per line: description, quantity, rate (e.g. \"Website design, 1, 25000\").",
+      "Click Generate quotation to compute line totals and the grand total automatically.",
+      "Send or print the quotation; convert it to a proper invoice once the customer accepts.",
+    ],
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
@@ -80,19 +101,11 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateQuotation,
     submitLabel: "Generate quotation",
-    emailGate: true,
-    howTo: {
-      name: "How to create a quotation",
-      steps: [
-        { name: "Enter business and customer details", text: "Add your business name, the customer's name, a quotation number and date." },
-        { name: "List your line items", text: "Add each item as one line — description, quantity and rate — and a validity date." },
-        { name: "Generate and send", text: "Click generate, then copy or download the finished quotation to send to your customer." },
-      ],
-    },
+    requireAuth: true,
     about: [
       "A quotation is the first document a prospective customer sees before committing to buy — it needs to look professional enough to build confidence while making the price and scope unambiguous. This generator produces a clean, itemised quotation from your business details, customer name, and a simple line-item list, ready to send or print.",
       "Enter each item as a single line — description, quantity, rate — and the generator computes line totals and the grand total automatically, formatted as a clean aligned table. Add a validity date so the customer knows the quoted prices aren't open-ended, which protects you if your costs change before they decide.",
-      "A quotation is explicitly not a tax invoice — it's an estimate, and the generated document says so clearly to avoid any confusion with your GST records. Once the customer accepts, convert it to a proper invoice using the invoice generator linked below.",
+      "A quotation is explicitly not a tax invoice — it's an estimate, and the generated document says so clearly to avoid any confusion with your GST records. Once the customer accepts, convert it to a proper invoice using the [invoice generator](/invoicing-billing/invoice-generator).",
       "Number your quotations sequentially just as you would invoices (QUOT-001, QUOT-002…) so you can track how many convert to actual sales over time — that conversion rate is a useful, easy-to-track business metric that most small businesses never bother measuring even though it's sitting right there in their sent-quotes folder.",
       "Keep a copy of every quotation you send, even the ones that don't convert — a customer who declines this time may come back months later referencing the price you quoted, and having it on hand avoids an awkward renegotiation from scratch.",
     ],
@@ -112,6 +125,16 @@ export const tools: ToolConfig[] = [
         answer:
           "One item per line, comma-separated: description, quantity, rate — for example \"Website design, 1, 25000\". The generator computes each line's amount and the grand total automatically.",
       },
+      {
+        question: "Can I convert this quotation into a GST invoice later?",
+        answer:
+          "Yes, once the customer approves the quotation, you can use our free invoice generator to create a formal tax invoice using the same details.",
+      },
+      {
+        question: "Do I need to include taxes in the quotation amount?",
+        answer:
+          "It's up to you, but clearly specifying whether the quoted amounts are inclusive or exclusive of GST helps prevent misunderstandings later.",
+      },
     ],
     related: ["invoice-generator", "proforma-invoice-generator", "purchase-order-generator", "discount-calculator"],
   },
@@ -123,6 +146,17 @@ export const tools: ToolConfig[] = [
     tagline: "Create a proforma invoice for advance payment or customs purposes.",
     seoDescription:
       "Free proforma invoice generator. Create a proforma invoice with line items for advance payment requests or customs declarations — not a tax invoice.",
+    directAnswer:
+      "A proforma invoice generator that produces a formal-looking document with line items and computed totals for advance payments, letters of credit or customs declarations — explicitly not a tax invoice or demand for payment.",
+    example:
+      "Example: A foreign buyer wants to pay you an advance for a bulk export order. You generate a proforma invoice for 50% of the value so they can process the payment.",
+    steps: [
+      "Enter your business name, the customer name and a proforma invoice number.",
+      "Set the date and enter line items — one per line: description, quantity, rate.",
+      "Click Generate proforma invoice to compute the line totals and grand total.",
+      "Send it to the customer to arrange an advance payment, letter of credit or import declaration.",
+      "Issue a proper tax invoice once the sale is finalised — never record the proforma as a sale.",
+    ],
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
@@ -132,7 +166,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateProformaInvoice,
     submitLabel: "Generate proforma invoice",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A proforma invoice sits between a quotation and a final tax invoice — used when a customer needs a formal-looking document to arrange payment (an advance, a letter of credit, an import declaration) before the actual sale and tax invoice are finalised. It looks like an invoice but explicitly isn't one for accounting or GST purposes.",
       "This generator produces exactly that: your business and customer details, line items with computed totals, and a clear statement that this is a proforma document, not a tax invoice or a demand for payment under GST law. It's commonly requested by customers making advance payments, and by customs authorities for cross-border shipments where the actual tax invoice will follow later.",
@@ -155,6 +189,16 @@ export const tools: ToolConfig[] = [
         answer:
           "No — only actual tax invoices should be recorded as sales for GST purposes. Recording a proforma invoice as a sale can create mismatches when you later issue the real tax invoice.",
       },
+      {
+        question: "Can a customer use a proforma invoice to claim input tax credit?",
+        answer:
+          "No, a proforma invoice is not a valid document for claiming Input Tax Credit (ITC) under GST rules. They must wait for the final tax invoice.",
+      },
+      {
+        question: "Do I need to include a unique invoice number on a proforma?",
+        answer:
+          "Yes, it is good practice to assign a unique reference number (e.g., PI-001) to track the proforma and match it against the final invoice later.",
+      },
     ],
     related: ["invoice-generator", "quotation-generator", "purchase-order-generator", "gst-calculator"],
   },
@@ -166,6 +210,17 @@ export const tools: ToolConfig[] = [
     tagline: "Create a clean payment receipt acknowledging money received.",
     seoDescription:
       "Free payment receipt generator. Create a professional receipt acknowledging payment received, with amount, method and purpose — ready to print or send.",
+    directAnswer:
+      "A payment receipt generator that produces a clean, professional receipt confirming the amount received, payment method, payer and what the payment was for — ready to hand over or email immediately.",
+    example:
+      "Example: A client pays you ₹15,000 via UPI for a completed consulting gig. You quickly generate a receipt referencing 'Invoice #INV-045' and email it to them.",
+    steps: [
+      "Enter your business name, the payer's name and a receipt number.",
+      "Set the receipt date and enter the amount received.",
+      "Choose the payment method (cash, bank transfer, UPI, cheque or card).",
+      "Add what the payment was for — e.g. a reference to the invoice number being settled.",
+      "Click Generate receipt, review and send it to the payer along with your own filed copy.",
+    ],
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "payerName", label: "Received from (payer name)", type: "text", placeholder: "Ravi Kumar" },
@@ -189,7 +244,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateReceipt,
     submitLabel: "Generate receipt",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A receipt is the customer's proof that a specific payment was made and accepted — it's what they'll ask for when reconciling their own books or resolving any later dispute about whether they paid. This generator produces a clean receipt with the amount, method, purpose and date, ready to hand over or email immediately after receiving payment.",
       "Fill in who paid, how much, by what method, and what it was for (referencing the original invoice number keeps your paper trail connected), and the receipt is ready. It's deliberately simple — no line items or tax breakdown, since that detail belongs on the invoice being paid, not the receipt confirming payment.",
@@ -212,6 +267,16 @@ export const tools: ToolConfig[] = [
         answer:
           "For most small transactions this is sufficient, but check current GST rules if you need to issue a formal receipt voucher (particularly for advance payments received against future supply).",
       },
+      {
+        question: "Do I need to add my digital signature to the payment receipt?",
+        answer:
+          "While a signature adds authenticity, a standard digital receipt without a signature is usually sufficient for acknowledging electronic payments like UPI or bank transfers.",
+      },
+      {
+        question: "Can I issue a single receipt for multiple invoice payments?",
+        answer:
+          "Yes, you can issue one receipt for a lump sum payment, just ensure you reference all corresponding invoice numbers in the 'Payment for' field.",
+      },
     ],
     related: ["invoice-generator", "payment-reminder-generator", "late-fee-calculator", "credit-note-generator"],
   },
@@ -223,6 +288,17 @@ export const tools: ToolConfig[] = [
     tagline: "Issue a credit note against a previous invoice for returns or corrections.",
     seoDescription:
       "Free credit note generator. Issue a credit note against an original invoice for returned goods, billing errors or discounts — with line items and reason.",
+    directAnswer:
+      "A credit note generator that formally reduces what a customer owes against a previous invoice — for returned goods, billing errors or post-sale discounts — referencing the original invoice, the reason and the credited items.",
+    example:
+      "Example: A client returns damaged goods worth ₹2,000 from an original ₹10,000 invoice. You issue a credit note for ₹2,000 referencing the original invoice number.",
+    steps: [
+      "Enter your business name, the customer name and a credit note number.",
+      "Set the date and enter the original invoice number this credit note offsets.",
+      "State the reason for the credit note (e.g. goods returned due to damage).",
+      "Enter the line items being credited — one per line: description, quantity, rate.",
+      "Click Generate credit note to issue the document and adjust your records.",
+    ],
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
@@ -234,7 +310,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateCreditNote,
     submitLabel: "Generate credit note",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A credit note reduces the amount a customer owes you against a previous invoice — issued when goods are returned, an invoice was overbilled, or you're granting a post-sale discount. It's a formal accounting document, not just an apology email, and it keeps both your books and your customer's straight on what's actually still owed.",
       "This generator references the original invoice number (so the correction is traceable), states the reason clearly, and lists the specific items or amounts being credited with computed totals. That reason field matters more than it might seem — under GST, credit notes need a documented reason, and auditors or your accountant will want it on record.",
@@ -257,6 +333,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes — credit notes against GST-registered supplies generally need to be reported in your GST returns and, above certain turnover thresholds, through e-invoicing. Confirm current requirements with your accountant.",
       },
+      {
+        question: "Is there a time limit for issuing a credit note under GST?",
+        answer:
+          "Yes, under GST, a credit note pertaining to a financial year must be issued by the 30th of November of the following financial year or the date of filing the annual return, whichever is earlier.",
+      },
+      {
+        question: "Can I issue one credit note for multiple invoices?",
+        answer:
+          "No, it is highly recommended and often required under GST rules to link a credit note to a single specific original tax invoice.",
+      },
     ],
     related: ["invoice-generator", "debit-note-generator", "refund-policy-generator", "gst-calculator"],
   },
@@ -268,6 +354,17 @@ export const tools: ToolConfig[] = [
     tagline: "Issue a debit note against a supplier invoice for returns or shortages.",
     seoDescription:
       "Free debit note generator. Issue a debit note against a supplier's invoice for returned goods, shortages or price corrections — with line items and reason.",
+    directAnswer:
+      "A debit note generator that formally records, from the buyer's side, a claim against a supplier's invoice — returned goods, short shipments or price corrections — with the original invoice reference, reason and itemised amounts.",
+    example:
+      "Example: A supplier bills you for 100 units, but you only receive 90. You issue a debit note for the 10 missing units to reduce your payment obligation.",
+    steps: [
+      "Enter your business name, the supplier name and a debit note number.",
+      "Set the date and enter the original supplier invoice number.",
+      "State the reason (e.g. goods returned due to quality issue).",
+      "Enter the line items being debited — one per line: description, quantity, rate.",
+      "Click Generate debit note and send it to the supplier as formal notice for their matching credit note.",
+    ],
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "supplierName", label: "Supplier name", type: "text", placeholder: "Global Supplies Ltd" },
@@ -279,7 +376,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateDebitNote,
     submitLabel: "Generate debit note",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A debit note is the mirror image of a credit note, issued from the buyer's side: when you return goods to a supplier, receive a short shipment, or need to correct an undercharge on their invoice, a debit note formally records that you're claiming back money or adjusting what you owe them.",
       "This generator references the supplier's original invoice number, records the reason for the adjustment, and lists the specific items or amounts involved with computed totals. As with credit notes, keeping a clear, documented reason matters for both your internal records and GST compliance.",
@@ -303,6 +400,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Ideally yes — a debit note is your formal claim, and the supplier confirming it with a matching credit note keeps both sets of books reconciled and satisfies GST documentation on both sides.",
       },
+      {
+        question: "How does a debit note affect my GST input tax credit?",
+        answer:
+          "When you issue a debit note for returned goods, your supplier should issue a corresponding credit note, which will reduce your eligible Input Tax Credit for that purchase.",
+      },
+      {
+        question: "Can a debit note be used to correct a pricing error where I was overcharged?",
+        answer:
+          "Yes, if a supplier accidentally bills you at a higher rate than agreed, you can issue a debit note for the price difference.",
+      },
     ],
     related: ["credit-note-generator", "purchase-order-generator", "invoice-generator", "gst-calculator"],
   },
@@ -314,6 +421,17 @@ export const tools: ToolConfig[] = [
     tagline: "Create a formal purchase order to send to your suppliers.",
     seoDescription:
       "Free purchase order generator. Create a formal PO with line items, delivery date and delivery address to send to your suppliers — ready to print or email.",
+    directAnswer:
+      "A purchase order generator that produces your formal, documented commitment to buy — supplier details, delivery date and address, and itemised quantities with rates — the paper trail that enables three-way matching before you pay.",
+    example:
+      "Example: You need 200 steel rods for a project. You generate a PO detailing the required quantity, a rate of ₹450 each, and a strict delivery date, then send it to the vendor.",
+    steps: [
+      "Enter your business name, supplier name and a PO number.",
+      "Set the order date and required delivery date, plus the delivery address.",
+      "Enter line items — one per line: description, quantity, rate.",
+      "Click Generate purchase order to compute quantities and totals.",
+      "Send the PO to the supplier for confirmation of receipt and delivery date before goods ship.",
+    ],
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "supplierName", label: "Supplier name", type: "text", placeholder: "Global Supplies Ltd" },
@@ -325,7 +443,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePurchaseOrder,
     submitLabel: "Generate purchase order",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A purchase order is your formal, documented commitment to buy specific goods at specific terms — sending one instead of a verbal or email agreement protects you if a supplier later disputes quantities, prices, or delivery expectations, and it gives your own accounts team a clean record to match against the eventual supplier invoice.",
       "This generator produces a complete PO: supplier details, order and required delivery dates, the delivery address, and itemised quantities and rates with computed totals. Any established supplier relationship should run on POs rather than ad-hoc ordering — it's the paper trail that makes three-way matching (PO, delivery receipt, invoice) possible before you pay a supplier invoice.",
@@ -348,6 +466,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Checking that the purchase order, the delivery/goods receipt, and the supplier's invoice all agree on quantity and price before you approve payment — a standard accounts payable control against errors and overbilling.",
       },
+      {
+        question: "Is a purchase order a legally binding contract?",
+        answer:
+          "Yes, once the supplier accepts the purchase order, it typically becomes a legally binding contract detailing the terms of the purchase.",
+      },
+      {
+        question: "Can I cancel a purchase order after it has been sent?",
+        answer:
+          "You can request a cancellation, but if the supplier has already started processing the order or incurred costs, you may be bound by their cancellation policy.",
+      },
     ],
     related: ["delivery-challan-generator", "invoice-generator", "debit-note-generator", "working-capital-calculator"],
   },
@@ -359,6 +487,17 @@ export const tools: ToolConfig[] = [
     tagline: "Create a delivery challan to accompany goods in transit.",
     seoDescription:
       "Free delivery challan generator. Create a delivery challan listing goods, quantity and vehicle details to accompany a shipment — not a tax invoice.",
+    directAnswer:
+      "A delivery challan generator that produces the document which travels with goods — consignee, vehicle number, delivery address and an itemised quantity list (no pricing) — for job work, returns, stock transfers and goods on approval.",
+    example:
+      "Example: You are sending raw materials to a contractor for job work. You generate a delivery challan listing the quantities and vehicle details to accompany the goods.",
+    steps: [
+      "Enter your business name, the consignee (receiving party) and a challan number.",
+      "Set the date, vehicle number (optional) and delivery address.",
+      "Enter the items being transported — one per line: description, quantity.",
+      "Optionally add an approximate total value for transport and e-way bill records.",
+      "Click Generate delivery challan and send it along with the goods, keeping a signed copy from the receiver.",
+    ],
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "consigneeName", label: "Consignee (receiving party)", type: "text", placeholder: "Ravi Kumar" },
@@ -371,7 +510,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generateDeliveryChallan,
     submitLabel: "Generate delivery challan",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "A delivery challan travels with goods, not with the sale — it's the document a transporter or delivery vehicle carries to prove what's being moved, where it's going, and (under GST e-way bill rules) is often required alongside or in place of an invoice for certain movement types like job work, returns, or goods sent for approval before a sale is finalised.",
       "This generator produces exactly that: consignee details, vehicle number, delivery address, and an itemised list of what's being transported with quantities (deliberately without pricing detail the way an invoice has, since a challan documents movement, not a sale). An optional approximate value field supports e-way bill and transport documentation needs without turning the challan into a priced commercial document.",
@@ -394,6 +533,16 @@ export const tools: ToolConfig[] = [
         answer:
           "A challan's purpose is documenting what's moving and where, not billing for it — that's why it lists quantities rather than a priced line-item breakdown. An optional approximate total value is included for transport/e-way bill documentation.",
       },
+      {
+        question: "How many copies of a delivery challan should I print?",
+        answer:
+          "Typically, you should print at least three copies: one for the consignee, one for the transporter, and one to retain for your own records.",
+      },
+      {
+        question: "Can I use a delivery challan for goods sent on an approval basis?",
+        answer:
+          "Yes, a delivery challan is perfectly suited for sending goods to a customer on an approval basis without triggering an immediate tax invoice.",
+      },
     ],
     related: ["purchase-order-generator", "invoice-generator", "receipt-generator", "gst-calculator"],
   },
@@ -405,6 +554,17 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a payment reminder message in the right tone for the situation.",
     seoDescription:
       "Free payment reminder generator. Create a friendly, firm or final-notice payment reminder message for an overdue invoice — ready to email or send.",
+    directAnswer:
+      "A payment reminder generator that writes the right-toned nudge for the right stage of chasing an overdue invoice — a friendly first reminder, a firm second reminder with a 7-day deadline, or a final notice with consequences.",
+    example:
+      "Example: An invoice for ₹25,000 is 5 days overdue. You select 'Friendly (first reminder)' to generate a polite nudge and email it to the client.",
+    steps: [
+      "Enter the customer name, invoice number, amount due and invoice due date.",
+      "Pick the tone that matches the stage: friendly, firm or final notice.",
+      "Click Generate reminder to draft the message.",
+      "Copy it into your email or messaging app and send it.",
+      "Escalate the tone for each overdue invoice, keeping a dated copy of every reminder sent.",
+    ],
     fields: [
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
       { name: "invoiceNumber", label: "Invoice number", type: "text", placeholder: "INV-045" },
@@ -424,7 +584,7 @@ export const tools: ToolConfig[] = [
     ],
     generate: generatePaymentReminder,
     submitLabel: "Generate reminder",
-    emailGate: true,
+    requireAuth: true,
     about: [
       "This generator gives you a ready-made payment reminder message for each stage of chasing a late payment — removing the awkward blank-page moment and making it easy to actually send the reminder promptly, which is the single biggest factor in getting paid faster. Chasing late payments is uncomfortable, and that discomfort is exactly why so many small businesses let overdue invoices sit far longer than they should.",
       "The tone escalates deliberately across three stages: friendly for the first, gentle nudge (assumes it might simply be an oversight), firm for a second reminder after the friendly one is ignored (states a clear 7-day deadline and mentions late charges), and final notice for a last attempt before considering suspension of services or collections (a clear 3-day deadline and explicit consequences). Escalating tone this way, rather than staying friendly forever or going straight to threats, is both more professional and more effective.",
@@ -447,6 +607,16 @@ export const tools: ToolConfig[] = [
         answer:
           "That depends on your risk tolerance and the amount involved — options include suspending services, engaging a collections process, or, for larger amounts, legal notice. This generator covers the reminder stage; escalation beyond that needs case-by-case judgement.",
       },
+      {
+        question: "Is it better to call or email for a payment reminder?",
+        answer:
+          "Start with an email to keep a written record. If the firm or final notices are ignored, a phone call can help clear up communication issues before taking harsher steps.",
+      },
+      {
+        question: "Should I pause work if a client ignores my payment reminders?",
+        answer:
+          "Yes, if a client consistently ignores reminders and an invoice becomes severely overdue, it is standard practice to pause ongoing work until the balance is settled.",
+      },
     ],
     related: ["late-fee-calculator", "invoice-due-date-calculator", "ai-cold-email-writer", "invoice-generator"],
   },
@@ -458,6 +628,18 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate the late fee and total due on an overdue invoice.",
     seoDescription:
       "Free late payment fee calculator. Enter the invoice amount, monthly late fee rate and days overdue to calculate the late fee and total amount now due.",
+    directAnswer:
+      "A late payment fee calculator that converts an agreed monthly late-fee rate into the exact charge on a specific overdue amount and number of days, plus the total now due.",
+    formula:
+      "Daily rate = monthly rate ÷ 30. Late fee = invoice amount × daily rate × days overdue. Total now due = invoice amount + late fee.",
+    example:
+      "Example: ₹50,000 invoice at a 2% per-month late fee, 20 days overdue → daily rate 0.0667% → late fee ₹666.67, total now due ₹50,666.67.",
+    steps: [
+      "Enter the original invoice amount that is overdue.",
+      "Input the agreed-upon monthly late fee rate (e.g., 2%).",
+      "Enter the exact number of days the payment is overdue.",
+      "The calculator instantly determines the daily rate, the total late fee, and the final amount now due."
+    ],
     fields: [
       { name: "invoiceAmount", label: "Invoice amount", type: "number", placeholder: "50000", min: 0, unit: "₹" },
       { name: "monthlyRate", label: "Late fee rate (per month)", type: "number", defaultValue: 2, min: 0, max: 10, step: 0.1, unit: "%" },
@@ -487,6 +669,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Monthly rate ÷ 30 gives a daily rate, which is then applied to the invoice amount for the exact number of days overdue — a simple, commonly used method for pro-rating monthly late-fee clauses.",
       },
+      {
+        question: "Is it legal to charge a late fee on unpaid invoices in India?",
+        answer:
+          "Yes, provided the late fee clause was clearly stated in your contract or the original invoice terms that the client accepted.",
+      },
+      {
+        question: "Should I issue a separate invoice for the late fee charges?",
+        answer:
+          "Yes, it is best practice to issue a separate debit note or invoice for the late fees to keep your accounting and GST records clean.",
+      },
     ],
     related: ["payment-reminder-generator", "invoice-due-date-calculator", "simple-interest-calculator", "invoice-generator"],
   },
@@ -498,6 +690,18 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate the final price after single or stacked discounts.",
     seoDescription:
       "Free discount calculator. Enter the original price and one or two discount percentages to get the final price, amount saved and effective discount rate.",
+    directAnswer:
+      "A discount calculator that applies one or two stacked discounts in the correct sequence — the second discount is taken on the already-reduced price, not the original — and reports the true effective discount.",
+    formula:
+      "After discount 1: price₁ = price × (1 − d₁ ÷ 100). After stacked discount 2: final = price₁ × (1 − d₂ ÷ 100). Effective discount = (price − final) ÷ price × 100.",
+    example:
+      "Example: ₹2,000 at 20% off → ₹1,600; a stacked extra 10% off ₹1,600 → ₹1,440. Amount saved ₹560 is a 28% effective discount overall, not 30%.",
+    steps: [
+      "Enter the original price of the item.",
+      "Input the first discount percentage.",
+      "If there's an additional stacked discount, enter it in the second discount field.",
+      "The calculator instantly shows the final price, total amount saved, and the true effective discount rate."
+    ],
     fields: [
       { name: "price", label: "Original price", type: "number", placeholder: "2000", min: 0, unit: "₹" },
       { name: "discount1", label: "First discount", type: "number", placeholder: "20", min: 0, max: 100, unit: "%" },
@@ -527,6 +731,16 @@ export const tools: ToolConfig[] = [
         answer:
           "Yes, this is how nearly all real-world stacked discounts and coupon stacks work — each discount is applied to the current, already-discounted price, not the original one. Retailers who advertise a flat combined percentage are usually being imprecise.",
       },
+      {
+        question: "Why do retailers use stacked discounts instead of one large discount?",
+        answer:
+          "Stacked discounts often sound more appealing to consumers (e.g., '20% + 10% off') while actually costing the retailer less than a flat combined percentage discount (e.g., '30% off').",
+      },
+      {
+        question: "Does the order of the discounts matter when calculating the final price?",
+        answer:
+          "No, mathematically, the final price is the same regardless of the order in which the two percentage discounts are applied.",
+      },
     ],
     related: ["margin-calculator", "markup-calculator", "gst-calculator", "invoice-generator"],
   },
@@ -538,6 +752,18 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate an invoice's due date from standard net payment terms.",
     seoDescription:
       "Free invoice due date calculator. Enter the invoice date and payment terms (Net 15/30/45/60/90 or custom) to calculate the exact due date and status.",
+    directAnswer:
+      "An invoice due date calculator that converts an invoice date and standard payment terms (Net 15/30/45/60/90 or custom days) into the exact due date with a live overdue status.",
+    formula:
+      "Due date = invoice date + term days (Net 30 means 30 calendar days from the invoice date). Status compares the due date to today: upcoming, due today or overdue.",
+    example:
+      "Example: an invoice dated 1 October 2026 with Net 30 terms → due date 31 October 2026, shown against a live status of upcoming, due today or overdue.",
+    steps: [
+      "Enter or select the date the invoice was issued.",
+      "Choose the standard payment term (e.g., Net 30, Net 60) or select 'Custom'.",
+      "If using a custom term, enter the exact number of days allowed for payment.",
+      "The calculator automatically computes the exact due date and displays its current status (upcoming, due today, or overdue)."
+    ],
     fields: [
       { name: "invoiceDate", label: "Invoice date", type: "date" },
       {
@@ -579,6 +805,16 @@ export const tools: ToolConfig[] = [
         question: "What payment terms should I offer new customers?",
         answer:
           "Net 30 is the most common default in B2B. Shorter terms (Net 15) improve your cash flow but may be less attractive to customers used to standard terms; longer terms (Net 60/90) are sometimes required by larger customers with their own payment cycles.",
+      },
+      {
+        question: "What happens if a due date falls on a public holiday or weekend?",
+        answer:
+          "Legally, if a due date falls on a non-working day, the payment is usually expected by the next business day, unless stated otherwise in your contract.",
+      },
+      {
+        question: "Should I calculate the due date from the invoice date or the delivery date?",
+        answer:
+          "Standard practice is to calculate the due date from the invoice date. If your terms specify calculating from the delivery date, use that instead.",
       },
     ],
     related: ["late-fee-calculator", "payment-reminder-generator", "working-capital-calculator", "invoice-generator"],

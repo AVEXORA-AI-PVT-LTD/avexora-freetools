@@ -5,6 +5,27 @@ import { useFileDrop } from "../use-file-drop";
 
 export { inputCls, labelCls, primaryBtn, secondaryBtn, iconBtn, panelCls } from "../ui-tokens";
 
+/**
+ * Shared cap on uploaded PDF size for the whole PDF tool family. Mirrors the
+ * 50 MB limits the PDF editor, PDF signature and Word→PDF tools already enforce
+ * so a huge file can never stall the browser by being read/parsed in memory.
+ */
+export const PDF_UPLOAD_MAX_BYTES = 50 * 1024 * 1024;
+
+export function formatBytes(n: number): string {
+  if (n >= 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} MB`;
+  if (n >= 1024) return `${Math.round(n / 1024)} KB`;
+  return `${n} B`;
+}
+
+/** Friendly per-file validation message, or null when the PDF is within the shared 50 MB limit. */
+export function pdfUploadLimitError(file: { name: string; size: number }): string | null {
+  if (file.size > PDF_UPLOAD_MAX_BYTES) {
+    return `"${file.name}" is ${formatBytes(file.size)} — larger than the 50 MB limit for this tool. Please choose a smaller PDF.`;
+  }
+  return null;
+}
+
 export function downloadBytes(bytes: Uint8Array, filename: string, type = "application/pdf") {
   const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type }));
   const a = document.createElement("a");
@@ -48,8 +69,17 @@ export function usePdfFile() {
   const pick = async (f: File | null) => {
     setError(null);
     setPageCount(null);
+    if (!f) {
+      setFile(null);
+      return;
+    }
+    const limitError = pdfUploadLimitError(f);
+    if (limitError) {
+      setFile(null);
+      setError(limitError);
+      return;
+    }
     setFile(f);
-    if (!f) return;
     try {
       const { PDFDocument } = await import("pdf-lib");
       const doc = await PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });

@@ -1,16 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ebosCtaUrl, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { ebosCtaUrl, getCategory } from "@/tools/categories";
 import { allTools, getTool, toolsByCategory } from "@/tools/registry";
+import { toolJsonLd, toolMetadata } from "@/lib/seo";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
+import { ToolAboutText } from "@/components/tools/tool-about-text";
+import { ToolAeoBlocks } from "@/components/tools/tool-aeo";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 
-export const dynamicParams = false;
+import { getEffectiveCategory } from "@/server/categories";
+import { getEffectiveTool, getEffectiveToolsByCategory } from "@/server/tools";
 
-export function generateStaticParams() {
-  return allTools.map((t) => ({ category: t.category, slug: t.slug }));
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const { getEffectiveTools } = await import("@/server/tools");
+  const tools = await getEffectiveTools();
+  return tools.map((t) => ({ category: t.category, slug: t.slug }));
 }
 
 export async function generateMetadata({
@@ -19,27 +27,10 @@ export async function generateMetadata({
   params: Promise<{ category: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const tool = getTool(slug);
+  const tool = await getEffectiveTool(slug);
   if (!tool) return {};
-  const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
-  const title = `${tool.name} — Avex Online Tool`;
-  return {
-    title,
-    description: tool.seoDescription,
-    alternates: { canonical },
-    openGraph: {
-      title: `${title} | ${SITE_NAME}`,
-      description: tool.seoDescription,
-      url: canonical,
-      siteName: SITE_NAME,
-      type: "website",
-    },
-    twitter: {
-      card: "summary",
-      title: `${title} | ${SITE_NAME}`,
-      description: tool.seoDescription,
-    },
-  };
+  const cat = await getEffectiveCategory(tool.category);
+  return cat ? toolMetadata(tool, cat) : {};
 }
 
 export default async function ToolPage({
@@ -48,60 +39,21 @@ export default async function ToolPage({
   params: Promise<{ category: string; slug: string }>;
 }) {
   const { category, slug } = await params;
-  const tool = getTool(slug);
-  const cat = getCategory(category);
+  const tool = await getEffectiveTool(slug);
+  const cat = await getEffectiveCategory(category);
   if (!tool || !cat || tool.category !== cat.slug) notFound();
 
-  const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
+  const effectiveToolsByCategory = await getEffectiveToolsByCategory();
+  const catTools = effectiveToolsByCategory[cat.slug] || [];
+  
+  const allEffectiveToolsList = Object.values(effectiveToolsByCategory).flat();
+
   const related = tool.related
-    .map((s) => getTool(s))
+    .map((s) => allEffectiveToolsList.find(t => t.slug === s))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
   const aiEnabled = tool.kind === "ai-writer" && Boolean(process.env.ANTHROPIC_API_KEY);
 
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: tool.name,
-      description: tool.seoDescription,
-      url: canonical,
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: tool.faq.map((f) => ({
-        "@type": "Question",
-        name: f.question,
-        acceptedAnswer: { "@type": "Answer", text: f.answer },
-      })),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/${cat.slug}` },
-        { "@type": "ListItem", position: 3, name: tool.name, item: canonical },
-      ],
-    },
-    ...(tool.howTo
-      ? [
-          {
-            "@context": "https://schema.org",
-            "@type": "HowTo",
-            name: tool.howTo.name,
-            step: tool.howTo.steps.map((s) => ({
-              "@type": "HowToStep",
-              name: s.name,
-              text: s.text,
-            })),
-          },
-        ]
-      : []),
-  ];
+  const jsonLd = toolJsonLd(tool, cat);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -126,9 +78,24 @@ export default async function ToolPage({
       </h1>
       <p className="mt-2 text-slate-600 print:hidden">{tool.tagline}</p>
 
+      {tool.directAnswer && (
+        <p
+          data-aeo="direct-answer"
+          className="mt-4 rounded-lg border-l-4 border-orange-500 bg-orange-50 px-4 py-3 text-[15px] leading-relaxed text-slate-800 print:hidden"
+        >
+          {tool.directAnswer}
+        </p>
+      )}
+
       <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm print:border-none print:p-0 print:shadow-none">
-        <ToolRunner category={tool.category} slug={tool.slug} aiEnabled={aiEnabled} />
+        <ToolRunner category={tool.category} slug={tool.slug} aiEnabled={aiEnabled} isDynamic={tool.isDynamic} />
       </div>
+
+      {(tool.steps?.length || tool.formula || tool.example) ? (
+        <div className="mt-8 space-y-8 print:hidden">
+          <ToolAeoBlocks tool={tool} />
+        </div>
+      ) : null}
 
       <div className="mt-10 space-y-10 print:hidden">
         <CtaBlock
@@ -146,7 +113,9 @@ export default async function ToolPage({
           </h2>
           <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-slate-700">
             {tool.about.map((p, i) => (
-              <p key={i}>{p}</p>
+              <p key={i}>
+                <ToolAboutText text={p} />
+              </p>
             ))}
           </div>
         </section>
@@ -192,7 +161,7 @@ export default async function ToolPage({
             More {cat.name.toLowerCase()}
           </h2>
           <div className="mt-2 flex flex-wrap gap-2">
-            {toolsByCategory[cat.slug]
+            {catTools
               .filter((t) => t.slug !== tool.slug)
               .map((t) => (
                 <Link

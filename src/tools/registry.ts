@@ -10,7 +10,7 @@ import { tools as textDataTools } from "./configs/text-data-tools";
 import { tools as businessLegal } from "./configs/business-legal";
 import { tools as developerWeb } from "./configs/developer-web";
 
-export const toolsByCategory: Record<CategorySlug, ToolConfig[]> = {
+const rawToolsByCategory: Record<CategorySlug, ToolConfig[]> = {
   "finance-calculators": financeCalculators,
   "invoicing-billing": invoicingBilling,
   "hr-payroll": hrPayroll,
@@ -23,7 +23,24 @@ export const toolsByCategory: Record<CategorySlug, ToolConfig[]> = {
   "developer-web": developerWeb,
 };
 
+export const toolsByCategory = Object.fromEntries(
+  Object.entries(rawToolsByCategory).map(([cat, tools]) => [
+    cat,
+    [...tools].sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999)),
+  ])
+) as Record<CategorySlug, ToolConfig[]>;
+
 export const allTools: ToolConfig[] = Object.values(toolsByCategory).flat();
+
+export const TOTAL_ACTIVE_TOOLS = allTools.length;
+
+export const MARKETING_TOOL_COUNT_FLOOR = 130;
+
+export function displayedToolCount(actualCount: number): number {
+  return Math.max(Math.floor(actualCount / 10) * 10, MARKETING_TOOL_COUNT_FLOOR);
+}
+
+export const DISPLAYED_TOOL_COUNT = displayedToolCount(TOTAL_ACTIVE_TOOLS);
 
 const bySlug = new Map(allTools.map((t) => [t.slug, t]));
 

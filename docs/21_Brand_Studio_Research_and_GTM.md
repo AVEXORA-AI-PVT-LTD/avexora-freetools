@@ -1,7 +1,7 @@
 # 21 — Avexora Brand Studio: Market Research, Positioning & Go-To-Market
 
 **Product:** Avexora Brand Studio — subscription business-stationery generator for Indian startups.
-**Surface:** `freetools.avexora.in/studio` (paid tier of the existing free-tools property).
+**Surface:** `tools.avexora.in/studio` (paid tier of the existing free-tools property).
 **Date of research:** August 2026.
 
 > Research method: desk research across market-sizing reports, competitor pricing pages, aggregated user reviews, and Indian statutory sources. Figures are cited inline. Where a number could not be verified from a primary source it is labelled **[estimate]** and the reasoning is shown — it is not presented as fact.
