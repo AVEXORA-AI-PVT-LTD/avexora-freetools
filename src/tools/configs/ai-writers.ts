@@ -38,6 +38,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate outline",
+    directAnswer: "The AI Blog Outline Generator is a free tool that instantly creates a structured, SEO-optimised skeleton for your blog post based on your topic and audience.",
+    example: "Input: 'How small businesses can automate GST filing' → Output: A hierarchical outline with H1 title, logical H2 sections like 'Why automation matters', H3 subpoints, and intro/conclusion prompts.",
+    steps: [
+      "Enter your core blog topic or working title.",
+      "Optionally specify your target audience to tailor the sections.",
+      "Select the desired tone (e.g., professional or conversational).",
+      "Click 'Generate outline' to receive a complete, working skeleton."
+    ],
     about: [
       "This generator turns your topic into a working blog outline in seconds: enter your topic (and optionally who you're writing for), and the AI produces a structured outline with an H1, logical H2 sections, supporting H3 points, and suggestions for the introduction and conclusion. Staring at a blank page is otherwise the slowest part of writing.",
       "A good outline is the difference between a rambling post and one that ranks. Search engines reward content that covers a topic thoroughly and is organised under clear headings — exactly what an outline enforces. Readers benefit too: most people scan a post's headings before deciding whether to read it, so a logical heading structure keeps them on the page. Use the generated structure as-is or rearrange sections to fit your angle, then write section by section — filling in a skeleton is far faster than composing from nothing, and it keeps every section focused on answering one question.",
@@ -46,20 +54,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "Is the generated outline unique?",
+        question: "Is the generated blog outline unique?",
         answer:
-          "Yes. Each outline is generated fresh by AI from your specific topic, audience and tone — it isn't pulled from a template library.",
+          "Yes. Each outline is generated fresh by AI from your specific topic, audience, and tone — it isn't pulled from a static template library, ensuring unique structure every time.",
       },
       {
-        question: "Can I use the outline for commercial content?",
+        question: "Can I use the outline directly for commercial content or client work?",
         answer:
-          "Yes, the output is yours to use freely for blog posts, client work or any other content.",
+          "Absolutely, the generated output is entirely yours to use freely for personal blog posts, client work, agency deliverables, or any other commercial content.",
       },
       {
-        question: "What makes a good blog outline?",
+        question: "What exactly makes a good blog outline for SEO?",
         answer:
-          "A clear H1 with the primary keyword, 4–8 H2 sections that each answer one reader question, H3 subpoints for detail, and a conclusion with a call to action. The generator follows this structure automatically.",
+          "A solid SEO outline features a clear H1 with the primary keyword, 4–8 H2 sections that each answer one specific reader question, H3 subpoints for deep detail, and a conclusion with a call to action. The generator naturally follows this best-practice structure.",
       },
+      {
+        question: "How long does it take to generate an outline?",
+        answer:
+          "It takes just a few seconds. Once you hit 'Generate outline', the AI processes your topic and instantly returns a fully structured, ready-to-write content skeleton.",
+      },
+      {
+        question: "Do I need an account to use this generator?",
+        answer:
+          "No, the AI blog outline generator is completely free and requires no sign-up or account creation to use.",
+      }
     ],
     related: ["ai-blog-intro-generator", "ai-seo-title-generator", "ai-faq-generator", "word-counter"],
   },
@@ -88,6 +106,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate intros",
+    directAnswer: "The AI Blog Intro Generator is a free tool that instantly writes three distinct, hook-driven opening paragraphs for your blog post based on your title and audience.",
+    example: "Input: '10 GST Mistakes' & Angle 'Problem' → Output: Three varied introductory paragraphs that immediately address the reader's pain point and promise a solution.",
+    steps: [
+      "Enter your blog post title.",
+      "Optionally specify your target audience.",
+      "Choose the opening angle (problem, statistic, story, or question).",
+      "Click 'Generate intros' to receive three unique hook options."
+    ],
     about: [
       "This generator removes the biggest bottleneck in writing an intro: give it your title, your audience, and the kind of opening you want, and it returns three different ready-to-edit introductions. Readers decide whether to stay within a post's first three sentences, which makes the introduction the highest-stakes paragraph you'll write — and, for most writers, the slowest, with twenty minutes often lost staring at a blank first line for a post whose body takes an hour.",
       "You get three because intros are a matter of fit, not correctness. One might open on the pain point, another on a vivid scenario, a third on a question — seeing them side by side makes it obvious which voice suits your post, and you'll often splice the best sentence from one into another. Each intro is built on the structure that keeps readers scrolling: a first line that earns attention, a middle that names the problem the reader recognises, and a final sentence that promises exactly what the post will deliver.",
@@ -95,20 +121,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "Why does it generate three intros instead of one?",
+        question: "Why does the tool generate three intros instead of just one?",
         answer:
-          "Because openings are about fit. Three different angles side by side make it easy to pick the one that matches your post's tone — or combine the best lines from each.",
+          "Because openings are highly subjective and about finding the right fit for your brand's voice. Three different angles side by side make it easy to pick the one that matches your post's tone — or you can combine the best lines from each.",
       },
       {
-        question: "What makes a good blog introduction?",
+        question: "What actually makes a good blog introduction?",
         answer:
-          "A first sentence that earns attention, a clear statement of the problem the reader recognises, and a promise of what they'll get by reading on — all within about 100 words.",
+          "A great introduction needs a first sentence that earns attention (the hook), a clear statement of the problem the reader recognises, and a final promise of what they'll get by reading on — all kept concise, usually within about 100 words.",
       },
       {
-        question: "Can I use the output as-is?",
+        question: "Can I use the generated intro text exactly as-is?",
         answer:
-          "Yes, but it improves noticeably if you personalise one detail — a real number, a real example. That's usually a 30-second edit.",
+          "Yes, you can use the output directly. However, it improves noticeably if you personalise one detail — like adding a real number, a personal anecdote, or a real example. That's usually a 30-second edit that adds authenticity.",
       },
+      {
+        question: "How do I choose the right opening angle?",
+        answer:
+          "It depends on your topic. A 'Problem' angle works best for how-to guides, a 'Statistic' grabs attention for thought leadership, 'Story' is great for case studies, and a 'Question' works well for opinion pieces.",
+      },
+      {
+        question: "Does this intro generator work for any industry?",
+        answer:
+          "Yes, the AI adapts to any industry. Just make sure to enter a specific target audience (e.g., 'B2B SaaS founders' instead of just 'business owners') so the AI can use the right vocabulary and tone.",
+      }
     ],
     related: ["ai-blog-outline-generator", "ai-seo-title-generator", "headline-analyzer", "word-counter"],
   },
@@ -136,6 +172,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate description",
+    directAnswer: "The AI Product Description Generator is a free tool that turns raw product features into persuasive, buyer-focused descriptions for e-commerce stores.",
+    example: "Input: 'King size cotton bedsheet' with features '400 TC, natural dyes' → Output: A 150-word description highlighting the luxurious feel and durability, plus a 5-point bullet list.",
+    steps: [
+      "Enter your product's name and type.",
+      "List the key features or specifications (e.g., materials, dimensions).",
+      "Describe your target buyer so the copy matches their desires.",
+      "Select your preferred length and click 'Generate description'."
+    ],
     about: [
       "This generator translates a product's features into the outcome the buyer actually wants — not \"400 thread count\" but the feeling of hotel-crisp sheets on a Sunday morning. Most listings read like spec sheets (\"400 TC, 100% cotton, king size\") instead, and spec sheets don't create desire: the difference between a product that sells and one that sits is often just the words next to the photo.",
       "Describe the product, list its features in any rough form, say who buys it, and you get a description that leads with the strongest benefit, folds the features into real-life outcomes, and closes with a gentle push toward purchase — plus a clean five-point bullet list for marketplaces that display one. The short length fits Amazon-style listings and catalogue cards; the standard length suits your own store's product pages, where fuller copy supports both conversion and SEO.",
@@ -143,20 +187,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "What's the difference between features and benefits?",
+        question: "What's the difference between product features and benefits?",
         answer:
-          "A feature is what the product has (400 TC cotton); a benefit is what the buyer gets (soft, durable sheets that survive years of washing). Copy that sells leads with benefits and uses features as proof.",
+          "A feature is what the product physically has (like '400 TC cotton'); a benefit is what the buyer actually gets out of it (like 'soft, durable sheets that survive years of washing'). Copy that sells always leads with benefits and uses features as proof.",
       },
       {
-        question: "Will the description work for Amazon/Flipkart listings?",
+        question: "Will the generated description work for Amazon or Flipkart listings?",
         answer:
-          "Yes — use the short length for marketplace descriptions and the bullet list for the key-features section. Check each marketplace's length limits and prohibited claims before pasting.",
+          "Yes — use the 'short' length option for marketplace descriptions and the included bullet list for the key-features section. Always check each specific marketplace's length limits and prohibited claims before pasting.",
       },
       {
-        question: "Is the copy unique enough for SEO?",
+        question: "Is the copy unique enough for my own website's SEO?",
         answer:
-          "Each generation is written fresh from your specific inputs, not from a template bank. For best SEO results, include the product's search keyword in the product-name field so it appears naturally in the copy.",
+          "Absolutely. Each generation is written fresh from your specific inputs, not from a generic template bank. For best SEO results, include your target keyword in the product-name field so it appears naturally.",
       },
+      {
+        question: "Should I mention the price in the features field?",
+        answer:
+          "Usually, no. Product pages display the price separately. Focus the generated description purely on value, features, and benefits rather than specific pricing, which might change.",
+      },
+      {
+        question: "Can it generate descriptions in different tones?",
+        answer:
+          "While there isn't a direct tone dropdown, the AI infers the tone from the 'Target buyer' field. Entering 'corporate professionals' will yield a much different tone than 'parents of toddlers'.",
+      }
     ],
     related: ["ai-ad-copy-generator", "ai-seo-title-generator", "ai-faq-generator", "margin-calculator"],
   },
@@ -184,6 +238,14 @@ export const tools: ToolConfig[] = [
       { name: "audience", label: "Target audience", type: "text", placeholder: "e.g. CAs and small business owners", optional: true },
     ],
     submitLabel: "Generate ad copy",
+    directAnswer: "The AI Ad Copy Generator is a free tool that creates platform-optimised advertising copy for Google Ads or Meta (Facebook/Instagram), complete with character counts.",
+    example: "Input: 'Cloud accounting software' + '30-day trial' → Output: Three distinct ad variants (benefit-led, offer-led, proof-led) sized perfectly for Google's character limits.",
+    steps: [
+      "Enter the product or service you are advertising.",
+      "Select the platform (Google Ads or Meta).",
+      "Include a specific offer or promotion, and define your audience.",
+      "Click 'Generate ad copy' to receive three distinct variants."
+    ],
     about: [
       "Ad platforms are unforgiving copy environments: Google search ads give you 30-character headlines and 90-character descriptions; Meta gives you one line above the fold before \"see more\" swallows the rest. Writing inside those boxes — while still being persuasive — is a genuine skill, and the first version you write is rarely the one that performs. Every profitable ad account runs on variants.",
       "That's why this generator produces three deliberately different angles per run: one leading with the core benefit, one leading with your offer and urgency, and one leading with social proof. These aren't cosmetic rewrites — they're the three classic persuasion routes, and testing them against each other is the fastest way to learn what your audience responds to. Google variants come with character counts printed against each headline and description so you can see they fit before you paste; Meta variants get a hook-first primary text sized for the feed.",
@@ -191,20 +253,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "Why three variants?",
+        question: "Why does the tool generate three variants instead of one?",
         answer:
-          "Ad performance is discovered, not predicted. Running benefit-led, offer-led and proof-led angles against each other tells you within days which persuasion route your audience buys — then you double down.",
+          "Ad performance is discovered, not predicted. Running benefit-led, offer-led and proof-led angles against each other tells you within days which persuasion route your audience buys — then you can double down on the winner.",
       },
       {
-        question: "Will the copy fit Google's character limits?",
+        question: "Will the copy actually fit Google's strict character limits?",
         answer:
-          "Google variants are generated to the 30-character headline / 90-character description limits with counts shown per line. Verify in the Ads editor, which counts some characters differently (like ampersands in certain scripts).",
+          "Yes. Google variants are generated specifically to the 30-character headline and 90-character description limits, with counts shown per line. Always verify in the Ads editor, as it counts some special characters differently.",
       },
       {
         question: "What makes Facebook ad copy different from Google?",
         answer:
-          "Google search copy answers an active query — be specific and match the keyword. Facebook interrupts a feed — the first line must stop the scroll before anything else matters. The generator formats each accordingly.",
+          "Google search copy answers an active query, so it must be specific and match the keyword. Facebook interrupts a feed, so the first line must stop the scroll before anything else matters. The generator formats each accordingly.",
       },
+      {
+        question: "Should I use emojis in my ad copy?",
+        answer:
+          "For Meta (Facebook/Instagram), tasteful emoji use can increase click-through rates by drawing the eye. For Google Search Ads, emojis are generally prohibited and will cause your ad to be disapproved.",
+      },
+      {
+        question: "How often should I refresh my ad copy?",
+        answer:
+          "Whenever your click-through rate (CTR) starts to noticeably drop, known as 'ad fatigue'. Regenerating fresh copy for the same offer every few weeks is a standard practice to keep campaigns profitable.",
+      }
     ],
     related: ["ai-social-media-post-generator", "roas-calculator", "cpm-calculator", "ai-tagline-generator"],
   },
@@ -234,6 +306,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Write cold email",
+    directAnswer: "The AI Cold Email Writer is a free tool that crafts concise, personalised B2B outreach emails and automated follow-ups designed to get replies, not spam complaints.",
+    example: "Input: Pitching 'payroll automation' to 'HR heads' → Output: A 100-word email focusing on their 3-day payroll headache, a clear call-to-action, and a 2-sentence follow-up.",
+    steps: [
+      "State exactly what you are pitching.",
+      "Describe the recipient and their likely pain point.",
+      "Select your primary goal (e.g., book a call or get a reply).",
+      "Click 'Write cold email' to get your subject line, email body, and follow-up sequence."
+    ],
     about: [
       "Cold email still works — it remains the cheapest way for a small business to reach exactly the person who can say yes — but only the version that respects the reader. The emails that get replies are short, specific about why this recipient, clear about the one thing being asked, and free of the padding (\"I hope this email finds you well\") that signals mass mail before the first comma.",
       "This writer is built around those rules. It produces an email under 120 words with a personalisation placeholder in [brackets] where you drop in the one detail you know about the recipient, a single value proposition framed around their pain point rather than your product, and one low-friction call to action matched to your goal. You also get a subject line under 50 characters — the length that survives mobile inboxes — and a two-sentence follow-up for three days later, because a large share of replies come from the polite nudge, not the first send.",
@@ -241,20 +321,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "How long should a cold email be?",
+        question: "How long should a cold email ideally be?",
         answer:
-          "Under 120 words. Busy people triage on their phone; a screen-length email that makes one clear point outperforms a pitch essay every time.",
+          "Under 120 words. Busy people triage emails on their phone; a screen-length email that makes one clear point outperforms a pitch essay every single time.",
       },
       {
-        question: "Do follow-ups really matter?",
+        question: "Do follow-up emails really matter?",
         answer:
-          "Enormously — a short, polite follow-up 2-4 days later often doubles total reply rates. One or two follow-ups is persistence; five is pestering.",
+          "Enormously — a short, polite follow-up 2-4 days later often doubles total reply rates. One or two follow-ups shows persistence; five follow-ups crosses into pestering.",
       },
       {
-        question: "How do I personalise at scale?",
+        question: "How do I personalise cold emails at scale?",
         answer:
-          "Keep the body templated and spend your time on the [bracketed] opening line — one specific, verifiable detail per recipient. Ten well-personalised emails beat a hundred generic ones.",
+          "Keep the body templated and spend your time on the [bracketed] opening line — include one specific, verifiable detail per recipient. Ten well-personalised emails will beat a hundred generic ones.",
       },
+      {
+        question: "What makes a good cold email subject line?",
+        answer:
+          "Keep it short (under 50 characters), casual, and highly relevant. It should read like an internal email from a colleague rather than a marketing newsletter.",
+      },
+      {
+        question: "Should I include links or attachments in my first email?",
+        answer:
+          "Avoid them if possible. Links and attachments in cold emails trigger spam filters. Your only goal in the first email is to get a reply; you can send links once they respond.",
+      }
     ],
     related: ["ai-email-reply-generator", "ai-linkedin-post-generator", "payment-reminder-generator", "ai-ad-copy-generator"],
   },
@@ -294,6 +384,14 @@ export const tools: ToolConfig[] = [
       { name: "cta", label: "Call to action", type: "text", placeholder: "e.g. DM us to order", optional: true },
     ],
     submitLabel: "Generate posts",
+    directAnswer: "The AI Social Media Post Generator is a free tool that creates three distinct, platform-optimised posts with hooks and hashtags for Instagram, Facebook, and X (Twitter).",
+    example: "Input: 'Delivered our 1,000th order' for 'Instagram' (Playful tone) → Output: Three tailored captions with scroll-stopping hooks and 5-8 relevant hashtags.",
+    steps: [
+      "Describe the topic or milestone you want to post about.",
+      "Select the social media platform (Instagram, Facebook, or X).",
+      "Choose a tone and optionally add a call to action.",
+      "Click 'Generate posts' to get three different caption variants."
+    ],
     about: [
       "This generator turns a one-line description of a moment into three ready-to-post captions in seconds — the product photo is taken, the moment is worth sharing, and this replaces the fifteen minutes that usually evaporate deciding how to say it. Posting consistently is the whole game on social media, since the algorithm rewards accounts that show up, yet for most business owners the caption is the daily blocker.",
       "Each variant is built for how feeds actually work: a first line that stops the scroll (on Instagram only the opening words show before \"more\"; on X the whole post is the hook), short paragraphs with breathing room rather than a wall of text, your call to action woven in naturally, and a set of 5-8 hashtags that mix broad reach with niche relevance. Three variants matter because tone is a choice — the same milestone can be told as a thank-you, a behind-the-scenes story, or a punchy announcement, and seeing all three makes the right one obvious.",
@@ -301,20 +399,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "How many hashtags should I actually use?",
+        question: "How many hashtags should I actually use per post?",
         answer:
-          "5-8 relevant ones on Instagram (mixing broad and niche), 1-2 on X, and few or none on Facebook. Relevance beats volume — 30 scattergun hashtags now reads as spam on every platform.",
+          "For Instagram, aim for 5-8 relevant ones mixing broad and niche tags. For X (Twitter), stick to 1-2. For Facebook, use few or none. Relevance always beats volume — 30 scattergun hashtags reads as spam.",
       },
       {
-        question: "What makes a first line a good hook?",
+        question: "What exactly makes the first line a good hook?",
         answer:
-          "Specificity and tension: a number, a bold claim, a question the audience feels. \"1,000 orders. Zero paid ads.\" outperforms \"We are pleased to announce a milestone.\"",
+          "Specificity and tension: a number, a bold claim, or a question the audience genuinely feels. '1,000 orders. Zero paid ads.' dramatically outperforms 'We are pleased to announce a milestone.'",
       },
       {
-        question: "Should I post the same caption on every platform?",
+        question: "Should I post the exact same caption on every platform?",
         answer:
-          "Adapt it — lengths, hashtag norms and tone differ. Generate per platform (it's seconds) rather than cross-posting one caption everywhere.",
+          "No, you should adapt it. Lengths, hashtag norms, and overall tone differ across platforms. It's better to generate per platform rather than cross-posting one generic caption everywhere.",
       },
+      {
+        question: "Will the AI include emojis in the captions?",
+        answer:
+          "Yes, the generator will include a restrained amount of contextually relevant emojis to break up the text and add visual interest, matching the tone you select.",
+      },
+      {
+        question: "What should I put in the 'Call to action' field?",
+        answer:
+          "Keep it simple and direct. Good examples include 'Link in bio to shop', 'Drop a comment below', 'DM us for details', or 'Save this post for later'.",
+      }
     ],
     related: ["ai-linkedin-post-generator", "hashtag-generator", "engagement-rate-calculator", "ai-ad-copy-generator"],
   },
@@ -343,6 +451,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate names",
+    directAnswer: "The AI Business Name Generator is a free tool that brainstorms 15 distinct business name ideas across descriptive, brandable, and evocative styles.",
+    example: "Input: 'Organic cold-pressed oils' → Output: 15 names like 'PurePress' (brandable) or 'Harvest & Root' (evocative), each with a one-line rationale.",
+    steps: [
+      "Describe exactly what your business does.",
+      "Add any specific keywords or themes you want included.",
+      "Choose a naming style (modern, classic, playful, or mixed).",
+      "Click 'Generate names' to receive 15 structured ideas."
+    ],
     about: [
       "This generator provides fifteen business name ideas per run, organised into the three families professional namers actually use. Naming a business is a strange task — it matters enormously, it's nearly impossible to do on demand, and every candidate sounds wrong after you've stared at it for an hour — and the way out is volume and structure: seeing many names across distinct strategies rather than circling the same three words on a notepad.",
       "Descriptive names (what you do, said plainly) buy instant comprehension and help search, at the cost of distinctiveness. Invented, brandable names (think coined words with good mouthfeel) are ownable and trademark-friendly but need marketing to acquire meaning. Evocative names borrow an image or feeling adjacent to your category — they're memorable and flexible as you grow. Each suggestion comes with a one-line rationale so you're choosing between strategies, not just sounds, and the generator favours short, hyphen-free names that stand a realistic chance of an available .com or .in domain.",
@@ -350,20 +466,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "Descriptive or brandable — which is better?",
+        question: "Descriptive or brandable names — which is better?",
         answer:
-          "Descriptive names communicate instantly but blend in; brandable names stand out but need marketing to explain. Early-stage businesses that rely on search often start descriptive; brands built on distinctiveness go invented or evocative.",
+          "Descriptive names communicate instantly but blend in; brandable names stand out but need marketing to explain. Early-stage businesses that rely on search often start descriptive, while brands built on distinctiveness go invented or evocative.",
       },
       {
         question: "What should I check before committing to a name?",
         answer:
-          "Domain and social handle availability, MCA name search (for incorporation), a trademark search on ipindia.gov.in, and the say-it-aloud test. Do all four before printing anything.",
+          "Check domain and social handle availability, do an MCA name search (for incorporation), run a trademark search (e.g., on ipindia.gov.in), and perform the say-it-aloud test. Do all four before printing anything.",
       },
       {
-        question: "The names don't feel right — what now?",
+        question: "The generated names don't feel right — what now?",
         answer:
-          "Regenerate with different keyword nudges and a tighter description. Naming is a volume game; most founders pick from batch three, not batch one.",
+          "Regenerate with different keyword nudges and a tighter description. Naming is a volume game; most founders pick their final name from batch three or four, not the very first batch.",
       },
+      {
+        question: "Does the generator check if the domains are available?",
+        answer:
+          "No, the AI generates the ideas but does not perform live domain availability checks. Once you shortlist your top 3-5 names, you should check domain registrars directly.",
+      },
+      {
+        question: "Can I use multiple keywords?",
+        answer:
+          "Yes, you can enter multiple keywords separated by commas (e.g., 'trust, speed, local'). The AI will attempt to weave those themes into the generated names.",
+      }
     ],
     related: ["ai-tagline-generator", "slug-generator", "ai-seo-title-generator", "meta-tag-generator"],
   },
@@ -392,6 +518,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate taglines",
+    directAnswer: "The AI Tagline Generator is a free tool that creates 12 distinct tagline and slogan options across different lengths and styles for your brand.",
+    example: "Input: 'Postbox courier aggregator' → Output: 12 options ranging from ultra-short (e.g., 'Ship simpler') to medium and wordplay formats.",
+    steps: [
+      "Enter your business or product name.",
+      "Briefly state your core value proposition or what makes you unique.",
+      "Select a tone that matches your brand identity.",
+      "Click 'Generate taglines' to receive 12 varied options."
+    ],
     about: [
       "A tagline is your brand's shortest piece of writing and its hardest: a handful of words that must say what you do, how you're different, or how you make people feel — ideally two of the three. The classics feel inevitable in hindsight (\"Just Do It\", \"Utterly Butterly Delicious\"), but they were picked from long lists of candidates, not conjured in one stroke. Volume, then selection, is how taglines actually get written.",
       "This generator gives you that volume with structure: twelve options per run, deliberately spread across three formats. Ultra-short lines (2-4 words) fit logos, packaging and app store subtitles. Medium lines (5-8 words) suit website heroes and ad copy where you can afford a full thought. And wordplay lines — rhythm, alliteration, a twist on a familiar phrase — trade explicitness for memorability. The prompt explicitly bans the exhausted startup vocabulary (\"unlock\", \"unleash\", \"elevate\", \"empower\"), which removes half of what generic tools produce.",
@@ -399,20 +533,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "What makes a good tagline?",
+        question: "What actually makes a good tagline?",
         answer:
-          "Short enough to remember, specific enough to mean something, and true enough to keep. Aim for two of: what you do, how you differ, how it feels. Test by saying it aloud next to your brand name.",
+          "It should be short enough to remember, specific enough to mean something, and true enough to keep. Aim to cover two of these three: what you do, how you differ, and how it feels. Always test by saying it aloud next to your brand name.",
       },
       {
         question: "Tagline vs slogan — is there a difference?",
         answer:
-          "A tagline is the durable line attached to the brand itself; a slogan often belongs to one campaign. The generator's output works for both — pick the timeless ones for a tagline.",
+          "Yes. A tagline is the durable, long-term line attached to the brand itself, while a slogan often belongs to just one specific marketing campaign. The generator's output works for both.",
       },
       {
-        question: "Can I trademark a tagline?",
+        question: "Can I legally trademark a generated tagline?",
         answer:
-          "Yes, if it's distinctive and used in trade — many taglines are registered marks in India. Search ipindia.gov.in before investing in one, especially for packaging.",
+          "Yes, if it's distinctive and used in trade — many taglines are registered marks. You should always search the trademark registry (like ipindia.gov.in) before investing heavily in printing one.",
       },
+      {
+        question: "Why does the tool generate options in different lengths?",
+        answer:
+          "Different placements require different lengths. A 2-word tagline fits well under a logo or on a tiny app icon, whereas an 8-word tagline works perfectly as a hero heading on your website.",
+      },
+      {
+        question: "What if the generated taglines sound too generic?",
+        answer:
+          "If they sound generic, it usually means the 'value proposition' field was too broad. Try entering a very specific detail, like 'we deliver in 10 minutes' instead of 'fast delivery'.",
+      }
     ],
     related: ["ai-business-name-generator", "headline-analyzer", "ai-ad-copy-generator", "meta-tag-generator"],
   },
@@ -441,6 +585,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Write reply",
+    directAnswer: "The AI Email Reply Generator is a free tool that reads an incoming email and crafts a polite, professional response based on your chosen intent and tone.",
+    example: "Input: An angry client email + Intent 'apologise but hold the boundary' → Output: A 100-word calm response that acknowledges the issue without over-promising.",
+    steps: [
+      "Paste the exact email you received.",
+      "Write a short sentence about what you want your reply to convey.",
+      "Select the tone (e.g., professional, friendly, firm, or apologetic).",
+      "Click 'Write reply' to get a ready-to-send draft."
+    ],
     about: [
       "This tool turns an email you need to answer into a ready-to-send reply: paste the email you received, state your intent in plain words, pick a tone, and get a polished draft. Some emails take longer to answer than the work they're about — the awkward decline, the payment reminder to a good client, the apology that mustn't over-apologise, the firm no that mustn't burn the bridge — because the labour is finding words that carry the message at the right temperature, not deciding what to say.",
       "The generator reads the original email, so the reply actually engages with it: every question asked gets answered, names and specifics are acknowledged, and the response addresses what was said rather than being a generic template with the blanks filled. Replies come out under 150 words — the length busy people read — structured as considerate professionals write: acknowledge, respond, state next step, sign off.",
@@ -450,18 +602,28 @@ export const tools: ToolConfig[] = [
       {
         question: "Will the reply address the specific points in the original email?",
         answer:
-          "Yes — the original is part of the prompt, so questions asked in it are answered and its specifics acknowledged. Always verify names, dates and amounts before sending.",
+          "Yes — the original email is part of the prompt, so questions asked in it are explicitly answered and its specifics are acknowledged. However, always verify names, dates, and amounts before sending.",
       },
       {
-        question: "Is the email I paste stored anywhere?",
+        question: "Is the email text I paste stored anywhere?",
         answer:
-          "It's sent to the AI service only to generate your reply and is not stored by this site. Remove anything highly sensitive that the reply doesn't need.",
+          "No. The text is sent securely to the AI service solely to generate your reply and is not stored by this site. Still, it's good practice to remove highly sensitive data before pasting.",
       },
       {
-        question: "When should I use the firm tone?",
+        question: "When should I use the 'firm' tone?",
         answer:
-          "Boundary situations: chasing overdue payments, declining scope creep, pushing back on unreasonable terms. Firm keeps the relationship; the generator avoids apology-padding that undermines the message.",
+          "Use 'firm' for boundary situations: chasing overdue payments, declining scope creep, or pushing back on unreasonable terms. It keeps the relationship professional but avoids apology-padding.",
       },
+      {
+        question: "Can it handle long, multi-question emails?",
+        answer:
+          "Yes, the AI will extract the key questions from long emails and ensure they are all addressed in a structured, easy-to-read reply.",
+      },
+      {
+        question: "Does it write the subject line too?",
+        answer:
+          "Typically, you will just hit 'Reply' in your email client so the subject line stays the same, so the generator focuses entirely on writing the perfect body copy.",
+      }
     ],
     related: ["ai-cold-email-writer", "payment-reminder-generator", "email-subject-line-tester", "word-counter"],
   },
@@ -491,6 +653,14 @@ export const tools: ToolConfig[] = [
       { name: "audience", label: "Audience", type: "text", placeholder: "e.g. founders and sales leaders", optional: true },
     ],
     submitLabel: "Generate post",
+    directAnswer: "The AI LinkedIn Post Generator is a free tool that turns a business insight or milestone into a formatted, professional post optimised specifically for the LinkedIn feed.",
+    example: "Input: 'Learned firing our biggest client' (Angle: Lesson) → Output: A post starting with a strong hook, broken into readable short paragraphs, closing with a question to drive comments.",
+    steps: [
+      "State the core topic or event you want to post about.",
+      "Select an angle (e.g., lesson learned, story, contrarian take).",
+      "Optionally specify your target audience.",
+      "Click 'Generate post' to get a feed-ready draft with hashtags."
+    ],
     about: [
       "LinkedIn is where business reputations compound quietly: a good post seen by two thousand relevant people does more for a consultant, founder or job-seeker than most paid campaigns. But LinkedIn writing is its own genre, with conventions that feel unnatural until learned — and this generator has learned them so you can start from a working draft instead of a blank box.",
       "The format it follows is the one that performs: a one-line hook, because only the first line or two shows before \"…see more\" and the click on that link is the whole battle; then short one-to-two-sentence paragraphs with real line breaks, since dense text dies on mobile; a concrete story or specific insight in the middle, because abstractions get scrolled past; a clear takeaway; and a closing question, because comments are what the algorithm feeds on. A restrained 3-5 hashtags sit at the very end, and emoji stay in single digits.",
@@ -498,20 +668,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "Why does the first line matter so much?",
+        question: "Why does the first line of a LinkedIn post matter so much?",
         answer:
-          "The feed truncates posts after roughly two lines — readers click \"see more\" only if the hook earns it. A specific number, tension or bold claim outperforms a polite preamble every time.",
+          "The LinkedIn feed truncates posts after roughly two lines. Readers will only click 'see more' if the hook earns it. A specific number, tension, or bold claim dramatically outperforms a polite preamble.",
       },
       {
-        question: "How often should I post on LinkedIn?",
+        question: "How often should I post on LinkedIn for best results?",
         answer:
-          "Two to three times a week, sustained for months, beats a daily sprint that burns out in three weeks. Batch-generate drafts and refine one each morning.",
+          "Two to three times a week, sustained for months, beats a daily sprint that burns you out in three weeks. Batch-generate your drafts and refine one each morning.",
       },
       {
-        question: "Do hashtags still matter on LinkedIn?",
+        question: "Do hashtags still matter on LinkedIn right now?",
         answer:
-          "Modestly — 3-5 relevant ones help categorisation without looking spammy. Your first-hour engagement (comments especially) matters far more for reach.",
+          "Yes, but modestly. Using 3-5 relevant hashtags helps categorisation without looking spammy. However, your first-hour engagement (especially comments) matters far more for algorithmic reach.",
       },
+      {
+        question: "Why does the generator use so many line breaks?",
+        answer:
+          "Because dense walls of text die on mobile screens, and most LinkedIn users browse on their phones. Short, one-to-two-sentence paragraphs with white space are proven to keep readers scrolling.",
+      },
+      {
+        question: "Can I use the same post on Twitter or Facebook?",
+        answer:
+          "You can, but it's not ideal. LinkedIn has a very specific professional tone and formatting style. Use the Social Media Post Generator if you want variants tailored for other platforms.",
+      }
     ],
     related: ["ai-social-media-post-generator", "ai-blog-outline-generator", "engagement-rate-calculator", "hashtag-generator"],
   },
@@ -539,6 +719,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate titles",
+    directAnswer: "The AI SEO Title Generator is a free tool that creates 10 highly clickable, search-optimised meta title tags that fit perfectly within Google's 60-character limit.",
+    example: "Input: 'GST registration for freelancers' → Output: 10 options like 'GST Registration for Freelancers: 2026 Guide' (55 chars), categorized by search intent.",
+    steps: [
+      "Enter the core topic of your webpage or article.",
+      "Enter the primary SEO keyword you want to rank for.",
+      "Select the search intent (informational, commercial, or transactional).",
+      "Click 'Generate titles' to get 10 precise options with character counts."
+    ],
     about: [
       "The title tag does two jobs at once: it tells Google what the page is about, and it persuades a human scanning a results page to pick your link over nine others. Ranking without clicks is a moral victory — the title is where rankings turn into traffic, and small wording changes routinely move click-through rates by whole percentage points.",
       "This generator produces ten options engineered for both jobs. Each stays within the roughly 60-character window Google displays before truncating (the count is printed after every title so you can verify at a glance), places your primary keyword naturally and early where relevance signals count most, and matches the search intent you select — a how-to phrasing for informational queries, comparison framing for commercial ones. The ten deliberately span the formats that dominate result pages: how-to, listicle, question, comparison, and plain descriptive, because different queries reward different shapes. A marked top pick with reasoning saves you the tie-break.",
@@ -546,20 +734,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "How long should a title tag be?",
+        question: "How long should an SEO title tag be?",
         answer:
-          "Aim for 50-60 characters. Google truncates around 600 pixels (~60 characters), and cut-off titles lose clicks. Every generated option shows its count so you can check instantly.",
+          "Aim for 50-60 characters. Google truncates titles around 600 pixels (roughly 60 characters), and cut-off titles lose clicks. Every generated option shows its character count so you can check instantly.",
       },
       {
-        question: "Does the keyword have to be at the start?",
+        question: "Does the exact keyword have to be at the very start of the title?",
         answer:
-          "Not strictly, but early placement helps both relevance signals and scanning humans. The generator front-loads it where it reads naturally — never at the cost of sounding robotic.",
+          "Not strictly, but early placement helps both relevance signals for Google and scanning humans. The generator front-loads it where it reads naturally, never at the cost of sounding robotic.",
       },
       {
-        question: "Why does Google sometimes rewrite my title?",
+        question: "Why does Google sometimes rewrite my title in search results?",
         answer:
-          "When it judges the title unrepresentative — too stuffed, too vague or duplicated across pages. Honest, specific, unique titles get rewritten least.",
+          "Google rewrites titles when it judges them unrepresentative — too keyword-stuffed, too vague, or duplicated across pages. Honest, specific, and unique titles get rewritten the least.",
       },
+      {
+        question: "What is search intent and why does it matter here?",
+        answer:
+          "Search intent is what the user actually wants. If they want a tutorial (informational intent), a 'How to' title wins. If they want to buy (transactional intent), 'Buy X' wins. The AI matches the title format to the intent.",
+      },
+      {
+        question: "Should I include my brand name in the title?",
+        answer:
+          "Yes, usually at the end (e.g., '... | BrandName'). If your CMS automatically appends your brand name to titles, make sure the generated title plus your brand name stays under 60 characters.",
+      }
     ],
     related: ["serp-snippet-preview", "meta-tag-generator", "headline-analyzer", "ai-blog-outline-generator"],
   },
@@ -588,6 +786,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate FAQ",
+    directAnswer: "The AI FAQ Generator is a free tool that automatically writes a list of customer-phrased Frequently Asked Questions and clear answers based on your product details.",
+    example: "Input: 'Wedding photography in Jaipur' + 'packages from ₹75,000' → Output: 'What is the starting price for wedding packages?' with a detailed answer.",
+    steps: [
+      "Enter the product, service, or core topic.",
+      "Paste any raw key details, pricing, or policies to draw from.",
+      "Select how many questions you want to generate.",
+      "Click 'Generate FAQ' for a ready-to-publish FAQ section."
+    ],
     about: [
       "A good FAQ section quietly does four jobs: it answers the pre-sales doubts that stop people buying, it deflects the repetitive emails and calls that eat your day, it reassures hesitant visitors that you've thought about their situation, and it feeds search engines exactly the question-shaped queries people type. Yet most businesses never write one, because generating the questions — seeing your own offering through a stranger's eyes — is genuinely hard from the inside.",
       "That outside view is what this generator supplies. Describe what you offer, paste whatever key details you have (prices, timelines, policies — rough notes are fine), and it produces customer-phrased questions with clear, honest answers drawn from those details. It deliberately includes the two questions every buyer has and every business hesitates to answer — the cost question and the \"how do you compare to the alternative\" question — because answering them on your terms beats letting a competitor's page do it.",
@@ -595,20 +801,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "How many FAQs should a page have?",
+        question: "How many FAQs should a page ideally have?",
         answer:
-          "Six to ten well-chosen questions beat twenty filler ones. Cover price, process, timing, the main objection, and the comparison question — then stop.",
+          "Six to ten well-chosen questions beat twenty filler ones. Make sure to cover price, process, timing, the main customer objection, and the comparison question — then stop.",
       },
       {
-        question: "Should I really answer the price question?",
+        question: "Should I really answer the price question in an FAQ?",
         answer:
-          "Yes, at least with a starting range. Visitors who can't find pricing assume the worst and leave; \"packages from ₹75,000\" filters and reassures simultaneously.",
+          "Yes, at least with a starting range. Visitors who can't find pricing assume the worst and leave. Saying 'packages start from ₹75,000' filters out bad leads and reassures good ones simultaneously.",
       },
       {
-        question: "Do FAQs help SEO?",
+        question: "Do FAQs actually help with SEO?",
         answer:
-          "Meaningfully — they match the natural-language questions people search, and with FAQPage structured data they can surface directly on results pages. This site's own tool pages use exactly that pattern.",
+          "Yes, meaningfully. They match the natural-language questions people type into Google. Furthermore, using FAQPage structured data on your site can surface your answers directly on Google search results pages.",
       },
+      {
+        question: "Will the AI make up answers if I don't provide details?",
+        answer:
+          "The AI will try to give general best-practice answers if you don't provide specifics, but for the best results, you should paste your actual policies, prices, and timelines into the 'Key details' field.",
+      },
+      {
+        question: "How do I know what questions my customers are asking?",
+        answer:
+          "The AI is trained on common consumer behaviour, so it will predict standard objections. However, the best source is always your own inbox — whatever customers email you about should be an FAQ.",
+      }
     ],
     related: ["ai-product-description-generator", "meta-tag-generator", "ai-seo-title-generator", "serp-snippet-preview"],
   },
@@ -681,6 +897,14 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate job description",
+    directAnswer: "The AI Job Description Generator is a free tool that creates professional, structured, and recruitment-ready job postings from just a role title and required skills.",
+    example: "Input: 'Senior React Developer' + '5 years experience' + 'React, Node' → Output: A complete JD with summary, responsibilities scaled to seniority, and qualifications.",
+    steps: [
+      "Enter the job role or title.",
+      "Select the required experience level.",
+      "List the mandatory technical and soft skills.",
+      "Optionally add company info and extra duties, then click 'Generate job description'."
+    ],
     about: [
       "This generator turns three facts you already know — the role, the experience level, the skills you need — into a professional, structured job description in under a minute. Most job descriptions are otherwise either copied from a competitor or dashed off in ten minutes, and both show up in your applications: a vague description attracts under-qualified candidates, while a padded one sets expectations nobody can meet.",
       "A job description works as two things at once: an advertisement that sells the role to good candidates, and a filter that discourages the wrong ones. That's why structure matters. Ten sections cover the ground a candidate actually checks — a summary of what the job is and why it matters, an overview of the day-to-day, five to eight specific responsibilities scaled to the experience level, the skills grouped sensibly, and honest qualifications. Setting expectations early pays off: candidates who self-select out at the application stage cost you nothing; discovering the mismatch after an interview costs you days.",
@@ -689,25 +913,30 @@ export const tools: ToolConfig[] = [
     ],
     faq: [
       {
-        question: "What do I need to provide?",
+        question: "What exactly do I need to provide to generate a JD?",
         answer:
-          "Just three things: the job role or title, the experience level, and the required skills. Industry, company information and extra responsibilities are optional add-ons that make the output more specific.",
+          "Just three mandatory things: the job role or title, the experience level, and the required skills. Industry, company information, and extra responsibilities are optional but make the output more tailored.",
       },
       {
-        question: "Will it invent salary, benefits or contact details?",
+        question: "Will the AI invent salary, benefits, or contact details?",
         answer:
-          "No. The generator is instructed to write only from what you provide and never to fabricate salary, benefits, location, company details or a contact address. The How to Apply section ends with a placeholder where you add your real application instructions.",
+          "No. The generator is strictly instructed to write only from what you provide and never to fabricate salary, benefits, or contact addresses. It leaves placeholders for you to fill in those details.",
       },
       {
-        question: "Can I post the output directly?",
+        question: "Can I post the output directly to job boards like LinkedIn or Indeed?",
         answer:
-          "Largely, yes — after filling any placeholders and checking the responsibilities against the real scope of the role. Before posting in India, also review the description for any wording that could be seen as discriminatory on grounds like age, gender or marital status, which hiring norms prohibit.",
+          "Largely, yes. However, you should always fill the placeholders, check that the responsibilities match the real scope of the role, and review it for compliance with local hiring laws before posting.",
       },
       {
-        question: "Are the responsibilities realistic?",
+        question: "Are the generated responsibilities realistic for the role?",
         answer:
-          "They're generated to match the experience level you select and are based only on your inputs. For a lead or manager level, expect ownership and mentoring duties; for entry level, expect learning and support duties. Adjust any line that doesn't reflect the actual day-to-day.",
+          "Yes, they are scaled to match the experience level you selected. A manager role will feature leadership duties, while an entry-level role will focus on learning and execution. Always adjust lines that don't fit perfectly.",
       },
+      {
+        question: "Is this job description generator completely free?",
+        answer:
+          "Yes, the tool is completely free and requires no account or sign-up. It's designed to help founders and HR teams save hours of drafting time.",
+      }
     ],
     related: ["offer-letter-generator", "experience-letter-generator", "ai-linkedin-post-generator", "salary-calculator"],
   },

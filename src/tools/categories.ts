@@ -6,6 +6,8 @@ export const EBOS_URL =
 export const SITE_URL = "https://tools.avexora.in";
 export const SITE_NAME = "Avexora Tools";
 
+export const SITE_OG_IMAGE = `${SITE_URL}/og-image`;
+
 export const categories: CategoryDef[] = [
   {
     slug: "finance-calculators",

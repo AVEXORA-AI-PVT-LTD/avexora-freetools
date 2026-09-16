@@ -1,0 +1,2 @@
+src/tools/ui/image/background-remover.tsx(36,49): error TS2307: Cannot find module '@imgly/background-removal' or its corresponding type declarations.
+src/tools/ui/pdf/pdf-to-word.tsx(63,71): error TS2307: Cannot find module 'docx' or its corresponding type declarations.

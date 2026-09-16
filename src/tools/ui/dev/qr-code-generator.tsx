@@ -1,6 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
+import { RestoredDownload } from "@/components/account/restored-download";
+import { primaryBtn } from "@/tools/ui/ui-tokens";
 
 const inputCls =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none";
@@ -12,6 +15,8 @@ export default function QrCodeGenerator() {
   const [error, setError] = useState<string | null>(null);
   const [rendered, setRendered] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
 
   const generate = async () => {
     if (text.trim() === "") {
@@ -32,13 +37,11 @@ export default function QrCodeGenerator() {
     }
   };
 
-  const download = () => {
+  const download = async () => {
     const url = canvasRef.current?.toDataURL("image/png");
     if (!url) return;
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "qr-code.png";
-    a.click();
+    const blob = await (await fetch(url)).blob();
+    downloadOne(blob, "qr-code.png");
   };
 
   const reset = () => {
@@ -51,6 +54,7 @@ export default function QrCodeGenerator() {
 
   return (
     <div className="space-y-4">
+      <RestoredDownload restored={restored} />
       <div>
         <label htmlFor="qr-text" className="mb-1 block text-sm font-medium text-slate-700">
           Text or URL
@@ -109,7 +113,7 @@ export default function QrCodeGenerator() {
         <button
           type="button"
           onClick={download}
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className={primaryBtn}
           data-lead-action="download"
         >
           Download PNG

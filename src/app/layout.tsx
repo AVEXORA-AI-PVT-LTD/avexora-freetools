@@ -3,6 +3,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
+import AccountProviders from "@/components/account/providers";
+import { NavAccount } from "@/components/account/nav-account";
+import { getEffectiveNavigation } from "@/server/navigation";
+import { getGlobalSeoOverride } from "@/server/seo-manager";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,41 +23,58 @@ const geistMono = Geist_Mono({
 const DEFAULT_DESCRIPTION =
   "Free calculators, generators, PDF & image utilities and AI writing tools for your business. No sign-up, no cost — by Avexora, makers of Enterprise Business OS.";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: `${SITE_NAME} — 120+ Avex Business Tools`,
-    template: `%s | ${SITE_NAME}`,
-  },
-  description: DEFAULT_DESCRIPTION,
-  alternates: { canonical: SITE_URL },
-  openGraph: {
-    title: `${SITE_NAME} — 120+ Avex Business Tools`,
-    description: DEFAULT_DESCRIPTION,
-    url: SITE_URL,
-    siteName: SITE_NAME,
-    type: "website",
-    images: [{ url: "/logo.png", width: 400, height: 100, alt: SITE_NAME }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE_NAME} — 120+ Avex Business Tools`,
-    description: DEFAULT_DESCRIPTION,
-    images: ["/logo.png"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const globalSeo = await getGlobalSeoOverride();
 
-export default function RootLayout({
+  const title = globalSeo?.title || `${SITE_NAME} — 120+ Avex Business Tools`;
+  const description = globalSeo?.description || DEFAULT_DESCRIPTION;
+  const canonical = globalSeo?.canonical || SITE_URL;
+  const ogImage = globalSeo?.ogImage || "/logo.png";
+  
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: title,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description,
+    alternates: { canonical },
+    robots: {
+      index: globalSeo?.robotsIndex !== false,
+      follow: globalSeo?.robotsFollow !== false,
+    },
+    openGraph: {
+      title: globalSeo?.ogTitle || title,
+      description: globalSeo?.ogDescription || description,
+      url: canonical,
+      siteName: SITE_NAME,
+      type: (globalSeo?.ogType as any) || "website",
+      images: [{ url: ogImage, width: 400, height: 100, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: (globalSeo?.twitterCard as any) || "summary_large_image",
+      title: globalSeo?.twitterTitle || title,
+      description: globalSeo?.twitterDescription || description,
+      images: [globalSeo?.twitterImage || ogImage],
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerLinks = await getEffectiveNavigation("HEADER");
+  const footerLinks = await getEffectiveNavigation("FOOTER");
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col text-slate-900" suppressHydrationWarning>
+        <AccountProviders>
         <header className="border-b border-slate-200 print:hidden">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:py-1.5">
             <Link href="/" className="flex items-center -ml-4">
@@ -65,10 +87,19 @@ export default function RootLayout({
               >
                 All tools
               </Link>
-              <Link href="/studio" className="text-slate-600 hover:text-slate-900">
-                <span className="sm:hidden">Studio</span>
-                <span className="hidden sm:inline">Brand Studio</span>
-              </Link>
+                            {headerLinks.map(link => (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  target={link.openInNewTab ? "_blank" : undefined}
+                  rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                  className="hidden text-slate-600 hover:text-slate-900 sm:inline"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <NavAccount />
+
               <a
                 href={`${EBOS_URL}?utm_source=avextools&utm_medium=header&utm_campaign=site`}
                 target="_blank"
@@ -108,6 +139,21 @@ export default function RootLayout({
                   Studio pricing
                 </Link>
               </div>
+              {footerLinks.length > 0 && (
+                <div>
+                  {footerLinks.map(link => (
+                    <a
+                      key={link.id}
+                      href={link.href}
+                      target={link.openInNewTab ? "_blank" : undefined}
+                      rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                      className="block text-sm font-semibold text-slate-800 hover:text-orange-800 mb-1"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
             <p className="mt-8 text-xs text-slate-500">
               © {new Date().getFullYear()} Avexora · tools.avexora.in — avex
@@ -120,6 +166,7 @@ export default function RootLayout({
             </p>
           </div>
         </footer>
+        </AccountProviders>
       </body>
     </html>
   );

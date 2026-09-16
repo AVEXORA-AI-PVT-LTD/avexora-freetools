@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { zipSync } from "fflate";
+import UPNG from "@pdf-lib/upng";
 import { useFileDrop } from "../use-file-drop";
 
 export { inputCls, labelCls, primaryBtn, secondaryBtn, iconBtn, panelCls } from "../ui-tokens";
@@ -308,4 +309,84 @@ export function drawToCanvas(image: HTMLImageElement, width: number, height: num
   const ctx = canvas.getContext("2d")!;
   ctx.drawImage(image, 0, 0, width, height);
   return canvas;
+}
+
+export type ImageMime = "image/png" | "image/jpeg" | "image/webp";
+
+/**
+ * Resolve the output format for the compressor. The image format is the source
+ * of truth: PNG → PNG, JPEG → JPEG, WebP → WebP. The compressor reduces size by
+ * changing encoding/compression parameters ONLY, never the format. Formats the
+ * browser canvas/UPNG cannot re-encode in kind (GIF, BMP, AVIF, TIFF, …) are
+ * not supported by this compressor and return `null` so the caller can show a
+ * clear message instead of silently converting.
+ */
+export function imageCompressionType(fileType: string): ImageMime | null {
+  if (fileType === "image/png") return "image/png";
+  if (fileType === "image/jpeg" || fileType === "image/jpg") return "image/jpeg";
+  if (fileType === "image/webp") return "image/webp";
+  return null;
+}
+
+
+
+export interface CompressionCandidate {
+  type: ImageMime;
+  quality: number;
+}
+
+export function compressionCandidates(
+  fileType: string,
+  requestedQuality: number,
+): CompressionCandidate[] {
+  const type = imageCompressionType(fileType);
+  if (!type) return [];
+  const q = Math.min(95, Math.max(10, Math.round(requestedQuality)));
+
+  if (type === "image/png") {
+    return [{ type: "image/png", quality: q }];
+  }
+
+  const step = 15;
+  const floor = 30;
+  const candidates: CompressionCandidate[] = [{ type, quality: q }];
+  for (let s = q - step; s >= floor; s -= step) {
+    candidates.push({ type, quality: s });
+  }
+  return candidates;
+}
+
+export interface EncodedPnGCandidate {
+  blob: Blob;
+  /** Nominal quality label: 100 = lossless; 256/64/32/16 = palette colour count. */
+  quality: number;
+}
+
+export function encodePngCandidates(canvas: HTMLCanvasElement): EncodedPnGCandidate[] {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return [];
+  const w = canvas.width;
+  const h = canvas.height;
+  if (w <= 0 || h <= 0) return [];
+  let buffer: ArrayBuffer;
+  try {
+    buffer = ctx.getImageData(0, 0, w, h).data.buffer as ArrayBuffer;
+  } catch {
+    return [];
+  }
+  const candidates: EncodedPnGCandidate[] = [];
+  const push = (cnum: number) => {
+    try {
+      candidates.push({ blob: pngBlob(UPNG.encode([buffer], w, h, cnum)), quality: cnum });
+    } catch {
+      // A pathological palette size can throw; skip it (bounded set remains).
+    }
+  };
+  push(0); // lossless
+  for (const colors of [256, 64, 32, 16]) push(colors);
+  return candidates;
+}
+
+function pngBlob(encoded: ArrayBuffer): Blob {
+  return new Blob([encoded], { type: "image/png" });
 }

@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useToolTracking } from "./use-tool-tracking";
+import { usePathname } from "next/navigation";
 import type { FieldValues, GeneratorTool } from "@/types/tools";
 import { FieldInput, initialValues } from "./field-input";
 import { OutputBlock } from "./output-block";
 import { GateProvider, useEmailGate } from "@/components/lead/email-gate";
+import { useAuthGate } from "@/components/account/auth-gate";
+import {
+  consumeDownloadResume,
+  saveDownloadResume,
+} from "@/components/account/account-resume";
 
 export function GeneratorShape({ tool }: { tool: GeneratorTool }) {
   const gate = useEmailGate(tool);
@@ -26,14 +33,43 @@ function DeclarativeGenerator({ tool }: { tool: GeneratorTool }) {
   const fields = tool.fields!;
   const generate = tool.generate!;
   const [values, setValues] = useState<FieldValues>(() => initialValues(fields));
-  const [output, setOutput] = useState<{ text: string; filename?: string } | null>(null);
+  const pathname = usePathname();
+  // On a return from the sign-in page, the document the visitor tried to
+  // download is rehydrated from sessionStorage in the initial state so the
+  // result is never lost and nothing needs regenerating.
+  const [output, setOutput] = useState<{ text: string; filename?: string } | null>(() => {
+    if (!tool.requireAuth) return null;
+    const resume = consumeDownloadResume(pathname);
+    return resume ? { text: resume.text, filename: resume.filename } : null;
+  });
   const [error, setError] = useState<string | null>(null);
   const gate = useEmailGate(tool);
+  const { authGate, modal: authModal } = useAuthGate(Boolean(tool.requireAuth));
+
+  useToolTracking(tool.slug, output !== null, JSON.stringify(values));
 
   const reset = () => {
     setValues(initialValues(fields));
     setOutput(null);
     setError(null);
+  };
+
+  // Downloads must pass sign-in first (auth-required tools), otherwise the
+  // anonymous email gate (emailGate tools). Either way the download action
+  // itself is only ever invoked after the gate succeeds.
+  const gated = Boolean(tool.requireAuth) || Boolean(tool.emailGate);
+  const onGatedAction = (action: () => void) => {
+    if (tool.requireAuth) {
+      authGate(action, () => {
+        if (output) saveDownloadResume({ path: pathname, text: output.text, filename: output.filename });
+      });
+      return;
+    }
+    if (tool.emailGate) {
+      gate.requireEmail(action);
+      return;
+    }
+    action();
   };
 
   return (
@@ -83,11 +119,12 @@ function DeclarativeGenerator({ tool }: { tool: GeneratorTool }) {
         <OutputBlock
           text={output.text}
           filename={output.filename}
-          gated={Boolean(tool.emailGate)}
-          onGatedAction={gate.requireEmail}
+          gated={gated}
+          onGatedAction={onGatedAction}
         />
       )}
       {gate.modal}
+      {authModal}
     </form>
   );
 }

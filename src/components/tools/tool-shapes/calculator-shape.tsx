@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useToolTracking } from "./use-tool-tracking";
 import type { CalculatorTool, FieldValues } from "@/types/tools";
 import { primaryBtn, secondaryBtn } from "@/tools/ui/ui-tokens";
 import { FieldInput, initialValues } from "./field-input";
@@ -20,6 +21,12 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
     return typeof v === "string" ? v.trim() !== "" : v !== undefined;
   });
 
+  const visibleFields = tool.fields.filter(
+    (f) => !f.visibleWhen || values[f.visibleWhen.field] === f.visibleWhen.equals,
+  );
+
+  useToolTracking(tool.slug, outcome !== null && !("error" in outcome) && hasInput, JSON.stringify(values));
+
   const reset = () => {
     setValues(initialValues(tool.fields));
     setSubmitted(false);
@@ -33,8 +40,8 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
         setSubmitted(true);
       }}
     >
-      <div className={tool.fields.length > 2 ? "grid gap-4 sm:grid-cols-2" : "space-y-4"}>
-        {tool.fields.map((f) => (
+      <div className={visibleFields.length > 2 ? "grid gap-4 sm:grid-cols-2" : "space-y-4"}>
+        {visibleFields.map((f) => (
           <div key={f.name} className={f.type === "textarea" ? "sm:col-span-2" : undefined}>
             <FieldInput
               field={f}
