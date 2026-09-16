@@ -255,18 +255,16 @@ model UsageCounter {
 // ---------------------------------------------------------------------------
 
 model ToolUsage {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String   @db.ObjectId
-  toolSlug String
-  useCount Int      @default(1)
-  lastUsed DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?  @db.ObjectId // Optional, to allow anonymous usage
+  toolSlug  String
+  createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Ek user ka ek tool ke liye ek hi record hoga, count update hoga
-  @@unique([userId, toolSlug])
-  // Ranking ke liye index taaki sabse zyada use hone wale tools jaldi fetch ho sakein
-  @@index([toolSlug, useCount(sort: Desc)])
+  @@index([toolSlug, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 // ---------------------------------------------------------------------------

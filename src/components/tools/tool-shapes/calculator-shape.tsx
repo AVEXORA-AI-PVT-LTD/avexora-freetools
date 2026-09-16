@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useToolTracking } from "./use-tool-tracking";
 import type { CalculatorTool, FieldValues } from "@/types/tools";
 import { primaryBtn, secondaryBtn } from "@/tools/ui/ui-tokens";
 import { FieldInput, initialValues } from "./field-input";
@@ -23,6 +24,8 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
   const visibleFields = tool.fields.filter(
     (f) => !f.visibleWhen || values[f.visibleWhen.field] === f.visibleWhen.equals,
   );
+
+  useToolTracking(tool.slug, outcome !== null && !("error" in outcome) && hasInput, JSON.stringify(values));
 
   const reset = () => {
     setValues(initialValues(tool.fields));
