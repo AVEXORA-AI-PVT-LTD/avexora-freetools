@@ -51,6 +51,8 @@ export interface FieldDef {
   required?: boolean;
   /** Upper bound enforced natively on the input and again server-side. */
   maxLength?: number;
+  /** Show this field only while the named select field holds this value. */
+  visibleWhen?: { field: string; equals: string };
 }
 
 export interface ResultItem {
@@ -86,17 +88,6 @@ export interface FaqItem {
   answer: string;
 }
 
-export interface HowToStep {
-  name: string;
-  text: string;
-}
-
-/** HowTo JSON-LD for tools that are a genuine multi-step process (not a single-form calculator). */
-export interface HowTo {
-  name: string;
-  steps: HowToStep[];
-}
-
 interface ToolBase {
   slug: string;
   category: CategorySlug;
@@ -105,13 +96,37 @@ interface ToolBase {
   seoDescription: string;
   /** "About / how it works" paragraphs rendered below the tool (SEO body copy). */
   about: string[];
+  /**
+   * AEO: one to two sentence direct answer to "What is this tool?" shown right
+   * below the tagline, before the tool runs. Must be extractable on its own.
+   */
+  directAnswer?: string;
+  /** AEO: primary formula/method stated exactly as the tool computes it. */
+  formula?: string;
+  /** AEO: one concrete worked example (Input → Formula → Result). */
+  example?: string;
+  /**
+   * AEO: genuine multi-step workflow steps rendered as a visible ordered list
+   * AND as HowTo JSON-LD (same array, so visible steps always equal the schema,
+   * and the schema is only emitted when real steps exist). Set only for tools
+   * with a real multi-step workflow (file-tools, document builders, etc.).
+   */
+  steps?: (string | { title: string; description: string })[];
   faq: FaqItem[];
   /** Slugs of related tools for internal linking. */
   related: string[];
+  /** Explicit sort order for this tool (lower numbers appear first). If unset, defaults to 999. */
+  priority?: number;
   /** Require an email before download/copy of produced documents. */
   emailGate?: boolean;
-  /** Optional HowTo JSON-LD for tools that are genuinely a multi-step process. */
-  howTo?: HowTo;
+  /** Require a signed-in account before downloading produced documents. When
+   * set, sign-in replaces the anonymous email gate for downloads and only the
+   * declarative generator shape honours it (custom `component` tools are left
+   * to their own gating).
+   */
+  requireAuth?: boolean;
+  /** True if the tool was dynamically created via the Admin Panel and lacks a hardcoded client implementation. */
+  isDynamic?: boolean;
 }
 
 export interface CalculatorTool extends ToolBase {
