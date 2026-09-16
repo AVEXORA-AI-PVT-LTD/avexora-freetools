@@ -34,9 +34,9 @@ export function ToolActions({ slug }: { slug: string }) {
       {open && (
         <div className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
-            <span className="block px-4 py-2 text-sm text-slate-400 italic">
-              Edit (Coming soon)
-            </span>
+            <Link href={`/admin/tools/${slug}/seo`} className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900">
+              Edit SEO
+            </Link>
           </div>
         </div>
       )}

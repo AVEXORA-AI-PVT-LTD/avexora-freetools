@@ -6,6 +6,7 @@ import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
 import AccountProviders from "@/components/account/providers";
 import { NavAccount } from "@/components/account/nav-account";
 import { getEffectiveNavigation } from "@/server/navigation";
+import { getGlobalSeoOverride } from "@/server/seo-manager";
 
 import "./globals.css";
 
@@ -22,29 +23,42 @@ const geistMono = Geist_Mono({
 const DEFAULT_DESCRIPTION =
   "Free calculators, generators, PDF & image utilities and AI writing tools for your business. No sign-up, no cost — by Avexora, makers of Enterprise Business OS.";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: `${SITE_NAME} — 120+ Avex Business Tools`,
-    template: `%s | ${SITE_NAME}`,
-  },
-  description: DEFAULT_DESCRIPTION,
-  alternates: { canonical: SITE_URL },
-  openGraph: {
-    title: `${SITE_NAME} — 120+ Avex Business Tools`,
-    description: DEFAULT_DESCRIPTION,
-    url: SITE_URL,
-    siteName: SITE_NAME,
-    type: "website",
-    images: [{ url: "/logo.png", width: 400, height: 100, alt: SITE_NAME }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE_NAME} — 120+ Avex Business Tools`,
-    description: DEFAULT_DESCRIPTION,
-    images: ["/logo.png"],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const globalSeo = await getGlobalSeoOverride();
+
+  const title = globalSeo?.title || `${SITE_NAME} — 120+ Avex Business Tools`;
+  const description = globalSeo?.description || DEFAULT_DESCRIPTION;
+  const canonical = globalSeo?.canonical || SITE_URL;
+  const ogImage = globalSeo?.ogImage || "/logo.png";
+  
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: title,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description,
+    alternates: { canonical },
+    robots: {
+      index: globalSeo?.robotsIndex !== false,
+      follow: globalSeo?.robotsFollow !== false,
+    },
+    openGraph: {
+      title: globalSeo?.ogTitle || title,
+      description: globalSeo?.ogDescription || description,
+      url: canonical,
+      siteName: SITE_NAME,
+      type: (globalSeo?.ogType as any) || "website",
+      images: [{ url: ogImage, width: 400, height: 100, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: (globalSeo?.twitterCard as any) || "summary_large_image",
+      title: globalSeo?.twitterTitle || title,
+      description: globalSeo?.twitterDescription || description,
+      images: [globalSeo?.twitterImage || ogImage],
+    },
+  };
+}
 
 export default async function RootLayout({
   children,

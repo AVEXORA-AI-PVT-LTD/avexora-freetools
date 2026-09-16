@@ -127,6 +127,7 @@ interface ToolBase {
   requireAuth?: boolean;
   /** True if the tool was dynamically created via the Admin Panel and lacks a hardcoded client implementation. */
   isDynamic?: boolean;
+  howTo?: any;
 }
 
 export interface CalculatorTool extends ToolBase {

@@ -279,7 +279,7 @@ model CategoryConfig {
   status           Boolean  @default(true)
   priority         Int?
   displayOrder     Int      @default(0)
-  metadataOverride Json?
+  seoMetadata Json?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -290,6 +290,7 @@ model ToolConfig {
   status       Boolean  @default(true)
   priority     Int      @default(0)
   displayOrder Int      @default(0)
+  seoMetadata Json?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ebosCtaUrl, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { allTools, getTool, toolsByCategory } from "@/tools/registry";
+import { resolveToolSeo } from "@/server/seo-manager";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
@@ -18,28 +19,22 @@ export async function generateMetadata({
 }: {
   params: Promise<{ category: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, category } = await params;
   const tool = getTool(slug);
   if (!tool) return {};
-  const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
-  const title = `${tool.name} — Avex Online Tool`;
-  return {
-    title,
+  
+  const defaultCanonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
+  const defaultTitle = `${tool.name} — Avex Online Tool`;
+  
+  const fallback = {
+    title: defaultTitle,
     description: tool.seoDescription,
-    alternates: { canonical },
-    openGraph: {
-      title: `${title} | ${SITE_NAME}`,
-      description: tool.seoDescription,
-      url: canonical,
-      siteName: SITE_NAME,
-      type: "website",
-    },
-    twitter: {
-      card: "summary",
-      title: `${title} | ${SITE_NAME}`,
-      description: tool.seoDescription,
-    },
+    canonical: defaultCanonical,
+    siteName: SITE_NAME,
+    ogImage: `${SITE_URL}/logo.png`,
   };
+
+  return resolveToolSeo(slug, category, fallback);
 }
 
 export default async function ToolPage({
@@ -52,9 +47,13 @@ export default async function ToolPage({
   const cat = getCategory(category);
   if (!tool || !cat || tool.category !== cat.slug) notFound();
 
-  const canonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
+  const defaultCanonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
+  const fallback = { title: tool.name, description: tool.seoDescription, canonical: defaultCanonical, siteName: SITE_NAME, ogImage: "" };
+  const resolvedSeo = await resolveToolSeo(slug, category, fallback);
+  const canonical = resolvedSeo.alternates?.canonical || defaultCanonical;
+
   const related = tool.related
-    .map((s) => getTool(s))
+    .map((s: string) => getTool(s))
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
   const aiEnabled = tool.kind === "ai-writer" && Boolean(process.env.ANTHROPIC_API_KEY);
 
@@ -63,7 +62,7 @@ export default async function ToolPage({
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       name: tool.name,
-      description: tool.seoDescription,
+      description: resolvedSeo.description || tool.seoDescription,
       url: canonical,
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
@@ -93,7 +92,7 @@ export default async function ToolPage({
             "@context": "https://schema.org",
             "@type": "HowTo",
             name: tool.howTo.name,
-            step: tool.howTo.steps.map((s) => ({
+            step: tool.howTo.steps.map((s: any) => ({
               "@type": "HowToStep",
               name: s.name,
               text: s.text,

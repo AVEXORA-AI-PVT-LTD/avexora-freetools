@@ -26,7 +26,7 @@ export async function createDynamicTool(prevState: any, formData: FormData) {
 
     const parseResult = DynamicToolSchema.safeParse(rawData);
     if (!parseResult.success) {
-      return { error: parseResult.error.errors[0].message, fields: rawData };
+      return { error: (parseResult.error as any).errors[0].message, fields: rawData };
     }
     const validated = parseResult.data;
 

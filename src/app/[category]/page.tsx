@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { categories, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { toolsByCategory } from "@/tools/registry";
+import { resolveCategorySeo } from "@/server/seo-manager";
 
 export const dynamicParams = false;
 
@@ -18,25 +19,19 @@ export async function generateMetadata({
   const { category } = await params;
   const cat = getCategory(category);
   if (!cat) return {};
-  const title = `${cat.name} — Avex Online Tools`;
-  const canonical = `${SITE_URL}/${cat.slug}`;
-  return {
-    title,
+  
+  const defaultTitle = `${cat.name} — Avex Online Tools`;
+  const defaultCanonical = `${SITE_URL}/${cat.slug}`;
+  
+  const fallback = {
+    title: defaultTitle,
     description: cat.description,
-    alternates: { canonical },
-    openGraph: {
-      title: `${title} | ${SITE_NAME}`,
-      description: cat.description,
-      url: canonical,
-      siteName: SITE_NAME,
-      type: "website",
-    },
-    twitter: {
-      card: "summary",
-      title: `${title} | ${SITE_NAME}`,
-      description: cat.description,
-    },
+    canonical: defaultCanonical,
+    siteName: SITE_NAME,
+    ogImage: `${SITE_URL}/logo.png`,
   };
+
+  return resolveCategorySeo(category, fallback);
 }
 
 export default async function CategoryPage({

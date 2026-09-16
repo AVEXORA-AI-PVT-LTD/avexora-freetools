@@ -1,6 +1,7 @@
 import { requireAdminAuth } from "@/server/admin-auth";
 import { getEffectiveContents, CONTENT_BLOCKS_LIST } from "@/server/content";
 import { ContentForm } from "./ContentForm";
+import Link from "next/link";
 
 export const metadata = {
   title: "Website Content | Admin Panel",
@@ -20,9 +21,14 @@ export default async function AdminContentPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Website Content</h1>
-        <p className="text-sm text-slate-500">Manage configurable website text across the site.</p>
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Website Content</h1>
+          <p className="text-sm text-slate-500">Manage configurable website text across the site.</p>
+        </div>
+        <Link href="/admin/content/seo" className="px-4 py-2 bg-orange-600 text-white rounded-md text-sm font-medium hover:bg-orange-700">
+          Manage Global SEO
+        </Link>
       </div>
 
       <div className="space-y-10">
