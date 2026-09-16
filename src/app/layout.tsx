@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
+import AccountProviders from "@/components/account/providers";
+import { NavAccount } from "@/components/account/nav-account";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,6 +55,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col text-slate-900" suppressHydrationWarning>
+        <AccountProviders>
         <header className="border-b border-slate-200 print:hidden">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:py-1.5">
             <Link href="/" className="flex items-center -ml-4">
@@ -65,10 +68,8 @@ export default function RootLayout({
               >
                 All tools
               </Link>
-              <Link href="/studio" className="text-slate-600 hover:text-slate-900">
-                <span className="sm:hidden">Studio</span>
-                <span className="hidden sm:inline">Brand Studio</span>
-              </Link>
+              <NavAccount />
+
               <a
                 href={`${EBOS_URL}?utm_source=avextools&utm_medium=header&utm_campaign=site`}
                 target="_blank"
@@ -120,6 +121,7 @@ export default function RootLayout({
             </p>
           </div>
         </footer>
+        </AccountProviders>
       </body>
     </html>
   );

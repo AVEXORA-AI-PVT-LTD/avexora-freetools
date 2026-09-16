@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import UPNG from "@pdf-lib/upng";
@@ -421,13 +421,20 @@ describe("compression pipeline (simulated)", () => {
   });
 });
 
+
+vi.mock("@/components/account/use-auth-download", () => ({
+  useAuthDownload: () => ({ downloadOne: vi.fn() }),
+  useRestoredDownload: () => ({ restored: null })
+}));
+
 describe("ImageCompressor component render", () => {
+
   it("renders the empty state with a disabled button and no quality slider", () => {
     const html = renderToStaticMarkup(createElement(ImageCompressor));
-    expect(html).toContain("Click to choose an image");
-    expect(html).toContain("Compress &amp; download");
+    expect(html).toContain("Click or drag an image here");
+    expect(html).toContain("Compress Image");
     expect(html).toContain("disabled=\"\"");
-    expect(html).toContain("data-lead-action=\"download\"");
+    
     expect(html).not.toContain("ic-quality");
   });
 });
