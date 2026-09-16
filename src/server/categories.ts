@@ -2,7 +2,7 @@ import { prisma } from "@/server/db";
 import { categories as staticCategories } from "@/tools/categories";
 
 export async function getAllCategoriesWithConfig() {
-  const configs = await prisma.categoryConfig?.findMany() ?? [];
+  const configs = await prisma.categoryConfig?.findMany().catch(() => []) ?? [];
   const configMap = new Map(configs.map((c) => [c.slug, c]));
 
   return staticCategories

@@ -38,7 +38,9 @@ export type Permission =
   | "settings.view"
   | "settings.edit"
   | "analytics.view"
-  | "audit_logs.view";
+  | "audit_logs.view"
+  | "content.view"
+  | "content.edit";
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   superadmin: [
@@ -48,18 +50,18 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "users.edit", "users.delete", "users.change_role", "roles.view", "roles.manage", 
     "brand_studio.view", "brand_studio.edit", "brand_studio.toggle", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
-    "settings.view", "settings.edit", "analytics.view", "audit_logs.view"
+    "settings.view", "settings.edit", "analytics.view", "audit_logs.view", "content.view", "content.edit"
   ],
   admin: [
     "dashboard.view", "categories.view", "categories.edit", "categories.toggle", 
     "tools.view", "tools.edit", "tools.toggle", "tools.reorder", "users.view", 
     "users.edit", "brand_studio.view", "brand_studio.edit", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
-    "analytics.view"
+    "analytics.view", "content.view", "content.edit"
   ],
   editor: [
     "dashboard.view", "categories.view", "categories.edit", "tools.view", 
-    "tools.edit", "tools.reorder", "homepage.view", "seo.view", "seo.edit"
+    "tools.edit", "tools.reorder", "homepage.view", "seo.view", "seo.edit", "content.view", "content.edit"
   ],
   user: []
 };

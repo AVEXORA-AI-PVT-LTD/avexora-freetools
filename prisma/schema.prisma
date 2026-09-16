@@ -304,3 +304,17 @@ model DynamicTool {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+// ---------------------------------------------------------------------------
+// CMS / Content Management
+// ---------------------------------------------------------------------------
+
+model ContentBlock {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
+  value       String
+  type        String   @default("TEXT")
+  status      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

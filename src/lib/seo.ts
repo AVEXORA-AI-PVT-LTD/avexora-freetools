@@ -104,12 +104,15 @@ export function toolJsonLd(tool: ToolConfig, cat: CategoryDef): object[] {
       "@type": "HowTo",
       name: tool.name,
       description: tool.seoDescription,
-      step: tool.steps.map((step, i) => ({
-        "@type": "HowToStep",
-        position: i + 1,
-        name: step,
-        text: step,
-      })),
+            step: tool.steps.map((step, i) => {
+        const isStr = typeof step === "string";
+        return {
+          "@type": "HowToStep",
+          position: i + 1,
+          name: isStr ? step : step.title,
+          text: isStr ? step : step.description,
+        };
+      }),
     });
   }
   return nodes;

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { EBOS_URL, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
 import { getEffectiveCategories } from "@/server/categories";
+import { getEffectiveContent } from "@/server/content";
 import { DISPLAYED_TOOL_COUNT } from "@/tools/registry";
 import AccountProviders from "@/components/account/providers";
 import { NavAccount } from "@/components/account/nav-account";
@@ -54,6 +55,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const effectiveCategories = await getEffectiveCategories();
+  const footerDesc = await getEffectiveContent("footer.description");
+  const footerCopyright = await getEffectiveContent("footer.copyright");
 
   return (
     <html
@@ -125,12 +128,13 @@ export default async function RootLayout({
               </div>
               <div className="mt-8 flex flex-col gap-4">
                 <p className="text-xs text-slate-500">
-                  © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — Avexora Tools, by Avexora, provides practical online business tools. By the makers of{" "}
-                  <a href={EBOS_URL} className="underline hover:text-slate-700">
-                    Enterprise Business OS
-                  </a>
-                  . Tools are provided as-is without warranty; verify important
-                  calculations independently.
+                  {footerCopyright} {footerDesc.split("{EBOS_LINK}")[0]}
+                  {footerDesc.includes("{EBOS_LINK}") && (
+                    <a href={EBOS_URL} className="underline hover:text-slate-700">
+                      Enterprise Business OS
+                    </a>
+                  )}
+                  {footerDesc.includes("{EBOS_LINK}") ? footerDesc.split("{EBOS_LINK}")[1] : ""}
                 </p>
               </div>
             </div>
