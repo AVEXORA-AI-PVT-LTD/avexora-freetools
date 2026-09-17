@@ -1,28 +1,8 @@
-import { getDashboardStats } from "@/server/admin/dashboard-stats";
-import { KpiCard } from "./KpiCard";
-import Link from "next/link";
-import { hasPermission } from "@/lib/admin/permissions";
+const fs = require('fs');
+const filepath = 'src/components/admin/DashboardCards.tsx';
+let content = fs.readFileSync(filepath, 'utf8');
 
-export function DashboardMetrics({ stats }: { stats: Awaited<ReturnType<typeof getDashboardStats>> }) {
-  const formatCurrency = (val: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      <KpiCard title="Total Tools" metric={stats.metrics.totalTools} href="/admin/tools" />
-      <KpiCard title="Active Tools" metric={stats.metrics.activeTools} href="/admin/tools?status=active" />
-      <KpiCard title="Inactive Tools" metric={stats.metrics.inactiveTools} href="/admin/tools?status=inactive" />
-      <KpiCard title="Total Users" metric={stats.metrics.totalUsers} href="/admin/users" />
-      <KpiCard title="Visitors" metric={stats.metrics.visitors} href="/admin/analytics" />
-      
-      <KpiCard title="Tool Executions" metric={stats.metrics.toolExecutions} href="/admin/analytics/tools" />
-      <KpiCard title="Revenue" metric={stats.metrics.revenue} href="/admin/monetization" formatter={formatCurrency} />
-      <KpiCard title="Active Subscriptions" metric={stats.metrics.activeSubscriptions} href="/admin/monetization/subscriptions" />
-      <KpiCard title="Failed Executions" metric={stats.metrics.failedExecutions} href="/admin/error-logs" />
-      <KpiCard title="Open Feedback" metric={stats.metrics.openFeedback} href="/admin/contact-feedback" />
-    </div>
-  );
-}
-
+const newQuickActions = `
 import { 
   Wrench, 
   FolderPlus, 
@@ -31,7 +11,7 @@ import {
   Search, 
   ImagePlus, 
   ArrowRightLeft,
-  ArrowRight
+  AlertCircle
 } from "lucide-react";
 
 export function QuickActions({ role }: { role: string | null | undefined }) {
@@ -58,12 +38,12 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
       icon: FolderPlus,
       href: "#",
       hasPermission: canCreateCategory,
-      isImplemented: false, // Category creation is not yet implemented (hardcoded in registry)
+      isImplemented: false,
     },
     {
       id: "manage-homepage",
       label: "Manage Homepage",
-      description: "Update featured tools and text.",
+      description: "Update featured tools and homepage text.",
       icon: LayoutTemplate,
       href: "/admin/content",
       hasPermission: canEditHomepage,
@@ -76,12 +56,12 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
       icon: FileEdit,
       href: "#",
       hasPermission: canEditContent,
-      isImplemented: false, // Blog CMS is not yet implemented
+      isImplemented: false,
     },
     {
       id: "manage-seo",
       label: "Manage SEO",
-      description: "Update global meta tags.",
+      description: "Update global meta tags and robots.",
       icon: Search,
       href: "/admin/content/seo",
       hasPermission: canEditSeo,
@@ -90,11 +70,11 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
     {
       id: "upload-media",
       label: "Upload Media",
-      description: "Add images to library.",
+      description: "Add images to the media library.",
       icon: ImagePlus,
       href: "#",
-      hasPermission: canEditContent, // Fallback permission since media.upload doesn't exist yet
-      isImplemented: false, // Media library is not yet implemented
+      hasPermission: canEditContent, // using content.edit since media doesn't have a specific permission
+      isImplemented: false,
     },
     {
       id: "create-redirect",
@@ -103,7 +83,7 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
       icon: ArrowRightLeft,
       href: "#",
       hasPermission: canEditSeo,
-      isImplemented: false, // Redirects management is not yet implemented
+      isImplemented: false,
     },
   ];
 
@@ -118,7 +98,7 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
           return (
             <div 
               key={action.id} 
-              className="group p-5 bg-zinc-50 border border-zinc-200 rounded-2xl opacity-60 cursor-not-allowed flex flex-col justify-between h-full relative overflow-hidden"
+              className="group p-5 bg-zinc-50 border border-zinc-200 rounded-2xl opacity-70 cursor-not-allowed flex flex-col justify-between h-full relative overflow-hidden"
               title="Feature coming soon"
             >
               <div>
@@ -126,7 +106,7 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
                   <div className="w-10 h-10 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-500">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 bg-zinc-200 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 bg-zinc-200 px-2 py-0.5 rounded-full">
                     Coming Soon
                   </span>
                 </div>
@@ -149,7 +129,7 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-300 group-hover:text-orange-500 transition-colors">
-                  <ArrowRight className="w-4 h-4 -rotate-45 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ArrowRightLeft className="w-3 h-3 rotate-45 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
               <h3 className="font-semibold text-zinc-900 text-sm group-hover:text-orange-700 transition-colors">{action.label}</h3>
@@ -161,3 +141,20 @@ export function QuickActions({ role }: { role: string | null | undefined }) {
     </div>
   );
 }
+`;
+
+// Extract imports
+let importBlock = content.match(/import.*?from.*?;/g).join('\n');
+importBlock = importBlock + '\nimport { Wrench, FolderPlus, LayoutTemplate, FileEdit, Search, ImagePlus, ArrowRightLeft, ArrowUpRight } from "lucide-react";';
+
+// Find the DashboardMetrics block and keep it
+const metricsMatch = content.match(/export function DashboardMetrics[\s\S]*?return \([\s\S]*?\}\);?\n\}/);
+const metricsBlock = metricsMatch[0];
+
+const newContent = \`\${importBlock}
+
+\${metricsBlock}
+
+\${newQuickActions.replace(/import.*?lucide-react";/s, '')}\`;
+
+fs.writeFileSync(filepath, newContent);

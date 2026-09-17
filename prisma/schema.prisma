@@ -89,7 +89,7 @@ model Session {
   // Security Hardening Fields
   ip           String?
   userAgent    String?
-  lastActive   DateTime @default(now())
+  lastActive   DateTime? @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
