@@ -43,11 +43,19 @@ model User {
   companyName      String?
   jobRole          String?
   referralCodeUsed String?
+  password         String?
+  twoFactorSecret  String?
+  twoFactorEnabled Boolean   @default(false)
+  recoveryCodes    String[]  @default([])
+  failedAttempts   Int       @default(0)
+  lockedUntil      DateTime?
+
   createdAt        DateTime  @default(now())
 
   accounts      Account[]
   sessions      Session[]
   brands        Brand[]
+  auditLogs     AuditLog[]
   subscription  Subscription?
   usageCounters UsageCounter[]
   toolUsages    ToolUsage[]
@@ -77,6 +85,11 @@ model Session {
   sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
+  
+  // Security Hardening Fields
+  ip           String?
+  userAgent    String?
+  lastActive   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -89,6 +102,16 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model PasswordResetToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  email      String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([email, token])
+}
+
 
 // ---------------------------------------------------------------------------
 // Brand Studio — brands, kits and generated assets.
@@ -333,4 +356,28 @@ model NavigationLink {
   openInNewTab Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Audit Logging (Admin Panel)
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  actorId    String   @db.ObjectId
+  actorRole  String
+  action     String   // e.g., "TOOL_UPDATED", "CATEGORY_CREATED", "USER_BLOCKED"
+  targetType String   // e.g., "TOOL", "CATEGORY", "USER", "SEO"
+  targetId   String?  // ID or slug of the affected resource
+  metadata   Json?    // Stores what changed, reason, etc.
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor      User     @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt(sort: Desc)])
+  @@index([actorId])
+  @@index([action])
+  @@index([targetType, targetId])
 }

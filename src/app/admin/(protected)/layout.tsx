@@ -14,8 +14,9 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       <AdminSidebar user={user} />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-zinc-50 flex flex-col relative">
-        <div className="p-8">
+      <main className="flex-1 overflow-auto bg-zinc-50 flex flex-col relative w-full">
+        {/* On mobile, we need top padding so content doesn't sit under the fixed hamburger menu */}
+        <div className="p-4 pt-16 md:p-8">
           {children}
         </div>
       </main>

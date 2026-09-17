@@ -6,7 +6,7 @@ export async function requireAdminAuth(permission?: Permission) {
   const session = await auth();
   
   if (!session || !session.user) {
-    redirect("/studio/signin?next=/");
+    redirect("/admin/login");
   }
 
   const rawRole = session.user.role as string | undefined;
