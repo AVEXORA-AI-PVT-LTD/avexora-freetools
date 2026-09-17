@@ -309,11 +309,16 @@ model ToolConfig {
   toolSlug     String   @unique
   categorySlug String
   status       Boolean  @default(true)
+  featured     Boolean  @default(false)
+  pricing      String   @default("Free")
   priority     Int      @default(0)
   displayOrder Int      @default(0)
-  seoMetadata Json?
+  seoMetadata  Json?
+  views        Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  updatedBy    String?
+
 }
 
 model DynamicTool {

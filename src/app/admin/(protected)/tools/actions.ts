@@ -1,45 +1,125 @@
 "use server";
 
-import { prisma } from "@/server/db";
-import { requireAdminAuth } from "@/server/admin-auth";
 import { hasPermission } from "@/lib/admin/permissions";
-import { allTools } from "@/tools/registry";
+import { requireAdminAuth } from "@/server/admin-auth";
+import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 
-export async function updateToolStatus(slug: string, status: boolean) {
-  try {
-    const user = await requireAdminAuth();
-    if (!hasPermission(user.role, "tools.toggle")) {
-      return { success: false, error: "You do not have permission to modify tools." };
-    }
-
-    const toolExists = allTools.some((t) => t.slug === slug);
-    if (!toolExists) {
-      return { success: false, error: "Tool not found in registry." };
-    }
-
-    if (typeof status !== "boolean") {
-      return { success: false, error: "Invalid status value." };
-    }
-
-    const tool = allTools.find((t) => t.slug === slug)!;
-
-    await prisma.toolConfig.upsert({
-      where: { toolSlug: slug },
-      update: { status },
-      create: { toolSlug: slug, categorySlug: tool.category, status },
-    });
-
-    revalidatePath("/");
-    revalidatePath(`/${tool.category}`);
-    revalidatePath(`/${tool.category}/${tool.slug}`);
-    revalidatePath("/(public)", "layout"); // For search updates if any
-    revalidatePath("/admin/tools");
-    revalidatePath("/admin/categories");
-
-    return { success: true };
-  } catch (error) {
-    console.error("[updateToolStatus Error]:", error);
-    return { success: false, error: "Unable to update tool. Please try again." };
+export async function toggleToolStatus(slug: string, status: boolean) {
+  const user = await requireAdminAuth();
+  
+  if (!hasPermission(user.role, "tools.toggle")) {
+    throw new Error("Unauthorized");
   }
+  
+  await prisma.toolConfig.upsert({
+    where: { toolSlug: slug },
+    create: {
+      toolSlug: slug,
+      categorySlug: "uncategorized",
+      status,
+      updatedBy: user.id
+    },
+    update: {
+      status,
+      updatedBy: user.id
+    }
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      actorRole: user.role || "unknown",
+      action: status ? "TOOL_ACTIVATED" : "TOOL_DISABLED",
+      targetType: "TOOL",
+      targetId: slug,
+      metadata: { status }
+    }
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/tools");
+  return { success: true };
+}
+
+export async function bulkUpdateTools(
+  slugs: string[], 
+  action: "publish" | "unpublish" | "feature" | "unfeature" | "delete",
+  options?: { categorySlug?: string }
+) {
+  const user = await requireAdminAuth();
+  
+  if (action === "delete" && !hasPermission(user.role, "tools.delete")) throw new Error("Unauthorized");
+  if ((action === "publish" || action === "unpublish") && !hasPermission(user.role, "tools.toggle")) throw new Error("Unauthorized");
+  if ((action === "feature" || action === "unfeature" || options?.categorySlug) && !hasPermission(user.role, "tools.edit")) throw new Error("Unauthorized");
+  
+  const now = new Date();
+  
+  const { allTools } = await import("@/tools/registry");
+  const dynamicTools = await prisma.dynamicTool.findMany();
+  
+  const getCategory = (slug: string) => {
+    const s = allTools.find(t => t.slug === slug);
+    if (s) return s.category;
+    const d = dynamicTools.find(d => d.slug === slug);
+    if (d) return d.categorySlug;
+    return "uncategorized";
+  };
+
+  const results = { success: 0, failed: 0 };
+  
+  for (const slug of slugs) {
+    try {
+      if (action === "delete") {
+        const isDynamic = dynamicTools.some(d => d.slug === slug);
+        if (isDynamic) {
+          await prisma.dynamicTool.delete({ where: { slug } }).catch(() => {});
+          await prisma.toolConfig.delete({ where: { toolSlug: slug } }).catch(() => {});
+        } else {
+          await prisma.toolConfig.upsert({
+            where: { toolSlug: slug },
+            create: { toolSlug: slug, categorySlug: getCategory(slug), status: false, updatedBy: user.id },
+            update: { status: false, updatedBy: user.id }
+          });
+        }
+      } else {
+        const updateData: any = { updatedBy: user.id };
+        if (action === "publish") updateData.status = true;
+        if (action === "unpublish") updateData.status = false;
+        if (action === "feature") updateData.featured = true;
+        if (action === "unfeature") updateData.featured = false;
+        if (options?.categorySlug) updateData.categorySlug = options.categorySlug;
+
+        await prisma.toolConfig.upsert({
+          where: { toolSlug: slug },
+          create: {
+            toolSlug: slug,
+            categorySlug: options?.categorySlug || getCategory(slug),
+            status: action === "publish" ? true : (action === "unpublish" ? false : true),
+            featured: action === "feature" ? true : false,
+            updatedBy: user.id
+          },
+          update: updateData
+        });
+      }
+      results.success++;
+    } catch (e) {
+      results.failed++;
+    }
+  }
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      actorRole: user.role || "unknown",
+      action: `BULK_${action.toUpperCase()}_TOOLS`,
+      targetType: "TOOL",
+      metadata: { count: slugs.length, slugs, results }
+    }
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/tools");
+  
+  return results;
 }
