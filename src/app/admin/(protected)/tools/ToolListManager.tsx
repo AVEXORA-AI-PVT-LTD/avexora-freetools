@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { MoreVertical } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { hasPermission } from "@/lib/admin/permissions";
 import { bulkUpdateTools } from "./actions";
@@ -46,6 +47,7 @@ export function ToolListManager({
   const [isBulkLoading, setIsBulkLoading] = useState(false);
   const [showBulkCategory, setShowBulkCategory] = useState(false);
   const [bulkCategorySlug, setBulkCategorySlug] = useState("");
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const hasEditPermission = hasPermission(userRole, "tools.edit");
   const hasStatusPermission = hasPermission(userRole, "tools.toggle");
@@ -170,12 +172,22 @@ export function ToolListManager({
           <p className="text-sm text-slate-500">Showing {tools.length} of {totalTools} tools on this page.</p>
         </div>
         {hasEditPermission && (
-          <Link
-            href="/admin/tools/new"
-            className="inline-flex items-center justify-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-          >
-            Add Tool
-          </Link>
+          initialParams.category ? (
+            <Link
+              href={`/admin/tools/reorder?category=${initialParams.category}`}
+              className="inline-flex items-center justify-center rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+            >
+              Reorder Tools
+            </Link>
+          ) : (
+            <button
+              disabled
+              title="Select a category first to reorder its tools"
+              className="inline-flex items-center justify-center rounded-md bg-orange-300 px-4 py-2 text-sm font-medium text-white shadow-sm cursor-not-allowed opacity-70"
+            >
+              Reorder Tools
+            </button>
+          )
         )}
       </div>
 
@@ -188,7 +200,7 @@ export function ToolListManager({
               name="q"
               placeholder="Search by name, slug, or keywords..."
               defaultValue={initialParams.q}
-              className="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-md border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
             />
           </div>
           <button type="submit" className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800" disabled={isPending}>
@@ -198,7 +210,7 @@ export function ToolListManager({
           <select 
             value={initialParams.category} 
             onChange={(e) => updateParam("category", e.target.value)}
-            className="rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+            className="rounded-md border-0 pl-3 pr-8 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
           >
             <option value="">All Categories</option>
             {categories.map((c) => (
@@ -209,7 +221,7 @@ export function ToolListManager({
           <select 
             value={initialParams.status} 
             onChange={(e) => updateParam("status", e.target.value)}
-            className="rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+            className="rounded-md border-0 pl-3 pr-8 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
           >
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -219,7 +231,7 @@ export function ToolListManager({
           <select 
             value={initialParams.featured} 
             onChange={(e) => updateParam("featured", e.target.value)}
-            className="rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+            className="rounded-md border-0 pl-3 pr-8 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
           >
             <option value="">All Featured States</option>
             <option value="true">Featured</option>
@@ -229,7 +241,7 @@ export function ToolListManager({
           <select 
             value={initialParams.sort} 
             onChange={(e) => updateParam("sort", e.target.value)}
-            className="rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+            className="rounded-md border-0 pl-3 pr-8 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
           >
             <option value="latest">Sort: Latest Updated</option>
             <option value="oldest">Sort: Oldest Updated</option>
@@ -265,7 +277,7 @@ export function ToolListManager({
                 <select 
                   value={bulkCategorySlug} 
                   onChange={(e) => setBulkCategorySlug(e.target.value)}
-                  className="rounded-md border-0 py-1.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300"
+                  className="rounded-md border-0 pl-3 pr-8 py-1.5 text-sm text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300"
                 >
                   <option value="">Select Category...</option>
                   {categories.map((c) => (
@@ -385,13 +397,40 @@ export function ToolListManager({
                         <span>{tool.views.toLocaleString()} views</span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                      <div className="flex items-center justify-end gap-3">
-                        <Link href={`/${tool.category}/${tool.slug}`} target="_blank" className="text-indigo-600 hover:text-indigo-900">Preview</Link>
-                        {hasEditPermission && (
-                          <Link href={`/admin/tools/${tool.slug}`} className="text-orange-600 hover:text-orange-900">Edit</Link>
-                        )}
-                      </div>
+                    <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium relative">
+                      <button 
+                        onClick={() => setOpenDropdown(openDropdown === tool.slug ? null : tool.slug)}
+                        className="p-1 rounded-md hover:bg-slate-100 text-slate-500 transition-colors"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                      
+                      {openDropdown === tool.slug && (
+                        <>
+                          <div 
+                            className="fixed inset-0 z-10" 
+                            onClick={() => setOpenDropdown(null)}
+                          />
+                          <div className="absolute right-6 mt-1 w-32 bg-white rounded-md shadow-lg border border-slate-200 z-20 py-1 overflow-hidden">
+                            <Link 
+                              href={`/${tool.category}/${tool.slug}`} 
+                              target="_blank" 
+                              className="block px-4 py-2 text-left text-slate-700 hover:bg-slate-50 hover:text-orange-600"
+                              onClick={() => setOpenDropdown(null)}
+                            >
+                              Preview
+                            </Link>
+                            {hasEditPermission && (
+                              <Link 
+                                href={`/admin/tools/${tool.slug}`} 
+                                className="block px-4 py-2 text-left text-slate-700 hover:bg-slate-50 hover:text-orange-600"
+                              >
+                                Edit
+                              </Link>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))

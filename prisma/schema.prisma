@@ -305,20 +305,32 @@ model CategoryConfig {
   updatedAt        DateTime @updatedAt
 }
 model ToolConfig {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  toolSlug     String   @unique
-  categorySlug String
-  status       Boolean  @default(true)
-  featured     Boolean  @default(false)
-  pricing      String   @default("Free")
-  priority     Int      @default(0)
-  displayOrder Int      @default(0)
-  seoMetadata  Json?
-  views        Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  updatedBy    String?
-
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug         String   @unique
+  categorySlug     String
+  status           Boolean  @default(true)
+  featured         Boolean  @default(false)
+  pricing          String   @default("Free")
+  priority         Int      @default(0)
+  displayOrder     Int      @default(0)
+  seoMetadata      Json?
+  views            Int      @default(0)
+  
+  nameOverride     String?
+  description      String?
+  subCategory      String?
+  tags             String[] @default([])
+  icon             String?
+  thumbnail        String?
+  content          Json?
+  runtimeConfig    Json?
+  technicalConfig  Json?
+  publishingConfig Json?
+  homepageVisible  Boolean  @default(true)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  updatedBy        String?
 }
 
 model DynamicTool {
@@ -359,6 +371,19 @@ model NavigationLink {
   status       Boolean  @default(true)
   type         String   @default("CUSTOM") // "INTERNAL" | "EXTERNAL" | "CUSTOM"
   openInNewTab Boolean  @default(false)
+  
+  nameOverride    String?
+  description     String?
+  subCategory     String?
+  tags            String[] @default([])
+  icon            String?
+  thumbnail       String?
+  content         Json?
+  runtimeConfig   Json?
+  technicalConfig Json?
+  publishingConfig Json?
+  homepageVisible Boolean  @default(true)
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

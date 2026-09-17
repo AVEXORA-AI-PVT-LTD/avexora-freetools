@@ -75,3 +75,121 @@ export async function getAdminToolsData(): Promise<AdminTool[]> {
     };
   });
 }
+
+
+import { INITIAL_TOOL_FORM_DATA, type ToolFormData } from "@/types/admin-tool-form";
+
+export async function getToolFormData(slug: string): Promise<ToolFormData | null> {
+  const [config, dynamicTool] = await Promise.all([
+    prisma.toolConfig.findUnique({ where: { toolSlug: slug } }),
+    prisma.dynamicTool.findUnique({ where: { slug } }),
+  ]);
+
+  const staticTool = allTools.find((t) => t.slug === slug);
+
+  if (!staticTool && !dynamicTool) {
+    return null;
+  }
+
+  const base = INITIAL_TOOL_FORM_DATA;
+  
+  // Merge static/dynamic base first
+  const merged: ToolFormData = {
+    ...base,
+    status: staticTool ? "Published" : "Draft",
+    name: staticTool?.name || dynamicTool?.name || "",
+    slug: staticTool?.slug || dynamicTool?.slug || "",
+    category: staticTool?.category || dynamicTool?.categorySlug || "",
+    type: staticTool?.kind || dynamicTool?.type || "generator",
+    icon: dynamicTool?.icon || "",
+    shortDescription: staticTool?.seoDescription || "",
+    description: staticTool?.about?.join("\n\n") || "",
+    introduction: staticTool?.directAnswer || "",
+    formula: staticTool?.formula || "",
+    examples: staticTool?.example ? [staticTool.example] : [],
+    relatedTools: staticTool?.related || [],
+    faqs: staticTool?.faq?.map((f: any, i: number) => ({
+      id: String(i),
+      question: f.question,
+      answer: f.answer,
+      order: i,
+      active: true,
+    })) || [],
+    // Add steps mapping
+    steps: staticTool?.steps?.map((s: any) => typeof s === 'string' ? s : s.title) || [],
+  };
+
+  if (config) {
+    merged.name = config.nameOverride || merged.name;
+    merged.description = config.description || merged.description;
+    merged.subCategory = config.subCategory || merged.subCategory;
+    merged.tags = config.tags || merged.tags;
+    merged.icon = config.icon || merged.icon;
+    merged.thumbnail = config.thumbnail || merged.thumbnail;
+    merged.category = config.categorySlug || merged.category;
+    merged.status = config.status ? "Published" : "Draft";
+    merged.featured = config.featured;
+    merged.pricing = (config.pricing as any) || merged.pricing;
+    merged.homepageVisible = config.homepageVisible;
+
+    if (config.content && typeof config.content === "object") {
+      const c = config.content as any;
+      merged.pageHeading = c.pageHeading ?? merged.pageHeading;
+      merged.introduction = c.introduction ?? merged.introduction;
+      merged.howToUse = c.howToUse ?? merged.howToUse;
+      merged.steps = c.steps ?? merged.steps;
+      merged.examples = c.examples ?? merged.examples;
+      merged.faqs = c.faqs ?? merged.faqs;
+      merged.relatedTools = c.relatedTools ?? merged.relatedTools;
+      merged.disclaimer = c.disclaimer ?? merged.disclaimer;
+      merged.formula = c.formula ?? merged.formula;
+    }
+
+    if (config.runtimeConfig && typeof config.runtimeConfig === "object") {
+      const r = config.runtimeConfig as any;
+      merged.loginRequired = r.loginRequired ?? merged.loginRequired;
+      merged.dailyLimit = r.dailyLimit ?? merged.dailyLimit;
+      merged.monthlyLimit = r.monthlyLimit ?? merged.monthlyLimit;
+      merged.rateLimit = r.rateLimit ?? merged.rateLimit;
+      merged.fileUploadEnabled = r.fileUploadEnabled ?? merged.fileUploadEnabled;
+      merged.maxUploadSizeMB = r.maxUploadSizeMB ?? merged.maxUploadSizeMB;
+      merged.allowedMimeTypes = r.allowedMimeTypes ?? merged.allowedMimeTypes;
+      merged.allowedExtensions = r.allowedExtensions ?? merged.allowedExtensions;
+      merged.apiRequired = r.apiRequired ?? merged.apiRequired;
+      merged.maintenanceMode = r.maintenanceMode ?? merged.maintenanceMode;
+    }
+
+    if (config.technicalConfig && typeof config.technicalConfig === "object") {
+      const t = config.technicalConfig as any;
+      merged.route = t.route ?? merged.route;
+      merged.internalServiceId = t.internalServiceId ?? merged.internalServiceId;
+      merged.apiEndpointId = t.apiEndpointId ?? merged.apiEndpointId;
+      merged.version = t.version ?? merged.version;
+      merged.executionTimeoutMs = t.executionTimeoutMs ?? merged.executionTimeoutMs;
+      merged.maxConcurrentJobs = t.maxConcurrentJobs ?? merged.maxConcurrentJobs;
+      merged.featureFlags = t.featureFlags ?? merged.featureFlags;
+    }
+
+    if (config.seoMetadata && typeof config.seoMetadata === "object") {
+      const s = config.seoMetadata as any;
+      merged.seoTitle = s.title ?? merged.seoTitle;
+      merged.metaDescription = s.description ?? merged.metaDescription;
+      merged.focusKeyword = s.focusKeyword ?? merged.focusKeyword;
+      merged.secondaryKeywords = s.secondaryKeywords ?? merged.secondaryKeywords;
+      merged.canonicalUrl = s.canonicalUrl ?? merged.canonicalUrl;
+      merged.ogTitle = s.ogTitle ?? merged.ogTitle;
+      merged.ogDescription = s.ogDescription ?? merged.ogDescription;
+      merged.ogImage = s.ogImage ?? merged.ogImage;
+      merged.schemaType = s.schemaType ?? merged.schemaType;
+      merged.index = s.index ?? merged.index;
+    }
+
+    if (config.publishingConfig && typeof config.publishingConfig === "object") {
+      const p = config.publishingConfig as any;
+      merged.publishDate = p.publishDate ?? merged.publishDate;
+      merged.unpublishDate = p.unpublishDate ?? merged.unpublishDate;
+    }
+  }
+
+  return merged;
+}

@@ -4,11 +4,12 @@ import { notFound } from "next/navigation";
 import { ebosCtaUrl, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { allTools, getTool, toolsByCategory } from "@/tools/registry";
 import { resolveToolSeo } from "@/server/seo-manager";
+import { getToolFormData } from "@/server/admin-tools";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return allTools.map((t) => ({ category: t.category, slug: t.slug }));
@@ -20,18 +21,18 @@ export async function generateMetadata({
   params: Promise<{ category: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug, category } = await params;
-  const tool = getTool(slug);
-  if (!tool) return {};
+  const toolData = await getToolFormData(slug);
+  if (!toolData || toolData.category !== category) return {};
   
-  const defaultCanonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
-  const defaultTitle = `${tool.name} — Avex Online Tool`;
+  const defaultCanonical = `${SITE_URL}/${toolData.category}/${toolData.slug}`;
+  const defaultTitle = `${toolData.name} — Avex Online Tool`;
   
   const fallback = {
-    title: defaultTitle,
-    description: tool.seoDescription,
-    canonical: defaultCanonical,
+    title: toolData.seoTitle || defaultTitle,
+    description: toolData.metaDescription || toolData.description,
+    canonical: toolData.canonicalUrl || defaultCanonical,
     siteName: SITE_NAME,
-    ogImage: `${SITE_URL}/logo.png`,
+    ogImage: toolData.ogImage || `${SITE_URL}/logo.png`,
   };
 
   return resolveToolSeo(slug, category, fallback);
@@ -39,39 +40,60 @@ export async function generateMetadata({
 
 export default async function ToolPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ category: string; slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { category, slug } = await params;
-  const tool = getTool(slug);
+  const query = await searchParams;
+  const isPreview = query.preview === "true";
+  
+  const toolData = await getToolFormData(slug);
   const cat = getCategory(category);
-  if (!tool || !cat || tool.category !== cat.slug) notFound();
+  
+  if (!toolData || !cat || toolData.category !== cat.slug) notFound();
+  if (toolData.status !== "Published" && !isPreview) notFound();
 
-  const defaultCanonical = `${SITE_URL}/${tool.category}/${tool.slug}`;
-  const fallback = { title: tool.name, description: tool.seoDescription, canonical: defaultCanonical, siteName: SITE_NAME, ogImage: "" };
+  const defaultCanonical = `${SITE_URL}/${toolData.category}/${toolData.slug}`;
+  const fallback = { 
+    title: toolData.seoTitle || toolData.name, 
+    description: toolData.metaDescription || toolData.description, 
+    canonical: toolData.canonicalUrl || defaultCanonical, 
+    siteName: SITE_NAME, 
+    ogImage: toolData.ogImage || "" 
+  };
   const resolvedSeo = await resolveToolSeo(slug, category, fallback);
   const canonical = resolvedSeo.alternates?.canonical || defaultCanonical;
 
-  const related = tool.related
-    .map((s: string) => getTool(s))
-    .filter((t): t is NonNullable<typeof t> => Boolean(t));
-  const aiEnabled = tool.kind === "ai-writer" && Boolean(process.env.ANTHROPIC_API_KEY);
+  // We still need the static tool for the ToolRunner (to know if it's an AI writer etc)
+  const staticTool = getTool(slug);
+  const aiEnabled = staticTool?.kind === "ai-writer" && Boolean(process.env.ANTHROPIC_API_KEY);
+  
+  // Resolve related tools
+  const related = [];
+  for (const rSlug of toolData.relatedTools) {
+    const rData = await getToolFormData(rSlug);
+    if (rData && rData.status === "Published") {
+      related.push(rData);
+    }
+  }
 
   const jsonLd = [
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: tool.name,
-      description: resolvedSeo.description || tool.seoDescription,
+      "@type": toolData.schemaType || "SoftwareApplication",
+      name: toolData.name,
+      description: resolvedSeo.description || toolData.description,
       url: canonical,
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "INR" },
+      offers: { "@type": "Offer", price: toolData.pricing === "Free" ? "0" : "99", priceCurrency: "INR" },
     },
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: tool.faq.map((f) => ({
+      mainEntity: toolData.faqs.filter(f => f.active).map((f) => ({
         "@type": "Question",
         name: f.question,
         acceptedAnswer: { "@type": "Answer", text: f.answer },
@@ -83,23 +105,9 @@ export default async function ToolPage({
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
         { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/${cat.slug}` },
-        { "@type": "ListItem", position: 3, name: tool.name, item: canonical },
+        { "@type": "ListItem", position: 3, name: toolData.name, item: canonical },
       ],
-    },
-    ...(tool.howTo
-      ? [
-          {
-            "@context": "https://schema.org",
-            "@type": "HowTo",
-            name: tool.howTo.name,
-            step: tool.howTo.steps.map((s: any) => ({
-              "@type": "HowToStep",
-              name: s.name,
-              text: s.text,
-            })),
-          },
-        ]
-      : []),
+    }
   ];
 
   return (
@@ -117,57 +125,102 @@ export default async function ToolPage({
         <Link href={`/${cat.slug}`} className="hover:text-orange-800">
           {cat.shortName}
         </Link>{" "}
-        / <span className="text-slate-700">{tool.name}</span>
+        / <span className="text-slate-700">{toolData.name}</span>
       </nav>
 
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 print:hidden">
-        {tool.name}
-      </h1>
-      <p className="mt-2 text-slate-600 print:hidden">{tool.tagline}</p>
+      {isPreview && (
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-400 text-yellow-800 rounded-lg flex items-center justify-between print:hidden">
+          <span className="font-medium">Admin Preview Mode</span>
+          <span>Status: {toolData.status}</span>
+        </div>
+      )}
 
-      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm print:border-none print:p-0 print:shadow-none">
-        <ToolRunner category={tool.category} slug={tool.slug} aiEnabled={aiEnabled} />
-      </div>
+      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 print:hidden">
+        {toolData.pageHeading || toolData.name}
+      </h1>
+      <p className="mt-2 text-slate-600 print:hidden">{toolData.shortDescription || toolData.description}</p>
+
+      {toolData.maintenanceMode && (
+         <div className="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+           <h3 className="font-bold">Maintenance Mode</h3>
+           <p>This tool is currently unavailable. Please check back later.</p>
+         </div>
+      )}
+
+      {!toolData.maintenanceMode && (
+        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm print:border-none print:p-0 print:shadow-none relative">
+          {toolData.loginRequired && (
+            <div className="absolute inset-0 z-10 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Login Required</h3>
+              <p className="text-slate-600 mb-4">You must be logged in to use this tool.</p>
+              <Link href="/login" className="px-6 py-2 bg-orange-600 text-white rounded-md font-medium hover:bg-orange-700">Login Now</Link>
+            </div>
+          )}
+          <ToolRunner category={toolData.category} slug={toolData.slug} aiEnabled={aiEnabled} />
+        </div>
+      )}
 
       <div className="mt-10 space-y-10 print:hidden">
         <CtaBlock
           headline={cat.ctaHeadline}
           body={cat.ctaBody}
-          href={ebosCtaUrl(cat, tool.slug)}
+          href={ebosCtaUrl(cat, toolData.slug)}
           moduleName={cat.ebosModule}
-          toolSlug={tool.slug}
-          category={tool.category}
+          toolSlug={toolData.slug}
+          category={toolData.category}
         />
 
         <section>
           <h2 className="text-xl font-semibold text-slate-900">
-            About the {tool.name}
+            About the {toolData.name}
           </h2>
           <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-slate-700">
-            {tool.about.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
+            {toolData.introduction && (
+              <p className="font-medium text-slate-900 mb-4">{toolData.introduction}</p>
+            )}
+            
+            {toolData.description && toolData.description.split('\n').map((p, i) => {
+              const text = p.trim();
+              return text ? <p key={i}>{text}</p> : null;
+            })}
+            
+            {toolData.howToUse && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-slate-800">How to Use</h3>
+                <div className="mt-2" dangerouslySetInnerHTML={{ __html: toolData.howToUse }} />
+              </div>
+            )}
+            
+            {toolData.formula && (
+              <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                <h3 className="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-2">Formula</h3>
+                <code className="text-orange-700">{toolData.formula}</code>
+              </div>
+            )}
           </div>
         </section>
 
-        <section>
-          <h2 className="text-xl font-semibold text-slate-900">
-            Frequently asked questions
-          </h2>
-          <dl className="mt-4 space-y-4">
-            {tool.faq.map((f) => (
-              <div key={f.question}>
-                <dt className="font-medium text-slate-900">{f.question}</dt>
-                <dd className="mt-1 text-[15px] leading-relaxed text-slate-700">
-                  {f.answer}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+        {toolData.faqs.filter(f => f.active).length > 0 && (
+          <section>
+            <h2 className="text-xl font-semibold text-slate-900">
+              Frequently asked questions
+            </h2>
+            <dl className="mt-4 space-y-4">
+              {toolData.faqs.filter(f => f.active).sort((a,b) => a.order - b.order).map((f) => (
+                <div key={f.id}>
+                  <dt className="font-medium text-slate-900">{f.question}</dt>
+                  <dd className="mt-1 text-[15px] leading-relaxed text-slate-700">
+                    {f.answer}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
 
-        <NewsletterBlock toolSlug={tool.slug} category={tool.category} />
+        <NewsletterBlock toolSlug={toolData.slug} category={toolData.category} />
 
+        
         {related.length > 0 && (
           <section>
             <h2 className="text-xl font-semibold text-slate-900">Related tools</h2>
@@ -179,7 +232,7 @@ export default async function ToolPage({
                   className="rounded-lg border border-slate-200 p-4 transition hover:border-orange-300"
                 >
                   <span className="font-medium text-slate-900">{r.name}</span>
-                  <p className="mt-0.5 text-sm text-slate-600">{r.tagline}</p>
+                  <p className="mt-0.5 text-sm text-slate-600">{r.shortDescription || r.description}</p>
                 </Link>
               ))}
             </div>
@@ -191,8 +244,8 @@ export default async function ToolPage({
             More {cat.name.toLowerCase()}
           </h2>
           <div className="mt-2 flex flex-wrap gap-2">
-            {toolsByCategory[cat.slug]
-              .filter((t) => t.slug !== tool.slug)
+            {toolsByCategory[cat.slug as keyof typeof toolsByCategory]
+              ?.filter((t) => t.slug !== toolData.slug)
               .map((t) => (
                 <Link
                   key={t.slug}
@@ -204,6 +257,7 @@ export default async function ToolPage({
               ))}
           </div>
         </section>
+
       </div>
     </div>
   );

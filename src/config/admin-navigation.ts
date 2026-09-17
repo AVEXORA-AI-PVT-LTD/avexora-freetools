@@ -132,7 +132,7 @@ export const adminNavigation: AdminNavItem[] = [
   },
   {
     label: "Reports",
-    href: "/admin/analytics",
+    href: "/admin/reports",
     icon: FileSpreadsheet,
     permission: "analytics.view" as any,
   },
