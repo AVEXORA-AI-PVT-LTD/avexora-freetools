@@ -5,97 +5,84 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hasPermission } from "@/lib/admin/permissions";
 import { adminNavigation, AdminNavItem } from "@/config/admin-navigation";
-import { ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { LogoutButton } from "@/components/admin/auth/LogoutButton";
 
 export function AdminSidebar({ user }: { user: any }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  
   const pathname = usePathname();
 
-  // Auto-expand sections that contain the active route
-  useEffect(() => {
-    const newExpanded = { ...expandedSections };
-    adminNavigation.forEach((item) => {
-      if (item.children) {
-        const hasActiveChild = item.children.some((child) => child.href === pathname || (child.href && child.href !== "/admin" && pathname?.startsWith(child.href)));
-        if (hasActiveChild) {
-          newExpanded[item.label] = true;
-        }
-      }
-    });
-    setExpandedSections(newExpanded);
-  }, [pathname]);
+  
 
   // Close mobile drawer on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const toggleSection = (label: string) => {
-    if (collapsed) setCollapsed(false); // Auto expand sidebar if clicking a section while collapsed
-    setExpandedSections((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
+  let activeParentIndex = -1;
+  let longestMatchLength = -1;
 
-  const renderNavItem = (item: AdminNavItem, isChild = false) => {
+  adminNavigation.forEach((item, index) => {
+    if (item.children) {
+      item.children.forEach(child => {
+        if (child.href === pathname) {
+          if (1000 > longestMatchLength) {
+            longestMatchLength = 1000;
+            activeParentIndex = index;
+          }
+        } else if (child.href && child.href !== "/admin" && pathname?.startsWith(child.href)) {
+          if (child.href.length > longestMatchLength) {
+            longestMatchLength = child.href.length;
+            activeParentIndex = index;
+          }
+        }
+      });
+    } else if (item.href) {
+      if (item.href === pathname) {
+        if (1000 > longestMatchLength) {
+          longestMatchLength = 1000;
+          activeParentIndex = index;
+        }
+      } else if (item.href !== "/admin" && pathname?.startsWith(item.href)) {
+        if (item.href.length > longestMatchLength) {
+          longestMatchLength = item.href.length;
+          activeParentIndex = index;
+        }
+      }
+    }
+  });
+
+  const renderNavItem = (item: AdminNavItem, index: number) => {
     // Check permissions
     if (item.permission && !hasPermission(user.role, item.permission)) return null;
     
-    // Check children permissions
-    const permittedChildren = item.children?.filter(child => !child.permission || hasPermission(user.role, child.permission));
-    if (item.children && (!permittedChildren || permittedChildren.length === 0)) return null;
-
-    const Icon = item.icon;
-    const isExpanded = expandedSections[item.label];
-    
-    // Determine active state
-    let isActive = false;
-    if (item.href) {
-      isActive = pathname === item.href || (item.href !== "/admin" && pathname?.startsWith(item.href));
-    } else if (item.children) {
-      isActive = permittedChildren!.some((child) => child.href === pathname || (child.href && child.href !== "/admin" && pathname?.startsWith(child.href)));
-    }
+    let targetHref = item.href;
+    const isActive = index === activeParentIndex;
 
     if (item.children) {
-      return (
-        <div key={item.label} className="flex flex-col">
-          <button
-            onClick={() => toggleSection(item.label)}
-            className={`flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors w-full ${
-              isActive && !isExpanded
-                ? "bg-orange-200/50 text-orange-950" 
-                : "text-orange-900/70 hover:bg-orange-100/50 hover:text-orange-950"
-            }`}
-            title={collapsed ? item.label : undefined}
-          >
-            <div className="flex items-center gap-3">
-              {Icon && <Icon className="h-5 w-5 shrink-0" />}
-              {!collapsed && <span>{item.label}</span>}
-            </div>
-            {!collapsed && (
-              isExpanded ? <ChevronDown className="h-4 w-4 opacity-70" /> : <ChevronRight className="h-4 w-4 opacity-70" />
-            )}
-          </button>
-          
-          {(!collapsed && isExpanded) && (
-            <div className="mt-1 flex flex-col space-y-1 pl-9 pr-2">
-              {permittedChildren!.map((child) => renderNavItem(child, true))}
-            </div>
-          )}
-        </div>
-      );
+      // Find permitted children
+      const permittedChildren = item.children.filter(child => !child.permission || hasPermission(user.role, child.permission));
+      if (permittedChildren.length === 0) return null;
+      
+      // The target href is the first permitted child's href
+      targetHref = permittedChildren[0].href;
     }
+
+    if (!targetHref) return null;
+
+    const Icon = item.icon;
 
     return (
       <Link
         key={item.label}
-        href={item.href!}
+        href={targetHref}
         className={`flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
           isActive 
             ? "bg-orange-200/50 text-orange-950 shadow-sm" 
             : "text-orange-900/70 hover:bg-orange-100/50 hover:text-orange-950"
-        } ${collapsed ? "justify-center" : isChild ? "py-1.5 text-xs" : "gap-3"}`}
+        } ${collapsed ? "justify-center" : "gap-3"}`}
         title={collapsed ? item.label : undefined}
       >
         {Icon && <Icon className="h-5 w-5 shrink-0" />}
@@ -118,7 +105,7 @@ export function AdminSidebar({ user }: { user: any }) {
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-orange-200">
-        {adminNavigation.map(item => renderNavItem(item))}
+        {adminNavigation.map((item, index) => renderNavItem(item, index))}
       </nav>
 
       <div className="shrink-0 border-t border-orange-200/60 p-4 bg-orange-50/80">

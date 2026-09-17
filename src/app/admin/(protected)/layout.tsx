@@ -1,6 +1,8 @@
 import { requireAdminAuth } from "@/server/admin-auth";
 import { ReactNode } from "react";
 import { AdminSidebar } from "./sidebar";
+import { AdminTopNav } from "./top-nav";
+
 
 export const metadata = {
   title: "Avexora Tools Admin Panel",
@@ -15,8 +17,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto bg-zinc-50 flex flex-col relative w-full">
-        {/* On mobile, we need top padding so content doesn't sit under the fixed hamburger menu */}
-        <div className="p-4 pt-16 md:p-8">
+        <div className="p-4 pt-16 md:p-8 relative">
+          <AdminTopNav userRole={user.role as string | undefined} />
           {children}
         </div>
       </main>
