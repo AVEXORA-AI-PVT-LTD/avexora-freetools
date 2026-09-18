@@ -20,6 +20,10 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
     return typeof v === "string" ? v.trim() !== "" : v !== undefined;
   });
 
+  const visibleFields = tool.fields.filter(
+    (f) => !f.visibleWhen || values[f.visibleWhen.field] === f.visibleWhen.equals,
+  );
+
   const reset = () => {
     setValues(initialValues(tool.fields));
     setSubmitted(false);
@@ -33,8 +37,8 @@ export function CalculatorShape({ tool }: { tool: CalculatorTool }) {
         setSubmitted(true);
       }}
     >
-      <div className={tool.fields.length > 2 ? "grid gap-4 sm:grid-cols-2" : "space-y-4"}>
-        {tool.fields.map((f) => (
+      <div className={visibleFields.length > 2 ? "grid gap-4 sm:grid-cols-2" : "space-y-4"}>
+        {visibleFields.map((f) => (
           <div key={f.name} className={f.type === "textarea" ? "sm:col-span-2" : undefined}>
             <FieldInput
               field={f}

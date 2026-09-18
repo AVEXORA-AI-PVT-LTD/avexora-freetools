@@ -1,6 +1,7 @@
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
+import Facebook from "next-auth/providers/facebook";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "@/server/db";
 
@@ -15,6 +16,9 @@ import { prisma } from "@/server/db";
 
 export const googleEnabled = Boolean(
   process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET,
+);
+export const facebookEnabled = Boolean(
+  process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET,
 );
 export const emailEnabled = Boolean(
   process.env.AUTH_RESEND_KEY && process.env.EMAIL_FROM,
@@ -38,6 +42,15 @@ if (googleEnabled) {
   );
 }
 
+if (facebookEnabled) {
+  providers.push(
+    Facebook({
+      clientId: process.env.AUTH_FACEBOOK_ID,
+      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
+    }),
+  );
+}
+
 if (emailEnabled) {
   providers.push(
     Resend({
@@ -47,10 +60,26 @@ if (emailEnabled) {
   );
 }
 
+const useSecureCookies = process.env.NODE_ENV === "production";
+const cookiePrefix = useSecureCookies ? "__Secure-" : "";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers,
   session: { strategy: "database" },
+  cookies: {
+    sessionToken: {
+      name: `${cookiePrefix}authjs.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: useSecureCookies,
+        // Share cookies across subdomains (e.g. admin.localhost or admin.tools.avexora.in)
+        domain: process.env.NODE_ENV === "production" ? ".avexora.in" : ".localhost",
+      },
+    },
+  },
   pages: {
     signIn: "/studio/signin",
     verifyRequest: "/studio/signin/check-email",
@@ -58,7 +87,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     session({ session, user }) {
-      if (session.user) session.user.id = user.id;
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = (user as any).role;
+      }
       return session;
     },
   },

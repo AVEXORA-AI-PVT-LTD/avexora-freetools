@@ -1,54 +1,37 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth, emailEnabled, googleEnabled, signIn } from "@/server/auth";
-import { enforceMagicLinkLimit } from "@/server/magic-link-limit";
+import { auth, emailEnabled, googleEnabled, facebookEnabled } from "@/server/auth";
+import {
+  sendMagicLink,
+  signInWithGoogle,
+  signInWithFacebook,
+} from "@/server/auth-actions";
+import { safeRedirectPath } from "@/server/safe-redirect";
+import { authErrorMessage } from "@/components/account/auth-errors";
+import { AuthCard } from "@/components/account/auth-card";
 
 export const metadata: Metadata = {
-  title: "Sign in to Brand Studio",
+  title: "Sign in to Avex",
   robots: { index: false },
 };
 
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; callbackUrl?: string; error?: string }>;
 }) {
-  const { next, error } = await searchParams;
+  const { next, callbackUrl, error } = await searchParams;
+  const safeNext = safeRedirectPath(next || callbackUrl, "/studio/app");
   const session = await auth();
-  if (session?.user) redirect(next ?? "/studio/app");
+  if (session?.user) redirect(safeNext);
 
-  const callbackUrl = next ?? "/studio/app";
+  const authReady = emailEnabled || googleEnabled || facebookEnabled;
+  const serverError = authErrorMessage(error);
 
-  return (
-    <main className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-        Sign in to Brand Studio
-      </h1>
-      <p className="mt-2 text-sm text-slate-600">
-        Your Avex tools history carries over — no separate account needed.
-      </p>
-
-      {error === "too_many_requests" && (
-        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Too many requests. Please wait a minute and try again.
-        </p>
-      )}
-
-      {error === "invalid_email" && (
-        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Enter a valid work email and try again.
-        </p>
-      )}
-
-      {error && error !== "too_many_requests" && error !== "invalid_email" && (
-        <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          That sign-in link didn&apos;t work. Try again.
-        </p>
-      )}
-
-      {!emailEnabled && !googleEnabled && (
-        <div className="mt-8 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  if (!authReady) {
+    return (
+      <main className="mx-auto max-w-md px-4 py-16">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           <p className="font-semibold">Sign-in is not configured yet.</p>
           <p className="mt-1">
             Set <code className="font-mono">AUTH_SECRET</code> plus either{" "}
@@ -58,80 +41,21 @@ export default async function SignInPage({
             <code className="font-mono">AUTH_GOOGLE_SECRET</code> for Google.
           </p>
         </div>
-      )}
+      </main>
+    );
+  }
 
-      {emailEnabled && (
-        <form
-          className="mt-8 space-y-3"
-          action={async (formData: FormData) => {
-            "use server";
-
-            // Server-side rate limiting and validation run BEFORE the magic
-            // link is sent, so a rejected request never triggers an email.
-            const check = await enforceMagicLinkLimit(
-              String(formData.get("email") ?? ""),
-              await headers(),
-            );
-            if (check.status === "invalid_email") {
-              redirect("/studio/signin?error=invalid_email");
-            }
-            if (check.status !== "allowed") {
-              redirect("/studio/signin?error=too_many_requests");
-            }
-
-            await signIn("resend", {
-              email: check.email,
-              redirectTo: callbackUrl,
-            });
-          }}
-        >
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-slate-700"
-          >
-            Work email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="you@company.in"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none"
-          />
-          <button
-            type="submit"
-            className="w-full rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
-          >
-            Email me a sign-in link
-          </button>
-        </form>
-      )}
-
-      {emailEnabled && googleEnabled && (
-        <div className="my-6 flex items-center gap-3">
-          <span className="h-px flex-1 bg-slate-200" />
-          <span className="text-xs uppercase tracking-wide text-slate-400">or</span>
-          <span className="h-px flex-1 bg-slate-200" />
-        </div>
-      )}
-
-      {googleEnabled && (
-        <form
-          action={async () => {
-            "use server";
-            await signIn("google", { redirectTo: callbackUrl });
-          }}
-        >
-          <button
-            type="submit"
-            className="w-full rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-slate-400"
-          >
-            Continue with Google
-          </button>
-        </form>
-      )}
-    </main>
+  return (
+    <AuthCard
+      mode="signin"
+      next={safeNext}
+      emailEnabled={emailEnabled}
+      googleEnabled={googleEnabled}
+      facebookEnabled={facebookEnabled}
+      serverError={serverError}
+      sendMagicLink={sendMagicLink}
+      signInWithGoogle={signInWithGoogle}
+      signInWithFacebook={signInWithFacebook}
+    />
   );
 }

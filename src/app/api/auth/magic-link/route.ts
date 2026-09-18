@@ -1,5 +1,6 @@
 import { signIn } from "@/server/auth";
 import { enforceMagicLinkLimit } from "@/server/magic-link-limit";
+import { safeRedirectPath } from "@/server/safe-redirect";
 
 export const runtime = "nodejs";
 
@@ -26,9 +27,7 @@ export async function POST(req: Request) {
   try {
     const body = (await req.json()) as { email?: unknown; redirectTo?: unknown };
     rawEmail = typeof body.email === "string" ? body.email : "";
-    if (typeof body.redirectTo === "string" && body.redirectTo.startsWith("/")) {
-      redirectTo = body.redirectTo;
-    }
+    redirectTo = safeRedirectPath(body.redirectTo, "/studio/app");
   } catch {
     // Malformed body → reject without sending an email.
     return Response.json({ error: "Invalid request." }, { status: 400 });

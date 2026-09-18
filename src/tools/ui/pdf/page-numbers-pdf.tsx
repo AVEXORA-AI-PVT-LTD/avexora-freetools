@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { PdfPicker, downloadBytes, inputCls, labelCls, primaryBtn, usePdfFile } from "./pdf-shared";
+import { useEffect, useState } from "react";
+import { PdfPicker, inputCls, labelCls, primaryBtn, secondaryBtn, usePdfFile } from "./pdf-shared";
+import {
+  useAuthDownload,
+  useRestoredDownload,
+} from "@/components/account/use-auth-download";
 
 const POSITIONS = {
   "bottom-center": "Bottom centre",
@@ -10,10 +14,25 @@ const POSITIONS = {
 } as const;
 
 export default function PageNumbersPdf() {
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
   const { file, pageCount, error, setError, pick } = usePdfFile();
   const [position, setPosition] = useState<keyof typeof POSITIONS>("bottom-center");
   const [startAt, setStartAt] = useState("1");
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
 
   const apply = async () => {
     if (!file) return;
@@ -40,7 +59,11 @@ export default function PageNumbersPdf() {
         const y = position === "top-right" ? page.getSize().height - margin : margin - 8;
         page.drawText(label, { x, y, size, font, color: rgb(0.3, 0.3, 0.3) });
       });
-      downloadBytes(await doc.save(), file.name.replace(/\.pdf$/i, "") + "-numbered.pdf");
+      const bytes = await doc.save();
+      const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(file.name.replace(/\.pdf$/i, "") + "-numbered.pdf");
+      setResultBlob(blob);
     } catch {
       setError("Something went wrong while adding page numbers.");
     } finally {
@@ -70,9 +93,36 @@ export default function PageNumbersPdf() {
         </div>
       )}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      <button type="button" onClick={apply} disabled={!file || busy} className={primaryBtn} data-lead-action="download">
-        {busy ? "Adding…" : "Add page numbers & download"}
-      </button>
+      {!resultUrl ? (
+        <button type="button" onClick={apply} disabled={!file || busy} className={primaryBtn}>
+          {busy ? "Adding…" : "Add page numbers"}
+        </button>
+      ) : (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            Page numbers added — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {resultUrl && resultBlob && (
+              <button
+                type="button"
+                onClick={() => void downloadOne(resultBlob, resultFilename)}
+                className={primaryBtn}
+                data-lead-action="download"
+              >
+                Download PDF
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => { pick(null); setResultUrl(null); setResultBlob(null); }}
+              className={secondaryBtn}
+            >
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

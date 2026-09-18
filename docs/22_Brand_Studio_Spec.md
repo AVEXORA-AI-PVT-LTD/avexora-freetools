@@ -1,6 +1,6 @@
 # 22 — Avexora Brand Studio: Build Specification
 
-**Surface:** `freetools.avexora.in/studio` — the paid subscription tier of the existing free-tools property.
+**Surface:** `tools.avexora.in/studio` — the paid subscription tier of the existing free-tools property.
 **Strategy & rationale:** see `21_Brand_Studio_Research_and_GTM.md`.
 **Positioning:** *Compliance-ready business stationery for Indian startups — logo to employee ID cards, in minutes.*
 

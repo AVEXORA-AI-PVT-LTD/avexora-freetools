@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PDFDocumentProxy, RenderTask } from "pdfjs-dist";
-import { PdfPicker, downloadBytes, panelCls, primaryBtn, secondaryBtn } from "./pdf-shared";
+import { PdfPicker, panelCls, primaryBtn, secondaryBtn } from "./pdf-shared";
+import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
 
 /**
  * Page-level PDF rotation with real per-page previews.
@@ -167,6 +168,21 @@ export function RotatePdf() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "failed">("idle");
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultFilename, setResultFilename] = useState<string>("");
+  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
+
+  const { downloadOne } = useAuthDownload();
+  const { restored } = useRestoredDownload();
+
+  useEffect(() => {
+    if (!restored) return;
+    queueMicrotask(() => {
+      setResultUrl(URL.createObjectURL(restored.blob));
+      setResultFilename(restored.filename);
+      setResultBlob(restored.blob);
+    });
+  }, [restored]);
 
   const load = useCallback(async (f: File) => {
     setError(null);
@@ -241,7 +257,13 @@ export function RotatePdf() {
         const page = src.getPage(i);
         page.setRotation(degrees((page.getRotation().angle + r) % 360));
       });
-      downloadBytes(await src.save(), file.name.replace(/\.pdf$/i, "") + "-rotated.pdf");
+      const bytes = await src.save();
+      const filename = file.name.replace(/\.pdf$/i, "") + "-rotated.pdf";
+      const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
+      setResultUrl(URL.createObjectURL(blob));
+      setResultFilename(filename);
+      setResultBlob(blob);
+      setError(null);
     } catch {
       setError("Something went wrong while rotating this PDF.");
     } finally {
@@ -335,14 +357,42 @@ export function RotatePdf() {
           onClick={apply}
           disabled={busy || rotatedCount === 0}
           className={primaryBtn}
-          data-lead-action="download"
         >
-          {busy ? "Rotating…" : "Rotate & download"}
+          {busy ? "Rotating…" : "Rotate"}
         </button>
         {rotatedCount === 0 && (
           <span className="text-xs text-slate-500">Apply rotations above, then download.</span>
         )}
       </div>
+
+      {resultUrl && resultBlob && (
+        <div className="space-y-2">
+          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
+            PDF rotated — review it, then download.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => void downloadOne(resultBlob, resultFilename)}
+              className={primaryBtn}
+              data-lead-action="download"
+            >
+              Download rotated PDF
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setResultBlob(null);
+                setResultUrl(null);
+                pick(null);
+              }}
+              className={secondaryBtn}
+            >
+              Start over
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

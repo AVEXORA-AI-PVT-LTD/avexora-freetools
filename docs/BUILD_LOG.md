@@ -388,3 +388,60 @@ Re-verified on 16.3.0: `tsc --noEmit` clean, `npm run lint` 0 errors,
 `vitest run` 383 passing / 11 skipped, `npm run build` clean, and the standalone
 artifact re-booted and re-checked over HTTP — same eight assertions, same
 results. `npm audit` now reports **0 vulnerabilities**.
+
+## Brand Studio navigation — remove duplicate context navbar + profile-icon account control
+
+### Requirement
+The Brand Studio pages rendered a second navigation row right under the global Avex Tools navbar
+(`Studio · Brand Studio ... Pricing | Dashboard`). It had to go so the Studio page reads
+"global navbar → Brand Studio content" only, without deleting any Studio/Dashboard/Pricing route.
+The logged-in account trigger also had to stop showing the user's initial (`A / A`) and show a
+profile icon instead — same dropdown, same size, no new dependencies.
+
+### Root cause
+The second row was a real layout, `src/app/studio/(studio)/layout.tsx`, scoped via the `(studio)`
+route group so that all `/studio`, `/studio/pricing` and `/studio/app*` pages inherited it beneath
+the root layout's global navbar. Grepping the tree showed this was the **only** instance of Studio
+navigation markup — there was no duplicated markup elsewhere to hide with CSS. The account trigger
+in `src/components/account/nav-account.tsx` rendered the fallback initial (`name ?? email ?? "A"`
+→ first char uppercase) twice: once inside a slate disc and once as trailing text.
+
+### Changes
+- **`src/app/studio/(studio)/layout.tsx` — DELETED** (was 46 lines). The route group folder stays
+  (it still keeps `/studio/signin` and `/studio/signup` outside the Studio segment), but with no
+  layout file the Studio routes now inherit only the root layout. Leaving the group in place means
+  zero file moves and zero cosmetic workarounds — a correct component-tree fix, not `display: none`.
+- **`src/components/account/nav-account.tsx`** — final file is 134 lines.
+  - Loading skeleton **L37**: now `h-[30px] w-[30px] rounded-full … sm:h-8 sm:w-8`, sized to the new
+    circular button so session load doesn't shift layout (was `w-20 sm:w-24` pill).
+  - `initial` derivation (old L52–56) removed — no first-letter fallback rendered anywhere.
+  - Account trigger **L60–79**: a circular `h-[30px] w-[30px] sm:h-8 sm:w-8` slate-900 button with a
+    stroke-drawn Lucide-style `user` SVG (head + shoulders, `h-4 w-4`, white on slate) —
+    `aria-label="Account menu"` (**L63**) for accessible naming; keyboard (Tab/Enter/Space) works
+    because it stays a native `<button>`; Escape-to-close and click-outside handlers unchanged.
+  - Dropdown `<role="dialog">` **L81+** untouched — Dashboard → `/studio/app`, Pricing →
+    `/studio/pricing`, **Sign out** → `signOut({ callbackUrl: pathname })` all preserved, still
+    right-aligned under the button (right-offset + w-56 within a `relative` wrapper survives the
+    narrower trigger; no overrides needed).
+- No icon package added. `package.json` contains no lucide/react-icons/iconify/heroicons, so per the
+  requirement to reuse the library only if present, the marks stay inline SVG (same approach as the
+  Google/Facebook marks in `src/components/account/provider-icons.tsx`).
+
+### Reaching Studio sub-pages without the row
+Routes are untouched; entry points that remain: Account dropdown → Dashboard / Pricing, global
+navbar "Brand Studio" → `/studio`, in-page CTAs (`/studio/app/new`, pricing links in the landing
+page, app pages, upgrade/onboarding buttons), plus the root-layout footer Studio links.
+
+### Verification
+- `npx tsc --noEmit` — clean (after `next build` regenerated `.next/types`; the first tsc run failed
+  only on stale generated types still referencing the deleted layout).
+- `npx eslint src/components/account/nav-account.tsx` — 0 errors.
+- `npx vitest run` — **933 passed / 11 skipped** (unchanged; no auth/logic touched).
+- `npx next build` — clean. Route manifest confirms nothing was deleted: `/studio` ○, `/studio/pricing`
+  ○ (both still static — the removed layout was the one without `auth()`, as before),
+  `/studio/app` ƒ, `/studio/app/[brandId]` ƒ, `/studio/app/new` ƒ, `/studio/signin` ƒ,
+  `/studio/signup` ƒ, `/studio/signin/check-email` ○.
+- Not exercised in CI (no browser automation in this project): live click-through of the dropdown,
+  Escape/click-outside, and a mobile 320px viewport. The control is a 30/32px native button so no
+  clipping or overflow is expected, but a quick manual check in-browser is the remaining owner step.
+- No commits made; working tree contains exactly the two intended changes (1 deletion, 1 file edit). 
