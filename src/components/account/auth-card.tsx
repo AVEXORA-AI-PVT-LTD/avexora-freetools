@@ -121,7 +121,7 @@ export function AuthCard({
             <div>
               <EmailSubmitButton pending={pending} />
               <p className="mt-2 text-center text-xs text-slate-500">
-                We'll email you a secure sign-in link.
+                We&apos;ll email you a secure sign-in link.
               </p>
             </div>
           </form>

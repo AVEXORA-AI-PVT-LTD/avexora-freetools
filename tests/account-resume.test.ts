@@ -110,14 +110,21 @@ describe("account-resume (state resume)", () => {
   });
 });
 
+interface FakeRequest<T> {
+  result: T | undefined;
+  error: unknown;
+  onsuccess?: () => void;
+  onerror?: () => void;
+}
+
 /** Minimal in-memory IndexedDB stub exposing only the API surface used by
  *  account-resume's blob helpers (open / objectStore get / put / delete). */
 function installFakeIndexedDB() {
   const store = new Map<string, BlobDownloadResume>();
 
   const request = <T>(op: () => T) => {
-    const req: any = { result: undefined as T, error: null };
-    let run = () => {
+    const req: FakeRequest<T> = { result: undefined, error: null };
+    const run = () => {
       try {
         req.result = op();
         req.onsuccess?.();
@@ -142,7 +149,7 @@ function installFakeIndexedDB() {
       }),
   });
 
-  const db: any = {
+  const db = {
     objectStoreNames: { contains: () => true },
     createObjectStore: () => {},
     transaction: () => ({ objectStore }),
@@ -150,7 +157,7 @@ function installFakeIndexedDB() {
 
   (globalThis as Record<string, unknown>).indexedDB = {
     open: () => {
-      const req: any = { result: db, error: null };
+      const req: FakeRequest<typeof db> = { result: db, error: null };
       queueMicrotask(() => req.onsuccess?.());
       return req;
     },
