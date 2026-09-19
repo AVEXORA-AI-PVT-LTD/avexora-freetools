@@ -5,8 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { hasPermission, type Permission } from "@/lib/admin/permissions";
+import type { requireAdminAuth } from "@/server/admin-auth";
 
-export function AdminSidebar({ user }: { user: any }) {
+export function AdminSidebar({ user }: { user: Awaited<ReturnType<typeof requireAdminAuth>> }) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 
@@ -93,7 +94,7 @@ export function AdminSidebar({ user }: { user: any }) {
             <Link href="/" target="_blank" className="mb-3 block text-xs font-semibold text-orange-600 hover:underline">
               ↗ Go to Website
             </Link>
-            <div className="text-sm font-medium text-orange-950 truncate" title={user.name || user.email}>
+            <div className="text-sm font-medium text-orange-950 truncate" title={user.name || user.email || undefined}>
               {user.name || user.email}
             </div>
             <div className="text-xs text-orange-700/60 uppercase tracking-wider">{user.role}</div>

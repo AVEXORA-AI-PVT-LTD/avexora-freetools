@@ -5,6 +5,7 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { hasPermission } from "@/lib/admin/permissions";
 import { categories as staticCategories } from "@/tools/categories";
 import { revalidatePath } from "next/cache";
+import type { CategorySlug } from "@/types/tools";
 
 export async function reorderCategories(orderedSlugs: string[]) {
   try {
@@ -25,7 +26,7 @@ export async function reorderCategories(orderedSlugs: string[]) {
     }
 
     for (const slug of orderedSlugs) {
-      if (!allSlugs.has(slug as any)) {
+      if (!allSlugs.has(slug as CategorySlug)) {
         return { success: false, error: `Invalid category slug: ${slug}` };
       }
     }

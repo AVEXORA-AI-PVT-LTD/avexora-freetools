@@ -24,7 +24,7 @@ export default async function OnboardingPage() {
           Welcome to Avex
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
-          Let's get your account set up.
+          Let&apos;s get your account set up.
         </p>
       </div>
 

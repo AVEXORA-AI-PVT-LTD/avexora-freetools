@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { hasPermission, Role, Permission } from "../src/lib/admin/permissions";
+import { hasPermission, type Permission } from "../src/lib/admin/permissions";
 
 describe("Admin Permissions RBAC Engine", () => {
   it("SUPER_ADMIN should have highest permission set", () => {
@@ -30,11 +30,10 @@ describe("Admin Permissions RBAC Engine", () => {
   });
 
   it("Unknown Role should fail closed", () => {
-    // Typecast to bypass TS for test
-    expect(hasPermission("UNKNOWN_ROLE" as any, "tools.edit")).toBe(false);
+    expect(hasPermission("UNKNOWN_ROLE", "tools.edit")).toBe(false);
   });
 
   it("Unknown Permission should fail closed", () => {
-    expect(hasPermission("admin", "unknown.permission" as any)).toBe(false);
+    expect(hasPermission("admin", "unknown.permission" as Permission)).toBe(false);
   });
 });

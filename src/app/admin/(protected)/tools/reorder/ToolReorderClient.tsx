@@ -14,7 +14,9 @@ export function ToolReorderClient({
   tools: MinimalTool[];
 }) {
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?.slug || "");
-  const [orderedSlugs, setOrderedSlugs] = useState<string[]>([]);
+  const [orderedSlugs, setOrderedSlugs] = useState<string[]>(() =>
+    tools.filter((t) => t.category === selectedCategory).map((t) => t.slug),
+  );
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -23,10 +25,13 @@ export function ToolReorderClient({
     return tools.filter((t) => t.category === selectedCategory);
   }, [tools, selectedCategory]);
 
-  // Sync state when category changes
-  useMemo(() => {
-    setOrderedSlugs(toolsInCategory.map(t => t.slug));
-  }, [toolsInCategory]);
+  // Sync state when category changes: adjust state during render rather than
+  // in an Effect, per https://react.dev/learn/you-might-not-need-an-effect.
+  const [syncedCategory, setSyncedCategory] = useState(selectedCategory);
+  if (selectedCategory !== syncedCategory) {
+    setSyncedCategory(selectedCategory);
+    setOrderedSlugs(toolsInCategory.map((t) => t.slug));
+  }
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(e.target.value);
