@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const redirects = await prisma.redirect.findMany({
       where: { active: true },
-      select: { source: true, destination: true, statusCode: true }
+      select: { id: true, source: true, destination: true, statusCode: true }
     });
     return NextResponse.json(redirects);
   } catch (error) {

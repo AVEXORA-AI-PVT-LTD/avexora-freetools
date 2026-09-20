@@ -95,6 +95,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Filter out duplicates (like multiple FAQs mapping to /faq)
   const uniqueContentRoutes = Array.from(new Map(contentRoutes.map(item => [item.url, item])).values());
 
-  return [...routes, ...catRoutes, ...toolRoutes, ...uniqueContentRoutes];
+  const allRoutes = [...routes, ...catRoutes, ...toolRoutes, ...uniqueContentRoutes];
+  
+  // Filter out any routes that are actively redirected
+  const activeRedirects = await prisma.redirect.findMany({ where: { active: true }, select: { source: true } });
+  const redirectedPaths = new Set(activeRedirects.map(r => r.source));
+  
+  return allRoutes.filter(route => {
+    const path = route.url.replace(SITE_URL, '');
+    return !redirectedPaths.has(path);
+  });
+
 
 }

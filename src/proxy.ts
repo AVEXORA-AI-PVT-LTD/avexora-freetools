@@ -69,9 +69,18 @@ export async function proxy(request: NextRequest) {
       if (res.ok) {
         const redirects = await res.json();
         const match = redirects.find((r: any) => r.source === url.pathname);
+
         if (match) {
+          // Asynchronously track hit
+          fetch(`${appUrl}/api/seo/redirects/track`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: match.id })
+          }).catch(() => {});
+          
           return NextResponse.redirect(new URL(match.destination, request.url), match.statusCode);
         }
+
       }
     } catch (e) {
       // Fail silently

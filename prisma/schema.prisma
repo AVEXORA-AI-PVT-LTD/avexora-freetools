@@ -376,6 +376,8 @@ model ContentBlock {
   status      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  hitCount    Int      @default(0)
+  lastHitAt   DateTime?
 }
 
 // ---------------------------------------------------------------------------
@@ -460,6 +462,8 @@ model HomepageConfig {
   updatedBy   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  hitCount    Int      @default(0)
+  lastHitAt   DateTime?
 }
 
 enum ContentType {
@@ -541,4 +545,6 @@ model Redirect {
   createdBy   String?  @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  hitCount    Int      @default(0)
+  lastHitAt   DateTime?
 }
