@@ -27,15 +27,23 @@ const homepageJsonLd = [
 
 
 import { getEffectiveToolsByCategory } from "@/server/tools";
-import { getEffectiveContent } from "@/server/content";
+import { getHomepageSections } from "@/server/homepage-service";
 
 export default async function HomePage() {
   const effectiveCategories = await getEffectiveCategories();
   const effectiveToolsByCategory = await getEffectiveToolsByCategory();
   const searchItems: SearchItem[] = buildSearchItems(effectiveCategories, effectiveToolsByCategory);
   
-  const heroTitle = await getEffectiveContent("homepage.hero.title");
-  const heroDescription = await getEffectiveContent("homepage.hero.description");
+  const sections = await getHomepageSections();
+  const heroConfig = sections.find(s => s.sectionKey === "hero");
+  const brandStudioConfig = sections.find(s => s.sectionKey === "brand_studio");
+  const categoriesConfig = sections.find(s => s.sectionKey === "categories");
+  const popularToolsConfig = sections.find(s => s.sectionKey === "popular_tools");
+
+  const heroTitle = heroConfig?.heading || "";
+  const heroDescription = heroConfig?.description || "";
+  const searchPlaceholder = heroConfig?.config?.searchPlaceholder || "Search from 130+ free tools...";
+
 
   return (
     <div className="mx-auto max-w-6xl px-4">
@@ -43,7 +51,7 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
       />
-      <section className="py-16 text-center">
+      {heroConfig?.enabled && (<section className="py-16 text-center">
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
           {heroTitle}
         </h1>
@@ -53,9 +61,9 @@ export default async function HomePage() {
         <div className="mt-8">
           <ToolSearch items={searchItems} displayCount={DISPLAYED_TOOL_COUNT} />
         </div>
-      </section>
+      </section>)}
 
-      <section id="brand-studio" className="pb-16">
+      {brandStudioConfig?.enabled && (<section id="brand-studio" className="pb-16">
         <div className="rounded-2xl border border-orange-200 bg-orange-50/60 p-8 sm:p-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-xl">
@@ -102,9 +110,9 @@ export default async function HomePage() {
             </ul>
           </div>
         </div>
-      </section>
+      </section>)}
 
-      <section id="categories" className="pb-20">
+      {categoriesConfig?.enabled && (<section id="categories" className="pb-20">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {effectiveCategories.map((c) => {
             const tools = effectiveToolsByCategory[c.slug] || [];
@@ -142,7 +150,7 @@ export default async function HomePage() {
             );
           })}
         </div>
-      </section>
+      </section>)}
     </div>
   );
 }

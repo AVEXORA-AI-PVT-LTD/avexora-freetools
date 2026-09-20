@@ -17,6 +17,13 @@ export type Permission =
   | "categories.publish"
 
   | "dashboard.view"
+  | "homepage.view"
+  | "homepage.edit"
+  | "homepage.publish"
+  | "homepage.reorder"
+  | "homepage.manage-tools"
+  | "homepage.manage-footer"
+
   | "categories.view"
   | "categories.create"
   | "categories.edit"
