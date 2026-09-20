@@ -36,8 +36,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  const toolConfigs = await prisma.toolConfig.findMany({ select: { toolSlug: true, seoMetadata: true }});
+  const catConfigs = await prisma.categoryConfig.findMany({ select: { slug: true, seoMetadata: true }});
+
+  // Filter out noindex categories
+  const indexableCategories = categories.filter(cat => {
+    const config = catConfigs.find(c => c.slug === cat.slug);
+    const meta: any = config?.seoMetadata || {};
+    return meta.robotsIndex !== false;
+  });
+
+  // Filter out noindex tools
+  const indexableTools = tools.filter(tool => {
+    const config = toolConfigs.find(c => c.toolSlug === tool.slug);
+    const meta: any = config?.seoMetadata || {};
+    return meta.robotsIndex !== false;
+  });
+
   // Category pages
-  const catRoutes = categories.map((cat) => ({
+  const catRoutes = indexableCategories.map((cat) => ({
     url: `${SITE_URL}/${cat.slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
@@ -45,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Tool pages
-  const toolRoutes = tools.map((tool) => ({
+  const toolRoutes = indexableTools.map((tool) => ({
     url: `${SITE_URL}/${tool.category}/${tool.slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
@@ -55,7 +72,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Content Items (Blog, Page, Guide, FAQ)
   const publishedContent = await prisma.contentItem.findMany({
-    where: { status: ContentStatus.PUBLISHED },
+    where: { status: ContentStatus.PUBLISHED, noIndex: false },
     select: { slug: true, contentType: true, updatedAt: true, publishedAt: true }
   });
 

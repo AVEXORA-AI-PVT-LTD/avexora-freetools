@@ -530,3 +530,15 @@ model ContentRevision {
   createdAt      DateTime    @default(now())
   createdBy      String      @db.ObjectId
 }
+
+model Redirect {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  source      String   @unique
+  destination String
+  statusCode  Int      @default(301)
+  active      Boolean  @default(true)
+  reason      String?
+  createdBy   String?  @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

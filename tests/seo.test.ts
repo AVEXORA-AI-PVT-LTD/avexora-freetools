@@ -3,7 +3,7 @@ import { allTools, TOTAL_ACTIVE_TOOLS } from "@/tools/registry";
 import { categories, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
 import { canonicalUrl, categoryJsonLd, categoryMetadata, categoryUrl, ogImageUrl, toolJsonLd, toolMetadata } from "@/lib/seo";
 import sitemap from "@/app/sitemap";
-import robots from "@/app/robots";
+import { GET as robots } from "@/app/robots.txt/route";
 
 const PROD_DOMAIN = "https://tools.avexora.in";
 const OLD_DOMAIN = "avextools.avexora.in";
@@ -126,11 +126,13 @@ describe("§46 SEO acceptance: sitemap", () => {
 });
 
 describe("§46 SEO acceptance: robots", () => {
-  it("allows public crawling, blocks only /api/, references the correct sitemap", () => {
-    const r = robots();
-    expect(r.rules).toEqual({ userAgent: "*", allow: "/", disallow: ["/api/"] });
-    expect(r.sitemap).toBe(`${PROD_DOMAIN}/sitemap.xml`);
-    expect(r.sitemap).not.toContain(OLD_DOMAIN);
+  it("allows public crawling, blocks only /api/, references the correct sitemap", async () => {
+    const r = await robots();
+    const text = await (r as any).text();
+    expect(text).toContain("Allow: /");
+    expect(text).toContain("Disallow: /api/");
+    expect(text).toContain(`${PROD_DOMAIN}/sitemap.xml`);
+    expect(text).not.toContain(OLD_DOMAIN);
   });
 });
 

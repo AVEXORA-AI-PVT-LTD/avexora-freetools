@@ -65,6 +65,7 @@ export const adminNavigation: AdminNavItem[] = [
       { label: "Sitemap", href: "/admin/seo/sitemap", permission: "seo.view" },
       { label: "Robots", href: "/admin/seo/robots", permission: "seo.view" },
       { label: "Redirects", href: "/admin/seo/redirects", permission: "seo.view" },
+      { label: "Validation", href: "/admin/seo/validation", permission: "seo.view" },
     ],
   },
   {
