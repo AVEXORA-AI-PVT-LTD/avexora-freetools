@@ -80,12 +80,9 @@ export const adminNavigation: AdminNavItem[] = [
   },
   {
     label: "Users",
+    href: "/admin/users",
     icon: Users,
-    children: [
-      { label: "All Users", href: "/admin/users", permission: "users.view" },
-      { label: "User Activity", href: "/admin/users/activity", permission: "users.view" },
-      { label: "User Restrictions", href: "/admin/users/restrictions", permission: "users.edit" },
-    ],
+    permission: "users.view",
   },
   {
     label: "Analytics",

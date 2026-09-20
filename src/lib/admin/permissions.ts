@@ -56,6 +56,14 @@ export type Permission =
   | "users.edit"
   | "users.delete"
   | "users.change_role"
+
+  | "users.manage_roles"
+  | "users.revoke_sessions"
+  | "users.view_activity"
+  | "users.view_usage"
+  | "users.view_subscription"
+  | "users.change_plan"
+
   | "roles.view"
   | "roles.manage"
   | "brand_studio.view"
@@ -81,7 +89,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "tools.edit", "tools.delete", "tools.toggle", "tools.reorder", "tools.version.read",
     "tools.version.create", "tools.version.compare", "tools.version.restore",
     "tools.version.publish", "tools.version.delete", "users.view", 
-    "users.edit", "users.delete", "users.change_role", "roles.view", "roles.manage", 
+    "users.edit", "users.delete", "users.change_role", "users.manage_roles", "users.revoke_sessions", "users.view_activity", "users.view_usage", "users.view_subscription", "users.change_plan", "roles.view", "roles.manage", 
     "brand_studio.view", "brand_studio.edit", "brand_studio.toggle", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
     "settings.view", "settings.edit", "analytics.view", "audit_logs.view", "content.view", "content.edit"

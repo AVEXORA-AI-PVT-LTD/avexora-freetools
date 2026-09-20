@@ -49,6 +49,13 @@ model User {
   recoveryCodes    String[]  @default([])
   failedAttempts   Int       @default(0)
   lockedUntil      DateTime?
+  
+  status           String    @default("ACTIVE") // ACTIVE, DISABLED, BLOCKED
+  lastActiveAt     DateTime?
+  disabledAt       DateTime?
+  blockedAt        DateTime?
+  deletedAt        DateTime?
+
 
   createdAt        DateTime  @default(now())
 
