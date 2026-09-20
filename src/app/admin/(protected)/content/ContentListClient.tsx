@@ -80,6 +80,7 @@ export function ContentListClient({ initialItems, fixedType }: { initialItems: C
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Title & Slug</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Views</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Last Updated</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">Actions</th>
               </tr>
@@ -104,6 +105,9 @@ export function ContentListClient({ initialItems, fixedType }: { initialItems: C
                     }`}>
                       {item.status}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500">
+                    {(item as any).views || 0}
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-500">
                     {new Date(item.updatedAt).toLocaleDateString()}

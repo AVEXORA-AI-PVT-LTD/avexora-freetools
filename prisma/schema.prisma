@@ -59,6 +59,8 @@ model User {
   subscription  Subscription?
   usageCounters UsageCounter[]
   toolUsages    ToolUsage[]
+  contentItems  ContentItem[]
+
 }
 
 model Account {
@@ -502,7 +504,9 @@ model ContentItem {
   canonicalUrl   String?
   noIndex        Boolean       @default(false)
 
+
   authorId       String        @db.ObjectId
+  author         User          @relation(fields: [authorId], references: [id])
   publishedAt    DateTime?
   scheduledAt    DateTime?
   createdAt      DateTime      @default(now())
@@ -510,6 +514,12 @@ model ContentItem {
   updatedBy      String?       @db.ObjectId
   
   version        Int           @default(1)
+  views          Int           @default(0)
+  
+  featured       Boolean       @default(false)
+  relatedTools   String[]      @default([])
+  relatedPosts   String[]      @default([])
+
 }
 
 model ContentRevision {

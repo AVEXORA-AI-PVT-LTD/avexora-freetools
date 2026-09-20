@@ -37,7 +37,12 @@ export async function saveContent(data: Partial<ContentItem> & { slug: string, t
     ogImage: data.ogImage || null,
     canonicalUrl: data.canonicalUrl || null,
     noIndex: data.noIndex || false,
-    updatedBy: user.id
+    updatedBy: user.id,
+    authorId: data.authorId || user.id,
+    featured: data.featured || false,
+    relatedTools: data.relatedTools || [],
+    relatedPosts: data.relatedPosts || [],
+    scheduledAt: data.scheduledAt || null,
   };
 
   if (effectiveStatus === ContentStatus.PUBLISHED && !data.publishedAt) {

@@ -7,7 +7,7 @@ import { useDialog } from "@/components/admin/DialogProvider";
 import { saveContent } from "../content-actions";
 import { ContentType, ContentStatus } from "@prisma/client";
 
-export function ContentEditor({ initialData, isNew, revisions, userRole }: { initialData: any, isNew: boolean, revisions: any[], userRole: string }) {
+export function ContentEditor({ initialData, isNew, revisions, userRole, authors, tools, allContent }: { initialData: any, isNew: boolean, revisions: any[], userRole: string, authors: any[], tools: any[], allContent: any[] }) {
   const router = useRouter();
   const { showAlert } = useDialog();
   const [isPending, startTransition] = useTransition();
@@ -91,7 +91,13 @@ export function ContentEditor({ initialData, isNew, revisions, userRole }: { ini
                     <label className="block text-sm font-medium text-slate-900 mb-1">Category (Optional)</label>
                     <input type="text" value={data.category || ""} onChange={e => update("category", e.target.value)} className="w-full border-slate-300 rounded-md py-2 px-3 focus:ring-orange-500 focus:border-orange-500" />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-900 mb-1">Tags (Comma separated)</label>
+                    <input type="text" value={data.tags?.join(", ") || ""} onChange={e => update("tags", e.target.value.split(",").map(s => s.trim()).filter(Boolean))} className="w-full border-slate-300 rounded-md py-2 px-3 focus:ring-orange-500 focus:border-orange-500" placeholder="e.g. SEO, Marketing, Tools" />
+                  </div>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-slate-900 mb-1">Excerpt / Summary</label>
                   <textarea rows={3} value={data.excerpt || ""} onChange={e => update("excerpt", e.target.value)} className="w-full border-slate-300 rounded-md py-2 px-3 focus:ring-orange-500 focus:border-orange-500" />
@@ -169,11 +175,25 @@ export function ContentEditor({ initialData, isNew, revisions, userRole }: { ini
             </div>
           </div>
 
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Scheduled Date</label>
+            <input type="datetime-local" value={data.scheduledAt ? new Date(data.scheduledAt).toISOString().slice(0,16) : ""} onChange={e => update("scheduledAt", new Date(e.target.value).toISOString())} className="w-full border-slate-300 rounded-md py-1.5 px-3 text-sm focus:ring-orange-500" />
+          </div>
+
           <div className="space-y-2 pt-2">
+
             <button onClick={() => handleSave()} disabled={isPending || !data.title || !data.slug} className="w-full flex justify-center items-center gap-2 px-4 py-2 bg-slate-800 text-white font-medium rounded-md hover:bg-slate-700 disabled:opacity-50">
               <Save className="w-4 h-4" /> Save {data.status === ContentStatus.DRAFT ? "Draft" : "Changes"}
             </button>
             
+
+            {data.status !== ContentStatus.PUBLISHED && canPublish && data.scheduledAt && new Date(data.scheduledAt) > new Date() && (
+              <button onClick={() => handleSave(ContentStatus.SCHEDULED)} disabled={isPending || !data.title || !data.slug} className="w-full flex justify-center items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 disabled:opacity-50">
+                <Clock className="w-4 h-4" /> Schedule Post
+              </button>
+            )}
+
             {data.status !== ContentStatus.PUBLISHED && canPublish && (
               <button onClick={() => handleSave(ContentStatus.PUBLISHED)} disabled={isPending || !data.title || !data.slug} className="w-full flex justify-center items-center gap-2 px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 disabled:opacity-50">
                 <Globe className="w-4 h-4" /> Publish Now
@@ -197,6 +217,51 @@ export function ContentEditor({ initialData, isNew, revisions, userRole }: { ini
                 Unpublish to Draft
               </button>
             )}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-5">
+          <h3 className="font-semibold text-slate-900 border-b pb-2">Settings</h3>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Author</label>
+            <select value={data.authorId || ""} onChange={e => update("authorId", e.target.value)} className="w-full border-slate-300 rounded-md py-1.5 px-3 focus:ring-orange-500 text-sm">
+              <option value="">Select Author...</option>
+              {authors?.map((a: any) => (
+                <option key={a.id} value={a.id}>{a.name || a.email}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={data.featured || false} onChange={e => update("featured", e.target.checked)} className="rounded text-orange-600 focus:ring-orange-600 border-slate-300" />
+              <span className="text-sm font-medium text-slate-900">Featured Post</span>
+            </label>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 space-y-5">
+          <h3 className="font-semibold text-slate-900 border-b pb-2">Relationships</h3>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Related Tools</label>
+            <select multiple value={data.relatedTools || []} onChange={e => update("relatedTools", Array.from(e.target.selectedOptions, option => option.value))} className="w-full border-slate-300 rounded-md py-1.5 px-3 focus:ring-orange-500 text-sm" size={5}>
+              {tools?.map((t: any) => (
+                <option key={t.id} value={t.id}>{t.title}</option>
+              ))}
+            </select>
+            <p className="text-xs text-slate-500 mt-1">Hold Cmd/Ctrl to select multiple.</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Related Posts</label>
+            <select multiple value={data.relatedPosts || []} onChange={e => update("relatedPosts", Array.from(e.target.selectedOptions, option => option.value))} className="w-full border-slate-300 rounded-md py-1.5 px-3 focus:ring-orange-500 text-sm" size={5}>
+              {allContent?.filter(c => c.id !== data.id).map((c: any) => (
+                <option key={c.id} value={c.id}>{c.title}</option>
+              ))}
+            </select>
+            <p className="text-xs text-slate-500 mt-1">Hold Cmd/Ctrl to select multiple.</p>
           </div>
         </div>
 

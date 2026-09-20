@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/tools/categories";
 import { getEffectiveCategories } from "@/server/categories";
 import { getEffectiveTools } from "@/server/tools";
+import { prisma } from "@/server/db";
+import { ContentStatus } from "@prisma/client";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, tools] = await Promise.all([
@@ -50,5 +52,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...routes, ...catRoutes, ...toolRoutes];
+
+  // Content Items (Blog, Page, Guide, FAQ)
+  const publishedContent = await prisma.contentItem.findMany({
+    where: { status: ContentStatus.PUBLISHED },
+    select: { slug: true, contentType: true, updatedAt: true, publishedAt: true }
+  });
+
+  const contentRoutes = publishedContent.map((c) => {
+    let path = `/${c.slug}`; // Default for PAGE
+    if (c.contentType === "BLOG") path = `/blog/${c.slug}`;
+    else if (c.contentType === "GUIDE") path = `/guides/${c.slug}`;
+    else if (c.contentType === "FAQ") path = `/faq`;
+    else if (c.contentType === "DOCUMENTATION") path = `/docs/${c.slug}`;
+    else if (["PRIVACY", "TERMS", "DISCLAIMER"].includes(c.contentType)) path = `/legal/${c.slug}`;
+
+    return {
+      url: `${SITE_URL}${path}`,
+      lastModified: c.updatedAt || c.publishedAt || now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    };
+  });
+
+  // Filter out duplicates (like multiple FAQs mapping to /faq)
+  const uniqueContentRoutes = Array.from(new Map(contentRoutes.map(item => [item.url, item])).values());
+
+  return [...routes, ...catRoutes, ...toolRoutes, ...uniqueContentRoutes];
+
 }
