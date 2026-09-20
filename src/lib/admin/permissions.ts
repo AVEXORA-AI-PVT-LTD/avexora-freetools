@@ -17,6 +17,17 @@ export type Permission =
   | "categories.publish"
 
   | "dashboard.view"
+  | "content.view"
+  | "content.create"
+  | "content.edit"
+  | "content.review"
+  | "content.publish"
+  | "content.schedule"
+  | "content.archive"
+  | "content.delete"
+  | "content.restore"
+  | "content.manage_seo"
+
   | "homepage.view"
   | "homepage.edit"
   | "homepage.publish"

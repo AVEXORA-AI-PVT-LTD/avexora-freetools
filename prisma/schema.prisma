@@ -459,3 +459,64 @@ model HomepageConfig {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+enum ContentType {
+  PAGE
+  BLOG
+  FAQ
+  GUIDE
+  DOCUMENTATION
+  ABOUT
+  CONTACT
+  PRIVACY
+  TERMS
+  DISCLAIMER
+}
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model ContentItem {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  slug           String        @unique
+  contentType    ContentType
+  content        String
+  excerpt        String?
+  featuredImage  String?
+  status         ContentStatus @default(DRAFT)
+  
+  tags           String[]      @default([])
+  category       String?
+  
+  seoTitle       String?
+  metaDesc       String?
+  ogTitle        String?
+  ogDesc         String?
+  ogImage        String?
+  canonicalUrl   String?
+  noIndex        Boolean       @default(false)
+
+  authorId       String        @db.ObjectId
+  publishedAt    DateTime?
+  scheduledAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  updatedBy      String?       @db.ObjectId
+  
+  version        Int           @default(1)
+}
+
+model ContentRevision {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  contentId      String      @db.ObjectId
+  version        Int
+  data           Json
+  createdAt      DateTime    @default(now())
+  createdBy      String      @db.ObjectId
+}
