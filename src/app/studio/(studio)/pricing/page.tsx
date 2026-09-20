@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
-import { PLANS, PLAN_ORDER, annualSavingMonths, formatINR } from "@/server/studio/plans";
+import { getAllPlans, annualSavingMonths, formatINR } from "@/server/studio/plans";
 import { razorpayEnabled } from "@/server/billing/razorpay";
 import { UpgradeButton } from "@/components/studio/upgrade-button";
 
@@ -28,7 +28,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const dbPlans = await getAllPlans();
+  const activePlans = dbPlans.filter(p => p.isActive !== false);
   return (
     <main className="mx-auto max-w-6xl px-4 py-12">
       <h1 className="text-3xl font-bold tracking-tight text-slate-900">Pricing</h1>
@@ -45,10 +47,10 @@ export default function PricingPage() {
       )}
 
       <div className="mt-10 grid gap-6 lg:grid-cols-4">
-        {PLAN_ORDER.map((id) => {
-          const plan = PLANS[id];
+        {activePlans.map((plan) => {
+          const id = plan.id;
           const free = plan.monthlyPaise === 0;
-          const savings = annualSavingMonths(plan);
+          const savings = annualSavingMonths(plan as any);
           const featured = id === "launch";
 
           return (

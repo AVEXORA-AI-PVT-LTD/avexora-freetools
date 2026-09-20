@@ -29,6 +29,7 @@ interface RazorpayWebhookPayload {
   event?: string;
   payload?: {
     subscription?: { entity?: RazorpaySubscriptionEntity };
+    payment?: { entity?: unknown };
   };
 }
 
@@ -106,5 +107,28 @@ export async function POST(req: Request) {
     },
   });
 
+  
+  // Sync Payment Ledger
+  if (event === "subscription.charged" && payload.payload?.payment?.entity) {
+    const paymentEntity = payload.payload.payment.entity as any;
+    
+    // We must find the Subscription row by razorpaySubscriptionId or userId
+    const sub = await prisma.subscription.findUnique({ where: { userId } });
+    if (sub) {
+      await prisma.payment.create({
+        data: {
+          subscriptionId: sub.id,
+          userId: userId,
+          amount: paymentEntity.amount,
+          currency: paymentEntity.currency || "INR",
+          status: paymentEntity.status === "captured" ? "successful" : "failed",
+          providerTxId: paymentEntity.id,
+          paymentDate: paymentEntity.created_at ? new Date(paymentEntity.created_at * 1000) : new Date(),
+        }
+      });
+    }
+  }
+
   return Response.json({ ok: true });
+
 }

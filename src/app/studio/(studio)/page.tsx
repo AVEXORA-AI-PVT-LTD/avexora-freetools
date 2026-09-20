@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
-import { PLANS, PLAN_ORDER, formatINR } from "@/server/studio/plans";
+import { getPlanAsync, formatINR } from "@/server/studio/plans";
 
 const title = "Brand Studio — compliance-ready business stationery for Indian startups";
 const description =
@@ -38,7 +38,9 @@ const ASSETS = [
   { name: "Email signatures", detail: "Inline-styled HTML that survives Outlook" },
 ];
 
-export default function StudioLandingPage() {
+export default async function StudioLandingPage() {
+  const plans = await import("@/server/studio/plans").then(m => m.getAllPlans());
+  const getPlanLocal = (id: string) => plans.find(p => p.id === id) || plans[0];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -46,10 +48,10 @@ export default function StudioLandingPage() {
     applicationCategory: "DesignApplication",
     operatingSystem: "Web",
     description,
-    offers: PLAN_ORDER.map((id) => ({
+    offers: ["free", "launch", "growth", "agency"].map((id) => ({
       "@type": "Offer",
-      name: PLANS[id].name,
-      price: (PLANS[id].monthlyPaise / 100).toFixed(2),
+      name: getPlanLocal(id).name,
+      price: (getPlanLocal(id).monthlyPaise / 100).toFixed(2),
       priceCurrency: "INR",
     })),
   };
@@ -158,7 +160,7 @@ export default function StudioLandingPage() {
         <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-300">
           Run your CIN and GSTIN through the checker, see exactly what is missing
           and why it matters, then fix it in one click when you&apos;re ready.
-          Paid plans start at {formatINR(PLANS.launch.monthlyPaise)}/month.
+          Paid plans start at {formatINR(getPlanLocal("launch").monthlyPaise)}/month.
         </p>
         <Link
           href="/studio/app/new"

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import Razorpay from "razorpay";
-import { PLANS, type PlanId, type Plan } from "@/server/studio/plans";
+import { getPlanAsync, type PlanId, type Plan } from "@/server/studio/plans";
 
 /**
  * Razorpay subscriptions (spec 22 §7).
@@ -38,8 +38,13 @@ export type BillingCycle = "monthly" | "yearly";
  * rather than the database means test and live accounts can differ without a
  * data migration.
  */
-export function razorpayPlanId(plan: PlanId, cycle: BillingCycle): string | undefined {
-  const key = `RAZORPAY_PLAN_${plan.toUpperCase()}_${cycle.toUpperCase()}`;
+export async function razorpayPlanId(planId: string, cycle: BillingCycle): Promise<string | undefined> {
+  const plan = await getPlanAsync(planId);
+  if (cycle === "yearly" && plan.razorpayYearlyId) return plan.razorpayYearlyId;
+  if (cycle === "monthly" && plan.razorpayMonthlyId) return plan.razorpayMonthlyId;
+
+  // Fallback
+  const key = `RAZORPAY_PLAN_${planId.toUpperCase()}_${cycle.toUpperCase()}`;
   return process.env[key];
 }
 
@@ -62,10 +67,10 @@ export async function createSubscription(opts: {
   name?: string | null;
   userId: string;
 }): Promise<CreatedSubscription> {
-  const plan = PLANS[opts.plan];
+  const plan = await getPlanAsync(opts.plan);
   if (plan.monthlyPaise === 0) throw new Error("PLAN_NOT_PURCHASABLE");
 
-  const planId = razorpayPlanId(opts.plan, opts.cycle);
+  const planId = await razorpayPlanId(opts.plan, opts.cycle);
   if (!planId) throw new Error(`RAZORPAY_PLAN_NOT_CONFIGURED:${opts.plan}:${opts.cycle}`);
 
   const subscription = await getClient().subscriptions.create({
@@ -154,7 +159,7 @@ export function planFromNotes(notes: unknown): { plan: PlanId; cycle: BillingCyc
   const record = notes as Record<string, unknown>;
   const plan = String(record.plan ?? "");
   const cycle = String(record.cycle ?? "monthly");
-  if (!(plan in PLANS) || plan === "free") return null;
+  if (plan === "free") return null;
   return {
     plan: plan as PlanId,
     cycle: cycle === "yearly" ? "yearly" : "monthly",

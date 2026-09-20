@@ -68,6 +68,7 @@ model User {
   toolUsages    ToolUsage[]
   contentItems  ContentItem[]
 
+  payments Payment[]
 }
 
 model Account {
@@ -266,6 +267,7 @@ model Subscription {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
 }
 
 /// Per-plan quota metering. One row per user/period/metric; `period` is a
@@ -554,4 +556,51 @@ model Redirect {
   updatedAt   DateTime @updatedAt
   hitCount    Int      @default(0)
   lastHitAt   DateTime?
+}
+
+
+model Plan {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug             String   @unique
+  name             String
+  description      String?
+  tagline          String?
+  
+  monthlyPrice     Int      @default(0)
+  yearlyPrice      Int      @default(0)
+  currency         String   @default("INR")
+  
+  razorpayMonthlyId String?
+  razorpayYearlyId  String?
+
+  hasTrial         Boolean  @default(false)
+  trialDays        Int      @default(0)
+
+  limits           Json     @default("{}")
+  capabilities     Json     @default("{}")
+  
+  watermark        Boolean  @default(false)
+  highlights       String[] @default([])
+
+  isActive         Boolean  @default(true)
+  isFeatured       Boolean  @default(false)
+  displayOrder     Int      @default(0)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Payment {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  subscriptionId String   @db.ObjectId
+  userId         String   @db.ObjectId
+  amount         Int      
+  currency       String   @default("INR")
+  status         String   // "successful", "failed", "refunded"
+  providerTxId   String?  // Razorpay Payment ID
+  paymentDate    DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

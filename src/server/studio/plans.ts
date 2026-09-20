@@ -1,3 +1,4 @@
+import { prisma } from "@/server/db";
 /**
  * Single source of truth for plan pricing and limits (spec 22 §6).
  *
@@ -41,6 +42,10 @@ export interface Plan {
   /** Free-tier exports carry a watermark. */
   watermark: boolean;
   highlights: string[];
+  isActive?: boolean;
+  displayOrder?: number;
+  razorpayMonthlyId?: string | null;
+  razorpayYearlyId?: string | null;
 }
 
 const noCapabilities: Record<Capability, boolean> = {
@@ -165,6 +170,89 @@ export const PLANS: Record<PlanId, Plan> = {
 };
 
 export const PLAN_ORDER: PlanId[] = ["free", "launch", "growth", "agency"];
+
+
+
+// --- Phase 16: DB-driven Pricing ---
+// We keep the hardcoded PLANS as a fallback/seed template, but the active
+// configuration is pulled from the DB.
+
+export async function getAllPlans(): Promise<Plan[]> {
+  const dbPlans = await prisma.plan.findMany({
+    orderBy: { displayOrder: "asc" }
+  });
+  
+  if (dbPlans.length > 0) {
+    return dbPlans.map(p => ({
+      id: p.slug as PlanId,
+      name: p.name,
+      monthlyPaise: p.monthlyPrice,
+      yearlyPaise: p.yearlyPrice,
+      tagline: p.tagline || "",
+      limits: p.limits as unknown as PlanLimits,
+      capabilities: p.capabilities as unknown as Record<Capability, boolean>,
+      watermark: p.watermark,
+      highlights: p.highlights,
+      isActive: p.isActive,
+      displayOrder: p.displayOrder,
+      razorpayMonthlyId: p.razorpayMonthlyId,
+      razorpayYearlyId: p.razorpayYearlyId,
+    }));
+  }
+  
+  // Fallback to hardcoded if DB is empty
+  return PLAN_ORDER.map(id => PLANS[id]);
+}
+
+export async function getPlanAsync(id: string | null | undefined): Promise<Plan> {
+  if (!id) return (await getAllPlans()).find(p => p.id === "free") || PLANS.free;
+  
+  const dbPlan = await prisma.plan.findUnique({ where: { slug: id } });
+  if (dbPlan) {
+    return {
+      id: dbPlan.slug as PlanId,
+      name: dbPlan.name,
+      monthlyPaise: dbPlan.monthlyPrice,
+      yearlyPaise: dbPlan.yearlyPrice,
+      tagline: dbPlan.tagline || "",
+      limits: dbPlan.limits as unknown as PlanLimits,
+      capabilities: dbPlan.capabilities as unknown as Record<Capability, boolean>,
+      watermark: dbPlan.watermark,
+      highlights: dbPlan.highlights,
+      isActive: dbPlan.isActive,
+      displayOrder: dbPlan.displayOrder,
+      razorpayMonthlyId: dbPlan.razorpayMonthlyId,
+      razorpayYearlyId: dbPlan.razorpayYearlyId,
+    };
+  }
+  
+  return PLANS[id as PlanId] ?? PLANS.free;
+}
+
+export async function seedPlansIfEmpty() {
+  const count = await prisma.plan.count();
+  if (count > 0) return;
+  
+  const ops = PLAN_ORDER.map((id, index) => {
+    const plan = PLANS[id];
+    return prisma.plan.create({
+      data: {
+        slug: id,
+        name: plan.name,
+        monthlyPrice: plan.monthlyPaise,
+        yearlyPrice: plan.yearlyPaise,
+        tagline: plan.tagline,
+        limits: plan.limits as any,
+        capabilities: plan.capabilities as any,
+        watermark: plan.watermark,
+        highlights: plan.highlights,
+        isActive: true,
+        displayOrder: index
+      }
+    });
+  });
+  await prisma.$transaction(ops);
+}
 
 export function getPlan(id: string | null | undefined): Plan {
   return PLANS[(id ?? "free") as PlanId] ?? PLANS.free;

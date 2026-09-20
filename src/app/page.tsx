@@ -5,7 +5,7 @@ import { buildSearchItems, type SearchItem } from "@/components/tools/search-ite
 import { ToolSearch } from "@/components/tools/tool-search";
 import { getEffectiveCategories } from "@/server/categories";
 import { STUDIO_ASSETS } from "@/studio/assets";
-import { PLANS, formatINR } from "@/server/studio/plans";
+import { getPlanAsync, formatINR } from "@/server/studio/plans";
 
 const homepageJsonLd = [
   {
@@ -94,7 +94,7 @@ export default async function HomePage() {
               </div>
               <p className="mt-3 text-xs text-slate-500">
                 Free to start — the compliance report costs nothing. Paid plans from{" "}
-                {formatINR(PLANS.launch.monthlyPaise)}/month.
+                {formatINR((await getPlanAsync("launch")).monthlyPaise)}/month.
               </p>
             </div>
 

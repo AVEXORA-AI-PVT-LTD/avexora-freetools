@@ -3,7 +3,7 @@ import {
   type Capability,
   type Metric,
   type Plan,
-  getPlan,
+  getPlanAsync,
   metricLimit,
   PLANS,
   PLAN_ORDER,
@@ -41,17 +41,19 @@ export function currentPeriod(now = new Date()): string {
  */
 export async function resolvePlan(userId: string): Promise<Plan> {
   const sub = await prisma.subscription.findUnique({ where: { userId } });
-  if (!sub) return getPlan("free");
-  if (sub.status !== "active") return getPlan("free");
+  if (!sub) return getPlanAsync("free");
+  if (sub.status !== "active") return getPlanAsync("free");
   if (sub.currentPeriodEnd && sub.currentPeriodEnd.getTime() < Date.now()) {
-    return getPlan("free");
+    return getPlanAsync("free");
   }
-  return getPlan(sub.plan);
+  return getPlanAsync(sub.plan);
 }
 
 /** The cheapest plan that grants `capability`, for the upgrade prompt. */
-function cheapestPlanWith(capability: Capability): string | undefined {
-  return PLAN_ORDER.find((id) => PLANS[id].capabilities[capability]);
+async function cheapestPlanWith(capability: Capability): Promise<string | undefined> {
+  const { getAllPlans } = await import("./plans");
+  const plans = await getAllPlans();
+  return plans.find(p => p.capabilities[capability])?.id;
 }
 
 export async function assertCapability(
@@ -63,7 +65,7 @@ export async function assertCapability(
     throw new EntitlementError(
       `Your ${plan.name} plan does not include this.`,
       "capability",
-      cheapestPlanWith(capability),
+      await cheapestPlanWith(capability),
     );
   }
   return plan;
