@@ -18,6 +18,7 @@ export type AdminTool = {
   updatedAt: Date;
   updatedBy: string | null;
   seoDescription: string;
+  currentVersion: string;
   isDynamic: boolean;
 };
 
@@ -72,6 +73,7 @@ export async function getAdminToolsData(): Promise<AdminTool[]> {
       usage,
       updatedAt: override?.updatedAt ?? fallbackDate,
       updatedBy: override?.updatedBy ?? null,
+      currentVersion: override?.currentVersion || "1.0.0",
     };
   });
 }

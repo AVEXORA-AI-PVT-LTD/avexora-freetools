@@ -1,11 +1,12 @@
 "use client";
 
+import { useDialog } from "@/components/admin/DialogProvider";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { saveToolData } from "./editor-actions";
 import type { ToolFormData, FAQItem } from "@/types/admin-tool-form";
-import { Save, ArrowLeft, Eye, LayoutTemplate, Settings, Code, FileText, Globe, CheckCircle } from "lucide-react";
+import { Save, ArrowLeft, Eye, LayoutTemplate, Settings, Code, FileText, Globe, CheckCircle, History } from "lucide-react";
 
 const TABS = [
   { id: "basic", label: "Basic Info", icon: LayoutTemplate },
@@ -14,11 +15,13 @@ const TABS = [
   { id: "technical", label: "Technical", icon: Code },
   { id: "seo", label: "SEO", icon: Globe },
   { id: "publishing", label: "Publishing", icon: CheckCircle },
+  { id: "versioning", label: "History & Versions", icon: History },
 ];
 
 export function ToolEditor({ initialData, isNew, categories, allSlugs }: { initialData: ToolFormData, isNew: boolean, categories: {slug: string, name: string}[], allSlugs: {slug: string, name: string}[] }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const { showAlert } = useDialog();
   const [activeTab, setActiveTab] = useState("basic");
   const [data, setData] = useState<ToolFormData>(initialData);
   const [error, setError] = useState("");
@@ -35,7 +38,7 @@ export function ToolEditor({ initialData, isNew, categories, allSlugs }: { initi
     try {
       const res = await saveToolData(payload);
       if (res.success) {
-        alert("Tool saved successfully!");
+        showAlert("Success", "Tool saved successfully!");
         if (isNew) {
           router.push(`/admin/tools/${res.slug}`);
         }
@@ -126,6 +129,7 @@ export function ToolEditor({ initialData, isNew, categories, allSlugs }: { initi
           {activeTab === "technical" && <TechnicalTab data={data} update={update} />}
           {activeTab === "seo" && <SEOTab data={data} update={update} />}
           {activeTab === "publishing" && <PublishingTab data={data} update={update} />}
+          {activeTab === "versioning" && <VersioningTab data={data} update={update} />}
         </div>
       </div>
     </div>
@@ -542,6 +546,71 @@ function PublishingTab({ data, update }: any) {
             />
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function VersioningTab({ data, update }: any) {
+  return (
+    <div className="space-y-6 max-w-3xl">
+      <h2 className="text-lg font-medium text-slate-900 mb-4">Version Control</h2>
+      
+      <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg space-y-4">
+        <h3 className="font-medium text-orange-900">Current Version: <span className="font-bold">{data.currentVersion || "1.0.0"}</span></h3>
+        
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={data.saveAsNewVersion || false}
+            onChange={(e) => update("saveAsNewVersion", e.target.checked)}
+            className="rounded border-slate-300 text-orange-600 focus:ring-orange-600 h-4 w-4"
+          />
+          <span className="text-sm font-medium text-slate-900">Create a new version snapshot on next save</span>
+        </label>
+
+        {data.saveAsNewVersion && (
+          <div className="space-y-4 pl-6 border-l-2 border-orange-200 mt-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-900 mb-1">New Version Number</label>
+              <input 
+                type="text" 
+                value={data.currentVersion} 
+                onChange={(e) => update("currentVersion", e.target.value)}
+                className="w-48 rounded-md border border-slate-300 py-1.5 px-3 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                placeholder="e.g. 2.1.0"
+              />
+              <p className="text-xs text-slate-500 mt-1">We recommend semantic versioning (MAJOR.MINOR.PATCH).</p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-900 mb-1">Changelog / Release Notes</label>
+              <textarea 
+                value={data.changelog || ""} 
+                onChange={(e) => update("changelog", e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-slate-300 py-1.5 px-3 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                placeholder="Briefly describe what changed in this version..."
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-8 pt-8 border-t border-slate-200">
+        <h3 className="text-lg font-medium text-slate-900 mb-4">Revision History</h3>
+        <p className="text-sm text-slate-500 mb-4">View past configurations, compare changes, and restore previous versions.</p>
+        
+        {data.slug ? (
+          <Link 
+            href={`/admin/tools/${data.slug}/history`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-md hover:bg-slate-700"
+          >
+            <History className="w-4 h-4" /> Open Revision History
+          </Link>
+        ) : (
+          <p className="text-sm text-slate-400 italic">Save this tool first to view history.</p>
+        )}
       </div>
     </div>
   );

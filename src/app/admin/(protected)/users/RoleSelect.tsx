@@ -2,6 +2,7 @@
 
 import { useTransition, useState } from "react";
 import { updateUserRole } from "./actions";
+import { useDialog } from "@/components/admin/DialogProvider";
 import { ALLOWED_ROLES } from "@/lib/admin/users";
 
 export function RoleSelect({
@@ -17,6 +18,7 @@ export function RoleSelect({
 }) {
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { showConfirm } = useDialog();
 
   const disabled = !isSuperAdmin || isSelf || isPending;
 
@@ -30,12 +32,19 @@ export function RoleSelect({
         ? "Warning: This grants FULL administrative authority (Super Admin). Are you sure?"
         : "Warning: You are about to demote a Super Admin. Are you sure?";
       
-      if (!window.confirm(confirmMsg)) {
-        e.target.value = currentRole;
-        return;
-      }
+      showConfirm("Confirm Role Change", confirmMsg, () => {
+        proceedWithChange(newRole);
+      }, () => {
+        const selectEl = document.getElementById(`role-${userId}`) as HTMLSelectElement;
+        if (selectEl) selectEl.value = currentRole;
+      });
+      return;
     }
 
+    proceedWithChange(newRole);
+  };
+
+  const proceedWithChange = (newRole: string) => {
     setErrorMsg(null);
     startTransition(async () => {
       const formData = new FormData();
@@ -45,7 +54,6 @@ export function RoleSelect({
       const result = await updateUserRole(formData);
       if (result?.error) {
         setErrorMsg(result.error);
-        // Reset the select value back to current role since it failed
         const selectEl = document.getElementById(`role-${userId}`) as HTMLSelectElement;
         if (selectEl) selectEl.value = currentRole;
       }

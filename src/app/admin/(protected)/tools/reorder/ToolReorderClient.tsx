@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { GripVertical, Save } from "lucide-react";
 import { reorderToolsAction } from "./reorder-actions";
+import { useDialog } from "@/components/admin/DialogProvider";
 
 type ToolItem = {
   name: string;
@@ -20,6 +21,7 @@ export function ToolReorderClient({ initialTools }: { initialTools: ToolItem[] }
   );
   
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+  const { showAlert } = useDialog();
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIdx(index);
@@ -54,10 +56,10 @@ export function ToolReorderClient({ initialTools }: { initialTools: ToolItem[] }
     startTransition(async () => {
       try {
         await reorderToolsAction(payload);
-        alert("Tools reordered successfully!");
+        showAlert("Success", "Tools reordered successfully!");
         router.push("/admin/tools?category=" + items[0].category);
       } catch (err) {
-        alert("Failed to save order.");
+        showAlert("Error", "Failed to save order.");
       }
     });
   };

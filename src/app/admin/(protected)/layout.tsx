@@ -2,6 +2,7 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { ReactNode } from "react";
 import { AdminSidebar } from "./sidebar";
 import { AdminTopNav } from "./top-nav";
+import { DialogProvider } from "@/components/admin/DialogProvider";
 
 
 export const metadata = {
@@ -12,6 +13,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   const user = await requireAdminAuth();
 
   return (
+    <DialogProvider>
     <div className="fixed inset-0 z-[100] flex h-screen bg-zinc-50 text-zinc-900">
       <AdminSidebar user={user} />
 
@@ -23,5 +25,6 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         </div>
       </main>
     </div>
+    </DialogProvider>
   );
 }

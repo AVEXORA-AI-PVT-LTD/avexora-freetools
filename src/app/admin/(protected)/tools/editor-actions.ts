@@ -12,6 +12,7 @@ const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9-]+$/, "Slug must be lowercase and URL-safe"),
   category: z.string().min(1, "Category is required"),
+  currentVersion: z.string().regex(/^\d+\.\d+\.\d+$/, "Version must be in format MAJOR.MINOR.PATCH (e.g. 1.0.0)").optional(),
   // Add more strict validation here... We will trust the types for now and do basic validation.
 });
 
@@ -103,8 +104,18 @@ export async function saveToolData(data: ToolFormData) {
 
   // Upsert ToolConfig
   const isActive = data.status === "Published";
+
+  if (data.saveAsNewVersion && data.currentVersion) {
+    const existingRevision = await prisma.toolRevision.findFirst({
+      where: { toolSlug: data.slug, version: data.currentVersion }
+    });
+    if (existingRevision) {
+      throw new Error(`Version ${data.currentVersion} already exists for this tool. Please increment the version number.`);
+    }
+  }
+
   
-  await prisma.toolConfig.upsert({
+  const toolConfig = await prisma.toolConfig.upsert({
     where: { toolSlug: data.slug },
     create: {
       toolSlug: data.slug,
@@ -119,6 +130,7 @@ export async function saveToolData(data: ToolFormData) {
       icon: data.icon,
       thumbnail: data.thumbnail,
       homepageVisible: data.homepageVisible,
+      currentVersion: data.currentVersion || "1.0.0",
       content: content as any,
       runtimeConfig: runtimeConfig as any,
       technicalConfig: technicalConfig as any,
@@ -138,6 +150,7 @@ export async function saveToolData(data: ToolFormData) {
       icon: data.icon,
       thumbnail: data.thumbnail,
       homepageVisible: data.homepageVisible,
+      currentVersion: data.currentVersion || "1.0.0",
       content: content as any,
       runtimeConfig: runtimeConfig as any,
       technicalConfig: technicalConfig as any,
@@ -146,6 +159,37 @@ export async function saveToolData(data: ToolFormData) {
       updatedBy: user.id,
     }
   });
+
+  if (data.saveAsNewVersion) {
+    await prisma.toolRevision.create({
+      data: {
+        toolSlug: data.slug,
+        version: data.currentVersion || "1.0.0",
+        changelog: data.changelog || "Manual update",
+        revisionType: isActive ? "Published" : "Manual",
+        isPublished: isActive,
+        createdBy: user.id,
+        snapshot: {
+          categorySlug: data.category,
+          status: isActive,
+          featured: data.featured,
+          pricing: data.pricing,
+          nameOverride: data.name,
+          description: data.description,
+          subCategory: data.subCategory,
+          tags: data.tags,
+          icon: data.icon,
+          thumbnail: data.thumbnail,
+          homepageVisible: data.homepageVisible,
+          content,
+          runtimeConfig,
+          technicalConfig,
+          publishingConfig,
+          seoMetadata,
+        } as any
+      }
+    });
+  }
 
   await prisma.auditLog.create({
     data: {

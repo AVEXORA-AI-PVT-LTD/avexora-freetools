@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { MoreVertical } from "lucide-react";
+import { useDialog } from "@/components/admin/DialogProvider";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { hasPermission } from "@/lib/admin/permissions";
 import { bulkUpdateTools } from "./actions";
@@ -48,6 +49,7 @@ export function ToolListManager({
   const [showBulkCategory, setShowBulkCategory] = useState(false);
   const [bulkCategorySlug, setBulkCategorySlug] = useState("");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const { showAlert, showConfirm } = useDialog();
 
   const hasEditPermission = hasPermission(userRole, "tools.edit");
   const hasStatusPermission = hasPermission(userRole, "tools.toggle");
@@ -93,26 +95,32 @@ export function ToolListManager({
   const handleBulkAction = async (action: "publish" | "unpublish" | "feature" | "unfeature" | "delete", opts?: { categorySlug?: string }) => {
     if (selectedSlugs.size === 0) return;
     
-    if (action === "delete" && !confirm(`Are you sure you want to delete ${selectedSlugs.size} selected tools? This action may be permanent.`)) {
+    const executeAction = async () => {
+      setIsBulkLoading(true);
+      try {
+        const res = await bulkUpdateTools(Array.from(selectedSlugs), action, opts);
+        showAlert("Bulk Update Complete", `Success: ${res.success} tools updated. Failed: ${res.failed}.`);
+        if (res.success > 0) {
+          setSelectedSlugs(new Set());
+          setShowBulkCategory(false);
+        }
+      } catch (e) {
+        showAlert("Error", "An error occurred during bulk operation.");
+      } finally {
+        setIsBulkLoading(false);
+      }
+    };
+
+    if (action === "delete") {
+      showConfirm("Delete Tools", `Are you sure you want to delete ${selectedSlugs.size} selected tools? This action may be permanent.`, executeAction);
       return;
     }
-    if ((action === "unpublish") && !confirm(`Are you sure you want to deactivate ${selectedSlugs.size} selected tools? They will be hidden from the public.`)) {
+    if (action === "unpublish") {
+      showConfirm("Unpublish Tools", `Are you sure you want to deactivate ${selectedSlugs.size} selected tools? They will be hidden from the public.`, executeAction);
       return;
     }
 
-    setIsBulkLoading(true);
-    try {
-      const res = await bulkUpdateTools(Array.from(selectedSlugs), action, opts);
-      alert(`Success: ${res.success} tools updated. Failed: ${res.failed}.`);
-      if (res.success > 0) {
-        setSelectedSlugs(new Set());
-        setShowBulkCategory(false);
-      }
-    } catch (e) {
-      alert("An error occurred during bulk operation.");
-    } finally {
-      setIsBulkLoading(false);
-    }
+    executeAction();
   };
 
 
@@ -341,6 +349,7 @@ export function ToolListManager({
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Tool</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Version</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Pricing</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Stats</th>

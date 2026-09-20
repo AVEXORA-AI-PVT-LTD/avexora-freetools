@@ -1,5 +1,6 @@
 "use client";
 
+import { useDialog } from "@/components/admin/DialogProvider";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -24,6 +25,7 @@ type NavLink = {
 export default function NavigationManager({ initialLinks }: { initialLinks: NavLink[] }) {
   const [links, setLinks] = useState(initialLinks);
   const [isPending, startTransition] = useTransition();
+  const { showAlert, showConfirm } = useDialog();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<NavLink | null>(null);
   

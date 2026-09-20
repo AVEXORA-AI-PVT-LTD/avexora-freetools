@@ -6,6 +6,7 @@ import { allTools, getTool, toolsByCategory } from "@/tools/registry";
 import { resolveToolSeo } from "@/server/seo-manager";
 import { getToolFormData } from "@/server/admin-tools";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
+import { ViewTracker } from "@/components/tools/ViewTracker";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 

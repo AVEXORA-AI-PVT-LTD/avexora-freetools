@@ -70,6 +70,11 @@ export interface ToolFormData {
   unpublishDate: string;
   featured: boolean;
   homepageVisible: boolean;
+
+  // Versioning
+  currentVersion: string;
+  saveAsNewVersion: boolean;
+  changelog: string;
 }
 
 export const INITIAL_TOOL_FORM_DATA: ToolFormData = {
@@ -130,4 +135,8 @@ export const INITIAL_TOOL_FORM_DATA: ToolFormData = {
   unpublishDate: "",
   featured: false,
   homepageVisible: true,
+
+  currentVersion: "1.0.0",
+  saveAsNewVersion: false,
+  changelog: "",
 };
