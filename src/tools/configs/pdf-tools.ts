@@ -60,7 +60,7 @@ export const tools: ToolConfig[] = [
     name: "Split PDF",
     tagline: "Split one PDF into two parts at any page — entirely in your browser.",
     seoDescription:
-      "Free online PDF splitter. Split a PDF into two files at any page number, right in your browser. No upload, no watermark, no sign-up.",
+      "Free online PDF splitter. Split a PDF into two files at any page number, right in your browser. No upload, no watermark — a free account is needed to download.",
     component: SplitPdf,
     howTo: {
       name: "How to split a PDF",

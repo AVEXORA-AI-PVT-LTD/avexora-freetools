@@ -391,7 +391,7 @@ export const tools: ToolConfig[] = [
     name: "Background Remover",
     tagline: "Remove the background from any photo, instantly and entirely in your browser.",
     seoDescription:
-      "Free background remover. Remove the background from a photo automatically — get a transparent PNG for product photos, ID photos or graphics. No upload, no watermark, no sign-up.",
+      "Free background remover. Remove the background from a photo automatically — get a transparent PNG for product photos, ID photos or graphics. No upload, no watermark — a free account is needed to download.",
     component: BackgroundRemover,
     howTo: {
       name: "How to remove a background from a photo",

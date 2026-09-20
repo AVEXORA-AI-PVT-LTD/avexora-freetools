@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { GET as getLlmsTxt } from "../src/app/llms.txt/route";
-import { allTools } from "../src/tools/registry";
-import { categories, SITE_URL } from "../src/tools/categories";
+import { allTools, toolsByCategory } from "../src/tools/registry";
+import { categories, SITE_NAME, SITE_URL } from "../src/tools/categories";
 
 const OLD_DOMAIN = "avextools.avexora.in";
 
@@ -10,21 +10,25 @@ describe("§ GEO acceptance: llms.txt", () => {
     const res = await getLlmsTxt();
     expect(res.status).toBe(200);
     const text = await res.text();
-    
+
     // Check Brand entity
-    expect(text).toContain("Avexora Tools, by Avexora");
-    
+    expect(text).toContain(`# ${SITE_NAME}`);
+
+    // Check the canonical origin is declared
+    expect(text).toContain(`Site: ${SITE_URL}`);
+
     // Check old domain regression
     expect(text).not.toContain(OLD_DOMAIN);
-    
-    // Check categories exist
+
+    // Check category headings exist (only non-empty categories are emitted)
     for (const cat of categories) {
-      expect(text).toContain(`- ${cat.name} — ${SITE_URL}/${cat.slug}`);
+      if ((toolsByCategory[cat.slug] ?? []).length === 0) continue;
+      expect(text).toContain(`## ${cat.name}`);
     }
-    
-    // Check tools exist
+
+    // Check tools exist (standard llms.txt list syntax: - [Name](URL): tagline)
     for (const tool of allTools) {
-      expect(text).toContain(`- ${tool.name} — ${SITE_URL}/${tool.category}/${tool.slug}`);
+      expect(text).toContain(`- [${tool.name}](${SITE_URL}/${tool.category}/${tool.slug}): ${tool.tagline}`);
     }
   });
 });

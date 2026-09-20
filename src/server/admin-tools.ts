@@ -130,6 +130,7 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     merged.thumbnail = config.thumbnail || merged.thumbnail;
     merged.category = config.categorySlug || merged.category;
     merged.status = config.status ? "Published" : "Draft";
+    merged.currentVersion = config.currentVersion || merged.currentVersion;
     merged.featured = config.featured;
     merged.pricing = (config.pricing as any) || merged.pricing;
     merged.homepageVisible = config.homepageVisible;

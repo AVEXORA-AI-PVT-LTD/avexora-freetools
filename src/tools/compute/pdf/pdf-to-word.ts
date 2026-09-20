@@ -152,12 +152,12 @@ const SETTINGS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 function coreXml(): string {
   const now = new Date().toISOString();
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>PDF to Word conversion</dc:title><dc:creator>Avex Tools</dc:creator><dc:description>Converted from PDF with the Avex Tools PDF to Word Converter. All processing happened in the browser and the file never left the device.</dc:description><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created></cp:coreProperties>`;
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>PDF to Word conversion</dc:title><dc:creator>Avexora Tools</dc:creator><dc:description>Converted from PDF with the Avexora Tools PDF to Word Converter. All processing happened in the browser and the file never left the device.</dc:description><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created></cp:coreProperties>`;
 }
 
 function appXml(): string {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Avex Tools</Application><AppVersion>1.0</AppVersion><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop></Properties>`;
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Avexora Tools</Application><AppVersion>1.0</AppVersion><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop></Properties>`;
 }
 
 /**

@@ -18,6 +18,14 @@ export default async function AdminsPage() {
         { role: null }
       ]
     },
+    select: {
+      id: true,
+      image: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    },
     orderBy: {
       createdAt: "desc",
     },

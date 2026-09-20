@@ -25,7 +25,7 @@ export default function NotFound() {
       </nav>
       <p className="mt-8">
         <Link href="/" className="font-medium text-orange-700 hover:text-orange-900">
-          Back to the Avex Tools homepage
+          Back to the Avexora Tools homepage
         </Link>
       </p>
     </div>

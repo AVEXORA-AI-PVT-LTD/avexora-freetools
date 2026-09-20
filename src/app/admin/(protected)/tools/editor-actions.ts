@@ -5,6 +5,7 @@ import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { allTools } from "@/tools/registry";
 import { hasPermission } from "@/lib/admin/permissions";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import type { ToolFormData } from "@/types/admin-tool-form";
 import { z } from "zod";
 
@@ -25,11 +26,34 @@ export async function saveToolData(data: ToolFormData) {
   
   formSchema.parse(data);
 
+  // Check if static tool (registered in the codebase vs created via admin)
+  const isStatic = allTools.some((t) => t.slug === data.slug);
+
+  // Editors may edit existing tools but must not create brand-new ones.
+  if (!isStatic && !hasPermission(user.role, "tools.create")) {
+    throw new Error("Unauthorized: You don't have permission to create new tools.");
+  }
+
+  // Changing a tool's publish status is a publish action — require tools.toggle.
+  const existingToolConfig = await prisma.toolConfig.findUnique({
+    where: { toolSlug: data.slug },
+    select: { status: true },
+  });
+  const targetStatus = data.status === "Published";
+  if (targetStatus !== (existingToolConfig?.status ?? false) && !hasPermission(user.role, "tools.toggle")) {
+    throw new Error("Unauthorized: You don't have permission to change this tool's publish status.");
+  }
+
+  // Creating a version snapshot is a separate permission.
+  if (data.saveAsNewVersion && !hasPermission(user.role, "tools.version.create")) {
+    throw new Error("Unauthorized: You don't have permission to create version snapshots.");
+  }
+
   // Pack the data into JSON fields
   const content = {
     pageHeading: data.pageHeading,
     introduction: data.introduction,
-    howToUse: data.howToUse,
+    howToUse: sanitizeHtml(data.howToUse),
     steps: data.steps,
     examples: data.examples,
     faqs: data.faqs,
@@ -79,11 +103,8 @@ export async function saveToolData(data: ToolFormData) {
     index: data.index,
   };
 
-  // Check if static tool
-  const isStatic = allTools.some((t) => t.slug === data.slug);
-  
+  // Upsert DynamicTool
   if (!isStatic) {
-    // Upsert DynamicTool
     await prisma.dynamicTool.upsert({
       where: { slug: data.slug },
       create: {

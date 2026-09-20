@@ -14,5 +14,7 @@ export const prisma = globalForPrisma.prisma_v12 ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma_v12 = prisma;
 
 export function isDatabaseConfigured(): boolean {
-  return !process.env.DATABASE_URL?.includes("<") && !process.env.DATABASE_URL?.includes(">");
+  const url = process.env.DATABASE_URL;
+  if (!url) return false;
+  return !url.includes("<") && !url.includes(">");
 }

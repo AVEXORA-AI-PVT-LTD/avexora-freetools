@@ -9,6 +9,8 @@ import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { ViewTracker } from "@/components/tools/ViewTracker";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
+import { sanitizeHtml } from "@/lib/sanitize-html";
+import { checkAdminPermission } from "@/server/admin-auth";
 
 export const dynamicParams = true;
 
@@ -26,7 +28,7 @@ export async function generateMetadata({
   if (!toolData || toolData.category !== category) return {};
   
   const defaultCanonical = `${SITE_URL}/${toolData.category}/${toolData.slug}`;
-  const defaultTitle = `${toolData.name} — Avex Online Tool`;
+  const defaultTitle = `${toolData.name} — ${SITE_NAME}`;
   
   const fallback = {
     title: toolData.seoTitle || defaultTitle,
@@ -48,7 +50,8 @@ export default async function ToolPage({
 }) {
   const { category, slug } = await params;
   const query = await searchParams;
-  const isPreview = query.preview === "true";
+  // ?preview=true only lets logged-in staff see unpublished tools — never the public.
+  const isPreview = query.preview === "true" && (await checkAdminPermission("tools.edit"));
   
   const toolData = await getToolFormData(slug);
   const cat = getCategory(category);
@@ -104,7 +107,7 @@ export default async function ToolPage({
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
+        { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
         { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/${cat.slug}` },
         { "@type": "ListItem", position: 3, name: toolData.name, item: canonical },
       ],
@@ -120,7 +123,7 @@ export default async function ToolPage({
 
       <nav className="text-sm text-slate-500 print:hidden">
         <Link href="/" className="hover:text-orange-800">
-          Avex Tools
+          {SITE_NAME}
         </Link>{" "}
         /{" "}
         <Link href={`/${cat.slug}`} className="hover:text-orange-800">
@@ -188,7 +191,10 @@ export default async function ToolPage({
             {toolData.howToUse && (
               <div className="mt-6">
                 <h3 className="text-lg font-semibold text-slate-800">How to Use</h3>
-                <div className="mt-2" dangerouslySetInnerHTML={{ __html: toolData.howToUse }} />
+                <div
+                  className="mt-2"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(toolData.howToUse) }}
+                />
               </div>
             )}
             

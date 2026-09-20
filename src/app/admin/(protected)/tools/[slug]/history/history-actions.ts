@@ -5,6 +5,13 @@ import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/lib/admin/permissions";
 
+/** Bump the patch number of a semver string, keeping it in x.y.z form. */
+function bumpPatch(version: string): string {
+  const m = /^(\d+)\.(\d+)\.(\d+)$/.exec(version.trim());
+  if (!m) return "1.0.1";
+  return `${m[1]}.${m[2]}.${Number(m[3]) + 1}`;
+}
+
 export async function restoreToolRevision(revisionId: string) {
   const user = await requireAdminAuth();
   
@@ -31,8 +38,9 @@ export async function restoreToolRevision(revisionId: string) {
 
     const snap = revision.snapshot as any;
     
-    // Create the "new" version string based on restore
-    const newVersionStr = `${revision.version}-restored-${Date.now().toString().slice(-4)}`;
+    // The restored tool becomes the next patch of the restored version (x.y.z form).
+    const newVersionStr = bumpPatch(revision.version);
+    const newCategory = snap.categorySlug || tool.categorySlug;
 
     // Update tool
     await prisma.toolConfig.update({
@@ -87,6 +95,7 @@ export async function restoreToolRevision(revisionId: string) {
     revalidatePath("/");
     revalidatePath("/admin/tools");
     revalidatePath(`/${tool.categorySlug}/${revision.toolSlug}`);
+    revalidatePath(`/${newCategory}/${revision.toolSlug}`);
 
     return { success: true };
   } catch (err: any) {

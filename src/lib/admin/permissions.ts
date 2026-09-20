@@ -52,7 +52,9 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   superadmin: [
     "dashboard.view", "categories.view", "categories.create", "categories.edit", 
     "categories.delete", "categories.toggle", "tools.view", "tools.create", 
-    "tools.edit", "tools.delete", "tools.toggle", "tools.reorder", "users.view", 
+    "tools.edit", "tools.delete", "tools.toggle", "tools.reorder", "tools.version.read",
+    "tools.version.create", "tools.version.compare", "tools.version.restore",
+    "tools.version.publish", "tools.version.delete", "users.view", 
     "users.edit", "users.delete", "users.change_role", "roles.view", "roles.manage", 
     "brand_studio.view", "brand_studio.edit", "brand_studio.toggle", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
@@ -60,7 +62,9 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   ],
   admin: [
     "dashboard.view", "categories.view", "categories.edit", "categories.toggle", 
-    "tools.view", "tools.edit", "tools.toggle", "tools.reorder", "users.view", 
+    "tools.view", "tools.edit", "tools.toggle", "tools.reorder", "tools.version.read",
+    "tools.version.create", "tools.version.compare", "tools.version.restore",
+    "users.view", 
     "users.edit", "brand_studio.view", "brand_studio.edit", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
     "analytics.view", "content.view", "content.edit"

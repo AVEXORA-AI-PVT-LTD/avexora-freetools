@@ -1,7 +1,13 @@
-import { prisma } from "@/server/db";
+import { isDatabaseConfigured, prisma } from "@/server/db";
 import { categories as staticCategories } from "@/tools/categories";
 
 export async function getAllCategoriesWithConfig() {
+  // Skip the DB entirely during tests or when no usable connection string is set,
+  // so routes that overlay DB overrides (e.g. sitemap) still work with the static registry.
+  if (process.env.NODE_ENV === "test" || !isDatabaseConfigured()) {
+    return staticCategories.map((cat) => ({ ...cat, status: true }));
+  }
+
   const configs = await prisma.categoryConfig?.findMany().catch(() => []) ?? [];
   const configMap = new Map(configs.map((c) => [c.slug, c]));
 

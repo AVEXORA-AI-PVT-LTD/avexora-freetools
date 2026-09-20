@@ -140,6 +140,6 @@ export function getCategory(slug: string): CategoryDef | undefined {
 /** EBOS module CTA URL for a tool, with UTM attribution per spec §2. */
 export function ebosCtaUrl(category: CategoryDef, toolSlug: string): string {
   const [path, hash] = category.ebosPath.split("#");
-  const qs = `?utm_source=avextools&utm_medium=cta&utm_campaign=${toolSlug}`;
+  const qs = `?utm_source=avexora&utm_medium=cta&utm_campaign=${toolSlug}`;
   return `${EBOS_URL}${path}${qs}${hash ? `#${hash}` : ""}`;
 }

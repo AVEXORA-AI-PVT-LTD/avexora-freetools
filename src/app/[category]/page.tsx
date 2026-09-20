@@ -20,7 +20,7 @@ export async function generateMetadata({
   const cat = getCategory(category);
   if (!cat) return {};
   
-  const defaultTitle = `${cat.name} — Avex Online Tools`;
+  const defaultTitle = `${cat.name} — ${SITE_NAME}`;
   const defaultCanonical = `${SITE_URL}/${cat.slug}`;
   
   const fallback = {
@@ -49,7 +49,7 @@ export default async function CategoryPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
+      { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
       { "@type": "ListItem", position: 2, name: cat.name, item: canonical },
     ],
   };
@@ -62,7 +62,7 @@ export default async function CategoryPage({
       />
       <nav className="text-sm text-slate-500">
         <Link href="/" className="hover:text-orange-800">
-          Avex Tools
+          {SITE_NAME}
         </Link>{" "}
         / <span className="text-slate-700">{cat.name}</span>
       </nav>

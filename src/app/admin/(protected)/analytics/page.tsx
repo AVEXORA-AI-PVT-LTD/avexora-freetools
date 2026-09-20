@@ -13,7 +13,7 @@ export default async function AnalyticsDashboardPage({
 }: {
   searchParams: Promise<{ range?: string }>;
 }) {
-  await requireAdminAuth("dashboard.view");
+  await requireAdminAuth("analytics.view");
   const params = await searchParams;
   const range = (params.range as DateRange) || "last30days";
   
