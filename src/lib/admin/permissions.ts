@@ -8,6 +8,14 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
 };
 
 export type Permission = 
+  | "categories.view"
+  | "categories.create"
+  | "categories.edit"
+  | "categories.delete"
+  | "categories.reorder"
+  | "categories.merge"
+  | "categories.publish"
+
   | "dashboard.view"
   | "categories.view"
   | "categories.create"

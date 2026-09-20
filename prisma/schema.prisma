@@ -296,13 +296,30 @@ model ToolUsage {
 
 model CategoryConfig {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  name             String   @default("Unnamed Category")
   slug             String   @unique
+  description      String?
+  icon             String?
+  image            String?
+  parentId         String?  @db.ObjectId
   status           Boolean  @default(true)
-  priority         Int?
+  featured         Boolean  @default(false)
   displayOrder     Int      @default(0)
-  seoMetadata Json?
+  seoMetadata      Json?
+  
+  createdBy        String?
+  updatedBy        String?
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+
+  parent           CategoryConfig?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children         CategoryConfig[] @relation("CategoryHierarchy")
+
+  @@index([parentId])
+  @@index([status])
+  @@index([featured])
+  @@index([displayOrder])
 }
 model ToolConfig {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId

@@ -17,7 +17,7 @@ export async function getAllCategoriesWithConfig() {
       return {
         ...cat,
         status: override ? override.status : true,
-        priority: override?.priority ?? 999,
+        featured: override?.featured ?? false,
         displayOrder: override?.displayOrder ?? 0,
       };
     })
@@ -25,7 +25,6 @@ export async function getAllCategoriesWithConfig() {
       if ((a as any).displayOrder !== (b as any).displayOrder) {
         return (a as any).displayOrder - (b as any).displayOrder;
       }
-      if (a.priority !== b.priority) return a.priority - b.priority;
       return a.name.localeCompare(b.name);
     });
 }
