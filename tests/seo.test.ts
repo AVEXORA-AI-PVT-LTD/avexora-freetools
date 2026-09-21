@@ -115,6 +115,9 @@ describe("§46 SEO acceptance: sitemap", () => {
       "/",
       "/studio",
       "/studio/pricing",
+      "/privacy-policy",
+      "/terms",
+      "/refund-policy",
       ...categories.map((c) => `/${c.slug}`),
       ...allTools.map((t) => `/${t.category}/${t.slug}`),
     ]);
