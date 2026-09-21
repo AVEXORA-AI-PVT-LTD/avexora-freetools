@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
 import Facebook from "next-auth/providers/facebook";
 import Resend from "next-auth/providers/resend";
+import Nodemailer from "next-auth/providers/nodemailer";
 import { prisma } from "@/server/db";
 
 /**
@@ -20,9 +21,9 @@ export const googleEnabled = Boolean(
 export const facebookEnabled = Boolean(
   process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET,
 );
-export const emailEnabled = Boolean(
-  process.env.AUTH_RESEND_KEY && process.env.EMAIL_FROM,
-);
+export const resendEnabled = Boolean(process.env.AUTH_RESEND_KEY && process.env.EMAIL_FROM);
+export const smtpEnabled = Boolean(process.env.EMAIL_SERVER && process.env.EMAIL_FROM);
+export const emailEnabled = resendEnabled || smtpEnabled;
 export const authConfigured = googleEnabled || emailEnabled;
 
 /** Cookie the proxy checks for its optimistic redirect. */
@@ -51,10 +52,17 @@ if (facebookEnabled) {
   );
 }
 
-if (emailEnabled) {
+if (resendEnabled) {
   providers.push(
     Resend({
       apiKey: process.env.AUTH_RESEND_KEY,
+      from: process.env.EMAIL_FROM,
+    }),
+  );
+} else if (smtpEnabled) {
+  providers.push(
+    Nodemailer({
+      server: process.env.EMAIL_SERVER,
       from: process.env.EMAIL_FROM,
     }),
   );
