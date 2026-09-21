@@ -17,14 +17,14 @@ describe("§ GEO acceptance: llms.txt", () => {
     // Check old domain regression
     expect(text).not.toContain(OLD_DOMAIN);
     
-    // Check categories exist
+    // Check categories exist as section headers
     for (const cat of categories) {
-      expect(text).toContain(`- ${cat.name} — ${SITE_URL}/${cat.slug}`);
+      expect(text).toContain(`## ${cat.name}`);
     }
-    
-    // Check tools exist
+
+    // Check tools exist as linked, tagged entries
     for (const tool of allTools) {
-      expect(text).toContain(`- ${tool.name} — ${SITE_URL}/${tool.category}/${tool.slug}`);
+      expect(text).toContain(`[${tool.name}](${SITE_URL}/${tool.category}/${tool.slug}): ${tool.tagline}`);
     }
   });
 });

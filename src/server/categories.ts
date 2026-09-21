@@ -2,7 +2,7 @@ import { prisma } from "@/server/db";
 import { categories as staticCategories } from "@/tools/categories";
 
 export async function getAllCategoriesWithConfig() {
-  const configs = await prisma.categoryConfig?.findMany() ?? [];
+  const configs = await prisma.categoryConfig?.findMany().catch(() => []) ?? [];
   const configMap = new Map(configs.map((c) => [c.slug, c]));
 
   return staticCategories
@@ -16,8 +16,8 @@ export async function getAllCategoriesWithConfig() {
       };
     })
     .sort((a, b) => {
-      if ((a as any).displayOrder !== (b as any).displayOrder) {
-        return (a as any).displayOrder - (b as any).displayOrder;
+      if (a.displayOrder !== b.displayOrder) {
+        return a.displayOrder - b.displayOrder;
       }
       if (a.priority !== b.priority) return a.priority - b.priority;
       return a.name.localeCompare(b.name);

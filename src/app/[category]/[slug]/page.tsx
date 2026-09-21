@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ebosCtaUrl, getCategory } from "@/tools/categories";
-import { allTools, getTool, toolsByCategory } from "@/tools/registry";
+import { ebosCtaUrl } from "@/tools/categories";
 import { toolJsonLd, toolMetadata } from "@/lib/seo";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
 import { ToolAboutText } from "@/components/tools/tool-about-text";

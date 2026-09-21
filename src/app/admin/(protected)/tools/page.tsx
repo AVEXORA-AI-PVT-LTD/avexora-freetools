@@ -4,7 +4,6 @@ import { getAllCategoriesWithConfig } from "@/server/categories";
 import { ToolActions } from "@/components/admin/ToolActions";
 import { ToolToggle } from "@/components/admin/ToolToggle";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Tool Management | Admin",
@@ -29,8 +28,8 @@ export default async function AdminToolsPage({
   const filtered = tools.filter((t) => {
     if (q && !t.name.toLowerCase().includes(q.toLowerCase())) return false;
     if (category && t.category !== category) return false;
-    if (status === "enabled" && !(t as any).status) return false;
-    if (status === "disabled" && (t as any).status) return false;
+    if (status === "enabled" && !t.status) return false;
+    if (status === "disabled" && t.status) return false;
     return true;
   });
 
@@ -183,15 +182,15 @@ export default async function AdminToolsPage({
                       {categories.find(c => c.slug === tool.category)?.name || tool.category}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
-                      {(tool as any).priority}
+                      {tool.priority}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <ToolToggle slug={tool.slug} initialStatus={(tool as any).status} />
+                      <ToolToggle slug={tool.slug} initialStatus={tool.status} />
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <span className={`inline-block h-2.5 w-2.5 rounded-full ${(tool as any).status ? "bg-green-500" : "bg-slate-300"}`}></span>
-                        <span className="text-sm font-medium text-slate-700">{(tool as any).status ? "Enabled" : "Disabled"}</span>
+                        <span className={`inline-block h-2.5 w-2.5 rounded-full ${tool.status ? "bg-green-500" : "bg-slate-300"}`}></span>
+                        <span className="text-sm font-medium text-slate-700">{tool.status ? "Enabled" : "Disabled"}</span>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">

@@ -78,7 +78,7 @@ describe("§46 SEO acceptance: sitemap", () => {
 
   beforeAll(async () => {
     const sm = await sitemap();
-    urls = sm.map((e: any) => e.url);
+    urls = sm.map((e) => e.url);
   });
 
   it("references the production domain only", () => {
@@ -104,7 +104,7 @@ describe("§46 SEO acceptance: sitemap", () => {
       "/studio/onboarding",
     ];
     for (const p of privatePaths) {
-      expect(urls.some((u: any) => u.includes(p))).toBe(false);
+      expect(urls.some((u) => u.includes(p))).toBe(false);
     }
   });
 

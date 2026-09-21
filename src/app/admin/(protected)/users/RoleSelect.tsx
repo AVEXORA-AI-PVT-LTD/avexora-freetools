@@ -3,6 +3,7 @@
 import { useTransition, useState } from "react";
 import { updateUserRole } from "./actions";
 import { ALLOWED_ROLES } from "@/lib/admin/users";
+import type { Role } from "@/lib/admin/permissions";
 
 export function RoleSelect({
   userId,
@@ -63,7 +64,7 @@ export function RoleSelect({
           disabled ? "bg-slate-50 opacity-70 cursor-not-allowed" : "bg-white"
         }`}
       >
-        {!ALLOWED_ROLES.includes(currentRole as any) && (
+        {!ALLOWED_ROLES.includes(currentRole as Role) && (
            <option value={currentRole}>{currentRole || "user"}</option>
         )}
         {ALLOWED_ROLES.map((role) => (
