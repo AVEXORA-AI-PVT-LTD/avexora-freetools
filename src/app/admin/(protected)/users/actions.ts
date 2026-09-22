@@ -23,7 +23,7 @@ export async function updateUserRole(formData: FormData) {
 
     const parseResult = UpdateRoleSchema.safeParse(rawData);
     if (!parseResult.success) {
-      return { error: parseResult.error.issues[0].message };
+      return { error: (parseResult.error as any).errors[0].message };
     }
 
     const { userId, role } = parseResult.data;

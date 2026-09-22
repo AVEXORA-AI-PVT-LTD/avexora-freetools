@@ -5,7 +5,7 @@ import { buildSearchItems, type SearchItem } from "@/components/tools/search-ite
 import { ToolSearch } from "@/components/tools/tool-search";
 import { getEffectiveCategories } from "@/server/categories";
 import { STUDIO_ASSETS } from "@/studio/assets";
-import { PLANS, formatINR } from "@/server/studio/plans";
+import { getPlanAsync, formatINR } from "@/server/studio/plans";
 
 const homepageJsonLd = [
   {
@@ -27,11 +27,23 @@ const homepageJsonLd = [
 
 
 import { getEffectiveToolsByCategory } from "@/server/tools";
+import { getHomepageSections } from "@/server/homepage-service";
 
 export default async function HomePage() {
   const effectiveCategories = await getEffectiveCategories();
   const effectiveToolsByCategory = await getEffectiveToolsByCategory();
   const searchItems: SearchItem[] = buildSearchItems(effectiveCategories, effectiveToolsByCategory);
+  
+  const sections = await getHomepageSections();
+  const heroConfig = sections.find(s => s.sectionKey === "hero");
+  const brandStudioConfig = sections.find(s => s.sectionKey === "brand_studio");
+  const categoriesConfig = sections.find(s => s.sectionKey === "categories");
+  const popularToolsConfig = sections.find(s => s.sectionKey === "popular_tools");
+
+  const heroTitle = heroConfig?.heading || "";
+  const heroDescription = heroConfig?.description || "";
+  const searchPlaceholder = heroConfig?.config?.searchPlaceholder || "Search from 130+ free tools...";
+
 
   return (
     <div className="mx-auto max-w-6xl px-4">
@@ -39,19 +51,19 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
       />
-      <section className="py-16 text-center">
+      {heroConfig?.enabled && (<section className="py-16 text-center">
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          Avexora Tools
+          {heroTitle}
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-          Avexora Tools, by Avexora, provides {DISPLAYED_TOOL_COUNT}+ practical online calculators, generators, PDF utilities, image utilities, AI writing tools, and business utilities for everyday work.
+          {heroDescription}
         </p>
         <div className="mt-8">
           <ToolSearch items={searchItems} displayCount={DISPLAYED_TOOL_COUNT} />
         </div>
-      </section>
+      </section>)}
 
-      <section id="brand-studio" className="pb-16">
+      {brandStudioConfig?.enabled && (<section id="brand-studio" className="pb-16">
         <div className="rounded-2xl border border-orange-200 bg-orange-50/60 p-8 sm:p-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-xl">
@@ -82,7 +94,7 @@ export default async function HomePage() {
               </div>
               <p className="mt-3 text-xs text-slate-500">
                 Free to start — the compliance report costs nothing. Paid plans from{" "}
-                {formatINR(PLANS.launch.monthlyPaise)}/month.
+                {formatINR((await getPlanAsync("launch")).monthlyPaise)}/month.
               </p>
             </div>
 
@@ -98,9 +110,9 @@ export default async function HomePage() {
             </ul>
           </div>
         </div>
-      </section>
+      </section>)}
 
-      <section id="categories" className="pb-20">
+      {categoriesConfig?.enabled && (<section id="categories" className="pb-20">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {effectiveCategories.map((c) => {
             const tools = effectiveToolsByCategory[c.slug] || [];
@@ -138,7 +150,7 @@ export default async function HomePage() {
             );
           })}
         </div>
-      </section>
+      </section>)}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToolTracking } from "./use-tool-tracking";
 import { usePathname } from "next/navigation";
 import type { FieldValues, GeneratorTool } from "@/types/tools";
 import { FieldInput, initialValues } from "./field-input";
@@ -44,6 +45,8 @@ function DeclarativeGenerator({ tool }: { tool: GeneratorTool }) {
   const [error, setError] = useState<string | null>(null);
   const gate = useEmailGate(tool);
   const { authGate, modal: authModal } = useAuthGate(Boolean(tool.requireAuth));
+
+  useToolTracking(tool.slug, output !== null, JSON.stringify(values));
 
   const reset = () => {
     setValues(initialValues(fields));

@@ -3,9 +3,7 @@ import type { CategoryDef, CategorySlug } from "../types/tools";
 export const EBOS_URL =
   process.env.NEXT_PUBLIC_EBOS_URL ?? "https://ebos.avexora.in";
 
-export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://tools.avexora.in"
-).replace(/\/+$/, "");
+export const SITE_URL = "https://tools.avexora.in";
 export const SITE_NAME = "Avexora Tools";
 
 export const SITE_OG_IMAGE = `${SITE_URL}/og-image`;
@@ -142,6 +140,6 @@ export function getCategory(slug: string): CategoryDef | undefined {
 /** EBOS module CTA URL for a tool, with UTM attribution per spec §2. */
 export function ebosCtaUrl(category: CategoryDef, toolSlug: string): string {
   const [path, hash] = category.ebosPath.split("#");
-  const qs = `?utm_source=avextools&utm_medium=cta&utm_campaign=${toolSlug}`;
+  const qs = `?utm_source=avexora&utm_medium=cta&utm_campaign=${toolSlug}`;
   return `${EBOS_URL}${path}${qs}${hash ? `#${hash}` : ""}`;
 }

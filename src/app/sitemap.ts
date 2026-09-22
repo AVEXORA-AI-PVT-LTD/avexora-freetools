@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/tools/categories";
 import { getEffectiveCategories } from "@/server/categories";
 import { getEffectiveTools } from "@/server/tools";
+import { prisma } from "@/server/db";
+import { ContentStatus } from "@prisma/client";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, tools] = await Promise.all([
@@ -52,8 +54,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  const toolConfigs = await prisma.toolConfig.findMany({ select: { toolSlug: true, seoMetadata: true }});
+  const catConfigs = await prisma.categoryConfig.findMany({ select: { slug: true, seoMetadata: true }});
+
+  // Filter out noindex categories
+  const indexableCategories = categories.filter(cat => {
+    const config = catConfigs.find(c => c.slug === cat.slug);
+    const meta: any = config?.seoMetadata || {};
+    return meta.robotsIndex !== false;
+  });
+
+  // Filter out noindex tools
+  const indexableTools = tools.filter(tool => {
+    const config = toolConfigs.find(c => c.toolSlug === tool.slug);
+    const meta: any = config?.seoMetadata || {};
+    return meta.robotsIndex !== false;
+  });
+
   // Category pages
-  const catRoutes = categories.map((cat) => ({
+  const catRoutes = indexableCategories.map((cat) => ({
     url: `${SITE_URL}/${cat.slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
@@ -61,12 +80,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Tool pages
-  const toolRoutes = tools.map((tool) => ({
+  const toolRoutes = indexableTools.map((tool) => ({
     url: `${SITE_URL}/${tool.category}/${tool.slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
-  return [...routes, ...catRoutes, ...toolRoutes];
+
+  // Content Items (Blog, Page, Guide, FAQ)
+  const publishedContent = await prisma.contentItem.findMany({
+    where: { status: ContentStatus.PUBLISHED, noIndex: false },
+    select: { slug: true, contentType: true, updatedAt: true, publishedAt: true }
+  });
+
+  const contentRoutes = publishedContent.map((c) => {
+    let path = `/${c.slug}`; // Default for PAGE
+    if (c.contentType === "BLOG") path = `/blog/${c.slug}`;
+    else if (c.contentType === "GUIDE") path = `/guides/${c.slug}`;
+    else if (c.contentType === "FAQ") path = `/faq`;
+    else if (c.contentType === "DOCUMENTATION") path = `/docs/${c.slug}`;
+    else if (["PRIVACY", "TERMS", "DISCLAIMER"].includes(c.contentType)) path = `/legal/${c.slug}`;
+
+    return {
+      url: `${SITE_URL}${path}`,
+      lastModified: c.updatedAt || c.publishedAt || now,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    };
+  });
+
+  // Filter out duplicates (like multiple FAQs mapping to /faq)
+  const uniqueContentRoutes = Array.from(new Map(contentRoutes.map(item => [item.url, item])).values());
+
+  const allRoutes = [...routes, ...catRoutes, ...toolRoutes, ...uniqueContentRoutes];
+  
+  // Filter out any routes that are actively redirected
+  const activeRedirects = await prisma.redirect.findMany({ where: { active: true }, select: { source: true } });
+  const redirectedPaths = new Set(activeRedirects.map(r => r.source));
+  
+  return allRoutes.filter(route => {
+    const path = route.url.replace(SITE_URL, '');
+    return !redirectedPaths.has(path);
+  });
+
+
 }

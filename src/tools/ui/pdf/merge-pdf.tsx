@@ -1,11 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  useAuthDownload,
-  useRestoredDownload,
-} from "@/components/account/use-auth-download";
-import { pdfUploadLimitError, primaryBtn, secondaryBtn } from "./pdf-shared";
+import { useRef, useState } from "react";
 import { useFileDrop } from "../use-file-drop";
 
 interface PickedFile {
@@ -14,42 +9,22 @@ interface PickedFile {
 }
 
 export default function MergePdf() {
-  const { downloadOne } = useAuthDownload();
-  const { restored } = useRestoredDownload();
-  const [resultUrl, setResultUrl] = useState<string | null>(null);
-  const [resultFilename, setResultFilename] = useState<string>("merged.pdf");
-  const [resultBlob, setResultBlob] = useState<Blob | null>(null);
-
   const [files, setFiles] = useState<PickedFile[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!restored) return;
-    queueMicrotask(() => {
-      setResultUrl(URL.createObjectURL(restored.blob));
-      setResultFilename(restored.filename);
-      setResultBlob(restored.blob);
-    });
-  }, [restored]);
-
   const addFiles = (list: FileList | null) => {
-    if (!list || list.length === 0) return;
+    if (!list) return;
     setError(null);
-    const all = Array.from(list).filter(
-      (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"),
-    );
-    if (all.length === 0) {
+    const picked = Array.from(list)
+      .filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"))
+      .map((file) => ({ file, id: crypto.randomUUID() }));
+    if (picked.length === 0) {
       setError("Please choose PDF files.");
       return;
     }
-    const oversized = all.find((f) => pdfUploadLimitError(f) !== null);
-    if (oversized) {
-      setError(pdfUploadLimitError(oversized)!);
-      return;
-    }
-    setFiles((prev) => [...prev, ...all.map((file) => ({ file, id: crypto.randomUUID() }))]);
+    setFiles((prev) => [...prev, ...picked]);
   };
 
   const move = (i: number, dir: -1 | 1) =>
@@ -75,7 +50,11 @@ export default function MergePdf() {
       }
       const merged = await out.save();
       const url = URL.createObjectURL(new Blob([merged as BlobPart], { type: "application/pdf" }));
-      setResultUrl(url); setResultFilename("merged.pdf"); setResultBlob(new Blob([merged as BlobPart], { type: "application/pdf" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "merged.pdf";
+      a.click();
+      URL.revokeObjectURL(url);
     } catch {
       setError("One of the files could not be read. Password-protected PDFs are not supported.");
     } finally {
@@ -137,37 +116,13 @@ export default function MergePdf() {
 
       <button
         type="button"
-        disabled={busy || files?.length < 2}
+        disabled={files.length < 2 || busy}
         onClick={merge}
-        className={primaryBtn}
+        className="rounded-md bg-orange-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-50"
+        data-lead-action="download"
       >
-        {busy ? "Processing..." : "Merge PDFs"}
+        {busy ? "Merging…" : `Merge ${files.length || ""} PDFs & download`}
       </button>
-
-      {resultUrl && resultBlob && (
-        <div className="space-y-2">
-          <p className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800" role="status">
-            Merged PDF ready — review it, then download.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => void downloadOne(resultBlob, resultFilename)}
-              className={primaryBtn}
-              data-lead-action="download"
-            >
-              Download Merged PDF
-            </button>
-            <button
-              type="button"
-              onClick={() => { setFiles([]); setResultUrl(null); setResultBlob(null); }}
-              className={secondaryBtn}
-            >
-              Start over
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

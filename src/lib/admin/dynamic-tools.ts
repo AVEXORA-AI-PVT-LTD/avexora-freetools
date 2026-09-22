@@ -20,6 +20,6 @@ export const DynamicToolSchema = z.object({
     .max(100, "Slug is too long")
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must contain only lowercase letters, numbers, and hyphens"),
   categorySlug: z.string().min(1, "Category is required"),
-  type: z.enum(DYNAMIC_TOOL_TYPES, { error: () => "Invalid tool type" }),
-  icon: z.enum(DYNAMIC_TOOL_ICONS, { error: () => "Invalid icon" }).optional(),
+  type: z.enum(DYNAMIC_TOOL_TYPES),
+  icon: z.enum(DYNAMIC_TOOL_ICONS).optional(),
 });

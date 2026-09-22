@@ -28,8 +28,16 @@ export function ToolAeoBlocks({ tool }: { tool: ToolConfig }) {
       {steps && steps.length > 0 && (
         <Section title="How it works">
           <ol className="list-decimal space-y-2 pl-5">
-            {steps.map((step, i) => (
-              <li key={i}>{step}</li>
+                        {steps.map((step, i) => (
+              <li key={i}>
+                {typeof step === "string" ? (
+                  step
+                ) : (
+                  <>
+                    <strong className="text-slate-900">{step.title}:</strong> {step.description}
+                  </>
+                )}
+              </li>
             ))}
           </ol>
         </Section>

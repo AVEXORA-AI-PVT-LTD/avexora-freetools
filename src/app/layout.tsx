@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
-import { EBOS_URL, SITE_NAME, SITE_OG_IMAGE, SITE_URL } from "@/tools/categories";
-import { getEffectiveCategories } from "@/server/categories";
-import { DISPLAYED_TOOL_COUNT } from "@/tools/registry";
+import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
 import AccountProviders from "@/components/account/providers";
 import { NavAccount } from "@/components/account/nav-account";
+import { getEffectiveNavigation } from "@/server/navigation";
+import { getGlobalSeoOverride } from "@/server/seo-manager";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -22,38 +23,50 @@ const geistMono = Geist_Mono({
 const DEFAULT_DESCRIPTION =
   "Free calculators, generators, PDF & image utilities and AI writing tools for your business. No sign-up, no cost — by Avexora, makers of Enterprise Business OS.";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: `${SITE_NAME} — ${DISPLAYED_TOOL_COUNT}+ Avex Business Tools`,
-    template: `%s | ${SITE_NAME}`,
-  },
-  description: DEFAULT_DESCRIPTION,
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    siteName: SITE_NAME,
-    title: `${SITE_NAME} — ${DISPLAYED_TOOL_COUNT}+ Avex Business Tools`,
-    description: DEFAULT_DESCRIPTION,
-    url: "/",
-    images: [SITE_OG_IMAGE],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE_NAME} — ${DISPLAYED_TOOL_COUNT}+ Avex Business Tools`,
-    description: DEFAULT_DESCRIPTION,
-    images: [SITE_OG_IMAGE],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const globalSeo = await getGlobalSeoOverride();
 
-
+  const title = globalSeo?.title || `${SITE_NAME} — 120+ free online tools`;
+  const description = globalSeo?.description || DEFAULT_DESCRIPTION;
+  const canonical = globalSeo?.canonical || SITE_URL;
+  const ogImage = globalSeo?.ogImage || "/logo.png";
+  
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: title,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description,
+    alternates: { canonical },
+    robots: {
+      index: globalSeo?.robotsIndex !== false,
+      follow: globalSeo?.robotsFollow !== false,
+    },
+    openGraph: {
+      title: globalSeo?.ogTitle || title,
+      description: globalSeo?.ogDescription || description,
+      url: canonical,
+      siteName: SITE_NAME,
+      type: (globalSeo?.ogType as any) || "website",
+      images: [{ url: ogImage, width: 400, height: 100, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: (globalSeo?.twitterCard as any) || "summary_large_image",
+      title: globalSeo?.twitterTitle || title,
+      description: globalSeo?.twitterDescription || description,
+      images: [globalSeo?.twitterImage || ogImage],
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const effectiveCategories = await getEffectiveCategories();
+  const headerLinks = await getEffectiveNavigation("HEADER");
+  const footerLinks = await getEffectiveNavigation("FOOTER");
 
   return (
     <html
@@ -62,89 +75,96 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col text-slate-900" suppressHydrationWarning>
         <AccountProviders>
-          <header className="border-b border-slate-200 print:hidden">
-            <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:py-1.5">
-              <Link href="/" className="flex items-center -ml-4">
-                <Image src="/logo.png" alt="Avex Tools" width={400} height={100} className="h-12 w-auto object-contain sm:h-14" priority />
+        <header className="border-b border-slate-200 print:hidden">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2 sm:py-1.5">
+            <Link href="/" className="flex items-center -ml-4">
+              <Image src="/logo.png" alt={SITE_NAME} width={400} height={100} className="h-12 w-auto object-contain sm:h-14" priority />
+            </Link>
+            <nav className="flex items-center gap-4 text-sm">
+              <Link
+                href="/#categories"
+                className="hidden text-slate-600 hover:text-slate-900 sm:inline"
+              >
+                All tools
               </Link>
-              <nav className="flex items-center gap-4 text-sm">
-                <Link
-                  href="/#categories"
+                            {headerLinks.map(link => (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  target={link.openInNewTab ? "_blank" : undefined}
+                  rel={link.openInNewTab ? "noopener noreferrer" : undefined}
                   className="hidden text-slate-600 hover:text-slate-900 sm:inline"
                 >
-                  All tools
-                </Link>
-                <NavAccount />
-                <a
-                  href={`${EBOS_URL}?utm_source=avextools&utm_medium=header&utm_campaign=site`}
-                  target="_blank"
-                  rel="noopener"
-                  className="rounded-md bg-orange-600 px-3 py-1.5 font-semibold text-white hover:bg-orange-700"
-                >
-                  Try EBOS
+                  {link.label}
                 </a>
-              </nav>
-            </div>
-          </header>
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-slate-200 bg-slate-50 print:hidden">
-            <div className="mx-auto max-w-6xl px-4 py-10">
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-                {effectiveCategories.map((c) => (
-                  <div key={c.slug}>
-                    <Link
-                      href={`/${c.slug}`}
-                      className="text-sm font-semibold text-slate-800 hover:text-orange-800"
-                    >
-                      {c.name}
-                    </Link>
-                  </div>
-                ))}
-                <div>
+              ))}
+              <NavAccount />
+
+              <a
+                href={`${EBOS_URL}?utm_source=avexora&utm_medium=header&utm_campaign=site`}
+                target="_blank"
+                rel="noopener"
+                className="rounded-md bg-orange-600 px-3 py-1.5 font-semibold text-white hover:bg-orange-700"
+              >
+                Try EBOS
+              </a>
+            </nav>
+          </div>
+        </header>
+        <main className="flex-1">{children}</main>
+        <footer className="border-t border-slate-200 bg-slate-50 print:hidden">
+          <div className="mx-auto max-w-6xl px-4 py-10">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+              {categories.map((c) => (
+                <div key={c.slug}>
                   <Link
-                    href="/studio"
+                    href={`/${c.slug}`}
                     className="text-sm font-semibold text-slate-800 hover:text-orange-800"
                   >
-                    Brand Studio
-                  </Link>
-                  <Link
-                    href="/studio/pricing"
-                    className="mt-1 block text-sm text-slate-600 hover:text-orange-800"
-                  >
-                    Studio pricing
+                    {c.name}
                   </Link>
                 </div>
-                <div className="lg:col-start-5 sm:col-start-2">
-                  <Link
-                    href="/admin"
-                    className="text-sm font-semibold text-slate-400 hover:text-slate-600 tracking-wider text-[10px]"
-                  >
-                    admin panel
-                  </Link>
+              ))}
+              <div>
+                <Link
+                  href="/studio"
+                  className="text-sm font-semibold text-slate-800 hover:text-orange-800"
+                >
+                  Brand Studio
+                </Link>
+                <Link
+                  href="/studio/pricing"
+                  className="mt-1 block text-sm text-slate-600 hover:text-orange-800"
+                >
+                  Studio pricing
+                </Link>
+              </div>
+              {footerLinks.length > 0 && (
+                <div>
+                  {footerLinks.map(link => (
+                    <a
+                      key={link.id}
+                      href={link.href}
+                      target={link.openInNewTab ? "_blank" : undefined}
+                      rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                      className="block text-sm font-semibold text-slate-800 hover:text-orange-800 mb-1"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
                 </div>
-              </div>
-              <div className="mt-8 flex flex-col gap-4">
-                <nav className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                  <Link href="/privacy-policy" className="hover:text-slate-700 hover:underline">
-                    Privacy Policy
-                  </Link>
-                  <Link href="/terms" className="hover:text-slate-700 hover:underline">
-                    Terms &amp; Conditions
-                  </Link>
-                  <Link href="/refund-policy" className="hover:text-slate-700 hover:underline">
-                    Refund Policy
-                  </Link>
-                </nav>
-                <p className="text-xs text-slate-500">
-                  © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — Avexora Tools, by Avexora, provides practical online business tools. By the makers of{" "}
-                  <a href={EBOS_URL} className="underline hover:text-slate-700">
-                    Enterprise Business OS
-                  </a>
-                  . Tools are provided as-is without warranty; verify important
-                  calculations independently.
-                </p>
-              </div>
+              )}
             </div>
+            <p className="mt-8 text-xs text-slate-500">
+              © {new Date().getFullYear()} Avexora · tools.avexora.in — Avexora
+              business tools by the makers of{" "}
+              <a href={EBOS_URL} className="underline hover:text-slate-700">
+                Enterprise Business OS
+              </a>
+              . Tools are provided as-is without warranty; verify important
+              calculations independently.
+            </p>
+          </div>
         </footer>
         </AccountProviders>
       </body>

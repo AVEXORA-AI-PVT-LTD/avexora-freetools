@@ -111,7 +111,7 @@ interface ToolBase {
    * and the schema is only emitted when real steps exist). Set only for tools
    * with a real multi-step workflow (file-tools, document builders, etc.).
    */
-  steps?: string[];
+  steps?: (string | { title: string; description: string })[];
   faq: FaqItem[];
   /** Slugs of related tools for internal linking. */
   related: string[];
@@ -127,6 +127,7 @@ interface ToolBase {
   requireAuth?: boolean;
   /** True if the tool was dynamically created via the Admin Panel and lacks a hardcoded client implementation. */
   isDynamic?: boolean;
+  howTo?: any;
 }
 
 export interface CalculatorTool extends ToolBase {

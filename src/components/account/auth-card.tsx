@@ -72,10 +72,10 @@ export function AuthCard({
     <div className="mx-auto w-full max-w-md px-4 py-16 sm:py-24">
       <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Sign in to Avex
+          Sign in to Avexora
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          One account for Avex Tools and Brand Studio.
+          One account for Avexora Tools and Brand Studio.
         </p>
 
         {serverError && (

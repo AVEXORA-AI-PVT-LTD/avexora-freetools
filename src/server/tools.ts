@@ -1,20 +1,15 @@
-import { prisma } from "@/server/db";
-import { allTools } from "@/tools/registry";
+import { isDatabaseConfigured, prisma } from "@/server/db";
+import { allTools, toolsByCategory as staticToolsByCategory } from "@/tools/registry";
 import { getEffectiveCategories } from "@/server/categories";
 import { memoize } from "@/server/cache";
 import type { ToolConfig, CategorySlug } from "@/types/tools";
 
-type ToolWithConfig = ToolConfig & {
-  status: boolean;
-  priority: number;
-  displayOrder: number;
-};
+export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
+  // Skip the DB during tests or when no usable connection string is set.
+  if (process.env.NODE_ENV === "test" || !isDatabaseConfigured()) {
+    return allTools.map((tool) => ({ ...tool, status: true }));
+  }
 
-export async function getAllToolsWithConfig(): Promise<ToolWithConfig[]> {
-  return memoize("allToolsWithConfig", 10_000, () => computeAllToolsWithConfig());
-}
-
-async function computeAllToolsWithConfig(): Promise<ToolWithConfig[]> {
   const [toolConfigs, dynamicTools] = await Promise.all([
     prisma.toolConfig?.findMany().catch(() => []) ?? [],
     prisma.dynamicTool?.findMany().catch(() => []) ?? [],

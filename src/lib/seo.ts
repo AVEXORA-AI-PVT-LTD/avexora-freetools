@@ -44,7 +44,7 @@ export function toolMetadata(tool: ToolConfig, cat: CategoryDef): Metadata {
 export function categoryMetadata(cat: CategoryDef): Metadata {
   const url = categoryUrl(cat);
   const title = cat.name;
-  const images = [ogImageUrl(cat.name, "Avex Tools")];
+  const images = [ogImageUrl(cat.name, SITE_NAME)];
   return {
     title,
     description: cat.description,
@@ -92,7 +92,7 @@ export function toolJsonLd(tool: ToolConfig, cat: CategoryDef): object[] {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
+        { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
         { "@type": "ListItem", position: 2, name: cat.name, item: categoryUrl(cat) },
         { "@type": "ListItem", position: 3, name: tool.name, item: url },
       ],
@@ -104,12 +104,15 @@ export function toolJsonLd(tool: ToolConfig, cat: CategoryDef): object[] {
       "@type": "HowTo",
       name: tool.name,
       description: tool.seoDescription,
-      step: tool.steps.map((step, i) => ({
-        "@type": "HowToStep",
-        position: i + 1,
-        name: step,
-        text: step,
-      })),
+            step: tool.steps.map((step, i) => {
+        const isStr = typeof step === "string";
+        return {
+          "@type": "HowToStep",
+          position: i + 1,
+          name: isStr ? step : step.title,
+          text: isStr ? step : step.description,
+        };
+      }),
     });
   }
   return nodes;
@@ -121,7 +124,7 @@ export function categoryJsonLd(cat: CategoryDef): object[] {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Avex Tools", item: SITE_URL },
+        { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
         { "@type": "ListItem", position: 2, name: cat.name, item: categoryUrl(cat) },
       ],
     },

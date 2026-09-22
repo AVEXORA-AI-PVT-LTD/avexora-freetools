@@ -13,7 +13,7 @@ const SESSION_COOKIES = [
   "__Secure-authjs.session-token",
 ];
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const url = request.nextUrl;
   const hostname = request.headers.get("host") || "";
   
@@ -25,7 +25,7 @@ export function proxy(request: NextRequest) {
       return NextResponse.next();
     }
     
-    if (url.pathname.startsWith('/api/auth') || url.pathname.startsWith('/studio/signin')) {
+    if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/studio/signin')) {
       return NextResponse.next();
     }
     
@@ -54,7 +54,41 @@ export function proxy(request: NextRequest) {
     }
   }
 
+
+  // 3. SEO Edge Redirects
+  // Fetch redirects (cached for 60 seconds)
+  if (request.method === 'GET' && !url.pathname.startsWith('/_next') && !url.pathname.startsWith('/api') && !url.pathname.includes('.')) {
+    try {
+      const protocol = request.headers.get("x-forwarded-proto") || "http";
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${hostname}`;
+      
+      const res = await fetch(`${appUrl}/api/seo/redirects`, {
+        next: { revalidate: 60, tags: ['seo-redirects'] }
+      });
+      
+      if (res.ok) {
+        const redirects = await res.json();
+        const match = redirects.find((r: any) => r.source === url.pathname);
+
+        if (match) {
+          // Asynchronously track hit
+          fetch(`${appUrl}/api/seo/redirects/track`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: match.id })
+          }).catch(() => {});
+          
+          return NextResponse.redirect(new URL(match.destination, request.url), match.statusCode);
+        }
+
+      }
+    } catch (e) {
+      // Fail silently
+    }
+  }
+
   return NextResponse.next();
+
 }
 
 export const config = {

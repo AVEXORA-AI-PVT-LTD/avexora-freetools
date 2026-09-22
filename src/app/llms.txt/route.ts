@@ -1,6 +1,5 @@
-import { SITE_NAME, SITE_URL } from "@/tools/categories";
-import { getEffectiveCategories } from "@/server/categories";
-import { getEffectiveToolsByCategory } from "@/server/tools";
+import { categories, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { toolsByCategory } from "@/tools/registry";
 
 // Follows the llms.txt convention (https://llmstxt.org/) so AI crawlers and
 // answer engines can discover the tool catalog without guessing from HTML.
@@ -41,7 +40,7 @@ export async function GET() {
     lines.push("");
   }
 
-  return new Response(lines.join("\n").trim() + "\n", {
-    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  return new Response(lines.join("\n"), {
+    headers: { "Content-Type": "text/markdown; charset=utf-8" },
   });
 }

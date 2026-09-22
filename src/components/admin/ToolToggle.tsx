@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition, useState } from "react";
-import { updateToolStatus } from "@/app/admin/(protected)/tools/actions";
+import { toggleToolStatus } from "@/app/admin/(protected)/tools/actions";
 
 export function ToolToggle({ slug, initialStatus }: { slug: string; initialStatus: boolean }) {
   const [isPending, startTransition] = useTransition();
@@ -14,10 +14,10 @@ export function ToolToggle({ slug, initialStatus }: { slug: string; initialStatu
     setError(null);
 
     startTransition(async () => {
-      const result = await updateToolStatus(slug, newStatus);
+      const result = await toggleToolStatus(slug, newStatus);
       if (!result.success) {
         setStatus(!newStatus);
-        setError(result.error || "Failed to update status");
+        setError((result as any).error || "Failed to update status");
       }
     });
   };

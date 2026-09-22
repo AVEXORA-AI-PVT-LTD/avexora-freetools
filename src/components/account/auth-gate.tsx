@@ -106,7 +106,7 @@ export function useAuthGate(requireAuth: boolean): {
         </h2>
         <p className="mt-1 text-sm text-slate-600">
           Save and manage this document in your account. One account works
-          across Avex Tools and Brand Studio — sign in with Google or an email
+          across Avexora Tools and Brand Studio — sign in with Google or an email
           magic link. Your result is kept ready — you&apos;ll download it right
           after signing in.
         </p>

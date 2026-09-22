@@ -1,12 +1,14 @@
-import { prisma } from "@/server/db";
+import { isDatabaseConfigured, prisma } from "@/server/db";
 import { categories as staticCategories } from "@/tools/categories";
 import { memoize } from "@/server/cache";
 
 export async function getAllCategoriesWithConfig() {
-  return memoize("allCategoriesWithConfig", 10_000, () => computeAllCategoriesWithConfig());
-}
+  // Skip the DB entirely during tests or when no usable connection string is set,
+  // so routes that overlay DB overrides (e.g. sitemap) still work with the static registry.
+  if (process.env.NODE_ENV === "test" || !isDatabaseConfigured()) {
+    return staticCategories.map((cat) => ({ ...cat, status: true }));
+  }
 
-async function computeAllCategoriesWithConfig() {
   const configs = await prisma.categoryConfig?.findMany().catch(() => []) ?? [];
   const configMap = new Map(configs.map((c) => [c.slug, c]));
 
@@ -16,7 +18,7 @@ async function computeAllCategoriesWithConfig() {
       return {
         ...cat,
         status: override ? override.status : true,
-        priority: override?.priority ?? 999,
+        featured: override?.featured ?? false,
         displayOrder: override?.displayOrder ?? 0,
       };
     })
@@ -24,7 +26,6 @@ async function computeAllCategoriesWithConfig() {
       if (a.displayOrder !== b.displayOrder) {
         return a.displayOrder - b.displayOrder;
       }
-      if (a.priority !== b.priority) return a.priority - b.priority;
       return a.name.localeCompare(b.name);
     });
 }

@@ -75,113 +75,6 @@ export async function downloadZip(
   downloadBlob(new Blob([zippedCopy], { type: "application/zip" }), zipName);
 }
 
-export type ImageMime = "image/png" | "image/jpeg" | "image/webp";
-
-/**
- * Resolve the output format for the compressor. The image format is the source
- * of truth: PNG → PNG, JPEG → JPEG, WebP → WebP. The compressor reduces size by
- * changing encoding/compression parameters ONLY, never the format. Formats the
- * browser canvas/UPNG cannot re-encode in kind (GIF, BMP, AVIF, TIFF, …) are
- * not supported by this compressor and return `null` so the caller can show a
- * clear message instead of silently converting.
- */
-export function imageCompressionType(fileType: string): ImageMime | null {
-  if (fileType === "image/png") return "image/png";
-  if (fileType === "image/jpeg" || fileType === "image/jpg") return "image/jpeg";
-  if (fileType === "image/webp") return "image/webp";
-  return null;
-}
-
-export interface CompressionCandidate {
-  type: ImageMime;
-  quality: number;
-}
-
-/**
- * Generate the bounded list of encoding candidates for an image source —
- * STRICTLY within the original format. No cross-format fallback exists:
- *
- *   PNG   → [PNG q]
- *   JPEG  → [JPEG q, JPEG q-15, …, JPEG floor]
- *   WebP  → [WebP q, WebP q-15, …, WebP floor]
- *   other → []  (unsupported; caller shows an error)
- *
- * The output format is always the source format; only the encoder quality is
- * varied to find a genuinely smaller result. PNG is handled separately by the
- * UPNG-based encoder (browser canvas PNG re-encode is unreliable), so the PNG
- * candidate is a marker the compressor routes to that path.
- */
-export function compressionCandidates(
-  fileType: string,
-  requestedQuality: number,
-): CompressionCandidate[] {
-  const type = imageCompressionType(fileType);
-  if (!type) return [];
-  const q = Math.min(95, Math.max(10, Math.round(requestedQuality)));
-
-  if (type === "image/png") {
-    return [{ type: "image/png", quality: q }];
-  }
-
-  const step = 15;
-  const floor = 30;
-  const candidates: CompressionCandidate[] = [{ type, quality: q }];
-  for (let s = q - step; s >= floor; s -= step) {
-    candidates.push({ type, quality: s });
-  }
-  return candidates;
-}
-
-export interface EncodedPnGCandidate {
-  blob: Blob;
-  /** Nominal quality label: 100 = lossless; 256/64/32/16 = palette colour count. */
-  quality: number;
-}
-
-function pngBlob(encoded: ArrayBuffer): Blob {
-  return new Blob([new Uint8Array(encoded)], { type: "image/png" });
-}
-
-/**
- * Encode a canvas to genuine PNG candidates using UPNG.js.
- *
- * The browser's own canvas PNG encoder re-serialises decoded RGBA and USUALLY
- * re-inflates already-optimised PNGs (983 KB → 1.60 MB). UPNG.js re-encodes
- * the decoded RGBA in-process:
- *   1. lossless (best DEFLATE of the raw pixels), and
- *   2. alpha-preserving palette-quantised encodes (256 → 16 colours), which are
- *      real, smaller PNGs while every pixel keeps its alpha channel — fully
- *      transparent pixels are encoded as invisible (alpha 0) so no white/black
- *      background can appear.
- *
- * Every returned Blob is `image/png`; dimensions are untouched (the canvas size
- * is used as-is).
- */
-export function encodePngCandidates(canvas: HTMLCanvasElement): EncodedPnGCandidate[] {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return [];
-  const w = canvas.width;
-  const h = canvas.height;
-  if (w <= 0 || h <= 0) return [];
-  let buffer: ArrayBuffer;
-  try {
-    buffer = ctx.getImageData(0, 0, w, h).data.buffer as ArrayBuffer;
-  } catch {
-    return [];
-  }
-  const candidates: EncodedPnGCandidate[] = [];
-  const push = (cnum: number) => {
-    try {
-      candidates.push({ blob: pngBlob(UPNG.encode([buffer], w, h, cnum)), quality: cnum });
-    } catch {
-      // A pathological palette size can throw; skip it (bounded set remains).
-    }
-  };
-  push(0); // lossless
-  for (const colors of [256, 64, 32, 16]) push(colors);
-  return candidates;
-}
-
 export interface RotateFlipGeometry {
   srcW: number;
   srcH: number;
@@ -238,8 +131,58 @@ export function rotateFlipGeometry(
   };
 }
 
-export { computeCropRect } from "@/tools/compute/image/crop-coords";
-export type { CropBox, CropRect } from "@/tools/compute/image/crop-coords";
+export interface CropBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface CropRect {
+  sx: number;
+  sy: number;
+  outW: number;
+  outH: number;
+}
+
+/**
+ * Convert a display-space crop selection to a valid natural-image-space crop
+ * rectangle, safe to pass to `drawImage`.
+ *
+ * The selection box is expressed in displayed/rendered image coordinates and
+ * `rect` is the displayed image size. This converts to the source image's
+ * natural pixel space and then CLAMPS the source rectangle to the natural image
+ * bounds, so the source rectangle never extends past the image edge (which
+ * would make `drawImage` clip the source and leave a blank/transparent strip at
+ * the boundary).
+ *
+ * Returns `null` when the crop would have non-positive width/height so callers
+ * can show a validation message instead of generating a blank canvas.
+ */
+export function computeCropRect(
+  box: CropBox,
+  rect: { width: number; height: number },
+  naturalWidth: number,
+  naturalHeight: number,
+): CropRect | null {
+  if (naturalWidth <= 0 || naturalHeight <= 0 || rect.width <= 0 || rect.height <= 0) return null;
+
+  const scaleX = naturalWidth / rect.width;
+  const scaleY = naturalHeight / rect.height;
+
+  const sx = Math.max(0, Math.floor(box.x * scaleX));
+  const sy = Math.max(0, Math.floor(box.y * scaleY));
+
+  const sw = Math.min(box.w * scaleX, naturalWidth - sx);
+  const sh = Math.min(box.h * scaleY, naturalHeight - sy);
+
+  if (sw <= 0 || sh <= 0) return null;
+
+  const outW = Math.max(1, Math.floor(sw));
+  const outH = Math.max(1, Math.floor(sh));
+
+  return { sx, sy, outW, outH };
+}
 
 export function useImageFile() {
   const [file, setFile] = useState<File | null>(null);
@@ -366,4 +309,84 @@ export function drawToCanvas(image: HTMLImageElement, width: number, height: num
   const ctx = canvas.getContext("2d")!;
   ctx.drawImage(image, 0, 0, width, height);
   return canvas;
+}
+
+export type ImageMime = "image/png" | "image/jpeg" | "image/webp";
+
+/**
+ * Resolve the output format for the compressor. The image format is the source
+ * of truth: PNG → PNG, JPEG → JPEG, WebP → WebP. The compressor reduces size by
+ * changing encoding/compression parameters ONLY, never the format. Formats the
+ * browser canvas/UPNG cannot re-encode in kind (GIF, BMP, AVIF, TIFF, …) are
+ * not supported by this compressor and return `null` so the caller can show a
+ * clear message instead of silently converting.
+ */
+export function imageCompressionType(fileType: string): ImageMime | null {
+  if (fileType === "image/png") return "image/png";
+  if (fileType === "image/jpeg" || fileType === "image/jpg") return "image/jpeg";
+  if (fileType === "image/webp") return "image/webp";
+  return null;
+}
+
+
+
+export interface CompressionCandidate {
+  type: ImageMime;
+  quality: number;
+}
+
+export function compressionCandidates(
+  fileType: string,
+  requestedQuality: number,
+): CompressionCandidate[] {
+  const type = imageCompressionType(fileType);
+  if (!type) return [];
+  const q = Math.min(95, Math.max(10, Math.round(requestedQuality)));
+
+  if (type === "image/png") {
+    return [{ type: "image/png", quality: q }];
+  }
+
+  const step = 15;
+  const floor = 30;
+  const candidates: CompressionCandidate[] = [{ type, quality: q }];
+  for (let s = q - step; s >= floor; s -= step) {
+    candidates.push({ type, quality: s });
+  }
+  return candidates;
+}
+
+export interface EncodedPnGCandidate {
+  blob: Blob;
+  /** Nominal quality label: 100 = lossless; 256/64/32/16 = palette colour count. */
+  quality: number;
+}
+
+export function encodePngCandidates(canvas: HTMLCanvasElement): EncodedPnGCandidate[] {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return [];
+  const w = canvas.width;
+  const h = canvas.height;
+  if (w <= 0 || h <= 0) return [];
+  let buffer: ArrayBuffer;
+  try {
+    buffer = ctx.getImageData(0, 0, w, h).data.buffer as ArrayBuffer;
+  } catch {
+    return [];
+  }
+  const candidates: EncodedPnGCandidate[] = [];
+  const push = (cnum: number) => {
+    try {
+      candidates.push({ blob: pngBlob(UPNG.encode([buffer], w, h, cnum)), quality: cnum });
+    } catch {
+      // A pathological palette size can throw; skip it (bounded set remains).
+    }
+  };
+  push(0); // lossless
+  for (const colors of [256, 64, 32, 16]) push(colors);
+  return candidates;
+}
+
+function pngBlob(encoded: ArrayBuffer): Blob {
+  return new Blob([encoded], { type: "image/png" });
 }
