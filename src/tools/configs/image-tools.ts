@@ -7,7 +7,7 @@ import { ImageToBase64, Base64ToImage } from "../ui/image/base64-image";
 import { FaviconGenerator } from "../ui/image/favicon-generator";
 import { ImageColorPicker } from "../ui/image/image-color-picker";
 import { ImageRotatorFlipper } from "../ui/image/image-rotator-flipper";
-import BackgroundRemover from "../ui/image/background-remover";
+import BackgroundRemover from "../ui/image/bg-remover";
 
 export const tools: ToolConfig[] = [
   {
