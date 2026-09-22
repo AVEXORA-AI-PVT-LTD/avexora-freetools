@@ -8,6 +8,7 @@ import { RotatePdf } from "../ui/pdf/rotate-pdf";
 import WatermarkPdf from "../ui/pdf/watermark-pdf";
 import PageNumbersPdf from "../ui/pdf/page-numbers-pdf";
 import PdfMetadataEditor from "../ui/pdf/pdf-metadata-editor";
+import PdfToWord from "../ui/pdf/pdf-to-word";
 
 export const tools: ToolConfig[] = [
   {

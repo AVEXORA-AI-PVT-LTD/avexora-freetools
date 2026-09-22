@@ -47,7 +47,7 @@ export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
 
   const mergedTools = [...allTools, ...dynamicToolConfigs];
 
-  return mergedTools.map((tool): ToolWithConfig => {
+  return mergedTools.map((tool): ToolConfig => {
     const override = configMap.get(tool.slug);
     return {
       ...tool,
@@ -57,10 +57,10 @@ export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
     };
   }).sort((a, b) => {
     if (a.displayOrder !== b.displayOrder) {
-      return a.displayOrder - b.displayOrder;
+      return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
     }
     if (a.priority !== b.priority) {
-      return a.priority - b.priority;
+      return (a.priority ?? 999) - (b.priority ?? 999);
     }
     return a.name.localeCompare(b.name);
   });
