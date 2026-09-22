@@ -124,6 +124,17 @@ export default async function RootLayout({
                 </div>
               </div>
               <div className="mt-8 flex flex-col gap-4">
+                <nav className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                  <Link href="/privacy-policy" className="hover:text-slate-700 hover:underline">
+                    Privacy Policy
+                  </Link>
+                  <Link href="/terms" className="hover:text-slate-700 hover:underline">
+                    Terms &amp; Conditions
+                  </Link>
+                  <Link href="/refund-policy" className="hover:text-slate-700 hover:underline">
+                    Refund Policy
+                  </Link>
+                </nav>
                 <p className="text-xs text-slate-500">
                   © {new Date().getFullYear()} Avexora · {new URL(SITE_URL).host} — Avexora Tools, by Avexora, provides practical online business tools. By the makers of{" "}
                   <a href={EBOS_URL} className="underline hover:text-slate-700">
