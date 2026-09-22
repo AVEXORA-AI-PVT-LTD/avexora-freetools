@@ -1,7 +1,12 @@
 import { prisma } from "@/server/db";
 import { categories as staticCategories } from "@/tools/categories";
+import { memoize } from "@/server/cache";
 
 export async function getAllCategoriesWithConfig() {
+  return memoize("allCategoriesWithConfig", 10_000, () => computeAllCategoriesWithConfig());
+}
+
+async function computeAllCategoriesWithConfig() {
   const configs = await prisma.categoryConfig?.findMany().catch(() => []) ?? [];
   const configMap = new Map(configs.map((c) => [c.slug, c]));
 

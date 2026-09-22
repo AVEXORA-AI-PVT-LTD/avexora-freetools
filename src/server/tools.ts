@@ -1,6 +1,7 @@
 import { prisma } from "@/server/db";
 import { allTools } from "@/tools/registry";
 import { getEffectiveCategories } from "@/server/categories";
+import { memoize } from "@/server/cache";
 import type { ToolConfig, CategorySlug } from "@/types/tools";
 
 type ToolWithConfig = ToolConfig & {
@@ -10,11 +11,15 @@ type ToolWithConfig = ToolConfig & {
 };
 
 export async function getAllToolsWithConfig(): Promise<ToolWithConfig[]> {
+  return memoize("allToolsWithConfig", 10_000, () => computeAllToolsWithConfig());
+}
+
+async function computeAllToolsWithConfig(): Promise<ToolWithConfig[]> {
   const [toolConfigs, dynamicTools] = await Promise.all([
     prisma.toolConfig?.findMany().catch(() => []) ?? [],
     prisma.dynamicTool?.findMany().catch(() => []) ?? [],
   ]);
-  
+
   const configMap = new Map(toolConfigs.map((c) => [c.toolSlug, c]));
 
   // Create fallback renderer configs for dynamic tools

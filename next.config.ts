@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
   // Vercel during the build; everywhere else — local, CI, the image — is
   // unaffected.
   output: process.env.VERCEL ? undefined : "standalone",
+
+  // Safety margin on top of the src/server/cache.ts memoization fix: static
+  // generation for a MongoDB-backed page can still occasionally be slower
+  // than the 60s default (cross-region latency, cold connection), and one
+  // slow page shouldn't fail the whole build.
+  staticPageGenerationTimeout: 180,
 };
 
 export default nextConfig;
