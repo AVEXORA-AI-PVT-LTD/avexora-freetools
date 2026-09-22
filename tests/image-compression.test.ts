@@ -233,7 +233,7 @@ async function simulateCompress(params: {
   toBlobSizes?: Record<string, number[]>;
   png?: { rgba: Uint8Array; width: number; height: number };
 }): Promise<PipelineResult> {
-  const { name, fileType, quality, originalSize } = params;
+  const { fileType, quality, originalSize } = params;
   const type = imageCompressionType(fileType);
   let download: PipelineResult["download"] = null;
   let report: string | null = null;

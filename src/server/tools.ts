@@ -1,6 +1,7 @@
 import { isDatabaseConfigured, prisma } from "@/server/db";
 import { allTools, toolsByCategory as staticToolsByCategory } from "@/tools/registry";
 import { getEffectiveCategories } from "@/server/categories";
+import { memoize } from "@/server/cache";
 import type { ToolConfig, CategorySlug } from "@/types/tools";
 
 export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
@@ -13,7 +14,7 @@ export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
     prisma.toolConfig?.findMany().catch(() => []) ?? [],
     prisma.dynamicTool?.findMany().catch(() => []) ?? [],
   ]);
-  
+
   const configMap = new Map(toolConfigs.map((c) => [c.toolSlug, c]));
 
   // Create fallback renderer configs for dynamic tools
@@ -46,7 +47,7 @@ export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
 
   const mergedTools = [...allTools, ...dynamicToolConfigs];
 
-  return mergedTools.map((tool) => {
+  return mergedTools.map((tool): ToolWithConfig => {
     const override = configMap.get(tool.slug);
     return {
       ...tool,
@@ -55,11 +56,11 @@ export async function getAllToolsWithConfig(): Promise<ToolConfig[]> {
       displayOrder: override?.displayOrder ?? 0,
     };
   }).sort((a, b) => {
-    if ((a as any).displayOrder !== (b as any).displayOrder) {
-      return (a as any).displayOrder - (b as any).displayOrder;
+    if (a.displayOrder !== b.displayOrder) {
+      return a.displayOrder - b.displayOrder;
     }
-    if ((a as any).priority !== (b as any).priority) {
-      return (a as any).priority - (b as any).priority;
+    if (a.priority !== b.priority) {
+      return a.priority - b.priority;
     }
     return a.name.localeCompare(b.name);
   });
@@ -79,7 +80,7 @@ export async function getEffectiveTools(): Promise<ToolConfig[]> {
 
   return allToolsWithConfig
     // A tool is visible if BOTH the tool is enabled AND its category is enabled
-    .filter((tool) => (tool as any).status === true && enabledCategorySlugs.has(tool.category));
+    .filter((tool) => tool.status === true && enabledCategorySlugs.has(tool.category));
 }
 
 export async function getEffectiveTool(slug: string): Promise<ToolConfig | undefined> {

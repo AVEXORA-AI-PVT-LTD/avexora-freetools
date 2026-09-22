@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
-import { DISPLAYED_TOOL_COUNT, toolsByCategory } from "@/tools/registry";
+import { DISPLAYED_TOOL_COUNT } from "@/tools/registry";
 import { buildSearchItems, type SearchItem } from "@/components/tools/search-items";
 import { ToolSearch } from "@/components/tools/tool-search";
 import { getEffectiveCategories } from "@/server/categories";

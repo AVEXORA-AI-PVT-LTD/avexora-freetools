@@ -9,7 +9,15 @@ import { DynamicToolSchema, RESERVED_SLUGS } from "@/lib/admin/dynamic-tools";
 import { allTools } from "@/tools/registry";
 import { getAllCategoriesWithConfig } from "@/server/categories";
 
-export async function createDynamicTool(prevState: any, formData: FormData) {
+interface DynamicToolFormState {
+  error: string | null;
+  fields?: Record<string, string | undefined>;
+}
+
+export async function createDynamicTool(
+  prevState: DynamicToolFormState,
+  formData: FormData,
+): Promise<DynamicToolFormState> {
   try {
     const user = await requireAdminAuth();
     if (!hasPermission(user.role, "tools.create")) {
@@ -89,9 +97,9 @@ export async function createDynamicTool(prevState: any, formData: FormData) {
     revalidatePath(`/${validated.categorySlug}`);
     revalidatePath("/(public)", "layout");
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("[createDynamicTool Error]:", error);
-    return { error: error.message || "An unexpected error occurred." };
+    return { error: error instanceof Error ? error.message : "An unexpected error occurred." };
   }
 
   // Redirect outside try-catch to avoid NEXT_REDIRECT error caught by catch block

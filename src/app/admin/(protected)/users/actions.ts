@@ -2,7 +2,7 @@
 
 import { prisma } from "@/server/db";
 import { requireAdminAuth } from "@/server/admin-auth";
-import { hasPermission, isHigherOrEqualRole } from "@/lib/admin/permissions";
+import { isHigherOrEqualRole } from "@/lib/admin/permissions";
 import { revalidatePath } from "next/cache";
 import { UpdateRoleSchema } from "@/lib/admin/users";
 
@@ -63,7 +63,7 @@ export async function updateUserRole(formData: FormData) {
     revalidatePath("/admin/users");
     
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     console.error("[updateUserRole Error]:", error);
     return { error: "An unexpected error occurred while updating the role." };
   }

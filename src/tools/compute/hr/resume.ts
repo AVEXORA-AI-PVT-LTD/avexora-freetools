@@ -1,93 +1,117 @@
-import type { GenerateFn } from "@/types/tools";
+export interface ResumeExperience {
+  company: string;
+  title: string;
+  duration: string;
+  /** Raw textarea value, one achievement per line. */
+  highlights: string;
+}
 
-function str(value: unknown): string {
-  return typeof value === "string" ? value.trim() : "";
+export interface ResumeEducation {
+  degree: string;
+  institution: string;
+  year: string;
+}
+
+export interface ResumeInput {
+  fullName: string;
+  targetRole: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin: string;
+  summary: string;
+  /** Raw comma or newline-separated skills. */
+  skills: string;
+  experiences: ResumeExperience[];
+  education: ResumeEducation[];
+}
+
+function str(value: string | undefined): string {
+  return (value ?? "").trim();
 }
 
 /** Turn a comma-separated or newline-separated list into a clean array. */
-function items(value: unknown): string[] {
-  return str(value)
+function items(value: string): string[] {
+  return value
     .split(/[,\n]/)
     .map((s) => s.trim())
     .filter(Boolean);
 }
 
-function bulletLines(value: unknown): string[] {
-  return str(value)
+function bulletLines(value: string): string[] {
+  return value
     .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
 }
 
-export const generateResume: GenerateFn = (values) => {
-  const fullName = str(values.fullName);
-  const targetRole = str(values.targetRole);
-  const email = str(values.email);
-  const phone = str(values.phone);
-  const location = str(values.location);
-  const linkedin = str(values.linkedin);
-  const summary = str(values.summary);
-  const skills = items(values.skills);
+/** Returns a validation error message, or null when the input is ready to render. */
+export function validateResume(input: ResumeInput): string | null {
+  if (str(input.fullName) === "") return "Enter your full name.";
+  if (str(input.email) === "") return "Enter your email address.";
+  if (str(input.phone) === "") return "Enter your phone number.";
+  if (str(input.summary) === "") return "Enter a short professional summary.";
+  if (items(input.skills).length === 0) return "Enter at least one skill.";
 
-  const exp1Company = str(values.exp1Company);
-  const exp1Title = str(values.exp1Title);
-  const exp1Duration = str(values.exp1Duration);
-  const exp1Highlights = bulletLines(values.exp1Highlights);
-
-  const exp2Company = str(values.exp2Company);
-  const exp2Title = str(values.exp2Title);
-  const exp2Duration = str(values.exp2Duration);
-  const exp2Highlights = bulletLines(values.exp2Highlights);
-
-  const eduDegree = str(values.eduDegree);
-  const eduInstitution = str(values.eduInstitution);
-  const eduYear = str(values.eduYear);
-
-  if (fullName === "") return { error: "Enter your full name." };
-  if (email === "") return { error: "Enter your email address." };
-  if (phone === "") return { error: "Enter your phone number." };
-  if (summary === "") return { error: "Enter a short professional summary." };
-  if (skills.length === 0) return { error: "Enter at least one skill." };
-  if (exp1Company === "" || exp1Title === "" || exp1Duration === "") {
-    return { error: "Enter at least one work experience (company, title and duration)." };
-  }
-  if (eduDegree === "" || eduInstitution === "") {
-    return { error: "Enter your education (degree and institution)." };
+  const firstExperience = input.experiences[0];
+  if (!firstExperience || str(firstExperience.company) === "" || str(firstExperience.title) === "" || str(firstExperience.duration) === "") {
+    return "Enter at least one work experience (company, title and duration).";
   }
 
-  const contactLine = [phone, email, location, linkedin].filter(Boolean).join("  |  ");
+  const firstEducation = input.education[0];
+  if (!firstEducation || str(firstEducation.degree) === "" || str(firstEducation.institution) === "") {
+    return "Enter your education (degree and institution).";
+  }
 
-  const experienceBlock = (
-    company: string,
-    title: string,
-    duration: string,
-    highlights: string[],
-  ): string => {
-    if (company === "") return "";
-    const header = `${title} — ${company}${duration ? ` (${duration})` : ""}`;
-    const bullets = highlights.map((h) => `  • ${h}`).join("\n");
-    return bullets ? `${header}\n${bullets}` : header;
-  };
+  return null;
+}
 
-  const experienceSections = [
-    experienceBlock(exp1Company, exp1Title, exp1Duration, exp1Highlights),
-    experienceBlock(exp2Company, exp2Title, exp2Duration, exp2Highlights),
-  ].filter(Boolean);
+function experienceBlock(exp: ResumeExperience): string {
+  const company = str(exp.company);
+  if (company === "") return "";
+  const title = str(exp.title);
+  const duration = str(exp.duration);
+  const header = `${title} — ${company}${duration ? ` (${duration})` : ""}`;
+  const bullets = bulletLines(exp.highlights).map((h) => `  • ${h}`).join("\n");
+  return bullets ? `${header}\n${bullets}` : header;
+}
 
-  const text = `${fullName.toUpperCase()}${targetRole ? `\n${targetRole}` : ""}
+function educationLine(edu: ResumeEducation): string {
+  const degree = str(edu.degree);
+  if (degree === "") return "";
+  const institution = str(edu.institution);
+  const year = str(edu.year);
+  return `${degree} — ${institution}${year ? ` (${year})` : ""}`;
+}
+
+/** Builds the plain-text resume. Call validateResume() first and only render on a null result. */
+export function buildResumeText(input: ResumeInput): string {
+  const fullName = str(input.fullName);
+  const targetRole = str(input.targetRole);
+  const contactLine = [str(input.phone), str(input.email), str(input.location), str(input.linkedin)]
+    .filter(Boolean)
+    .join("  |  ");
+
+  const experienceSections = input.experiences.map(experienceBlock).filter(Boolean);
+  const educationLines = input.education.map(educationLine).filter(Boolean);
+
+  return `${fullName.toUpperCase()}${targetRole ? `\n${targetRole}` : ""}
 ${contactLine}
 
 SUMMARY
-${summary}
+${str(input.summary)}
 
 SKILLS
-${skills.join(" · ")}
+${items(input.skills).join(" · ")}
 
 EXPERIENCE
 ${experienceSections.join("\n\n")}
 
 EDUCATION
-${eduDegree} — ${eduInstitution}${eduYear ? ` (${eduYear})` : ""}`;
+${educationLines.join("\n")}`;
+}
 
-  return { text, filename: `${fullName.replace(/\s+/g, "-").toLowerCase()}-resume.txt` };
-};
+export function resumeFilename(fullName: string): string {
+  const slug = str(fullName).replace(/\s+/g, "-").toLowerCase();
+  return `${slug || "resume"}-resume.txt`;
+}

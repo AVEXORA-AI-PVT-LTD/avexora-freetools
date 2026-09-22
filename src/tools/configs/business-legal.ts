@@ -23,14 +23,6 @@ export const tools: ToolConfig[] = [
     seoDescription:
       "Free letterhead compliance checker for Indian companies and LLPs. Verify your CIN, LLPIN, GSTIN, registered office address and contact details against Companies Act 2013 s.12(3)(c) requirements.",
     component: LetterheadComplianceChecker,
-    howTo: {
-      name: "How to check letterhead compliance",
-      steps: [
-        { name: "Select your entity type", text: "Choose company, LLP or another entity type, since the required particulars differ." },
-        { name: "Enter your identifiers and address", text: "Add your CIN/LLPIN, GSTIN and registered office address as printed on your stationery." },
-        { name: "Review the findings", text: "See document-by-document findings for your letterhead, invoice, envelope and visiting card, each citing the legal provision it comes from." },
-      ],
-    },
     about: [
       "Section 12(3)(c) of the Companies Act 2013 requires every company registered in India to print its name, the address of its registered office and its Corporate Identity Number \u2014 along with its telephone number and, where they exist, its email and website addresses \u2014 on all its business letters, billheads, letter papers, notices and other official publications. It is one of the most routinely missed compliance requirements in Indian corporate practice, precisely because it looks like a design decision rather than a statutory one. A founder orders letterheads from a printer or builds one in a design tool, nobody involved knows the section exists, and the company operates for years on stationery that is technically in default.",
       "The consequences are not theoretical. Failure to comply attracts a penalty of one thousand rupees for every day the default continues, subject to a maximum of one lakh rupees. Because the penalty accrues daily rather than as a one-time fine, a letterhead printed without a CIN and used for two years represents meaningful exposure. The same obligation extends to invoices and billheads, which is why a GST invoice issued on non-compliant letterhead compounds the problem across every customer you have billed.",

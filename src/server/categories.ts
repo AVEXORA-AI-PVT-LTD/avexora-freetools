@@ -1,5 +1,6 @@
 import { isDatabaseConfigured, prisma } from "@/server/db";
 import { categories as staticCategories } from "@/tools/categories";
+import { memoize } from "@/server/cache";
 
 export async function getAllCategoriesWithConfig() {
   // Skip the DB entirely during tests or when no usable connection string is set,
@@ -22,8 +23,8 @@ export async function getAllCategoriesWithConfig() {
       };
     })
     .sort((a, b) => {
-      if ((a as any).displayOrder !== (b as any).displayOrder) {
-        return (a as any).displayOrder - (b as any).displayOrder;
+      if (a.displayOrder !== b.displayOrder) {
+        return a.displayOrder - b.displayOrder;
       }
       return a.name.localeCompare(b.name);
     });

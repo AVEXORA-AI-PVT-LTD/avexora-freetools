@@ -11,15 +11,20 @@ import { generateLoanAgreement } from "@/tools/compute/legal/loan-agreement";
 import { buildUtmUrl } from "@/tools/compute/marketing/utm-builder";
 import { generateHtmlEntities } from "@/tools/compute/dev/html-entities";
 import { decodeJwt } from "@/tools/compute/dev/jwt-decoder";
+import type { ComputeFn, FieldValues, GenerateFn } from "@/types/tools";
 
 const results: string[] = [];
 const P = (label: string, val: unknown) => results.push(`${label} = ${JSON.stringify(val)}`);
 
-function calcLabel(fn: Function, v: unknown): string {
-  const o = fn(v) as any;
+function describeError(e: unknown): string {
+  return e instanceof Error ? `${e.constructor.name}: ${e.message}` : String(e);
+}
+
+function calcLabel(fn: ComputeFn | GenerateFn, v: FieldValues): string {
+  const o = fn(v);
   if ("error" in o) return `{ERROR:${o.error}}`;
   if ("text" in o) return `{TEXT:${String(o.text).slice(0, 400)}}`;
-  if ("results" in o) return `{${(o.results as any[]).map((x) => `${x.label}=${x.value}`).join(" | ")}}`;
+  if ("results" in o) return `{${o.results.map((x) => `${x.label}=${x.value}`).join(" | ")}}`;
   return JSON.stringify(o);
 }
 
@@ -43,10 +48,10 @@ describe("REPRO", () => {
     }
 
     // ISSUE-004 loan agreement - extract interest wording + instalment
-    const loan = generateLoanAgreement({ principal: 100000, interestRate: 12, repaymentMonths: 12, lenderName: "Test Lender", borrowerName: "Test Borrower", loanDate: "2026-01-15" }) as any;
+    const loan = generateLoanAgreement({ principal: 100000, interestRate: 12, repaymentMonths: 12, lenderName: "Test Lender", borrowerName: "Test Borrower", loanDate: "2026-01-15" });
     if ("error" in loan) P("LOAN", { ERROR: loan.error });
     else {
-      const t = loan.text as string;
+      const t = loan.text;
       const instalment = t.match(/₹[\d,]+(?:\.[\d]+)?\s*(?:per month|monthly)/);
       const reducing = /reduc[ei]ng|outstanding/i.test(t);
       P("LOAN mentions-reducing", reducing);
@@ -67,8 +72,8 @@ describe("REPRO", () => {
     for (const inp of ["&#1114112;", "&#xD800;", "&#999999999;", "&#-1;", "&#1114111;", "&#65;"]) {
       try {
         P(`HTML decode ${inp}`, calcLabel(generateHtmlEntities, { text: inp, mode: "decode" }));
-      } catch (e: any) {
-        P(`HTML decode ${inp}`, `THREW ${e.constructor.name}: ${e.message}`);
+      } catch (e) {
+        P(`HTML decode ${inp}`, `THREW ${describeError(e)}`);
       }
     }
 
@@ -76,22 +81,22 @@ describe("REPRO", () => {
     const jwtInf = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0." + Buffer.from(JSON.stringify({ exp: 1e400, iat: 1e400 })).toString("base64url") + ".sig";
     try {
       P("JWT exp=1e400", calcLabel(decodeJwt, { token: jwtInf }));
-    } catch (e: any) {
-      P("JWT exp=1e400", `THREW ${e.constructor.name}: ${e.message}`);
+    } catch (e) {
+      P("JWT exp=1e400", `THREW ${describeError(e)}`);
     }
     // JWT null date / string date / negative
     try {
       P("JWT exp=null", calcLabel(decodeJwt, { token: "a." + Buffer.from(JSON.stringify({ exp: null })).toString("base64url") + ".b" }));
       P("JWT exp=str", calcLabel(decodeJwt, { token: "a." + Buffer.from(JSON.stringify({ exp: "abc" })).toString("base64url") + ".b" }));
       P("JWT exp=-5", calcLabel(decodeJwt, { token: "a." + Buffer.from(JSON.stringify({ exp: -5 })).toString("base64url") + ".b" }));
-    } catch (e: any) {
-      P("JWT other", `THREW ${e.constructor.name}: ${e.message}`);
+    } catch (e) {
+      P("JWT other", `THREW ${describeError(e)}`);
     }
     // valid JWT baseline
     try {
       P("JWT valid", calcLabel(decodeJwt, { token: "a." + Buffer.from(JSON.stringify({ exp: 9999999999 })).toString("base64url") + ".b" }));
-    } catch (e: any) {
-      P("JWT valid", `THREW ${e.constructor.name}: ${e.message}`);
+    } catch (e) {
+      P("JWT valid", `THREW ${describeError(e)}`);
     }
 
     // ISSUE-009 silent coercion - invalid optional numeric fields

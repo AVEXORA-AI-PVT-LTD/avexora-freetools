@@ -11,7 +11,7 @@ import { generatePayslip } from "../compute/hr/payslip";
 import { generateOfferLetter } from "../compute/hr/offer-letter";
 import { generateAppointmentLetter } from "../compute/hr/appointment-letter";
 import { generateExperienceLetter } from "../compute/hr/experience-letter";
-import { generateResume } from "../compute/hr/resume";
+import ResumeBuilder from "../ui/hr/resume-builder";
 
 export const tools: ToolConfig[] = [
   {
@@ -549,41 +549,16 @@ export const tools: ToolConfig[] = [
     tagline: "Build a clean, ATS-friendly resume from a simple form.",
     seoDescription:
       "Free resume builder. Enter your details, work experience and education to generate a clean, ATS-friendly resume you can copy or download instantly.",
-    fields: [
-      { name: "fullName", label: "Full name", type: "text", placeholder: "Priya Sharma" },
-      { name: "targetRole", label: "Target job title", type: "text", placeholder: "Product Manager", optional: true },
-      { name: "email", label: "Email", type: "text", placeholder: "priya.sharma@email.com" },
-      { name: "phone", label: "Phone", type: "text", placeholder: "+91 98765 43210" },
-      { name: "location", label: "City", type: "text", placeholder: "Bengaluru", optional: true },
-      { name: "linkedin", label: "LinkedIn / portfolio URL", type: "text", placeholder: "linkedin.com/in/priyasharma", optional: true },
-      { name: "summary", label: "Professional summary (2-3 sentences)", type: "textarea", rows: 3, placeholder: "Product manager with 5 years building B2B SaaS features from discovery to launch." },
-      { name: "skills", label: "Skills (comma-separated)", type: "textarea", rows: 2, placeholder: "Product strategy, SQL, Figma, A/B testing, Agile" },
-      { name: "exp1Company", label: "Most recent employer", type: "text", placeholder: "Avexora Technologies" },
-      { name: "exp1Title", label: "Job title", type: "text", placeholder: "Senior Product Manager" },
-      { name: "exp1Duration", label: "Duration", type: "text", placeholder: "Jan 2022 – Present" },
-      { name: "exp1Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Launched a feature that grew activation by 18%", optional: true },
-      { name: "exp2Company", label: "Previous employer", type: "text", placeholder: "Nimbus Software", optional: true },
-      { name: "exp2Title", label: "Job title", type: "text", placeholder: "Product Analyst", optional: true },
-      { name: "exp2Duration", label: "Duration", type: "text", placeholder: "Jun 2019 – Dec 2021", optional: true },
-      { name: "exp2Highlights", label: "Key achievements (one per line)", type: "textarea", rows: 3, placeholder: "Built the analytics dashboard used company-wide", optional: true },
-      { name: "eduDegree", label: "Degree", type: "text", placeholder: "B.Tech, Computer Science" },
-      { name: "eduInstitution", label: "Institution", type: "text", placeholder: "IIT Bombay" },
-      { name: "eduYear", label: "Year of graduation", type: "text", placeholder: "2019", optional: true },
-    ],
-    generate: generateResume,
-    submitLabel: "Generate resume",
+    component: ResumeBuilder,
     emailGate: true,
-    howTo: {
-      name: "How to build a resume",
-      steps: [
-        { name: "Enter your contact details and summary", text: "Add your name, contact details and a 2-3 sentence professional summary." },
-        { name: "Add skills and experience", text: "List your skills, then your work experience with quantified achievements for each role." },
-        { name: "Add education and generate", text: "Enter your degree and institution, then generate — copy or download the finished resume." },
-      ],
-    },
+    steps: [
+      "Add your name, contact details and a 2-3 sentence professional summary.",
+      "List your skills, then your work experience with quantified achievements for each role — use the + buttons to add more roles or education entries.",
+      "Generate — copy or download the finished resume.",
+    ],
     about: [
       "A resume that clears applicant-tracking-system (ATS) screening has one job before it ever reaches a human: parse cleanly as plain text, with your name, contact details, skills and dated work history in a predictable order. This builder produces exactly that — a single-column, keyword-scannable resume with no tables, columns, icons or graphics that a parser could choke on or reorder incorrectly.",
-      "Fill in your contact details, a two-to-three sentence summary, your skills, up to two roles of work experience with bullet-point achievements, and your education — the generator assembles it into a clean, standard structure recruiters and ATS software both read the same way. Lead each achievement bullet with a number where you have one (\"grew signups 18%\", \"cut processing time from 3 days to 4 hours\") — quantified bullets are read as evidence, plain duty descriptions are read as a job description.",
+      "Fill in your contact details, a two-to-three sentence summary, your skills, as many roles of work experience and education entries as you need (use the + buttons to add more, or remove ones you don't) with bullet-point achievements, and the generator assembles it into a clean, standard structure recruiters and ATS software both read the same way. Lead each achievement bullet with a number where you have one (\"grew signups 18%\", \"cut processing time from 3 days to 4 hours\") — quantified bullets are read as evidence, plain duty descriptions are read as a job description.",
       "This produces the content and structure, not final visual design — copy the output into your preferred word processor for a formatted, polished layout once the substance is right, or use it as-is for online applications that only accept plain text or paste-in resumes. Keep it to one page for under ten years of experience; two only once your history genuinely needs it.",
     ],
     faq: [
@@ -595,7 +570,7 @@ export const tools: ToolConfig[] = [
       {
         question: "How many jobs can I add?",
         answer:
-          "This generator supports two work experience entries. For a longer history, copy the output and add further entries manually in the same format, keeping your most recent role first.",
+          "As many as you need — use the \"+ Add experience\" button for each additional role, and \"+ Add education\" for further degrees or certifications. Keep your most recent role first.",
       },
       {
         question: "Should I quantify every bullet point?",

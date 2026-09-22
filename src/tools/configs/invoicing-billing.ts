@@ -24,14 +24,6 @@ export const tools: ToolConfig[] = [
       "Free online GST invoice generator for India. Add your business details, line items and GST rates, then print or save a professional tax invoice as PDF in seconds.",
     component: InvoiceGenerator,
     emailGate: true,
-    howTo: {
-      name: "How to create a GST invoice",
-      steps: [
-        { name: "Enter business and customer details", text: "Add your business details, the customer's details and an invoice number." },
-        { name: "Add line items", text: "List each item or service with quantity, rate and GST rate — the totals and CGST/SGST or IGST split calculate automatically." },
-        { name: "Print or save as PDF", text: "Use your browser's print dialog to save the invoice as a PDF or print it directly." },
-      ],
-    },
     about: [
       "This free generator builds a clean, professional GST tax invoice in your browser: enter your business and customer details, add line items with quantity, rate and GST slab, and the invoice preview updates live with the correct CGST/SGST or IGST split.",
       "For sales within your state, GST is split as CGST + SGST; tick “Inter-state (IGST)” for sales to another state and the invoice shows IGST instead. When you're done, hit Print / Save as PDF — your browser's print dialog lets you save a PDF copy to send to your customer.",

@@ -8,7 +8,7 @@ import { adminNavigation, AdminNavItem } from "@/config/admin-navigation";
 import { Menu, X } from "lucide-react";
 import { LogoutButton } from "@/components/admin/auth/LogoutButton";
 
-export function AdminSidebar({ user }: { user: any }) {
+export function AdminSidebar({ user }: { user: Awaited<ReturnType<typeof requireAdminAuth>> }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   
@@ -115,7 +115,7 @@ export function AdminSidebar({ user }: { user: any }) {
             <Link href="/" target="_blank" className="mt-2 block text-xs font-semibold text-orange-600 hover:underline">
               ↗ Public Website
             </Link>
-            <div className="text-sm font-medium text-orange-950 truncate" title={user.name || user.email}>
+            <div className="text-sm font-medium text-orange-950 truncate" title={user.name || user.email || undefined}>
               {user.name || user.email}
             </div>
             <div className="text-xs text-orange-700/60 uppercase tracking-wider mt-1">{user.role}</div>

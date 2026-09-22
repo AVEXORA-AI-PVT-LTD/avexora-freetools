@@ -1,10 +1,10 @@
 import { describe, it } from "vitest";
 import { writeFileSync } from "node:fs";
+import type { ComputeFn, FieldValues, GenerateFn } from "@/types/tools";
 import { generateBase64 } from "@/tools/compute/dev/base64";
 import { decodeJwt } from "@/tools/compute/dev/jwt-decoder";
 import { testRegex } from "@/tools/compute/dev/regex-tester";
 import { convertTimestamp } from "@/tools/compute/dev/timestamp-converter";
-import { generateUrlEncodeDecode } from "@/tools/compute/dev/url-encoder-decoder";
 import { findAndReplace } from "@/tools/compute/text/find-and-replace";
 import { jsonToCsv } from "@/tools/compute/text/json-to-csv";
 import { csvToJson } from "@/tools/compute/text/csv-to-json";
@@ -19,9 +19,12 @@ import { analyzeHeadline } from "@/tools/compute/marketing/headline";
 import { generateRobotsTxt } from "@/tools/compute/marketing/robots-txt";
 import { buildUtmUrl } from "@/tools/compute/marketing/utm-builder";
 
-const r = (fn:any, v:any)=>{const o=fn(v); return "error" in o ? {ERROR:o.error} : o;};
+const r = (fn: ComputeFn | GenerateFn, v: FieldValues) => {
+  const o = fn(v);
+  return "error" in o ? { ERROR: o.error } : o;
+};
 const out: string[] = [];
-const P = (label:string, val:any)=>out.push(`${label}=${JSON.stringify(val)}`);
+const P = (label: string, val: unknown) => out.push(`${label}=${JSON.stringify(val)}`);
 describe("probe", () => {
   it("probe all", () => {
     P("b64 empty-space", r(generateBase64,{text:"",mode:"encode"}));
