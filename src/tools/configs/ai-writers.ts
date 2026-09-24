@@ -10,7 +10,20 @@ export const tools: ToolConfig[] = [
     tagline:
       "Turn a topic into a complete, SEO-ready blog post outline in seconds.",
     seoDescription:
-      "Free AI blog outline generator. Enter your topic and audience and get a structured outline with headings, subheadings and key points — powered by AI, no sign-up.",
+      "Free AI blog outline generator. Enter a topic and audience to get an SEO outline with an H1, H2 sections, H3 points and intro and CTA ideas. No sign-up.",
+    seoTitle: "Free AI Blog Outline Generator: SEO H2 & H3 Structure",
+    keywords: [
+      "ai blog outline generator",
+      "blog outline generator",
+      "free blog outline generator",
+      "blog post outline maker",
+      "seo blog outline",
+      "blog structure generator",
+      "h2 and h3 outline for a blog",
+      "article outline generator",
+      "content outline generator",
+      "how to outline a blog post",
+    ],
     fields: [
       {
         name: "topic",
@@ -89,6 +102,17 @@ export const tools: ToolConfig[] = [
     tagline: "Get three hook-first opening paragraphs for any blog post title.",
     seoDescription:
       "Free AI blog intro generator. Enter your post title and audience to get three alternative opening paragraphs that hook readers — powered by AI, no sign-up.",
+    seoTitle: "Free AI Blog Intro Generator: 3 Hook-First Openings",
+    keywords: [
+      "ai blog intro generator",
+      "blog introduction generator",
+      "blog intro writer",
+      "free blog intro generator",
+      "opening paragraph generator",
+      "blog hook generator",
+      "article intro generator",
+      "how to write a blog introduction",
+    ],
     fields: [
       { name: "title", label: "Blog post title", type: "text", placeholder: "e.g. 10 GST Mistakes Small Businesses Keep Making" },
       { name: "audience", label: "Target audience", type: "text", placeholder: "e.g. first-time business owners", optional: true },
@@ -156,6 +180,17 @@ export const tools: ToolConfig[] = [
     tagline: "Turn features into buyer-focused product copy for your store or catalogue.",
     seoDescription:
       "Free AI product description generator. Enter your product and features to get persuasive, benefit-led copy plus a bullet list — ideal for e-commerce listings.",
+    seoTitle: "Free AI Product Description Generator for E-commerce",
+    keywords: [
+      "ai product description generator",
+      "product description generator",
+      "free product description writer",
+      "e-commerce product description",
+      "product listing description generator",
+      "product copy generator",
+      "product bullet points generator",
+      "how to write a product description",
+    ],
     fields: [
       { name: "product", label: "Product name & type", type: "text", placeholder: "e.g. Aarna handloom cotton bedsheet, king size" },
       { name: "features", label: "Key features / details", type: "textarea", rows: 3, placeholder: "e.g. 400 TC, natural dyes, machine washable, made in Bhagalpur", optional: true },
@@ -221,7 +256,19 @@ export const tools: ToolConfig[] = [
     name: "AI Ad Copy Generator",
     tagline: "Three tested ad angles for Google or Meta, sized to the platform's limits.",
     seoDescription:
-      "Free AI ad copy generator for Google and Facebook/Instagram ads. Get three ad variants — benefit-led, offer-led and social-proof — sized to character limits.",
+      "Free AI ad copy generator for Google and Facebook/Instagram ads. Get benefit, offer and social-proof variants sized to each platform's character limits.",
+    seoTitle: "Free AI Ad Copy Generator for Google & Facebook Ads",
+    keywords: [
+      "ai ad copy generator",
+      "ad copy generator",
+      "google ads copy generator",
+      "facebook ad copy generator",
+      "instagram ad copy",
+      "ad headline generator",
+      "ppc ad copy writer",
+      "free ad copy generator",
+      "how to write ad copy",
+    ],
     fields: [
       { name: "product", label: "Product / service", type: "text", placeholder: "e.g. cloud accounting software for Indian SMEs" },
       {
@@ -238,7 +285,7 @@ export const tools: ToolConfig[] = [
       { name: "audience", label: "Target audience", type: "text", placeholder: "e.g. CAs and small business owners", optional: true },
     ],
     submitLabel: "Generate ad copy",
-    directAnswer: "The AI Ad Copy Generator is a free tool that creates platform-optimised advertising copy for Google Ads or Meta (Facebook/Instagram), complete with character counts.",
+    directAnswer: "The AI Ad Copy Generator is a free tool that creates platform-optimised advertising copy for Google Ads or Meta (Facebook/Instagram), sized to each platform's limits, with character counts for Google ads.",
     example: "Input: 'Cloud accounting software' + '30-day trial' → Output: Three distinct ad variants (benefit-led, offer-led, proof-led) sized perfectly for Google's character limits.",
     steps: [
       "Enter the product or service you are advertising.",
@@ -288,6 +335,18 @@ export const tools: ToolConfig[] = [
     tagline: "Short, personalised cold emails that respect the reader's time — plus the follow-up.",
     seoDescription:
       "Free AI cold email writer. Get a sub-120-word cold outreach email with subject line and follow-up — personalised, direct and free of tired sales clichés.",
+    seoTitle: "Free AI Cold Email Writer: Subject Line & Follow-Up",
+    keywords: [
+      "ai cold email writer",
+      "cold email generator",
+      "cold email template",
+      "b2b cold email writer",
+      "sales email generator",
+      "outreach email writer",
+      "follow-up email generator",
+      "cold email subject line",
+      "how to write a cold email",
+    ],
     fields: [
       { name: "pitch", label: "What you're pitching", type: "text", placeholder: "e.g. our payroll automation service for factories" },
       { name: "recipient", label: "Who you're writing to", type: "text", placeholder: "e.g. HR heads at mid-size manufacturers", optional: true },
@@ -306,7 +365,7 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Write cold email",
-    directAnswer: "The AI Cold Email Writer is a free tool that crafts concise, personalised B2B outreach emails and automated follow-ups designed to get replies, not spam complaints.",
+    directAnswer: "The AI Cold Email Writer is a free tool that crafts concise, personalised B2B outreach emails, with a subject line and a short follow-up email, designed to get replies, not spam complaints.",
     example: "Input: Pitching 'payroll automation' to 'HR heads' → Output: A 100-word email focusing on their 3-day payroll headache, a clear call-to-action, and a 2-sentence follow-up.",
     steps: [
       "State exactly what you are pitching.",
@@ -356,6 +415,17 @@ export const tools: ToolConfig[] = [
     tagline: "Three platform-sized post variants with hooks and hashtags.",
     seoDescription:
       "Free AI social media post generator for Instagram, Facebook and X. Enter a topic and get three post variants with strong hooks and relevant hashtags.",
+    seoTitle: "Free AI Social Media Post Generator with Hashtags",
+    keywords: [
+      "ai social media post generator",
+      "social media post generator",
+      "instagram caption generator",
+      "facebook post generator",
+      "tweet generator",
+      "social media caption writer",
+      "post ideas with hashtags",
+      "free social media content generator",
+    ],
     fields: [
       { name: "topic", label: "What's the post about?", type: "text", placeholder: "e.g. we just delivered our 1,000th order" },
       {
@@ -434,6 +504,18 @@ export const tools: ToolConfig[] = [
     tagline: "Fifteen name ideas across descriptive, brandable and evocative styles.",
     seoDescription:
       "Free AI business name generator. Describe your business and get 15 name ideas — descriptive, brandable and evocative — each with a one-line rationale.",
+    seoTitle: "Free AI Business Name Generator: 15 Brandable Ideas",
+    keywords: [
+      "ai business name generator",
+      "business name generator",
+      "company name generator",
+      "brand name ideas",
+      "startup name generator",
+      "shop name ideas",
+      "brandable name generator",
+      "free business name generator",
+      "how to name a business",
+    ],
     fields: [
       { name: "description", label: "What does the business do?", type: "textarea", rows: 3, placeholder: "e.g. organic cold-pressed oils sold D2C across India" },
       { name: "keywords", label: "Words or themes to consider", type: "text", placeholder: "e.g. purity, tradition, harvest", optional: true },
@@ -500,7 +582,18 @@ export const tools: ToolConfig[] = [
     name: "AI Tagline Generator",
     tagline: "Twelve slogan options in three lengths — minus the clichés.",
     seoDescription:
-      "Free AI tagline and slogan generator. Describe your business and value proposition to get 12 tagline options across ultra-short, medium and wordplay styles.",
+      "Free AI tagline generator. Describe your business and value proposition to get 12 slogan options in ultra-short, medium and wordplay styles.",
+    seoTitle: "Free AI Tagline Generator: Slogan Ideas for Your Brand",
+    keywords: [
+      "ai tagline generator",
+      "tagline generator",
+      "slogan generator",
+      "business slogan maker",
+      "brand tagline ideas",
+      "catchy slogan generator",
+      "company tagline generator",
+      "free slogan generator",
+    ],
     fields: [
       { name: "business", label: "Business / product", type: "text", placeholder: "e.g. Postbox — a courier aggregator for D2C brands" },
       { name: "value", label: "Core value proposition", type: "text", placeholder: "e.g. cheapest shipping rates with one integration", optional: true },
@@ -568,6 +661,17 @@ export const tools: ToolConfig[] = [
     tagline: "Paste an email, say what you want to convey, get a polished reply.",
     seoDescription:
       "Free AI email reply generator. Paste the email you received, choose your intent and tone, and get a clear, professional reply that answers every point.",
+    seoTitle: "Free AI Email Reply Generator: Professional Replies",
+    keywords: [
+      "ai email reply generator",
+      "email reply generator",
+      "email response generator",
+      "reply to email with ai",
+      "professional email reply",
+      "customer email reply writer",
+      "free email reply writer",
+      "how to reply to an email professionally",
+    ],
     fields: [
       { name: "email", label: "The email you received", type: "textarea", rows: 6, placeholder: "Paste the email you need to reply to…" },
       { name: "intent", label: "What should the reply say?", type: "text", placeholder: "e.g. agree to the meeting but move it to Thursday" },
@@ -635,6 +739,17 @@ export const tools: ToolConfig[] = [
     tagline: "Turn an insight or milestone into a post built for the LinkedIn feed.",
     seoDescription:
       "Free AI LinkedIn post generator. Enter your topic and angle to get a feed-ready post with a strong hook, short paragraphs and a comment-inviting close.",
+    seoTitle: "Free AI LinkedIn Post Generator: Hooks & Hashtags",
+    keywords: [
+      "ai linkedin post generator",
+      "linkedin post generator",
+      "linkedin post writer",
+      "linkedin content generator",
+      "linkedin hook generator",
+      "linkedin post ideas",
+      "free linkedin post generator",
+      "how to write a linkedin post",
+    ],
     fields: [
       { name: "topic", label: "What's the post about?", type: "text", placeholder: "e.g. what we learned firing our biggest client" },
       {
@@ -700,9 +815,20 @@ export const tools: ToolConfig[] = [
     slug: "ai-seo-title-generator",
     category: "ai-writers",
     name: "AI SEO Title Generator",
-    tagline: "Ten click-worthy title tags, all within Google's 60-character window.",
+    tagline: "Ten click-worthy title tags, written for Google's 60-character window.",
     seoDescription:
       "Free AI SEO title generator. Enter your topic and keyword to get 10 title-tag options, each within 60 characters, across proven formats — with a top pick.",
+    seoTitle: "Free AI SEO Title Generator: 10 Title Tags Under 60 Chars",
+    keywords: [
+      "ai seo title generator",
+      "seo title generator",
+      "meta title generator",
+      "title tag generator",
+      "blog title generator",
+      "seo headline generator",
+      "title tag under 60 characters",
+      "free seo title generator",
+    ],
     fields: [
       { name: "topic", label: "What's the page about?", type: "text", placeholder: "e.g. a guide to GST registration for freelancers" },
       { name: "keyword", label: "Primary keyword", type: "text", placeholder: "e.g. GST registration for freelancers", optional: true },
@@ -719,7 +845,7 @@ export const tools: ToolConfig[] = [
       },
     ],
     submitLabel: "Generate titles",
-    directAnswer: "The AI SEO Title Generator is a free tool that creates 10 highly clickable, search-optimised meta title tags that fit perfectly within Google's 60-character limit.",
+    directAnswer: "The AI SEO Title Generator is a free tool that creates 10 highly clickable, search-optimised meta title tags written to fit Google's roughly 60-character limit, with each title's character count shown.",
     example: "Input: 'GST registration for freelancers' → Output: 10 options like 'GST Registration for Freelancers: 2026 Guide' (55 chars), categorized by search intent.",
     steps: [
       "Enter the core topic of your webpage or article.",
@@ -769,6 +895,17 @@ export const tools: ToolConfig[] = [
     tagline: "Generate the questions your customers actually ask — answered.",
     seoDescription:
       "Free AI FAQ generator. Describe your product or service and get customer-phrased questions with clear answers — ready for your website's FAQ section.",
+    seoTitle: "Free AI FAQ Generator: Questions & Answers for Your Site",
+    keywords: [
+      "ai faq generator",
+      "faq generator",
+      "faq section generator",
+      "frequently asked questions generator",
+      "faq writer for website",
+      "product faq generator",
+      "questions and answers generator",
+      "free faq generator",
+    ],
     fields: [
       { name: "subject", label: "Product / service / topic", type: "text", placeholder: "e.g. our wedding photography packages in Jaipur" },
       { name: "details", label: "Key details to draw from", type: "textarea", rows: 4, placeholder: "e.g. packages from ₹75,000, 2 photographers, delivery in 3 weeks, travel extra", optional: true },
@@ -836,7 +973,19 @@ export const tools: ToolConfig[] = [
     tagline:
       "Turn a role, experience level and required skills into a professional, ready-to-post job description.",
     seoDescription:
-      "Free AI job description generator. Enter a role, experience level and required skills to get a professional, recruitment-ready job description — powered by AI, no sign-up.",
+      "Free AI job description generator. Enter a role, experience level and skills to get a structured, recruitment-ready JD in seconds. No sign-up needed.",
+    seoTitle: "Free AI Job Description Generator: JD Maker",
+    keywords: [
+      "ai job description generator",
+      "job description generator",
+      "jd generator",
+      "job description template",
+      "job posting generator",
+      "job ad generator",
+      "hiring job description writer",
+      "free jd maker",
+      "how to write a job description",
+    ],
     fields: [
       {
         name: "role",

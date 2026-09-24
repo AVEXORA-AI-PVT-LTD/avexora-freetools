@@ -22,7 +22,22 @@ export const tools: ToolConfig[] = [
     name: "Letterhead Compliance Checker",
     tagline: "Check whether your company letterhead carries the particulars the law requires.",
     seoDescription:
-      "Free letterhead compliance checker for Indian companies and LLPs. Verify your CIN, LLPIN, GSTIN, registered office address and contact details against Companies Act 2013 s.12(3)(c) requirements.",
+      "Free letterhead compliance checker for Indian companies and LLPs. Check CIN, LLPIN, GSTIN and registered office details against Companies Act 2013 rules.",
+    seoTitle: "Free Letterhead Compliance Checker: CIN, GSTIN & LLPIN",
+    keywords: [
+      "letterhead compliance checker",
+      "letterhead requirements india",
+      "company letterhead format as per companies act 2013",
+      "section 12(3)(c) companies act",
+      "CIN on letterhead",
+      "is CIN mandatory on letterhead",
+      "LLPIN on letterhead",
+      "LLP letterhead requirements",
+      "GSTIN on invoice",
+      "letterhead particulars for private limited company",
+    ],
+    directAnswer:
+      "A letterhead compliance checker tests your company's legal name, CIN or LLPIN, GSTIN, registered office address, phone and email against Indian rules like Companies Act 2013 s.12(3)(c). It lists must-fix and should-fix gaps for your letterhead, invoice, envelope and visiting card.",
     component: LetterheadComplianceChecker,
     about: [
       "Section 12(3)(c) of the Companies Act 2013 requires every company registered in India to print its name, the address of its registered office and its Corporate Identity Number \u2014 along with its telephone number and, where they exist, its email and website addresses \u2014 on all its business letters, billheads, letter papers, notices and other official publications. It is one of the most routinely missed compliance requirements in Indian corporate practice, precisely because it looks like a design decision rather than a statutory one. A founder orders letterheads from a printer or builds one in a design tool, nobody involved knows the section exists, and the company operates for years on stationery that is technically in default.",
@@ -67,6 +82,20 @@ export const tools: ToolConfig[] = [
     tagline: "Create a mutual or one-way non-disclosure agreement in minutes.",
     seoDescription:
       "Free NDA generator. Create a mutual or one-way non-disclosure agreement with standard confidentiality clauses — ready to review and sign.",
+    seoTitle: "Free NDA Generator: Mutual & One-Way NDA Under Indian Law",
+    keywords: [
+      "nda generator",
+      "non-disclosure agreement template",
+      "nda format india",
+      "mutual nda",
+      "one-way nda",
+      "confidentiality agreement format",
+      "free nda template",
+      "non-disclosure agreement for business",
+      "how to write an nda",
+    ],
+    directAnswer:
+      "An NDA generator creates a mutual or one-way non-disclosure agreement from the party names, effective date, purpose and term. It includes clauses on confidential information, obligations, exclusions, term and Indian governing law, as plain text to copy or download.",
     fields: [
       { name: "partyA", label: "First party (name)", type: "text", placeholder: "Acme Technologies Pvt Ltd" },
       { name: "partyB", label: "Second party (name)", type: "text", placeholder: "Priya Sharma" },
@@ -118,6 +147,20 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a complete privacy policy for your website or app.",
     seoDescription:
       "Free privacy policy generator. Create a complete privacy policy for your website covering data collection, cookies, analytics and user rights.",
+    seoTitle: "Free Privacy Policy Generator for Your Website or App",
+    keywords: [
+      "privacy policy generator",
+      "privacy policy template",
+      "privacy policy for website",
+      "privacy policy for app",
+      "free privacy policy",
+      "privacy policy for ecommerce website",
+      "privacy policy with cookies clause",
+      "privacy policy for website india",
+      "how to write a privacy policy",
+    ],
+    directAnswer:
+      "A privacy policy generator writes a ready-to-edit privacy policy from your company name, website URL and contact email. It covers information collected, how it is used and shared, data security, user rights and children's privacy, with optional cookie, analytics and payment clauses.",
     fields: [
       { name: "companyName", label: "Company/website name", type: "text", placeholder: "Avexora Technologies" },
       { name: "websiteUrl", label: "Website URL", type: "text", placeholder: "https://example.com" },
@@ -161,6 +204,19 @@ export const tools: ToolConfig[] = [
     tagline: "Generate complete terms and conditions for your website or online business.",
     seoDescription:
       "Free terms and conditions generator. Create complete T&Cs covering usage rules, accounts, intellectual property, liability and governing law.",
+    seoTitle: "Free Terms and Conditions Generator for Websites",
+    keywords: [
+      "terms and conditions generator",
+      "terms and conditions template",
+      "terms of service generator",
+      "terms of use for website",
+      "terms and conditions for ecommerce website",
+      "terms and conditions for website india",
+      "free terms and conditions",
+      "how to write terms and conditions",
+    ],
+    directAnswer:
+      "A terms and conditions generator drafts website T&Cs from your business name, URL, contact email and city. It covers website use, accounts, intellectual property, orders and payment, prohibited uses, warranties, liability, indemnity, termination and Indian governing law.",
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "websiteUrl", label: "Website URL", type: "text", placeholder: "https://example.com" },
@@ -204,6 +260,19 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a clear refund and return policy for your store.",
     seoDescription:
       "Free refund policy generator. Create a clear refund and return policy covering eligibility, process and timelines — for physical or digital products.",
+    seoTitle: "Free Refund Policy Generator: Return & Refund Policy",
+    keywords: [
+      "refund policy generator",
+      "return and refund policy template",
+      "refund policy for ecommerce website",
+      "return policy generator",
+      "refund policy for digital products",
+      "cancellation and refund policy",
+      "refund policy for payment gateway",
+      "free refund policy template",
+    ],
+    directAnswer:
+      "A refund policy generator creates a return and refund policy for physical or digital products from your company name, contact email and return window. It covers eligibility, how to request a refund, processing time, non-refundable items, return shipping and late refunds.",
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Retail Pvt Ltd" },
       { name: "contactEmail", label: "Contact email", type: "text", placeholder: "support@example.com" },
@@ -247,6 +316,20 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a website disclaimer covering liability, advice and external links.",
     seoDescription:
       "Free disclaimer generator. Create a website disclaimer covering no-professional-advice, liability limitation, external links and affiliate disclosure.",
+    seoTitle: "Free Disclaimer Generator for Websites & Blogs",
+    keywords: [
+      "disclaimer generator",
+      "website disclaimer template",
+      "blog disclaimer",
+      "affiliate disclaimer",
+      "no professional advice disclaimer",
+      "legal disclaimer for website",
+      "external links disclaimer",
+      "free disclaimer template",
+      "how to write a disclaimer for a website",
+    ],
+    directAnswer:
+      "A disclaimer generator writes a website disclaimer from your site name, URL, niche and contact email. It covers general information, limitation of liability, external links, and errors and omissions, with optional professional-advice and affiliate-link clauses.",
     fields: [
       { name: "companyName", label: "Company/website name", type: "text", placeholder: "Avexora Blog" },
       { name: "websiteUrl", label: "Website URL", type: "text", placeholder: "https://example.com" },
@@ -290,6 +373,20 @@ export const tools: ToolConfig[] = [
     tagline: "Create a residential leave-and-license rent agreement.",
     seoDescription:
       "Free rent agreement generator for India. Create a residential leave-and-license agreement with rent, deposit, term and standard clauses.",
+    seoTitle: "Free Rent Agreement Generator India: Leave & License Format",
+    keywords: [
+      "rent agreement generator",
+      "rent agreement format",
+      "11 month rent agreement",
+      "leave and license agreement",
+      "rental agreement format india",
+      "house rent agreement",
+      "rent agreement online",
+      "tenancy agreement template",
+      "how to make a rent agreement",
+    ],
+    directAnswer:
+      "A rent agreement generator drafts a residential leave-and-license agreement for India from the landlord and tenant names, property address, monthly rent in ₹, security deposit, start date and term (11 months by default). It covers rent, deposit refund, use, maintenance, termination and inspection.",
     fields: [
       { name: "landlordName", label: "Landlord's name", type: "text", placeholder: "Suresh Kumar" },
       { name: "tenantName", label: "Tenant's name", type: "text", placeholder: "Ananya Rao" },
@@ -343,6 +440,19 @@ export const tools: ToolConfig[] = [
     tagline: "Create a freelance services agreement covering scope, fee and IP.",
     seoDescription:
       "Free freelance contract generator. Create a complete freelance services agreement with scope of work, payment terms, IP transfer and confidentiality.",
+    seoTitle: "Free Freelance Contract Generator: Scope, Fee & IP Terms",
+    keywords: [
+      "freelance contract generator",
+      "freelance contract template",
+      "freelancer agreement format",
+      "service agreement for freelancers",
+      "independent contractor agreement",
+      "freelance contract india",
+      "client agreement for freelancers",
+      "how to write a freelance contract",
+    ],
+    directAnswer:
+      "A freelance contract generator drafts a services agreement between a client and a freelancer from the project scope, fee in ₹, payment terms and start and delivery dates. It covers timeline, payment, contractor status, IP transfer, confidentiality, revisions, termination, liability and Indian law.",
     fields: [
       { name: "clientName", label: "Client name", type: "text", placeholder: "Acme Retail Pvt Ltd" },
       { name: "freelancerName", label: "Freelancer name", type: "text", placeholder: "Rohan Mehta" },
@@ -387,6 +497,19 @@ export const tools: ToolConfig[] = [
     tagline: "Create a full employment contract with compensation and termination terms.",
     seoDescription:
       "Free employment contract generator. Create a complete employment contract covering compensation, probation, confidentiality and notice period.",
+    seoTitle: "Free Employment Contract Generator for Indian Employers",
+    keywords: [
+      "employment contract generator",
+      "employment contract template",
+      "employment agreement format india",
+      "employment contract with probation",
+      "employment contract with notice period",
+      "job contract format",
+      "employment agreement for startups",
+      "non-solicitation clause employment contract",
+    ],
+    directAnswer:
+      "An employment contract generator drafts an employment contract from the company, employee, designation, annual CTC in ₹, start date, work location and notice period. It covers duties, pay, probation, working hours, leave, confidentiality, non-solicitation, termination and Indian governing law.",
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "employeeName", label: "Employee name", type: "text", placeholder: "Kavya Reddy" },
@@ -432,6 +555,20 @@ export const tools: ToolConfig[] = [
     tagline: "Create a personal or business loan agreement with repayment terms.",
     seoDescription:
       "Free loan agreement generator. Create a loan agreement with principal, interest rate and repayment schedule — for personal or business loans.",
+    seoTitle: "Free Loan Agreement Generator: Personal & Business Loans",
+    keywords: [
+      "loan agreement generator",
+      "loan agreement format",
+      "personal loan agreement",
+      "loan agreement between friends",
+      "family loan agreement",
+      "business loan agreement template",
+      "interest-free loan agreement",
+      "loan agreement format india",
+      "money lending agreement",
+    ],
+    directAnswer:
+      "A loan agreement generator drafts a personal or business loan agreement from the lender and borrower names, loan amount in ₹, annual interest rate (0% allowed), repayment months and loan date. It estimates the monthly instalment and covers interest, repayment, prepayment, default and security.",
     fields: [
       { name: "lenderName", label: "Lender's name", type: "text", placeholder: "Vikram Singh" },
       { name: "borrowerName", label: "Borrower's name", type: "text", placeholder: "Arjun Nair" },
@@ -475,7 +612,21 @@ export const tools: ToolConfig[] = [
     name: "Partnership Deed Generator",
     tagline: "Create a partnership deed with capital and profit-sharing terms.",
     seoDescription:
-      "Free partnership deed generator for India. Create a partnership deed with capital contribution, profit-sharing ratio and standard clauses under the Partnership Act.",
+      "Free partnership deed generator for India. Create a deed with capital contribution, profit-sharing ratio and standard clauses under the Partnership Act.",
+    seoTitle: "Free Partnership Deed Generator: Indian Partnership Act",
+    keywords: [
+      "partnership deed generator",
+      "partnership deed format",
+      "partnership deed format india",
+      "partnership agreement template",
+      "partnership deed for two partners",
+      "profit sharing ratio in partnership deed",
+      "partnership deed for firm registration",
+      "indian partnership act 1932",
+      "how to make a partnership deed",
+    ],
+    directAnswer:
+      "A partnership deed generator drafts a deed for a two-partner firm from the firm name, partner names and profit shares (totalling 100%), address, capital in ₹ and start date. It covers capital, profit sharing, duties, books, retirement, dissolution and disputes under the Partnership Act, 1932.",
     fields: [
       { name: "firmName", label: "Firm name", type: "text", placeholder: "Sharma & Rao Enterprises" },
       { name: "partner1Name", label: "First partner's name", type: "text", placeholder: "Rajesh Sharma" },
@@ -521,6 +672,20 @@ export const tools: ToolConfig[] = [
     tagline: "Check whether a GSTIN is correctly formatted, with a valid checksum.",
     seoDescription:
       "Free GSTIN verification tool. Check a GST number's format and mod-36 check digit instantly, and decode its state code, embedded PAN and registration number.",
+    seoTitle: "Free GSTIN Verification: Validate GST Number Format & PAN",
+    keywords: [
+      "gstin verification",
+      "gst number check",
+      "gstin validator",
+      "gstin format",
+      "gstin checksum",
+      "gst number validation",
+      "gstin state code",
+      "find pan from gstin",
+      "how to check if a gstin is valid",
+    ],
+    directAnswer:
+      "A GSTIN verification tool checks that a 15-character GST number has the right format and a valid mod-36 check digit, then decodes its state and state code, embedded PAN and registration number. It runs in your browser and does not confirm live registration on the GST portal.",
     fields: [
       { name: "gstin", label: "GSTIN", type: "text", placeholder: "29AABCU9603R1ZM", maxLength: 15 },
     ],
@@ -577,7 +742,6 @@ export const tools: ToolConfig[] = [
       ".vcf file generator",
       "shareable business card link",
     ],
-    showAvexoraProducts: true,
     directAnswer:
       "A digital business card generator turns your name, contact details, photo and logo into a mobile card page with tap-to-call, WhatsApp and a Save Contact button, plus a .vcf vCard file and a QR code. This one is free to design and download; a shareable link is included in paid plans.",
     example:
@@ -659,6 +823,20 @@ export const tools: ToolConfig[] = [
     tagline: "Look up any Indian bank branch's IFSC, MICR code and address.",
     seoDescription:
       "Free IFSC code finder. Enter any Indian bank's IFSC code to instantly get the branch name, address, MICR code and NEFT/RTGS/IMPS/UPI availability.",
+    seoTitle: "Free IFSC Code Finder: Bank Branch, Address & MICR Code",
+    keywords: [
+      "ifsc code finder",
+      "ifsc code details",
+      "bank ifsc code",
+      "ifsc code lookup",
+      "micr code finder",
+      "bank branch address by ifsc",
+      "ifsc to bank name",
+      "neft rtgs imps upi by ifsc",
+      "what is ifsc code",
+    ],
+    directAnswer:
+      "An IFSC code finder looks up an 11-character Indian bank IFSC code and shows the bank, branch name, address, MICR code and whether NEFT, RTGS, IMPS and UPI are supported. It queries a public bank-branch dataset directly from your browser.",
     component: IfscCodeFinder,
     about: [
       "An IFSC (Indian Financial System Code) is an 11-character code that uniquely identifies a bank branch for electronic payments — the first four letters name the bank, a fixed zero comes next, and the last six characters identify the specific branch. Every NEFT, RTGS, IMPS and UPI transfer routes through this code, which is why bank forms, cheque books and payment apps all ask for it.",

@@ -29,8 +29,23 @@ export const tools: ToolConfig[] = [
       "Add or remove GST from any amount and see the CGST/SGST/IGST split instantly.",
     seoDescription:
       "Free online GST calculator for India. Calculate GST inclusive or exclusive amounts at 0.25%, 3%, 5%, 12%, 18% and 28% with instant CGST, SGST and IGST breakup.",
+    seoTitle: "Free GST Calculator: CGST, SGST & IGST Breakup",
+    keywords: [
+      "GST calculator",
+      "GST calculator India",
+      "online GST calculator",
+      "GST inclusive calculator",
+      "GST exclusive calculator",
+      "reverse GST calculator",
+      "CGST SGST calculator",
+      "IGST calculator",
+      "add GST to price",
+      "remove GST from amount",
+      "18% GST calculator",
+      "how to calculate GST",
+    ],
     directAnswer:
-      "A GST calculator for India that adds or removes GST at the current slab rates (0.25%, 3%, 5%, 12%, 18%, 28%) and shows the CGST/SGST/IGST breakup instantly.",
+      "A GST calculator for India that adds or removes GST at 0.25%, 3%, 5%, 12%, 18% or 28% and shows the CGST/SGST/IGST breakup instantly.",
     formula:
       "Add GST: GST = amount × rate ÷ 100, total = amount + GST. Remove GST: base = amount ÷ (1 + rate ÷ 100), GST = amount − base.",
     example:
@@ -120,6 +135,18 @@ export const tools: ToolConfig[] = [
     tagline: "Work out your monthly loan instalment, total interest and total repayment in seconds.",
     seoDescription:
       "Free EMI calculator for home, car and personal loans. Enter loan amount, interest rate and tenure to get your monthly EMI, total interest and total payment.",
+    seoTitle: "Free EMI Calculator for Home, Car & Personal Loans",
+    keywords: [
+      "EMI calculator",
+      "loan EMI calculator",
+      "home loan EMI calculator",
+      "car loan EMI calculator",
+      "personal loan EMI calculator",
+      "monthly instalment calculator",
+      "loan interest calculator",
+      "EMI formula",
+      "how to calculate EMI",
+    ],
     directAnswer:
       "An EMI (Equated Monthly Instalment) calculator works out the fixed monthly repayment on a home, car or personal loan — plus total interest and total payment — using the standard reducing-balance formula.",
     formula:
@@ -181,6 +208,17 @@ export const tools: ToolConfig[] = [
     tagline: "See what your monthly mutual-fund SIP could grow to over time.",
     seoDescription:
       "Free SIP calculator. Enter your monthly investment, expected return and period to see your maturity corpus, total invested and estimated returns instantly.",
+    seoTitle: "Free SIP Calculator: Mutual Fund Returns & Maturity Value",
+    keywords: [
+      "SIP calculator",
+      "mutual fund SIP calculator",
+      "SIP return calculator",
+      "SIP maturity calculator",
+      "monthly SIP calculator",
+      "systematic investment plan calculator",
+      "SIP formula",
+      "how much will my SIP grow",
+    ],
     directAnswer:
       "A SIP calculator projects how a fixed monthly mutual-fund investment grows over time, using the standard SIP future-value formula with monthly compounding.",
     formula:
@@ -241,6 +279,17 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate FD maturity value with monthly, quarterly, half-yearly or yearly compounding.",
     seoDescription:
       "Free fixed deposit calculator for Indian banks. Enter deposit, interest rate, tenure and compounding frequency to see FD maturity amount and interest earned.",
+    seoTitle: "Free Fixed Deposit Calculator: FD Maturity & Interest",
+    keywords: [
+      "fixed deposit calculator",
+      "FD calculator",
+      "FD interest calculator",
+      "FD maturity calculator",
+      "bank FD calculator",
+      "FD calculator quarterly compounding",
+      "fixed deposit interest calculator",
+      "how is FD interest calculated",
+    ],
     directAnswer:
       "A fixed deposit calculator tells you the exact maturity amount and total interest of an FD for any deposit, rate, tenure and compounding frequency (monthly, quarterly, half-yearly or yearly).",
     formula:
@@ -311,7 +360,18 @@ export const tools: ToolConfig[] = [
     name: "Recurring Deposit Calculator",
     tagline: "See the maturity value of a monthly recurring deposit at any bank rate.",
     seoDescription:
-      "Free RD calculator. Enter your monthly deposit, interest rate and tenure to see the recurring deposit maturity amount and interest, using the standard bank formula.",
+      "Free RD calculator. Enter your monthly deposit, interest rate and tenure to see the recurring deposit maturity amount and interest, using the bank formula.",
+    seoTitle: "Free RD Calculator: Recurring Deposit Maturity Value",
+    keywords: [
+      "RD calculator",
+      "recurring deposit calculator",
+      "RD interest calculator",
+      "RD maturity calculator",
+      "post office RD calculator",
+      "bank RD calculator",
+      "monthly deposit calculator",
+      "how is RD interest calculated",
+    ],
     directAnswer:
       "A recurring deposit calculator works out the maturity value of a monthly RD (bank or post office) using the standard quarterly-compounding RD formula.",
     formula:
@@ -371,6 +431,18 @@ export const tools: ToolConfig[] = [
     tagline: "Compare your tax under the new and old regimes and see which saves you more.",
     seoDescription:
       "Free income tax calculator for FY 2025-26 (AY 2026-27). Compare new vs old regime tax on your salary with standard deduction, 87A rebate and cess included.",
+    seoTitle: "Free Income Tax Calculator FY 2025-26: New vs Old Regime",
+    keywords: [
+      "income tax calculator",
+      "income tax calculator FY 2025-26",
+      "tax calculator AY 2026-27",
+      "new vs old tax regime calculator",
+      "new regime tax calculator",
+      "salary tax calculator India",
+      "87A rebate calculator",
+      "which tax regime is better",
+      "how much income tax on my salary",
+    ],
     directAnswer:
       "An income tax calculator for FY 2025-26 (AY 2026-27) that compares your tax under the new and old regimes — with standard deduction, the §87A rebate and 4% health-and-education cess — so you can see which regime saves you more.",
     formula:
@@ -441,6 +513,18 @@ export const tools: ToolConfig[] = [
     tagline: "Work out TDS to deduct on contractor, professional, rent, commission and interest payments.",
     seoDescription:
       "Free TDS calculator for sections 194C, 194J, 194I, 194H and 194A. Enter the payment amount and section to get the TDS to deduct and net amount payable.",
+    seoTitle: "Free TDS Calculator: 194C, 194J, 194I, 194H & 194A",
+    keywords: [
+      "TDS calculator",
+      "TDS calculator India",
+      "194C TDS calculator",
+      "194J TDS calculator",
+      "TDS on rent calculator",
+      "TDS on contractor payment",
+      "TDS on commission",
+      "TDS rate chart",
+      "how much TDS to deduct",
+    ],
     directAnswer:
       "A TDS calculator that applies the correct tax-at-source rate for the most common sections (194C contractors, 194J professional fees, 194I rent, 194H commission, 194A interest) and shows the TDS amount and net payment.",
     formula:
@@ -514,7 +598,18 @@ export const tools: ToolConfig[] = [
     tagline:
       "Estimate your annual income tax for AY 2027-28 and see exactly how much advance tax to pay and when.",
     seoDescription:
-      "Free advance tax calculator for FY 2026-27 (AY 2027-28). Estimate your income tax under the new or old regime, subtract TDS and advance tax already paid, and see the quarterly advance tax instalment schedule with due dates.",
+      "Free advance tax calculator for FY 2026-27. Estimate tax under the new or old regime, subtract TDS paid and get your quarterly instalments and due dates.",
+    seoTitle: "Advance Tax Calculator FY 2026-27: Instalments & Due Dates",
+    keywords: [
+      "advance tax calculator",
+      "advance tax calculator FY 2026-27",
+      "advance tax due dates",
+      "advance tax instalments",
+      "quarterly advance tax",
+      "advance tax for freelancers",
+      "how to calculate advance tax",
+      "who needs to pay advance tax",
+    ],
     directAnswer:
       "An advance tax calculator that estimates your income tax for FY 2026-27 (AY 2027-28), subtracts TDS and advance tax already paid, and converts the balance into the exact quarterly instalments due on 15 June, 15 September, 15 December and 15 March.",
     formula:
@@ -636,7 +731,19 @@ export const tools: ToolConfig[] = [
     tagline:
       "Section 194J TDS on professional and technical fees — see what your client deducts and the net you receive.",
     seoDescription:
-      "Free Section 194J TDS calculator for freelancers and consultants (Tax Year 2026-27, Income-tax Act 2025). Enter your fee, category and annual payments to see the applicable TDS rate (10% professional / 2% technical), the TDS deducted and your net receivable.",
+      "Free freelance TDS calculator for Section 194J (393 in the 2025 Act). See the 10% or 2% TDS your client deducts, the ₹50,000 threshold and your net receivable.",
+    seoTitle: "Free Freelance TDS Calculator: Section 194J TDS on Fees",
+    keywords: [
+      "freelance TDS calculator",
+      "194J TDS calculator",
+      "TDS on professional fees",
+      "TDS on freelance income",
+      "TDS on technical services",
+      "TDS for consultants",
+      "section 393 TDS",
+      "net payment after TDS",
+      "how much TDS will my client deduct",
+    ],
     directAnswer:
       "A freelancer TDS calculator that works out the Section 194J (now 393(1)) deduction a client withholds from your professional or technical fees — 10% or 2% — including the ₹50,000 annual threshold, the payer-type rules and the 20% no-PAN rate.",
     formula:
@@ -733,6 +840,17 @@ export const tools: ToolConfig[] = [
     tagline: "See how money grows when interest earns interest.",
     seoDescription:
       "Free compound interest calculator. Enter principal, rate, time and compounding frequency to see the maturity amount and total interest earned instantly.",
+    seoTitle: "Free Compound Interest Calculator: Maturity & Interest",
+    keywords: [
+      "compound interest calculator",
+      "compound interest formula",
+      "monthly compound interest calculator",
+      "quarterly compounding calculator",
+      "CI calculator",
+      "compound interest calculator India",
+      "interest on interest calculator",
+      "how to calculate compound interest",
+    ],
     directAnswer:
       "A compound interest calculator that shows how much a principal grows when interest earns interest, for any rate, period and compounding frequency (yearly, half-yearly, quarterly or monthly).",
     formula:
@@ -804,6 +922,16 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate interest charged only on the principal — the SI = P×R×T formula.",
     seoDescription:
       "Free simple interest calculator. Enter principal, annual rate and time to get the interest and total amount using the SI = P × R × T ÷ 100 formula.",
+    seoTitle: "Free Simple Interest Calculator: SI = P × R × T ÷ 100",
+    keywords: [
+      "simple interest calculator",
+      "simple interest formula",
+      "SI calculator",
+      "simple interest on loan",
+      "interest calculator",
+      "simple interest vs compound interest",
+      "how to calculate simple interest",
+    ],
     directAnswer:
       "A simple interest calculator that computes interest charged only on the principal (no compounding) and the total amount repayable, using the SI = P × R × T ÷ 100 formula.",
     formula:
@@ -863,6 +991,17 @@ export const tools: ToolConfig[] = [
     tagline: "Find how many units you must sell before your business stops losing money.",
     seoDescription:
       "Free break-even calculator. Enter fixed costs, price per unit and variable cost to get break-even units, revenue and contribution margin instantly.",
+    seoTitle: "Free Break-Even Calculator: Units, Revenue & Margin",
+    keywords: [
+      "break-even calculator",
+      "break-even point calculator",
+      "break-even analysis",
+      "break-even formula",
+      "break-even units",
+      "contribution margin calculator",
+      "BEP calculator",
+      "how many units to break even",
+    ],
     directAnswer:
       "A break-even calculator that finds how many units you must sell before total revenue covers total costs — break-even units, break-even revenue and contribution margin ratio in one go.",
     formula:
@@ -922,6 +1061,17 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate your gross profit and margin percentage from cost and revenue.",
     seoDescription:
       "Free profit margin calculator. Enter cost and revenue to get gross profit, profit margin percentage and equivalent markup — know what you really earn per sale.",
+    seoTitle: "Free Profit Margin Calculator: Gross Profit & Margin %",
+    keywords: [
+      "profit margin calculator",
+      "margin calculator",
+      "gross margin calculator",
+      "gross profit calculator",
+      "profit percentage calculator",
+      "margin formula",
+      "margin vs markup",
+      "how to calculate profit margin",
+    ],
     directAnswer:
       "A profit margin calculator that turns cost and revenue into gross profit, the margin percentage on the selling price, and the equivalent markup on cost.",
     formula:
@@ -980,6 +1130,16 @@ export const tools: ToolConfig[] = [
     tagline: "Work out your markup percentage on cost — and the margin it translates to.",
     seoDescription:
       "Free markup calculator. Enter cost price and selling price to get markup percentage on cost, profit per unit and the equivalent profit margin.",
+    seoTitle: "Free Markup Calculator: Markup % on Cost & Margin",
+    keywords: [
+      "markup calculator",
+      "markup percentage calculator",
+      "markup on cost",
+      "markup formula",
+      "markup to margin calculator",
+      "markup vs margin",
+      "how to calculate markup",
+    ],
     directAnswer:
       "A markup calculator that works out the percentage you add to cost to reach a selling price, plus the equivalent profit margin — you buy at a cost, mark up, and see both perspectives on the same profit.",
     formula:
@@ -1038,7 +1198,18 @@ export const tools: ToolConfig[] = [
     tagline:
       "See your true profit on every sale after marketplace fees, shipping, packaging and other costs.",
     seoDescription:
-      "Free profit margin and markup calculator for Indian marketplace sellers. Enter selling price, product cost, marketplace fee (percentage or fixed) and shipping to get gross profit, net profit, margin %, markup % and the amount you actually receive — instantly.",
+      "Free seller profit calculator for Indian marketplace sellers. Enter price, cost, marketplace fee and shipping to get net profit, margin %, markup % and payout.",
+    seoTitle: "Free Seller Profit Calculator: Margin, Markup & Fees",
+    keywords: [
+      "seller profit calculator",
+      "marketplace profit calculator",
+      "profit margin and markup calculator",
+      "ecommerce profit calculator",
+      "online seller margin calculator",
+      "marketplace fee calculator",
+      "net profit per order",
+      "how much profit after marketplace fees",
+    ],
     directAnswer:
       "A marketplace seller profit calculator that works backwards from the customer price to the rupees that actually land with you — net of product cost, marketplace fee, shipping, packaging and other costs — and reports both margin (on price) and markup (on cost).",
     formula:
@@ -1145,6 +1316,17 @@ export const tools: ToolConfig[] = [
     tagline: "Measure total and annualized return on any investment.",
     seoDescription:
       "Free ROI calculator. Enter initial investment, final value and holding period to get total ROI, net gain and annualized return (CAGR) instantly.",
+    seoTitle: "Free ROI Calculator: Total Return & Annualized CAGR",
+    keywords: [
+      "ROI calculator",
+      "return on investment calculator",
+      "ROI formula",
+      "ROI percentage",
+      "annualized return calculator",
+      "CAGR calculator",
+      "investment return calculator",
+      "how to calculate ROI",
+    ],
     directAnswer:
       "An ROI calculator that measures the total return on an investment, the rupee gain or loss, and the annualized return (CAGR) that makes investments with different holding periods comparable.",
     formula:
@@ -1204,6 +1386,18 @@ export const tools: ToolConfig[] = [
     tagline: "Straight-line and written-down-value depreciation with year-wise book values.",
     seoDescription:
       "Free depreciation calculator with straight-line and WDV (reducing balance) methods. Get annual depreciation and year-wise book value for any business asset.",
+    seoTitle: "Free Depreciation Calculator: SLM & WDV Methods",
+    keywords: [
+      "depreciation calculator",
+      "straight line depreciation calculator",
+      "WDV depreciation calculator",
+      "written down value method",
+      "SLM depreciation",
+      "reducing balance depreciation",
+      "depreciation schedule",
+      "book value calculator",
+      "how to calculate depreciation",
+    ],
     directAnswer:
       "A depreciation calculator that spreads an asset's cost over its useful life using either straight-line (SLM) or written-down value (WDV) method, with the year-wise book value for each year.",
     formula:
@@ -1273,7 +1467,17 @@ export const tools: ToolConfig[] = [
     name: "Working Capital Calculator",
     tagline: "Check your business's short-term financial health: net working capital and current ratio.",
     seoDescription:
-      "Free working capital calculator. Enter current assets and current liabilities to get net working capital and current ratio — your short-term liquidity health check.",
+      "Free working capital calculator. Enter current assets and current liabilities to get net working capital and current ratio — a quick liquidity check.",
+    seoTitle: "Free Working Capital Calculator & Current Ratio",
+    keywords: [
+      "working capital calculator",
+      "net working capital calculator",
+      "current ratio calculator",
+      "working capital formula",
+      "liquidity ratio calculator",
+      "current assets minus current liabilities",
+      "how to calculate working capital",
+    ],
     directAnswer:
       "A working capital calculator that measures a business's short-term liquidity: net working capital (current assets minus current liabilities) and the current ratio.",
     formula:
@@ -1332,6 +1536,20 @@ export const tools: ToolConfig[] = [
     tagline: "Find X% of Y, what percent X is of Y, or the percentage change between two numbers.",
     seoDescription:
       "Free percentage calculator. Find X% of Y, work out what percent one number is of another, or calculate the percentage increase or decrease between two values.",
+    seoTitle: "Free Percentage Calculator: % Of, Increase & Decrease",
+    keywords: [
+      "percentage calculator",
+      "percent calculator",
+      "percentage increase calculator",
+      "percentage decrease calculator",
+      "percentage change calculator",
+      "X% of Y",
+      "what percent of a number",
+      "percentage formula",
+      "how to calculate percentage",
+    ],
+    directAnswer:
+      "A percentage calculator answers the three everyday percentage questions: what X% of Y is, what percent X is of Y, and the percentage increase or decrease from X to Y (with the difference), updating as you type.",
     fields: [
       {
         name: "mode",

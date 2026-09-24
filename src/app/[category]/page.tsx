@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AVEXORA_ORGANIZATION } from "@/config/avexora-products";
 import { notFound } from "next/navigation";
 import { categories, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
 import { toolsByCategory } from "@/tools/registry";
@@ -20,7 +21,8 @@ export async function generateMetadata({
   const cat = getCategory(category);
   if (!cat) return {};
   
-  const defaultTitle = `${cat.name} — ${SITE_NAME}`;
+  // The layout's title template appends the site name.
+  const defaultTitle = `Free Online ${cat.name}`;
   const defaultCanonical = `${SITE_URL}/${cat.slug}`;
   
   const fallback = {
@@ -45,14 +47,34 @@ export default async function CategoryPage({
   const tools = toolsByCategory[cat.slug];
   const canonical = `${SITE_URL}/${cat.slug}`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: cat.name, item: canonical },
-    ],
-  };
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: cat.name, item: canonical },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: cat.name,
+      description: cat.description,
+      url: canonical,
+      publisher: AVEXORA_ORGANIZATION,
+      mainEntity: {
+        "@type": "ItemList",
+        numberOfItems: tools.length,
+        itemListElement: tools.map((t, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: t.name,
+          url: `${SITE_URL}/${cat.slug}/${t.slug}`,
+        })),
+      },
+    },
+  ];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">

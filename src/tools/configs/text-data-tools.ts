@@ -22,6 +22,18 @@ export const tools: ToolConfig[] = [
       "Count words, characters, sentences and reading time as you type.",
     seoDescription:
       "Free online word counter. Instantly count words, characters (with and without spaces), sentences, paragraphs, reading time and speaking time for any text.",
+    seoTitle: "Free Word Counter: Words, Characters & Reading Time",
+    keywords: [
+      "word counter",
+      "word count",
+      "count words online",
+      "word count checker",
+      "words and characters count",
+      "sentence counter",
+      "paragraph counter",
+      "reading time calculator",
+      "word count for essay",
+    ],
     directAnswer:
       "A word counter that gives live counts for words, characters (with and without spaces), sentences, paragraphs, and the estimated reading and speaking time — all recomputed as you type.",
     formula:
@@ -88,6 +100,18 @@ export const tools: ToolConfig[] = [
     tagline: "Count characters with and without spaces, live as you type.",
     seoDescription:
       "Free character counter. Count characters with and without spaces, words and lines instantly — perfect for SMS, tweets, meta descriptions and ad copy limits.",
+    seoTitle: "Free Character Counter: Count With & Without Spaces",
+    keywords: [
+      "character counter",
+      "character count",
+      "letter counter",
+      "count characters online",
+      "character count with spaces",
+      "character count without spaces",
+      "sms character counter",
+      "tweet character counter",
+      "meta description length checker",
+    ],
     directAnswer:
       "A character counter that reports characters with and without spaces, plus word and line counts, live as you type — with the numbers that actually matter for character-limited fields.",
     formula:
@@ -146,6 +170,19 @@ export const tools: ToolConfig[] = [
     tagline: "Convert text to UPPERCASE, lowercase, Title Case, camelCase, snake_case and more.",
     seoDescription:
       "Free online case converter. Change text to uppercase, lowercase, title case, sentence case, camelCase, PascalCase, snake_case or kebab-case in one click.",
+    seoTitle: "Free Case Converter: Upper, Lower, Title & camelCase",
+    keywords: [
+      "case converter",
+      "text case converter",
+      "uppercase to lowercase",
+      "lowercase to uppercase",
+      "title case converter",
+      "sentence case converter",
+      "camelCase converter",
+      "snake_case converter",
+      "kebab-case converter",
+      "capitalize text online",
+    ],
     directAnswer:
       "A case converter that transforms any text into eight cases in one click — UPPERCASE, lowercase, Title Case, Sentence case, camelCase, PascalCase, snake_case and kebab-case — splitting on spaces, punctuation and existing camelCase humps.",
     steps: [
@@ -219,6 +256,17 @@ export const tools: ToolConfig[] = [
     tagline: "Pretty-print, validate or minify JSON instantly in your browser.",
     seoDescription:
       "Free JSON formatter and validator. Pretty-print JSON with 2 or 4-space indentation, minify it for production, and get clear error messages for invalid JSON.",
+    seoTitle: "Free JSON Formatter & Validator: Beautify or Minify",
+    keywords: [
+      "json formatter",
+      "json validator",
+      "json beautifier",
+      "pretty print json",
+      "format json online",
+      "json minifier",
+      "validate json",
+      "check json syntax error",
+    ],
     directAnswer:
       "A JSON formatter and validator that pretty-prints JSON with 2 or 4-space indentation, minifies it for production, and surfaces the parser's exact error message and position when the input is invalid.",
     steps: [
@@ -287,6 +335,17 @@ export const tools: ToolConfig[] = [
     tagline: "Turn spreadsheet CSV data into a clean JSON array.",
     seoDescription:
       "Free CSV to JSON converter. Paste CSV with comma, semicolon or tab delimiters and get a JSON array — handles quoted fields and header rows correctly.",
+    seoTitle: "Free CSV to JSON Converter: Excel CSV to JSON Array",
+    keywords: [
+      "csv to json",
+      "csv to json converter",
+      "convert csv to json",
+      "excel csv to json",
+      "csv to json array",
+      "tsv to json",
+      "semicolon csv to json",
+      "csv with header to json",
+    ],
     directAnswer:
       "A CSV to JSON converter that turns spreadsheet data into a JSON array, correctly handling quoted fields containing commas and line breaks, header-row keys, and comma, semicolon or tab delimiters.",
     steps: [
@@ -357,6 +416,17 @@ export const tools: ToolConfig[] = [
     tagline: "Flatten a JSON array into spreadsheet-ready CSV.",
     seoDescription:
       "Free JSON to CSV converter. Paste a JSON array of objects and get CSV with a header row — properly quoted for Excel and Google Sheets.",
+    seoTitle: "Free JSON to CSV Converter: Open JSON Data in Excel",
+    keywords: [
+      "json to csv",
+      "json to csv converter",
+      "convert json to csv",
+      "json to excel",
+      "json array to csv",
+      "export json to csv",
+      "json to google sheets",
+      "json to spreadsheet",
+    ],
     directAnswer:
       "A JSON to CSV converter that flattens a JSON array of objects into spreadsheet-ready CSV, building the header row from the union of all keys, filling missing values with blanks, and quoting fields containing commas or quotes.",
     steps: [
@@ -414,6 +484,17 @@ export const tools: ToolConfig[] = [
     tagline: "Compare two texts line by line and see exactly what changed.",
     seoDescription:
       "Free text diff checker. Paste two versions of any text and see a line-by-line comparison with additions and removals clearly marked — all in your browser.",
+    seoTitle: "Free Text Diff Checker: Compare Two Texts Line by Line",
+    keywords: [
+      "text diff checker",
+      "diff checker",
+      "compare text online",
+      "compare two texts",
+      "text compare",
+      "find difference between two texts",
+      "line by line text comparison",
+      "online diff tool",
+    ],
     directAnswer:
       "A text diff checker that compares two versions line by line using the longest-common-subsequence algorithm, marking removed lines with a minus and added lines with a plus so you see exactly what changed — including small insertions in the middle of long documents.",
     steps: [
@@ -472,6 +553,17 @@ export const tools: ToolConfig[] = [
     tagline: "Generate placeholder text by paragraphs, sentences or words.",
     seoDescription:
       "Free lorem ipsum generator. Create classic placeholder text by paragraphs, sentences or words for mockups, designs and templates — copy or download instantly.",
+    seoTitle: "Free Lorem Ipsum Generator: Paragraphs, Sentences & Words",
+    keywords: [
+      "lorem ipsum generator",
+      "lorem ipsum",
+      "placeholder text generator",
+      "dummy text generator",
+      "filler text",
+      "lorem ipsum paragraphs",
+      "lorem ipsum dolor sit amet",
+      "dummy text for website",
+    ],
     directAnswer:
       "A lorem ipsum generator that produces the classic placeholder text starting with \"Lorem ipsum dolor sit amet\" in exact quantities — by paragraphs, sentences or words — for mockups, designs and CMS templates, with copy or download output.",
     steps: [
@@ -539,7 +631,18 @@ export const tools: ToolConfig[] = [
     name: "Password Generator",
     tagline: "Create strong random passwords with cryptographically secure randomness.",
     seoDescription:
-      "Free strong password generator. Create random passwords from 4 to 128 characters with uppercase, lowercase, numbers and symbols — generated locally, never sent anywhere.",
+      "Free strong password generator. Create random 4–128 character passwords with uppercase, lowercase, numbers and symbols — generated locally, never sent.",
+    seoTitle: "Free Strong Password Generator: Random & Secure",
+    keywords: [
+      "strong password generator",
+      "password generator",
+      "random password generator",
+      "secure password generator",
+      "create strong password",
+      "password with numbers and symbols",
+      "16 character password generator",
+      "generate password online",
+    ],
     directAnswer:
       "A strong password generator that creates random passwords of 4–128 characters from your chosen character sets, using the browser's cryptographically secure random API with biased-free rejection sampling — so nothing is ever sent over a network.",
     steps: [
@@ -601,6 +704,17 @@ export const tools: ToolConfig[] = [
     tagline: "De-duplicate any list while keeping the original order.",
     seoDescription:
       "Free duplicate line remover. Paste any list and remove duplicate lines instantly, with optional case-insensitive matching and whitespace trimming.",
+    seoTitle: "Free Remove Duplicate Lines Tool: Dedupe Any List",
+    keywords: [
+      "remove duplicate lines",
+      "duplicate line remover",
+      "remove duplicates from list",
+      "dedupe list online",
+      "delete duplicate lines",
+      "remove duplicate entries",
+      "keep unique lines",
+      "remove duplicate lines case insensitive",
+    ],
     directAnswer:
       "A duplicate line remover that strips repeat lines from any list while preserving the first occurrence and the original order, with case-insensitive matching and whitespace trimming to catch near-duplicates that look identical.",
     steps: [
@@ -661,6 +775,17 @@ export const tools: ToolConfig[] = [
     tagline: "Sort lines alphabetically, by length, or in natural numeric order.",
     seoDescription:
       "Free text sorter. Sort lines A to Z, Z to A, by length, or in natural numeric order (file2 before file10), with optional case-insensitive sorting.",
+    seoTitle: "Free Text Sorter: Sort Lines Alphabetically Online",
+    keywords: [
+      "text sorter",
+      "sort lines alphabetically",
+      "alphabetical order",
+      "sort list online",
+      "sort text a to z",
+      "reverse alphabetical order",
+      "natural sort order",
+      "sort lines by length",
+    ],
     directAnswer:
       "A text sorter that orders lines A→Z, Z→A, by length, or in natural numeric order — so file2 sorts before file10 — with stable, case-insensitive sorting by default.",
     steps: [
@@ -733,6 +858,17 @@ export const tools: ToolConfig[] = [
     tagline: "Bulk find-and-replace with whole-word, case and regex options.",
     seoDescription:
       "Free online find and replace tool. Replace text in bulk with case-sensitive, whole-word and regular-expression modes — runs entirely in your browser.",
+    seoTitle: "Free Find and Replace Tool: Bulk, Whole-Word & Regex",
+    keywords: [
+      "find and replace",
+      "find and replace online",
+      "bulk replace text",
+      "replace text online",
+      "replace words in text",
+      "regex find and replace",
+      "search and replace tool",
+      "case sensitive find and replace",
+    ],
     directAnswer:
       "A find and replace tool that makes bulk edits to any pasted text, with case-sensitive, whole-word and regex modes — including capture-group replacements like $1 — all running entirely in the browser.",
     steps: [

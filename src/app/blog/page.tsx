@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { getPublishedList } from "@/server/content-service";
 import { ContentType, type ContentItem } from "@prisma/client";
-import { SITE_NAME } from "@/tools/categories";
 
 export const metadata = {
-  title: `Blog | ${SITE_NAME}`,
+  title: "Blog",
   description: `Read the latest articles, tutorials, and guides about digital tools and marketing.`,
 };
 

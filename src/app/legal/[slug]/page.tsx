@@ -2,14 +2,14 @@ import { notFound } from "next/navigation";
 import { getPublishedContent } from "@/server/content-service";
 import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
 import { ContentType } from "@prisma/client";
-import { SITE_NAME, SITE_URL } from "@/tools/categories";
+import { SITE_URL } from "@/tools/categories";
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = await getPublishedContent(params.slug);
   if (!post || !( [ContentType.PRIVACY, ContentType.TERMS, ContentType.DISCLAIMER, ContentType.PAGE] as ContentType[] ).includes(post.contentType as ContentType)) return {};
   
   return {
-    title: post.seoTitle || `${post.title} | ${SITE_NAME}`,
+    title: post.seoTitle || post.title,
     description: post.metaDesc || post.excerpt,
     alternates: {
       canonical: post.canonicalUrl || `${SITE_URL}/legal/${post.slug}`
