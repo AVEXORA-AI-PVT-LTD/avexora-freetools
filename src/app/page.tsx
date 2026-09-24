@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { SITE_NAME, SITE_URL } from "@/tools/categories";
 import { DISPLAYED_TOOL_COUNT } from "@/tools/registry";
 import { buildSearchItems, type SearchItem } from "@/components/tools/search-items";
 import { ToolSearch } from "@/components/tools/tool-search";
 import { getEffectiveCategories } from "@/server/categories";
+import { AVEXORA_ORGANIZATION } from "@/config/avexora-products";
 import { STUDIO_ASSETS } from "@/studio/assets";
 import { getPlanAsync, formatINR } from "@/server/studio/plans";
 
@@ -16,12 +17,7 @@ const homepageJsonLd = [
     description:
       "Free calculators, generators, PDF & image utilities and AI writing tools for your business.",
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Avexora",
-    url: EBOS_URL,
-  },
+  { "@context": "https://schema.org", ...AVEXORA_ORGANIZATION },
 ];
 
 

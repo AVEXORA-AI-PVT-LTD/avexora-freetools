@@ -182,6 +182,11 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     })) || [],
     // Add steps mapping
     steps: staticTool?.steps?.map((s) => typeof s === 'string' ? s : s.title) || [],
+    // Search metadata from the static config; admin SEO overrides replace these below.
+    seoTitle: staticTool?.seoTitle || "",
+    metaDescription: staticTool?.seoDescription || "",
+    focusKeyword: staticTool?.keywords?.[0] || "",
+    secondaryKeywords: staticTool?.keywords?.slice(1) || [],
   };
 
   if (config) {

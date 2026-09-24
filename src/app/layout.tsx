@@ -141,6 +141,12 @@ export default async function RootLayout({
                 >
                   Studio pricing
                 </Link>
+                <Link
+                  href="/products"
+                  className="mt-1 block text-sm text-slate-600 hover:text-orange-800"
+                >
+                  Avexora products
+                </Link>
               </div>
               {footerLinks.length > 0 && (
                 <div>

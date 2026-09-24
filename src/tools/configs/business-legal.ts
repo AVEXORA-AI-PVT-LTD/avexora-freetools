@@ -560,10 +560,26 @@ export const tools: ToolConfig[] = [
     category: "business-legal",
     name: "Digital Business Card Generator",
     tagline: "Design an animated digital business card with your photo, logo, tap-to-call, WhatsApp, Save Contact and a QR code.",
+    seoTitle: "Free Digital Business Card Generator: Animated vCard & QR",
     seoDescription:
-      "Free digital business card generator. Add your details, an animated photo, your company logo and brand colours to get a mobile-first card with tap-to-call, WhatsApp, maps, social links, a vCard, a QR code and a shareable link.",
+      "Free digital business card generator: make an animated digital visiting card with your photo, logo, WhatsApp button, Save Contact vCard and QR code.",
+    keywords: [
+      "digital business card generator",
+      "free digital business card",
+      "digital visiting card maker",
+      "online visiting card",
+      "vCard QR code",
+      "QR code business card",
+      "business card with WhatsApp button",
+      "animated business card",
+      "virtual business card",
+      "electronic business card",
+      ".vcf file generator",
+      "shareable business card link",
+    ],
+    showAvexoraProducts: true,
     directAnswer:
-      "A free digital business card generator that turns your name, contact details, photo, logo and brand colours into an animated, mobile-first card page, a .vcf contact file and a scannable QR code, with a shareable link on paid plans.",
+      "A digital business card generator turns your name, contact details, photo and logo into a mobile card page with tap-to-call, WhatsApp and a Save Contact button, plus a .vcf vCard file and a QR code. This one is free to design and download; a shareable link is included in paid plans.",
     example:
       "Example: Enter \"Priya Sharma\", \"Founder & CEO\", \"Northwind Labs\", a phone number and your website, pick the Ocean palette, and download a single HTML card page, priya-sharma.vcf and a QR code that saves Priya to any phone's contacts.",
     steps: [
@@ -577,11 +593,26 @@ export const tools: ToolConfig[] = [
     ],
     component: DigitalBusinessCard,
     about: [
-      "A digital business card is a small web page that does everything a paper visiting card does, and more: one tap calls you, opens a WhatsApp chat, starts an email or shows your office on Google Maps, and a Save Contact button adds you to the other person's phone in one step. This generator builds that page from a short form. Upload up to four photos in the same outfit, with different poses or expressions, and the top of the card turns them into a motion picture: each photo is shown whole, never cropped, and crossfades into the next with a slow zoom. Your company logo sits large on a clean white panel just beneath the photos, where it is easy to see. Contact rows, social icons and a QR code follow, all in your brand colours and previewed live as you type.",
+      "A digital business card, also called a digital visiting card, virtual business card or e-business card, is a small web page that does everything a paper visiting card does, and more: one tap calls you, opens a WhatsApp chat, starts an email or shows your office on Google Maps, and a Save Contact button adds you to the other person's phone in one step. This generator builds that page from a short form. Upload up to four photos in the same outfit, with different poses or expressions, and the top of the card turns them into a motion picture: each photo is shown whole, never cropped, and crossfades into the next with a slow zoom. Your company logo sits large on a clean white panel just beneath the photos, where it is easy to see. Contact rows, social icons and a QR code follow, all in your brand colours and previewed live as you type.",
       "Designing and downloading are free. Three files come out of it. The card page is a single self-contained HTML file with its styles, animations and the Share button built in and no external requests, so it loads fast and can be hosted anywhere: on your own website, a company intranet or a free static host. The .vcf file is a standard vCard 3.0 that iPhone, Android, Gmail and Outlook contacts import directly, with your photo embedded. The QR code can either save your contact straight into the phone that scans it or open your website. Print it on the back of a paper card, a standee at your counter or the footer of your [invoices](/invoicing-billing/invoice-generator). For a plain QR code for any other link, use the [QR code generator](/developer-web/qr-code-generator).",
       "On a paid plan you can also save the card to your account and get a shareable link, such as tools.avexora.in/card/your-name. Copy it, share it from your phone or send it on WhatsApp; the link shows a proper preview with your photo, and the QR code can point to it. Edit the card whenever your details change and the link stays the same. If you only download the files, everything happens in your browser: your details and photo are not uploaded, and the form is saved only on your own device so you don't lose your work between visits. The card respects each visitor's reduced-motion setting and has light and dark modes, so it stays readable and accessible on any phone. If you need company stationery that meets the Companies Act's disclosure rules as well, check your letterhead with the [letterhead compliance checker](/business-legal/letterhead-compliance-checker).",
     ],
     faq: [
+      {
+        question: "How do I make a digital business card for free?",
+        answer:
+          "Open this generator, upload a photo and your logo, fill in your name, designation, phone, WhatsApp, email and website, and pick your brand colours. The preview updates as you type. When it looks right, download the card page (.html), the vCard (.vcf) and the QR code (.png). Designing and downloading are free and need no sign-up.",
+      },
+      {
+        question: "What is a vCard, and why does my card need one?",
+        answer:
+          "A vCard (.vcf file) is the standard contact file every phone and email app understands. The card's Save Contact button and its contact QR code both use it, so one tap or one scan adds your name, number, email, company and photo to the other person's contacts, with no retyping.",
+      },
+      {
+        question: "Digital business card or paper visiting card: which is better?",
+        answer:
+          "A digital card never runs out, costs nothing to update when your number or title changes, and lets people call, WhatsApp or save you in one tap. Paper still helps at events and counters. Many people use both: print the card's QR code on the back of a paper visiting card so it leads to the digital one.",
+      },
       {
         question: "How do I share my digital business card?",
         answer:
