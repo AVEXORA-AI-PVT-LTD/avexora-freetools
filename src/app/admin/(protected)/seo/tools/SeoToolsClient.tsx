@@ -5,7 +5,15 @@ import { Search, Filter, Edit, ExternalLink } from "lucide-react";
 import { resetToolSeo } from "../actions";
 import { useDialog } from "@/components/admin/DialogProvider";
 
-export function SeoToolsClient({ tools }: { tools: any[] }) {
+interface SeoToolRow {
+  name: string;
+  slug: string;
+  category: string;
+  hasOverride: boolean;
+  robotsIndex: boolean;
+}
+
+export function SeoToolsClient({ tools }: { tools: SeoToolRow[] }) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
   const { showConfirm, showAlert } = useDialog();
@@ -27,8 +35,8 @@ export function SeoToolsClient({ tools }: { tools: any[] }) {
       try {
         await resetToolSeo(slug, cat);
         showAlert("Success", "SEO reset to defaults.");
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to reset.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : "") || "Failed to reset.");
       }
     });
   };

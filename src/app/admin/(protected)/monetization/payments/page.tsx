@@ -11,7 +11,7 @@ export const metadata = {
 export default async function PaymentsAdminPage(props: {
   searchParams: Promise<{ page?: string }>
 }) {
-  await requireAdminAuth("settings.view" as any);
+  await requireAdminAuth("settings.view");
   
   const searchParams = await props.searchParams;
   const page = parseInt(searchParams.page || "1") || 1;

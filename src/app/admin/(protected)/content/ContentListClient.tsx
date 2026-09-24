@@ -29,8 +29,8 @@ export function ContentListClient({ initialItems, fixedType }: { initialItems: C
             setItems(prev => prev.filter(c => c.id !== item.id));
             showAlert("Success", "Content deleted.");
           }
-        } catch (e: any) {
-          showAlert("Error", e.message || "Failed to delete.");
+        } catch (e) {
+          showAlert("Error", (e instanceof Error ? e.message : "") || "Failed to delete.");
         }
       }
     );
@@ -107,7 +107,7 @@ export function ContentListClient({ initialItems, fixedType }: { initialItems: C
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-500">
-                    {(item as any).views || 0}
+                    {(item as ContentItem & { views?: number }).views || 0}
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-500">
                     {new Date(item.updatedAt).toLocaleDateString()}

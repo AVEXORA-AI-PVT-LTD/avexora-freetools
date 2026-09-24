@@ -6,13 +6,29 @@ import { Save, ArrowLeft } from "lucide-react";
 import { useDialog } from "@/components/admin/DialogProvider";
 import { saveCategory } from "../category-actions";
 
-export function CategoryEditor({ initialData, isNew }: { initialData: any, isNew: boolean }) {
+interface CategoryFormData {
+  name: string;
+  slug: string;
+  description: string;
+  status: boolean;
+  featured: boolean;
+  isStatic?: boolean;
+  icon?: string | null;
+  image?: string | null;
+  displayOrder?: number;
+  parentId?: string | null;
+}
+
+type CategoryFormField = keyof CategoryFormData;
+
+export function CategoryEditor({ initialData, isNew }: { initialData: CategoryFormData, isNew: boolean }) {
   const router = useRouter();
   const { showAlert } = useDialog();
   const [isPending, startTransition] = useTransition();
   const [data, setData] = useState(initialData);
 
-  const update = (field: string, value: any) => setData((prev: any) => ({ ...prev, [field]: value }));
+  const update = <K extends CategoryFormField>(field: K, value: CategoryFormData[K]) =>
+    setData((prev) => ({ ...prev, [field]: value }));
 
   const handleSave = async () => {
     startTransition(async () => {
@@ -22,8 +38,8 @@ export function CategoryEditor({ initialData, isNew }: { initialData: any, isNew
           showAlert("Success", "Category saved successfully.");
           if (isNew) router.push(`/admin/categories/${data.slug}`);
         }
-      } catch (err: any) {
-        showAlert("Error", err.message || "Failed to save category.");
+      } catch (err) {
+        showAlert("Error", (err instanceof Error ? err.message : "") || "Failed to save category.");
       }
     });
   };

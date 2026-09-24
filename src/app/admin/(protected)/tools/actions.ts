@@ -4,6 +4,7 @@ import { hasPermission } from "@/lib/admin/permissions";
 import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
+import type { Prisma } from "@prisma/client";
 
 export async function toggleToolStatus(slug: string, status: boolean) {
   const user = await requireAdminAuth();
@@ -83,7 +84,7 @@ export async function bulkUpdateTools(
           });
         }
       } else {
-        const updateData: any = { updatedBy: user.id };
+        const updateData: Prisma.ToolConfigUpdateInput = { updatedBy: user.id };
         if (action === "publish") updateData.status = true;
         if (action === "unpublish") updateData.status = false;
         if (action === "feature") updateData.featured = true;

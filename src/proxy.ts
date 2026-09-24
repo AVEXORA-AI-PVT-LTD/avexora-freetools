@@ -67,8 +67,8 @@ export async function proxy(request: NextRequest) {
       });
       
       if (res.ok) {
-        const redirects = await res.json();
-        const match = redirects.find((r: any) => r.source === url.pathname);
+        const redirects: RedirectRule[] = await res.json();
+        const match = redirects.find((r) => r.source === url.pathname);
 
         if (match) {
           // Asynchronously track hit
@@ -89,6 +89,13 @@ export async function proxy(request: NextRequest) {
 
   return NextResponse.next();
 
+}
+
+interface RedirectRule {
+  id: string;
+  source: string;
+  destination: string;
+  statusCode: number;
 }
 
 export const config = {

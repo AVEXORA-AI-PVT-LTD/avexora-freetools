@@ -2,6 +2,7 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { allTools } from "@/tools/registry";
 import { SeoToolsClient } from "./SeoToolsClient";
+import type { SeoMetadata } from "@/server/seo-manager";
 
 export const metadata = { title: "Tool SEO Management | Admin" };
 
@@ -13,7 +14,7 @@ export default async function SeoToolsPage() {
   });
 
   const merged = allTools.map(t => {
-    const override = configs.find(c => c.toolSlug === t.slug)?.seoMetadata as any;
+    const override = configs.find(c => c.toolSlug === t.slug)?.seoMetadata as Partial<SeoMetadata> | null | undefined;
     return {
       name: t.name,
       slug: t.slug,
