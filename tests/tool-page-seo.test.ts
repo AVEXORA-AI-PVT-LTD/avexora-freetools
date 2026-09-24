@@ -65,8 +65,48 @@ describe("digital business card generator SEO", () => {
     expect(howTo.step[0]!.position).toBe(1);
   });
 
-  it("is the only tool showing the Avexora product cards", () => {
-    expect(allTools.filter((t) => t.showAvexoraProducts).map((t) => t.slug)).toEqual([slug]);
+});
+
+describe("every tool: SEO, AEO and GEO", () => {
+  it.each(allTools)("$slug: seoTitle is keyword-first and fits in 60 characters", (tool) => {
+    expect(tool.seoTitle, "seoTitle missing").toBeTruthy();
+    expect(tool.seoTitle!.length).toBeLessThanOrEqual(60);
+    expect(tool.seoTitle).not.toMatch(/Avexora|\|/);
+  });
+
+  it.each(allTools)("$slug: 6–12 unique keywords, focus keyword in the title", (tool) => {
+    const keywords = tool.keywords ?? [];
+    expect(keywords.length).toBeGreaterThanOrEqual(6);
+    expect(keywords.length).toBeLessThanOrEqual(12);
+    expect(new Set(keywords.map((k) => k.toLowerCase())).size).toBe(keywords.length);
+    expect(tool.seoTitle!.toLowerCase()).toContain(keywords[0]!.toLowerCase());
+  });
+
+  it.each(allTools)("$slug: meta description fits in 160 characters", (tool) => {
+    expect(tool.seoDescription.length).toBeLessThanOrEqual(160);
+  });
+
+  it.each(allTools)("$slug: has a direct answer for answer engines", (tool) => {
+    expect(tool.directAnswer?.trim()).toBeTruthy();
+  });
+
+  it("seo titles are unique", () => {
+    const titles = allTools.map((t) => t.seoTitle!.toLowerCase());
+    const dupes = titles.filter((t, i) => titles.indexOf(t) !== i);
+    expect(dupes).toEqual([]);
+  });
+
+  it("every tool shows the Avexora product cards", () => {
+    expect(allTools.filter((t) => t.showAvexoraProducts === false)).toEqual([]);
+  });
+
+  it("tools declaring howTo get visible steps and HowTo JSON-LD", async () => {
+    for (const tool of allTools.filter((t) => t.howTo && !t.steps)) {
+      const data = (await getToolFormData(tool.slug))!;
+      expect(data.steps.length).toBe(tool.howTo!.steps.length);
+      const cat = categories.find((c) => c.slug === data.category)!;
+      expect((toolPageJsonLd(data, cat) as Node[]).some((n) => n["@type"] === "HowTo")).toBe(true);
+    }
   });
 });
 

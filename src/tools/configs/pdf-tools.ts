@@ -19,7 +19,20 @@ export const tools: ToolConfig[] = [
     tagline:
       "Combine multiple PDFs into one file — right in your browser, files never uploaded.",
     seoDescription:
-      "Free online PDF merger. Combine two or more PDF files into a single document in seconds. 100% private: merging happens in your browser and files are never uploaded.",
+      "Merge PDF files free: combine two or more PDFs into one document in any order. Merging runs in your browser, so your files are never uploaded.",
+    seoTitle: "Merge PDF Free: Combine PDF Files Online, No Upload",
+    keywords: [
+      "merge pdf",
+      "combine pdf files",
+      "merge pdf online free",
+      "pdf merger",
+      "join pdf files",
+      "merge pdf without uploading",
+      "combine multiple pdfs into one",
+      "how to merge pdf files",
+    ],
+    directAnswer:
+      "A PDF merger combines two or more PDF files into a single document in the order you arrange. This one runs entirely in your browser, so files are never uploaded, and merged.pdf downloads free with no watermark or sign-up. Password-protected PDFs aren't supported.",
     component: MergePdf,
     about: [
       "This tool combines multiple PDFs into a single document — a proposal with its annexures, scanned pages from your phone, monthly bank statements, or a set of invoices for your accountant. Choose your files, arrange them in the right order with the up and down arrows, and click merge. The combined PDF downloads instantly with every page intact, in exactly the order you set.",
@@ -52,10 +65,22 @@ export const tools: ToolConfig[] = [
     name: "Split PDF",
     tagline: "Split one PDF into two parts at any page — entirely in your browser.",
     seoDescription:
-      "Free online PDF splitter. Split a PDF into two files at any page number, right in your browser. No upload, no watermark — a free account is needed to download.",
+      "Split PDF online free: divide one PDF into two files at any page, right in your browser with no upload. A free account is needed to download.",
+    seoTitle: "Split PDF Free: Divide One PDF into Two Files Online",
+    keywords: [
+      "split pdf",
+      "split pdf online",
+      "pdf splitter",
+      "split pdf free",
+      "divide pdf into two",
+      "separate pdf pages",
+      "how to split a pdf",
+    ],
+    directAnswer:
+      "A PDF splitter divides one PDF into two separate files at a page you choose: part 1 holds pages 1 to N and part 2 the rest. This tool splits in your browser without uploading the file; downloading both parts needs a free account.",
     component: SplitPdf,
     about: [
-      "This tool splits any PDF into two parts at whichever page you choose: everything up to and including that page becomes part one, everything after becomes part two, both downloaded automatically. That's useful when a single PDF is really two documents stuck together — a contract and its annexures, a report and its appendix, a scanned bundle that should have been two separate files.",
+      "This tool splits any PDF into two parts at whichever page you choose: everything up to and including that page becomes part one, everything after becomes part two, and both are ready to download. That's useful when a single PDF is really two documents stuck together — a contract and its annexures, a report and its appendix, a scanned bundle that should have been two separate files.",
       "Choose your file, see the total page count, and enter the page where the split should happen — page 5 of a 12-page document, for instance, produces a 5-page part one and a 7-page part two. There's no limit on how large the source file can be beyond what your browser's memory allows, and because splitting happens entirely client-side, confidential documents never leave your device.",
       "This is the simplest of the page-management tools here; for more control — pulling out a specific non-contiguous set of pages, or removing particular pages rather than splitting at one point — use the extract or remove-pages tools instead. All three share the same private, in-browser processing.",
       "Splitting is often the first step before two documents go their separate ways — one half to accounting, the other to legal, or one part filed and the other emailed on. Because both output files are generated locally and downloaded straight to your device, there's no server copy of either half sitting around afterward, and no waiting on an upload before you can download anything back.",
@@ -86,7 +111,19 @@ export const tools: ToolConfig[] = [
     name: "Compress PDF",
     tagline: "Shrink a PDF's file size with a lossless structural pass, in your browser.",
     seoDescription:
-      "Free PDF compressor. Reduce PDF file size with a lossless structural pass — strips redundant metadata and repacks the file — entirely in your browser.",
+      "Compress PDF free with a lossless pass that strips metadata and repacks the file to reduce PDF size, entirely in your browser. Images aren't re-encoded.",
+    seoTitle: "Compress PDF Free: Reduce PDF File Size in Your Browser",
+    keywords: [
+      "compress pdf",
+      "reduce pdf size",
+      "pdf compressor",
+      "compress pdf online free",
+      "shrink pdf file size",
+      "lossless pdf compression",
+      "reduce pdf file size without losing quality",
+    ],
+    directAnswer:
+      "A PDF compressor reduces a PDF's file size. This one runs a lossless structural pass in your browser, stripping document metadata and repacking objects, and reports the size saved. Images aren't re-encoded, so scanned or image-heavy PDFs may shrink little. Downloading needs a free account.",
     component: CompressPdf,
     about: [
       "This tool re-saves your PDF with a leaner internal structure and strips redundant metadata, shrinking the file without touching a single pixel of the visible content. PDF files often carry more bytes than their content needs — verbose internal structure, duplicated objects, and metadata fields (author, application version, edit history) that serve no purpose once the document is final.",
@@ -120,6 +157,19 @@ export const tools: ToolConfig[] = [
     tagline: "Turn one or more JPG images into a single PDF, in your browser.",
     seoDescription:
       "Free JPG to PDF converter. Combine one or more JPG images into a single PDF document — arrange the order, convert, and download. No upload required.",
+    seoTitle: "JPG to PDF Converter Free: Combine Images into One PDF",
+    keywords: [
+      "jpg to pdf",
+      "jpg to pdf converter",
+      "jpeg to pdf",
+      "convert images to pdf",
+      "combine jpg into one pdf",
+      "photo to pdf",
+      "jpg to pdf free",
+      "how to convert jpg to pdf",
+    ],
+    directAnswer:
+      "A JPG to PDF converter turns one or more JPG or JPEG images into a single PDF, one image per page at its original size, in the order you arrange. It runs in your browser, so photos are never uploaded, and the PDF downloads free.",
     component: JpgToPdf,
     about: [
       "This tool takes one or more JPG images and combines them into a single PDF, one image per page, in whatever order you arrange them. That covers scanned receipts, photographed documents, ID cards, whiteboard photos — a lot of paperwork enters your phone as a JPG and needs to leave as a PDF, the format banks, government portals and most businesses actually accept.",
@@ -154,6 +204,19 @@ export const tools: ToolConfig[] = [
     tagline: "Turn one or more PNG images into a single PDF, in your browser.",
     seoDescription:
       "Free PNG to PDF converter. Combine one or more PNG images into a single PDF document — arrange the order, convert, and download. No upload required.",
+    seoTitle: "PNG to PDF Converter Free: Merge PNG Images into a PDF",
+    keywords: [
+      "png to pdf",
+      "png to pdf converter",
+      "convert png to pdf",
+      "combine png into one pdf",
+      "image to pdf",
+      "screenshot to pdf",
+      "png to pdf free",
+      "how to convert png to pdf",
+    ],
+    directAnswer:
+      "A PNG to PDF converter turns one or more PNG images, such as screenshots or scans, into a single PDF, one image per page at its original size, in the order you arrange. It runs in your browser, so images are never uploaded, and the PDF downloads free.",
     component: PngToPdf,
     about: [
       "This tool combines one or more PNG images into a single PDF, one image per page, sized exactly to each image's own dimensions. That's useful for screenshots, exported graphics, transparent logos, and diagrams saved as PNG that need to become part of a PDF report or submission.",
@@ -187,7 +250,18 @@ export const tools: ToolConfig[] = [
     name: "PDF Page Remover",
     tagline: "Delete specific pages from a PDF, in your browser.",
     seoDescription:
-      "Free PDF page remover. Delete one or more pages from a PDF by page number or range — entirely in your browser, no upload required.",
+      "Remove pages from PDF free: delete one or more pages by number or range, like 2, 4-6. Runs entirely in your browser, no upload required.",
+    seoTitle: "Remove Pages from PDF Free: Delete PDF Pages Online",
+    keywords: [
+      "remove pages from pdf",
+      "delete pages from pdf",
+      "pdf page remover",
+      "delete pdf pages online",
+      "remove a page from pdf free",
+      "how to delete a page from a pdf",
+    ],
+    directAnswer:
+      "A PDF page remover deletes the pages you list, by number or range such as 2, 4-6, and saves the remaining pages as a new PDF. It runs in your browser without uploading the file; downloading the result needs a free account.",
     component: PdfPageRemover,
     about: [
       "This tool removes exactly the pages you specify from a PDF, leaving everything else untouched and correctly renumbered in the output. That's useful when a PDF has a page or two you need gone — a blank scanned page, a cover sheet that doesn't belong in the final version, an outdated appendix, or duplicate pages from a rushed scan.",
@@ -221,7 +295,18 @@ export const tools: ToolConfig[] = [
     name: "Extract PDF Pages",
     tagline: "Pull out specific pages from a PDF into a new file, in your browser.",
     seoDescription:
-      "Free PDF page extractor. Extract specific pages or ranges from a PDF into a new document — entirely in your browser, no upload required.",
+      "Extract pages from PDF free: pick pages or ranges like 1-3, 7 and save them as a new PDF. Runs entirely in your browser, no upload required.",
+    seoTitle: "Extract Pages from PDF Free: Save Selected Pages",
+    keywords: [
+      "extract pages from pdf",
+      "extract pdf pages",
+      "pdf page extractor",
+      "save specific pages of a pdf",
+      "select pages from pdf",
+      "how to extract pages from a pdf",
+    ],
+    directAnswer:
+      "A PDF page extractor copies the pages you pick, by number or range such as 1-3, 7, into a new PDF and leaves the original untouched. It runs in your browser without uploading the file; downloading the new PDF needs a free account.",
     component: ExtractPdfPages,
     about: [
       "This tool extracts exactly the pages you specify from a PDF into a new, standalone PDF, leaving the source file untouched. That's useful when you don't need a whole PDF — just the three pages of a contract that matter, the chapter you're referencing, or the single invoice buried in a long statement.",
@@ -255,7 +340,18 @@ export const tools: ToolConfig[] = [
     name: "Reorder PDF Pages",
     tagline: "Rearrange the pages of a PDF into any order, in your browser.",
     seoDescription:
-      "Free PDF page reorder tool. Rearrange the pages of a PDF into any order using simple up/down controls — entirely in your browser, no upload required.",
+      "Reorder PDF pages free: move pages up or down to rearrange them into any order, then save the new PDF. Runs entirely in your browser, no upload.",
+    seoTitle: "Reorder PDF Pages Free: Rearrange Pages in Any Order",
+    keywords: [
+      "reorder pdf pages",
+      "rearrange pdf pages",
+      "change page order in pdf",
+      "sort pdf pages",
+      "move pages in pdf",
+      "how to rearrange pages in a pdf",
+    ],
+    directAnswer:
+      "A PDF page reorder tool lets you move pages up or down to put them in any order, then saves a new PDF in that sequence. It runs in your browser without uploading the file; downloading the reordered PDF needs a free account.",
     component: ReorderPdfPages,
     about: [
       "This tool lets you rearrange every page of a PDF into whatever order you need, without retyping or rescanning anything. That fixes pages that end up in the wrong order — a scanner that fed sheets out of sequence, a report where a section should come before another, a contract where the signature page needs to move to the end.",
@@ -289,7 +385,19 @@ export const tools: ToolConfig[] = [
     name: "Rotate PDF",
     tagline: "Rotate all or specific pages of a PDF, in your browser.",
     seoDescription:
-      "Free PDF rotation tool. Rotate all pages or specific pages of a PDF by 90, 180 or 270 degrees — entirely in your browser, no upload required.",
+      "Rotate PDF pages free: turn all pages or just the ones you pick by 90°, 180° or 270° and save the fixed PDF. Runs entirely in your browser, no upload.",
+    seoTitle: "Rotate PDF Free: Turn Pages 90°, 180° or 270°",
+    keywords: [
+      "rotate pdf",
+      "rotate pdf pages",
+      "rotate pdf online free",
+      "rotate single page in pdf",
+      "rotate pdf 90 degrees",
+      "turn pdf page upside down",
+      "how to rotate a pdf and save it",
+    ],
+    directAnswer:
+      "A PDF rotator turns pages that are sideways or upside down. This one rotates every page or only the pages you select by 90° clockwise, 90° anticlockwise or 180°, and saves the rotation permanently. It runs in your browser; downloading needs a free account.",
     component: RotatePdf,
     about: [
       "This tool rotates a PDF's pages by 90°, 180° or 270°, fixing the orientation without needing to rescan anything. Scanned documents come out sideways or upside-down more often than anyone would like — a phone held the wrong way, a scanner fed a page in landscape when the document is portrait.",
@@ -323,7 +431,19 @@ export const tools: ToolConfig[] = [
     name: "Add Watermark to PDF",
     tagline: "Stamp a diagonal text watermark across every page, in your browser.",
     seoDescription:
-      "Free PDF watermark tool. Add a custom diagonal text watermark like CONFIDENTIAL or DRAFT across every page of a PDF — entirely in your browser.",
+      "Add watermark to PDF free: stamp diagonal text like CONFIDENTIAL or DRAFT across every page with adjustable opacity, entirely in your browser.",
+    seoTitle: "Add Watermark to PDF Free: CONFIDENTIAL or DRAFT Stamp",
+    keywords: [
+      "add watermark to pdf",
+      "pdf watermark",
+      "watermark pdf online free",
+      "confidential watermark on pdf",
+      "draft watermark pdf",
+      "text watermark on pdf",
+      "how to add a watermark to a pdf",
+    ],
+    directAnswer:
+      "A PDF watermark tool stamps text such as CONFIDENTIAL or DRAFT diagonally across every page, with the opacity you set. This one works in your browser without uploading the file; downloading the watermarked PDF needs a free account.",
     component: WatermarkPdf,
     about: [
       "This tool stamps your chosen text diagonally across every page of a PDF, sized and angled the way professional watermarks conventionally are. A watermark communicates a document's status at a glance — DRAFT before it's final, CONFIDENTIAL before it's shared widely, SAMPLE on a preview you're not ready to hand over as the finished product.",
@@ -357,7 +477,18 @@ export const tools: ToolConfig[] = [
     name: "Add Page Numbers to PDF",
     tagline: "Number every page of a PDF, with your choice of position and starting number.",
     seoDescription:
-      "Free PDF page numbering tool. Add page numbers to every page of a PDF with your choice of position (bottom-centre, bottom-right, top-right) and start number.",
+      "Add page numbers to PDF free: number every page at bottom-centre, bottom-right or top-right, from any starting number. Runs in your browser.",
+    seoTitle: "Add Page Numbers to PDF Free: Choose Position & Start",
+    keywords: [
+      "add page numbers to pdf",
+      "pdf page numbering",
+      "number pdf pages",
+      "insert page numbers in pdf",
+      "page numbers pdf online free",
+      "how to add page numbers to a pdf",
+    ],
+    directAnswer:
+      "A PDF page numbering tool prints a number on every page of a PDF. This one lets you place it bottom-centre, bottom-right or top-right and start from any number, such as 1 or 3. It runs in your browser; downloading the numbered PDF needs a free account.",
     component: PageNumbersPdf,
     about: [
       "This tool adds numbers to every page of a PDF in one pass, with the position and starting number you choose. A multi-page report, contract or manual without page numbers is harder to navigate, harder to reference in a meeting (\"see page 12\" only works if pages are numbered), and looks unfinished.",
@@ -391,7 +522,20 @@ export const tools: ToolConfig[] = [
     name: "PDF Metadata Editor",
     tagline: "View and edit a PDF's title, author, subject and keywords.",
     seoDescription:
-      "Free PDF metadata editor. View and edit a PDF's title, author, subject and keywords — the properties shown in file browsers and PDF readers — in your browser.",
+      "Free PDF metadata editor: view and change a PDF's title, author, subject and keywords, the properties file browsers and readers show. Runs in your browser.",
+    seoTitle: "Free PDF Metadata Editor: Edit Title, Author & Keywords",
+    keywords: [
+      "pdf metadata editor",
+      "edit pdf metadata",
+      "change pdf title",
+      "pdf properties editor",
+      "change pdf author",
+      "edit pdf keywords",
+      "pdf document properties",
+      "how to change a pdf title",
+    ],
+    directAnswer:
+      "A PDF metadata editor shows and changes a PDF's document properties: title, author, subject and keywords. This one reads the current values, lets you edit them and saves an updated copy with the pages unchanged. It runs in your browser; downloading needs a free account.",
     component: PdfMetadataEditor,
     about: [
       "A PDF's metadata is a small set of fields — title, author, subject, keywords — that don't appear on the page itself but show up in file browsers, PDF reader \"document properties\" panels, and search indexes. Left unedited, these often default to whatever a scanner or export tool auto-filled: a generic \"Untitled,\" the wrong author name, or nothing at all.",
@@ -426,6 +570,18 @@ export const tools: ToolConfig[] = [
     tagline: "Convert a PDF's text into an editable Word document — entirely in your browser.",
     seoDescription:
       "Free PDF to Word converter. Extract a PDF's text and convert it into an editable .docx file, right in your browser — no upload, no sign-up, no watermark.",
+    seoTitle: "Free PDF to Word Converter: Editable DOCX, No Upload",
+    keywords: [
+      "pdf to word converter",
+      "pdf to word",
+      "pdf to docx",
+      "convert pdf to editable word",
+      "pdf to word free",
+      "pdf to word without uploading",
+      "how to convert pdf to word",
+    ],
+    directAnswer:
+      "A PDF to Word converter turns a PDF's text into an editable .docx file. This one extracts the selectable text of each page in your browser, keeping reading order and page breaks but not complex layouts, tables or images. Scanned PDFs need OCR first. Free, no upload.",
     component: PdfToWord,
     howTo: {
       name: "How to convert a PDF to Word",

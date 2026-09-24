@@ -21,7 +21,24 @@ export const tools: ToolConfig[] = [
     tagline:
       "Create a professional GST invoice and print or save it as PDF — no sign-up needed.",
     seoDescription:
-      "Free online GST invoice generator for India. Add your business details, line items and GST rates, then print or save a professional tax invoice as PDF in seconds.",
+      "Free GST invoice generator for India. Add business details, line items and GST rates, then print or save a professional tax invoice as PDF in seconds.",
+    seoTitle: "Free GST Invoice Generator: Tax Invoice PDF with CGST/SGST",
+    keywords: [
+      "GST invoice generator",
+      "free invoice generator",
+      "invoice generator",
+      "tax invoice format",
+      "GST invoice format",
+      "GST bill maker",
+      "online bill generator",
+      "invoice maker India",
+      "CGST SGST invoice",
+      "IGST invoice",
+      "invoice PDF",
+      "how to make a GST invoice",
+    ],
+    directAnswer:
+      "A GST invoice generator builds a printable tax invoice from your business and customer details (with GSTIN), invoice number, dates and line items with a GST rate per line, and shows the subtotal, CGST + SGST or IGST and total. Print it or save it as a PDF from your browser.",
     component: InvoiceGenerator,
     emailGate: true,
     about: [
@@ -62,6 +79,20 @@ export const tools: ToolConfig[] = [
     tagline: "Create a professional price quotation with line items and validity date.",
     seoDescription:
       "Free quotation generator. Add your business details, customer, line items and validity date to create a professional price quotation in seconds.",
+    seoTitle: "Free Quotation Generator: Itemised Price Quote Maker",
+    keywords: [
+      "quotation generator",
+      "quotation format",
+      "quotation maker",
+      "price quotation format",
+      "online quotation maker",
+      "quote generator",
+      "estimate generator",
+      "business quotation template",
+      "how to write a quotation",
+    ],
+    directAnswer:
+      "A quotation generator creates an itemised price quotation from your business name, customer, quotation number, date, optional validity date and line items (description, qty, rate), with line amounts and a total, as a document you can copy or download.",
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
@@ -115,6 +146,19 @@ export const tools: ToolConfig[] = [
     tagline: "Create a proforma invoice for advance payment or customs purposes.",
     seoDescription:
       "Free proforma invoice generator. Create a proforma invoice with line items for advance payment requests or customs declarations — not a tax invoice.",
+    seoTitle: "Free Proforma Invoice Generator for Advance Payment",
+    keywords: [
+      "proforma invoice generator",
+      "proforma invoice format",
+      "proforma invoice maker",
+      "pro forma invoice",
+      "proforma invoice template",
+      "proforma invoice for advance payment",
+      "proforma invoice vs tax invoice",
+      "what is a proforma invoice",
+    ],
+    directAnswer:
+      "A proforma invoice generator creates an itemised proforma invoice (your business, customer, number, date, line items and total) marked as not a tax invoice under GST, for requesting advance payment before the final tax invoice is issued.",
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
@@ -157,7 +201,21 @@ export const tools: ToolConfig[] = [
     name: "Payment Receipt Generator",
     tagline: "Create a clean payment receipt acknowledging money received.",
     seoDescription:
-      "Free payment receipt generator. Create a professional receipt acknowledging payment received, with amount, method and purpose — ready to print or send.",
+      "Free payment receipt generator. Create a professional receipt acknowledging payment received, with amount, method and purpose — ready to copy, download or send.",
+    seoTitle: "Free Payment Receipt Generator: Money Receipt Format",
+    keywords: [
+      "payment receipt generator",
+      "receipt generator",
+      "money receipt format",
+      "payment receipt format",
+      "cash receipt maker",
+      "online receipt maker",
+      "payment acknowledgement receipt",
+      "receipt for payment received",
+      "how to make a payment receipt",
+    ],
+    directAnswer:
+      "A payment receipt generator creates a receipt acknowledging money received: your business name, receipt number, date, payer, amount in ₹, payment method and what it was for, with an authorised signatory line, ready to copy or download.",
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "payerName", label: "Received from (payer name)", type: "text", placeholder: "Ravi Kumar" },
@@ -215,6 +273,19 @@ export const tools: ToolConfig[] = [
     tagline: "Issue a credit note against a previous invoice for returns or corrections.",
     seoDescription:
       "Free credit note generator. Issue a credit note against an original invoice for returned goods, billing errors or discounts — with line items and reason.",
+    seoTitle: "Free Credit Note Generator: Returns & Invoice Corrections",
+    keywords: [
+      "credit note generator",
+      "credit note format",
+      "credit note maker",
+      "credit note template",
+      "credit note against invoice",
+      "credit note for sales return",
+      "credit note vs debit note",
+      "what is a credit note",
+    ],
+    directAnswer:
+      "A credit note generator creates a credit note against an original invoice: your business, customer, credit note number, date, original invoice number, reason and itemised amounts with a total, recording that the customer now owes you less.",
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
@@ -260,6 +331,19 @@ export const tools: ToolConfig[] = [
     tagline: "Issue a debit note against a supplier invoice for returns or shortages.",
     seoDescription:
       "Free debit note generator. Issue a debit note against a supplier's invoice for returned goods, shortages or price corrections — with line items and reason.",
+    seoTitle: "Free Debit Note Generator: Purchase Returns & Shortages",
+    keywords: [
+      "debit note generator",
+      "debit note format",
+      "debit note maker",
+      "debit note template",
+      "debit note for purchase return",
+      "debit note to supplier",
+      "debit note vs credit note",
+      "what is a debit note",
+    ],
+    directAnswer:
+      "A debit note generator creates a debit note to a supplier against their invoice: your business, supplier, debit note number, date, original invoice number, reason (such as a return, shortage or price correction) and itemised amounts with a total.",
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "supplierName", label: "Supplier name", type: "text", placeholder: "Global Supplies Ltd" },
@@ -305,7 +389,20 @@ export const tools: ToolConfig[] = [
     name: "Purchase Order Generator",
     tagline: "Create a formal purchase order to send to your suppliers.",
     seoDescription:
-      "Free purchase order generator. Create a formal PO with line items, delivery date and delivery address to send to your suppliers — ready to print or email.",
+      "Free purchase order generator. Create a formal PO with line items, delivery date and delivery address for suppliers — ready to copy, download or email.",
+    seoTitle: "Free Purchase Order Generator: PO Format for Suppliers",
+    keywords: [
+      "purchase order generator",
+      "purchase order format",
+      "PO generator",
+      "purchase order maker",
+      "purchase order template",
+      "PO format for suppliers",
+      "how to make a purchase order",
+      "what is a purchase order",
+    ],
+    directAnswer:
+      "A purchase order generator creates a formal PO to send a supplier: your business, supplier, PO number, order date, optional required delivery date, delivery address and line items (description, qty, rate) with a total and a signatory line.",
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "supplierName", label: "Supplier name", type: "text", placeholder: "Global Supplies Ltd" },
@@ -351,6 +448,19 @@ export const tools: ToolConfig[] = [
     tagline: "Create a delivery challan to accompany goods in transit.",
     seoDescription:
       "Free delivery challan generator. Create a delivery challan listing goods, quantity and vehicle details to accompany a shipment — not a tax invoice.",
+    seoTitle: "Free Delivery Challan Generator for Goods in Transit",
+    keywords: [
+      "delivery challan generator",
+      "delivery challan format",
+      "delivery challan maker",
+      "challan format",
+      "delivery note format",
+      "delivery challan for job work",
+      "delivery challan vs invoice",
+      "what is a delivery challan",
+    ],
+    directAnswer:
+      "A delivery challan generator creates a challan to travel with goods: your business, consignee, challan number, date, delivery address, optional vehicle number, items with quantities and an optional approximate value, marked as not a tax invoice.",
     fields: [
       { name: "businessName", label: "Your business name", type: "text", placeholder: "Acme Traders Pvt Ltd" },
       { name: "consigneeName", label: "Consignee (receiving party)", type: "text", placeholder: "Ravi Kumar" },
@@ -397,6 +507,19 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a payment reminder message in the right tone for the situation.",
     seoDescription:
       "Free payment reminder generator. Create a friendly, firm or final-notice payment reminder message for an overdue invoice — ready to email or send.",
+    seoTitle: "Free Payment Reminder Generator for Overdue Invoices",
+    keywords: [
+      "payment reminder generator",
+      "payment reminder message",
+      "payment reminder email",
+      "overdue invoice reminder",
+      "payment reminder letter",
+      "polite payment reminder",
+      "final notice for payment",
+      "how to ask a client for payment",
+    ],
+    directAnswer:
+      "A payment reminder generator writes a reminder for an overdue invoice in a friendly, firm or final-notice tone, filled in with the customer's name, invoice number, amount due in ₹ and due date, ready to copy into an email or message.",
     fields: [
       { name: "customerName", label: "Customer name", type: "text", placeholder: "Ravi Kumar" },
       { name: "invoiceNumber", label: "Invoice number", type: "text", placeholder: "INV-045" },
@@ -450,6 +573,19 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate the late fee and total due on an overdue invoice.",
     seoDescription:
       "Free late payment fee calculator. Enter the invoice amount, monthly late fee rate and days overdue to calculate the late fee and total amount now due.",
+    seoTitle: "Free Late Payment Fee Calculator: Overdue Invoice Interest",
+    keywords: [
+      "late payment fee calculator",
+      "late fee calculator",
+      "late payment interest calculator",
+      "overdue invoice interest",
+      "interest on delayed payment",
+      "late payment charges",
+      "penalty interest calculator",
+      "how to calculate late fee",
+    ],
+    directAnswer:
+      "A late payment fee calculator works out the late fee on an overdue invoice from the invoice amount, a monthly late fee rate (applied per day as rate ÷ 30) and the days overdue, and shows the total amount now due.",
     fields: [
       { name: "invoiceAmount", label: "Invoice amount", type: "number", placeholder: "50000", min: 0, unit: "₹" },
       { name: "monthlyRate", label: "Late fee rate (per month)", type: "number", defaultValue: 2, min: 0, max: 10, step: 0.1, unit: "%" },
@@ -490,6 +626,20 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate the final price after single or stacked discounts.",
     seoDescription:
       "Free discount calculator. Enter the original price and one or two discount percentages to get the final price, amount saved and effective discount rate.",
+    seoTitle: "Free Discount Calculator: Final Price & Stacked Discounts",
+    keywords: [
+      "discount calculator",
+      "percentage off calculator",
+      "sale price calculator",
+      "price after discount",
+      "double discount calculator",
+      "stacked discount calculator",
+      "successive discount calculator",
+      "discount formula",
+      "how much will I save",
+    ],
+    directAnswer:
+      "A discount calculator gives the final price after one or two percentage discounts, applying the second to the already-discounted price, plus the total amount saved and the effective discount rate.",
     fields: [
       { name: "price", label: "Original price", type: "number", placeholder: "2000", min: 0, unit: "₹" },
       { name: "discount1", label: "First discount", type: "number", placeholder: "20", min: 0, max: 100, unit: "%" },
@@ -530,6 +680,19 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate an invoice's due date from standard net payment terms.",
     seoDescription:
       "Free invoice due date calculator. Enter the invoice date and payment terms (Net 15/30/45/60/90 or custom) to calculate the exact due date and status.",
+    seoTitle: "Free Invoice Due Date Calculator: Net 30, 60 & 90 Terms",
+    keywords: [
+      "invoice due date calculator",
+      "payment due date calculator",
+      "net 30 calculator",
+      "net 30 payment terms",
+      "net 60 due date",
+      "due date calculator",
+      "payment terms calculator",
+      "when is an invoice due",
+    ],
+    directAnswer:
+      "An invoice due date calculator adds payment terms (Net 15, 30, 45, 60, 90 or a custom number of days) to the invoice date to give the exact due date, and shows whether it is due in a set number of days, due today or overdue.",
     fields: [
       { name: "invoiceDate", label: "Invoice date", type: "date" },
       {

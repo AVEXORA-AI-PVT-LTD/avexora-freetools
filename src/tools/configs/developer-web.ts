@@ -23,6 +23,18 @@ export const tools: ToolConfig[] = [
     tagline: "Create a QR code for any URL or text and download it as a PNG.",
     seoDescription:
       "Free QR code generator. Turn any URL or text into a QR code with selectable size and error correction, and download it as a high-resolution PNG.",
+    seoTitle: "Free QR Code Generator: URL or Text to PNG",
+    keywords: [
+      "qr code generator",
+      "free qr code generator",
+      "url to qr code",
+      "text to qr code",
+      "qr code for website link",
+      "qr code png download",
+      "high resolution qr code",
+      "qr code error correction",
+      "how to make a qr code",
+    ],
     directAnswer:
       "A QR code generator that turns any URL or text into a scannable QR code with selectable size (512, 1024) and error-correction level (L/M/Q/H), generated entirely in your browser, with PNG download.",
     example:
@@ -74,7 +86,19 @@ export const tools: ToolConfig[] = [
     name: "Barcode Generator",
     tagline: "Generate EAN-13, UPC-A and Code 128 barcodes with real check-digit validation.",
     seoDescription:
-      "Free barcode generator. Create EAN-13, UPC-A and Code 128 barcodes with proper check-digit validation, live preview, and crisp PNG or vector SVG download for print.",
+      "Free barcode generator. Create EAN-13, UPC-A and Code 128 barcodes with check-digit validation, live preview and crisp PNG or vector SVG download for print.",
+    seoTitle: "Free Barcode Generator: EAN-13, UPC-A & Code 128",
+    keywords: [
+      "barcode generator",
+      "ean-13 barcode generator",
+      "upc-a barcode generator",
+      "code 128 barcode generator",
+      "barcode for products",
+      "barcode svg download",
+      "barcode png download",
+      "ean check digit",
+      "how to create a barcode for a product",
+    ],
     directAnswer:
       "A barcode generator that produces real, scannable EAN-13, UPC-A and Code 128 barcodes in your browser — with genuine Modulo-10 check-digit validation for EAN/UPC (invalid numbers are never encoded), live preview, and PNG or vector SVG export.",
     example:
@@ -129,6 +153,17 @@ export const tools: ToolConfig[] = [
     tagline: "Percent-encode text for URLs, or decode an encoded URL back to plain text.",
     seoDescription:
       "Free URL encoder and decoder. Percent-encode text for query strings or decode %20-style URLs back to readable text — with component and full-URI modes.",
+    seoTitle: "Free URL Encoder & Decoder: Percent-Encode Text Online",
+    keywords: [
+      "url encoder",
+      "url decoder",
+      "url encode online",
+      "url decode online",
+      "percent encoding",
+      "encodeURIComponent online",
+      "url encode space %20",
+      "query string encoder",
+    ],
     directAnswer:
       "A URL encoder/decoder that percent-encodes text for use in URLs or decodes %20-style URLs back to readable text, with two modes — value-safe component encoding and structure-preserving full-URI encoding.",
     formula:
@@ -206,6 +241,17 @@ export const tools: ToolConfig[] = [
     tagline: "Convert text to base64 and back — Unicode-safe, in your browser.",
     seoDescription:
       "Free base64 encoder and decoder. Convert any text to base64 or decode base64 back to text, with full Unicode support — runs entirely in your browser.",
+    seoTitle: "Free Base64 Encoder & Decoder: Unicode-Safe Text",
+    keywords: [
+      "base64 encoder",
+      "base64 decoder",
+      "base64 encode online",
+      "base64 decode online",
+      "text to base64",
+      "base64 to text",
+      "utf-8 base64 encode",
+      "what is base64 encoding",
+    ],
     directAnswer:
       "A Unicode-safe base64 encoder/decoder that converts text to base64 (UTF-8 aware, so Hindi, emoji and ₹ work) and decodes base64 back to text — with the understanding that base64 is an encoding, not encryption.",
     formula:
@@ -272,7 +318,18 @@ export const tools: ToolConfig[] = [
     name: "UUID Generator",
     tagline: "Generate one or a hundred random v4 UUIDs with one click.",
     seoDescription:
-      "Free UUID v4 generator. Create 1 to 100 cryptographically random UUIDs instantly — copy them or download as a text file for IDs, keys and test data.",
+      "Free UUID generator for v4 UUIDs. Create 1 to 100 cryptographically random UUIDs instantly, then copy them or download a text file for IDs, keys and test data.",
+    seoTitle: "Free UUID Generator: Random v4 UUIDs in Bulk",
+    keywords: [
+      "uuid generator",
+      "uuid v4 generator",
+      "random uuid",
+      "guid generator",
+      "bulk uuid generator",
+      "generate uuid online",
+      "unique id generator",
+      "what is a uuid",
+    ],
     directAnswer:
       "A UUID generator that produces cryptographically random version 4 UUIDs instantly in your browser. Choose how many you need (1 to 100), generate them, and copy or download them for your project.",
     example:
@@ -328,6 +385,18 @@ export const tools: ToolConfig[] = [
     tagline: "Compute SHA-1, SHA-256 and SHA-512 hashes of any text.",
     seoDescription:
       "Free SHA hash generator. Compute SHA-1, SHA-256 and SHA-512 hex digests of any text instantly in your browser — nothing is ever uploaded.",
+    seoTitle: "Free Hash Generator: SHA-256, SHA-512 & SHA-1 Online",
+    keywords: [
+      "hash generator",
+      "sha256 generator",
+      "sha-256 hash online",
+      "sha512 generator",
+      "sha1 hash generator",
+      "text to sha256",
+      "hash calculator",
+      "sha256 hex digest",
+      "what is a hash function",
+    ],
     directAnswer:
       "A hash generator that computes SHA-1, SHA-256 and SHA-512 cryptographic hashes for any text entirely in your browser using the Web Crypto API.",
     example:
@@ -380,6 +449,17 @@ export const tools: ToolConfig[] = [
     tagline: "Test regular expressions against sample text and inspect every match and group.",
     seoDescription:
       "Free regex tester. Try JavaScript regular expressions against sample text and see every match with its index and capture groups — with clear error messages.",
+    seoTitle: "Free Regex Tester: Test JavaScript Regular Expressions",
+    keywords: [
+      "regex tester",
+      "regular expression tester",
+      "javascript regex tester",
+      "test regex online",
+      "regex match tester",
+      "regex capture groups",
+      "regex debugger",
+      "how to test a regex",
+    ],
     directAnswer:
       "A regex tester that lets you test JavaScript regular expressions against sample text to see matches, indices, and capture groups in real-time.",
     example:
@@ -437,6 +517,17 @@ export const tools: ToolConfig[] = [
     tagline: "Convert any colour between HEX, RGB and HSL formats.",
     seoDescription:
       "Free color converter. Paste a colour as HEX, RGB or HSL and instantly get all three formats — perfect for CSS, design handoffs and brand palettes.",
+    seoTitle: "Free Color Converter: HEX to RGB to HSL",
+    keywords: [
+      "color converter",
+      "hex to rgb",
+      "rgb to hex",
+      "hex to hsl",
+      "hsl to rgb",
+      "colour converter",
+      "css color converter",
+      "color code converter",
+    ],
     directAnswer:
       "A fast color converter that translates any color between HEX, RGB, and HSL formats instantly, helping you bridge the gap between design tools and CSS.",
     example:
@@ -492,6 +583,17 @@ export const tools: ToolConfig[] = [
     tagline: "Build linear and radial CSS gradients and copy the code.",
     seoDescription:
       "Free CSS gradient generator. Pick two colours, choose linear (with angle) or radial, and copy clean modern CSS gradient code with a solid-colour fallback.",
+    seoTitle: "Free CSS Gradient Generator: Linear & Radial Code",
+    keywords: [
+      "css gradient generator",
+      "linear gradient css",
+      "radial gradient css",
+      "css gradient background",
+      "css gradient code",
+      "background gradient generator",
+      "two color gradient",
+      "how to make a gradient in css",
+    ],
     directAnswer:
       "A CSS gradient generator that lets you build linear and radial gradients visually. It produces clean, modern CSS with a solid-color fallback for older browsers.",
     example:
@@ -559,6 +661,17 @@ export const tools: ToolConfig[] = [
     tagline: "Escape text for HTML, or decode &amp;-style entities back to characters.",
     seoDescription:
       "Free HTML entity encoder and decoder. Escape <, >, & and quotes for safe HTML display, or decode named and numeric entities back into readable text.",
+    seoTitle: "Free HTML Entity Encoder & Decoder: Escape HTML Online",
+    keywords: [
+      "html entity encoder",
+      "html entity decoder",
+      "html escape",
+      "html unescape",
+      "escape html characters",
+      "decode html entities",
+      "html special characters converter",
+      "numeric html entities",
+    ],
     directAnswer:
       "An HTML entity encoder/decoder that escapes special characters (like <, >, &) for safe rendering in HTML, and decodes entity-riddled text back into readable characters.",
     example:
@@ -624,6 +737,17 @@ export const tools: ToolConfig[] = [
     tagline: "Decode a JSON Web Token and inspect its header, payload and expiry.",
     seoDescription:
       "Free JWT decoder. Paste a JSON Web Token to see its header and payload as formatted JSON, with issued-at and expiry timestamps translated to readable dates.",
+    seoTitle: "Free JWT Decoder: Inspect Header, Payload & Expiry",
+    keywords: [
+      "jwt decoder",
+      "decode jwt",
+      "jwt parser",
+      "json web token decoder",
+      "jwt payload viewer",
+      "jwt expiry check",
+      "jwt exp to date",
+      "how to decode a jwt",
+    ],
     directAnswer:
       "A JWT decoder that unpacks the header and payload of a JSON Web Token into formatted JSON, and translates its standard unix timestamps (like exp and iat) into human-readable dates.",
     example:
@@ -680,6 +804,16 @@ export const tools: ToolConfig[] = [
     tagline: "Convert markdown into clean HTML you can paste anywhere.",
     seoDescription:
       "Free markdown to HTML converter. Turn headings, lists, links, bold, code blocks and quotes into clean HTML — with raw HTML safely escaped.",
+    seoTitle: "Free Markdown to HTML Converter Online",
+    keywords: [
+      "markdown to html",
+      "markdown to html converter",
+      "convert markdown to html",
+      "md to html",
+      "markdown converter",
+      "markdown parser online",
+      "readme to html",
+    ],
     directAnswer:
       "A fast converter that translates standard Markdown into clean, semantic HTML. It safely escapes raw HTML to prevent injection, and outputs unstyled tags ready to inherit your site's CSS.",
     example:
@@ -734,9 +868,20 @@ export const tools: ToolConfig[] = [
     name: "JSON to TypeScript Interface / Type Generator",
     tagline: "Turn a JSON sample into clean TypeScript interfaces or type aliases.",
     seoDescription:
-      "Free JSON to TypeScript converter. Turn any JSON sample into clean TypeScript interfaces or type aliases — nested objects, arrays, union types, null and quoted keys all handled automatically.",
+      "Free JSON to TypeScript converter. Turn any JSON sample into clean interfaces or type aliases, handling nested objects, arrays, unions, null and quoted keys.",
+    seoTitle: "Free JSON to TypeScript Converter: Interfaces & Types",
+    keywords: [
+      "json to typescript",
+      "json to typescript interface",
+      "json to ts",
+      "json to type",
+      "generate typescript types from json",
+      "typescript interface generator",
+      "json to typescript type alias",
+      "convert json to typescript",
+    ],
     directAnswer:
-      "A JSON to TypeScript generator that turns a JSON sample into clean TypeScript interfaces or type aliases automatically handling nested objects, arrays, and unions.",
+      "A JSON to TypeScript generator that turns a JSON sample into clean TypeScript interfaces or type aliases, automatically handling nested objects, arrays, and unions.",
     example:
       "Example: Provide `{\"id\": 1, \"name\": \"A\"}` and get an interface with `id: number;` and `name: string;`.",
     steps: [
@@ -816,6 +961,17 @@ export const tools: ToolConfig[] = [
     tagline: "Convert between unix timestamps and human-readable dates, with IST built in.",
     seoDescription:
       "Free unix timestamp converter. Convert epoch seconds or milliseconds to readable UTC and IST dates — or paste an ISO date to get its unix timestamp.",
+    seoTitle: "Free Unix Timestamp Converter: Epoch to IST & UTC",
+    keywords: [
+      "unix timestamp converter",
+      "epoch converter",
+      "epoch to date",
+      "timestamp to date",
+      "unix time to IST",
+      "date to unix timestamp",
+      "milliseconds to date",
+      "current unix timestamp",
+    ],
     directAnswer:
       "A timestamp converter that translates between unix epochs (seconds or milliseconds) and human-readable UTC/IST dates instantly.",
     example:
