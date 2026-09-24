@@ -6,6 +6,7 @@ import { allTools, getTool, toolsByCategory } from "@/tools/registry";
 import { resolveToolSeo } from "@/server/seo-manager";
 import { getToolFormData } from "@/server/admin-tools";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
+import { ToolAboutText } from "@/components/tools/tool-about-text";
 import { ViewTracker } from "@/components/tools/ViewTracker";
 import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
@@ -185,7 +186,7 @@ export default async function ToolPage({
             
             {toolData.description && toolData.description.split('\n').map((p, i) => {
               const text = p.trim();
-              return text ? <p key={i}>{text}</p> : null;
+              return text ? <p key={i}><ToolAboutText text={text} /></p> : null;
             })}
             
             {toolData.howToUse && (
