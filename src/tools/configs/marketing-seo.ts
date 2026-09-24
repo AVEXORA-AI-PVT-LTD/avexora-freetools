@@ -21,6 +21,18 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a complete HTML head block — title, description, Open Graph and Twitter tags.",
     seoDescription:
       "Free meta tag generator. Create a complete HTML head block with title, meta description, canonical, Open Graph and Twitter Card tags in seconds.",
+    seoTitle: "Free Meta Tag Generator: Open Graph & Twitter Card Tags",
+    keywords: [
+      "meta tag generator",
+      "meta tags generator",
+      "Open Graph tag generator",
+      "Twitter Card generator",
+      "OG tag generator",
+      "HTML meta tags",
+      "meta description generator",
+      "SEO meta tags",
+      "canonical tag generator",
+    ],
     directAnswer:
       "A meta tag generator that produces a complete, ready-to-paste HTML head block — title, meta description, canonical, full Open Graph set and matching Twitter Card tags with correct character escaping.",
     example:
@@ -99,6 +111,18 @@ export const tools: ToolConfig[] = [
     tagline: "Build campaign URLs with utm_source, utm_medium and utm_campaign parameters.",
     seoDescription:
       "Free UTM link builder. Add utm_source, utm_medium, utm_campaign, term and content parameters to any URL with correct encoding for campaign tracking.",
+    seoTitle: "Free UTM Link Builder: Create Campaign Tracking URLs",
+    keywords: [
+      "UTM link builder",
+      "UTM builder",
+      "UTM generator",
+      "campaign URL builder",
+      "UTM parameters",
+      "UTM tracking link",
+      "utm_source utm_medium utm_campaign",
+      "Google Analytics campaign URL",
+      "how to create UTM links",
+    ],
     directAnswer:
       "A UTM link builder that attaches correctly-encoded campaign parameters — utm_source, utm_medium, utm_campaign and the optional utm_term and utm_content — to any URL for accurate traffic tracking in analytics.",
     example:
@@ -162,6 +186,17 @@ export const tools: ToolConfig[] = [
     tagline: "Turn titles into clean, lowercase, SEO-friendly URL slugs — one per line.",
     seoDescription:
       "Free URL slug generator. Convert page titles into clean lowercase slugs with hyphens or underscores — paste multiple titles and get one slug per line.",
+    seoTitle: "Free URL Slug Generator: SEO-Friendly Slugs in Bulk",
+    keywords: [
+      "URL slug generator",
+      "slug generator",
+      "SEO-friendly URL",
+      "URL slug maker",
+      "title to slug converter",
+      "bulk slug generator",
+      "permalink generator",
+      "slugify text online",
+    ],
     directAnswer:
       "A URL slug generator that converts page titles into clean, lowercase, SEO-friendly slugs — collapsing spaces, punctuation and special characters into hyphens or underscores, one slug per line for bulk conversion.",
     example:
@@ -236,6 +271,17 @@ export const tools: ToolConfig[] = [
     tagline: "Count how often a keyword appears in your content and check the density percentage.",
     seoDescription:
       "Free keyword density checker. Paste your content and a keyword to get total words, whole-word occurrences, density percentage and a stuffing verdict.",
+    seoTitle: "Free Keyword Density Checker: Keyword Count & Percentage",
+    keywords: [
+      "keyword density checker",
+      "keyword density",
+      "keyword density calculator",
+      "keyword counter",
+      "keyword frequency checker",
+      "keyword stuffing checker",
+      "ideal keyword density for SEO",
+      "how to calculate keyword density",
+    ],
     directAnswer:
       "A keyword density checker that counts whole-word, case-insensitive occurrences of a keyword in your content and reports the density percentage — under 0.5% low, 0.5–2.5% natural, above 2.5% a stuffing risk.",
     formula:
@@ -302,6 +348,17 @@ export const tools: ToolConfig[] = [
     tagline: "Score your headline on length, word balance, numbers and power words.",
     seoDescription:
       "Free headline analyzer. Score any headline out of 100 on length, word count, numbers, power words and sentiment — with instant feedback as you type.",
+    seoTitle: "Free Headline Analyzer: Score Your Headline Out of 100",
+    keywords: [
+      "headline analyzer",
+      "headline analyser",
+      "headline checker",
+      "blog title analyzer",
+      "headline score",
+      "power words headline",
+      "title analyzer for SEO",
+      "how to write a good headline",
+    ],
     directAnswer:
       "A headline analyzer that scores any headline out of 100 on the traits strong headlines share — length (40–70 characters best), word count, the presence of a number, power words and positive sentiment.",
     example:
@@ -359,6 +416,17 @@ export const tools: ToolConfig[] = [
     tagline: "Turn keywords into clean, deduplicated hashtags in your preferred style.",
     seoDescription:
       "Free hashtag generator. Convert keywords into clean hashtags in camelCase, lowercase or capitalized style — deduplicated and ready to copy into any post.",
+    seoTitle: "Free Hashtag Generator for Instagram, LinkedIn & X",
+    keywords: [
+      "hashtag generator",
+      "hashtag maker",
+      "Instagram hashtag generator",
+      "LinkedIn hashtags",
+      "keywords to hashtags",
+      "hashtag formatter",
+      "camelCase hashtags",
+      "how many hashtags to use",
+    ],
     directAnswer:
       "A hashtag generator that converts a plain list of keywords into clean, valid, deduplicated hashtags in capitalized, camelCase or lowercase style, with a ready-to-paste single line for any platform.",
     example:
@@ -434,6 +502,17 @@ export const tools: ToolConfig[] = [
     tagline: "See how your title and description will look — and truncate — in Google results.",
     seoDescription:
       "Free SERP snippet preview. See how Google truncates your page title and meta description, with character counts and clear OK or too-long verdicts.",
+    seoTitle: "Free SERP Snippet Preview: Google Title & Description Check",
+    keywords: [
+      "SERP snippet preview",
+      "SERP preview tool",
+      "Google snippet preview",
+      "SERP simulator",
+      "meta title length checker",
+      "meta description length checker",
+      "title tag preview",
+      "Google search result preview",
+    ],
     directAnswer:
       "A Google SERP snippet preview that shows exactly how your title and description will look — and truncate — in search results, with a breadcrumb-style URL and explicit OK or TOO LONG verdicts per field.",
     example:
@@ -500,6 +579,18 @@ export const tools: ToolConfig[] = [
     tagline: "Create a valid robots.txt — allow all, block all, or custom disallow rules.",
     seoDescription:
       "Free robots.txt generator. Create a valid robots.txt file — allow or block all crawlers, add custom disallow paths, crawl-delay and a sitemap URL.",
+    seoTitle: "Free Robots.txt Generator: Allow, Block & Sitemap Rules",
+    keywords: [
+      "robots.txt generator",
+      "robots txt generator",
+      "create robots.txt",
+      "robots.txt file",
+      "disallow robots.txt",
+      "robots.txt sitemap",
+      "crawl-delay robots.txt",
+      "robots.txt for WordPress",
+      "how to block crawlers",
+    ],
     directAnswer:
       "A robots.txt generator that produces a valid robots.txt for the three common situations — allow all crawlers, block all crawlers, or block specific paths — with an optional crawl-delay and sitemap URL.",
     example:
@@ -578,6 +669,17 @@ export const tools: ToolConfig[] = [
     tagline: "Score a subject line on length, spam triggers, caps, personalization and emoji.",
     seoDescription:
       "Free email subject line tester. Score subject lines out of 100 on length, spam trigger words, all-caps, personalization and emoji use before you send.",
+    seoTitle: "Free Email Subject Line Tester: Spam Words & Score",
+    keywords: [
+      "email subject line tester",
+      "subject line tester",
+      "email subject line checker",
+      "subject line analyzer",
+      "email spam word checker",
+      "email subject line score",
+      "best email subject line length",
+      "subject line spam trigger words",
+    ],
     directAnswer:
       "An email subject line tester that scores a subject line out of 100 on length (30–50 characters best), spam trigger words, all-caps, personalization and emoji use, recomputed live as you type.",
     example:
@@ -635,6 +737,17 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate return on ad spend — the revenue every rupee of advertising brings back.",
     seoDescription:
       "Free ROAS calculator. Enter ad spend and revenue to get your return on ad spend as a ratio and percentage, plus net revenue and a benchmark verdict.",
+    seoTitle: "Free ROAS Calculator: Return on Ad Spend in ₹",
+    keywords: [
+      "ROAS calculator",
+      "return on ad spend calculator",
+      "ROAS formula",
+      "how to calculate ROAS",
+      "good ROAS",
+      "break-even ROAS",
+      "ad spend calculator",
+      "ROAS vs ROI",
+    ],
     directAnswer:
       "A ROAS (return on ad spend) calculator that divides revenue attributable to advertising by ad spend, reporting the ratio, the equivalent percentage, the net revenue after the ad bill and a benchmark verdict.",
     formula:
@@ -683,7 +796,18 @@ export const tools: ToolConfig[] = [
     name: "CPM / CPC Calculator",
     tagline: "Calculate CPM, CPC and CTR from campaign cost, impressions and clicks.",
     seoDescription:
-      "Free CPM and CPC calculator. Enter campaign cost with impressions or clicks to get cost per thousand impressions, cost per click and click-through rate.",
+      "Free CPM calculator and CPC calculator. Enter campaign cost with impressions or clicks to get cost per thousand impressions, cost per click and CTR.",
+    seoTitle: "Free CPM Calculator: CPM, CPC & CTR from Ad Cost",
+    keywords: [
+      "CPM calculator",
+      "CPC calculator",
+      "CTR calculator",
+      "cost per thousand impressions",
+      "cost per click calculator",
+      "CPM formula",
+      "ad cost calculator",
+      "how to calculate CPM",
+    ],
     directAnswer:
       "A CPM/CPC calculator that turns campaign cost and impressions or clicks into cost per thousand impressions, cost per click and click-through rate — whichever metrics your inputs support.",
     formula:
@@ -745,6 +869,17 @@ export const tools: ToolConfig[] = [
     tagline: "Work out your engagement rate per post and see how it benchmarks.",
     seoDescription:
       "Free engagement rate calculator. Enter engagements, followers and post count to get your per-post engagement rate with an instant benchmark verdict.",
+    seoTitle: "Free Engagement Rate Calculator for Instagram & Social Posts",
+    keywords: [
+      "engagement rate calculator",
+      "Instagram engagement rate calculator",
+      "engagement rate formula",
+      "social media engagement rate",
+      "engagement rate per post",
+      "influencer engagement rate",
+      "good engagement rate on Instagram",
+      "how to calculate engagement rate",
+    ],
     directAnswer:
       "An engagement rate calculator that measures how much of your audience actually reacts to your posts — total engagements per post divided by followers — with a benchmark verdict from low to excellent.",
     formula:

@@ -22,6 +22,21 @@ export const tools: ToolConfig[] = [
     tagline: "See your monthly take-home pay from your annual CTC.",
     seoDescription:
       "Free in-hand salary calculator. Enter your annual CTC to get monthly take-home pay, PF deduction and income tax under the new regime (FY 2025-26).",
+    seoTitle: "Free In-Hand Salary Calculator: CTC to Take-Home Pay India",
+    keywords: [
+      "in-hand salary calculator",
+      "take home salary calculator",
+      "CTC to in-hand salary",
+      "salary calculator India",
+      "net salary calculator",
+      "monthly take home pay calculator",
+      "CTC calculator",
+      "in-hand salary for 12 LPA",
+      "how much is in-hand salary from CTC",
+      "salary after PF and tax",
+    ],
+    directAnswer:
+      "An in-hand salary calculator converts your annual CTC into monthly and annual take-home pay by deducting employer and employee PF, professional tax and new-regime income tax for FY 2025-26, and also shows your effective tax rate.",
     fields: [
       { name: "annualCtc", label: "Annual CTC", type: "number", placeholder: "1200000", min: 0, unit: "₹" },
       { name: "basicPercent", label: "Basic salary (% of CTC)", type: "number", defaultValue: 40, min: 1, max: 100, unit: "%" },
@@ -67,6 +82,20 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate gratuity payable under the Payment of Gratuity Act.",
     seoDescription:
       "Free gratuity calculator for India. Enter your last drawn salary and years of service to calculate gratuity payable under the Payment of Gratuity Act, 1972.",
+    seoTitle: "Free Gratuity Calculator India: Payment of Gratuity Act 1972",
+    keywords: [
+      "gratuity calculator",
+      "gratuity calculator India",
+      "gratuity calculation formula",
+      "gratuity for 5 years",
+      "how to calculate gratuity",
+      "gratuity eligibility",
+      "Payment of Gratuity Act 1972",
+      "gratuity on resignation",
+      "gratuity ₹20 lakh limit",
+    ],
+    directAnswer:
+      "A gratuity calculator works out the gratuity payable under the Payment of Gratuity Act, 1972 as 15 × last drawn basic + DA × years of service ÷ 26, rounding service over six months up to a full year, applying the ₹20 lakh cap and flagging service under five years.",
     fields: [
       { name: "monthlySalary", label: "Last drawn monthly salary (basic + DA)", type: "number", placeholder: "50000", min: 0, unit: "₹" },
       { name: "yearsOfService", label: "Years of service", type: "number", placeholder: "8", min: 0, max: 50, step: 0.1 },
@@ -110,6 +139,20 @@ export const tools: ToolConfig[] = [
     tagline: "Project your Employees' Provident Fund corpus at retirement.",
     seoDescription:
       "Free EPF calculator. Project your Provident Fund corpus at retirement based on your basic salary, contribution rate, salary growth and EPF interest rate.",
+    seoTitle: "Free EPF Calculator: Project Your PF Corpus at Retirement",
+    keywords: [
+      "EPF calculator",
+      "PF calculator",
+      "provident fund calculator",
+      "EPF corpus calculator",
+      "EPF maturity calculator",
+      "PF retirement calculator",
+      "EPF interest rate calculator",
+      "employee and employer PF contribution",
+      "how much PF will I get at retirement",
+    ],
+    directAnswer:
+      "An EPF calculator projects your Employees' Provident Fund balance at retirement from your age, basic salary, current balance, yearly salary growth and EPF interest rate, showing the final corpus, total employee and employer contributions and the interest earned.",
     fields: [
       { name: "currentAge", label: "Current age", type: "number", placeholder: "28", min: 18, max: 60 },
       { name: "retirementAge", label: "Retirement age", type: "number", defaultValue: 58, min: 19, max: 60 },
@@ -152,6 +195,20 @@ export const tools: ToolConfig[] = [
     tagline: "Work out how much of your House Rent Allowance is tax-exempt.",
     seoDescription:
       "Free HRA exemption calculator. Enter basic salary, HRA received and rent paid to calculate your tax-exempt HRA under the old tax regime — metro and non-metro.",
+    seoTitle: "Free HRA Exemption Calculator: Metro & Non-Metro Rules",
+    keywords: [
+      "HRA exemption calculator",
+      "HRA calculator",
+      "house rent allowance exemption",
+      "HRA tax exemption",
+      "HRA exemption calculation",
+      "taxable HRA calculator",
+      "HRA exemption for metro cities",
+      "how to calculate HRA exemption",
+      "HRA under old tax regime",
+    ],
+    directAnswer:
+      "An HRA exemption calculator finds the tax-exempt part of your House Rent Allowance under the old regime as the lowest of actual HRA, rent paid minus 10% of basic, and 50% (metro) or 40% (non-metro) of basic, and shows the exempt and taxable HRA.",
     fields: [
       { name: "basicSalary", label: "Annual basic salary", type: "number", placeholder: "600000", min: 0, unit: "₹" },
       { name: "hraReceived", label: "Annual HRA received", type: "number", placeholder: "240000", min: 0, unit: "₹" },
@@ -197,6 +254,19 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate the cash value of your unused earned leave.",
     seoDescription:
       "Free leave encashment calculator. Enter your monthly salary and earned leave days to calculate the cash amount payable for unused leave.",
+    seoTitle: "Free Leave Encashment Calculator: Earned Leave Payout",
+    keywords: [
+      "leave encashment calculator",
+      "earned leave encashment",
+      "leave encashment formula",
+      "leave encashment calculation",
+      "unused leave payout",
+      "leave encashment on resignation",
+      "privilege leave encashment",
+      "how to calculate leave encashment",
+    ],
+    directAnswer:
+      "A leave encashment calculator works out the cash payable for unused earned leave by dividing your monthly basic + DA by 30 to get a per-day rate and multiplying it by the leave days encashed.",
     fields: [
       { name: "monthlySalary", label: "Monthly salary (basic + DA)", type: "number", placeholder: "50000", min: 0, unit: "₹" },
       { name: "leaveDays", label: "Earned leave days to encash", type: "number", placeholder: "15", min: 0, max: 365 },
@@ -235,6 +305,19 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate the statutory bonus payable under the Payment of Bonus Act.",
     seoDescription:
       "Free statutory bonus calculator for India. Enter your salary, bonus rate and months worked to calculate the bonus payable under the Payment of Bonus Act, 1965.",
+    seoTitle: "Free Statutory Bonus Calculator: Payment of Bonus Act India",
+    keywords: [
+      "statutory bonus calculator",
+      "bonus calculator",
+      "Payment of Bonus Act 1965",
+      "statutory bonus calculation",
+      "bonus 8.33 percent calculation",
+      "minimum bonus calculation",
+      "bonus eligibility ₹21000",
+      "how to calculate statutory bonus",
+    ],
+    directAnswer:
+      "A statutory bonus calculator works out the bonus payable under the Payment of Bonus Act, 1965 at a rate of 8.33% to 20%, using salary capped at ₹7,000 a month and pro-rated for months worked; employees earning over ₹21,000 a month are flagged as not covered.",
     fields: [
       { name: "monthlySalary", label: "Monthly salary (basic + DA)", type: "number", placeholder: "15000", min: 0, unit: "₹" },
       { name: "bonusRate", label: "Bonus rate", type: "number", defaultValue: 8.33, min: 8.33, max: 20, step: 0.01, unit: "%" },
@@ -274,6 +357,19 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate overtime pay at the statutory double-rate.",
     seoDescription:
       "Free overtime pay calculator for India. Enter monthly wages, daily working hours and overtime hours to calculate overtime pay at the statutory double rate.",
+    seoTitle: "Free Overtime Pay Calculator India: Double-Rate OT Wages",
+    keywords: [
+      "overtime pay calculator",
+      "overtime calculator",
+      "OT calculation",
+      "overtime calculation formula India",
+      "double rate overtime",
+      "Factories Act overtime",
+      "overtime wages calculator",
+      "how to calculate overtime pay",
+    ],
+    directAnswer:
+      "An overtime pay calculator converts your monthly wages into an hourly rate (wages ÷ 26 days ÷ normal daily hours) and pays overtime hours at twice that rate, the statutory double rate in India, showing total overtime pay and both hourly rates.",
     fields: [
       { name: "monthlyWages", label: "Monthly wages", type: "number", placeholder: "20000", min: 0, unit: "₹" },
       { name: "dailyHours", label: "Normal daily working hours", type: "number", defaultValue: 8, min: 1, max: 24 },
@@ -313,6 +409,18 @@ export const tools: ToolConfig[] = [
     tagline: "Calculate the salary recovery for notice period shortfall.",
     seoDescription:
       "Free notice period recovery calculator. Enter your salary, required notice period and days actually served to calculate the recovery amount for a shortfall.",
+    seoTitle: "Free Notice Period Recovery Calculator: Buyout Amount",
+    keywords: [
+      "notice period recovery calculator",
+      "notice period buyout calculator",
+      "notice pay recovery",
+      "notice period shortfall",
+      "notice period buyout amount",
+      "notice pay calculation",
+      "how to calculate notice period recovery",
+    ],
+    directAnswer:
+      "A notice period recovery calculator works out the amount an employer can recover when you serve less notice than your contract requires: monthly gross salary ÷ 30 per day, multiplied by the shortfall days.",
     fields: [
       { name: "monthlySalary", label: "Monthly gross salary", type: "number", placeholder: "60000", min: 0, unit: "₹" },
       { name: "requiredDays", label: "Notice period required (days)", type: "number", defaultValue: 60, min: 1, max: 180 },
@@ -352,6 +460,19 @@ export const tools: ToolConfig[] = [
     tagline: "Create a clean, itemised payslip in seconds.",
     seoDescription:
       "Free payslip generator. Enter earnings and deductions to generate a clean, itemised payslip with automatic net pay calculation — download as a text file.",
+    seoTitle: "Free Payslip Generator: Salary Slip with PF & Net Pay",
+    keywords: [
+      "payslip generator",
+      "salary slip generator",
+      "salary slip format",
+      "pay slip maker",
+      "payslip format India",
+      "salary slip with PF deduction",
+      "online payslip",
+      "how to make a salary slip",
+    ],
+    directAnswer:
+      "A payslip generator builds an itemised monthly salary slip from basic, HRA, special and other allowances minus PF, professional tax and other deductions, calculating total earnings, total deductions and net pay, and downloads it as a plain-text file.",
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "employeeName", label: "Employee name", type: "text", placeholder: "Priya Sharma" },
@@ -400,6 +521,19 @@ export const tools: ToolConfig[] = [
     tagline: "Create a professional job offer letter in minutes.",
     seoDescription:
       "Free offer letter generator. Enter the position, CTC and joining date to create a professional job offer letter with standard clauses — ready to send.",
+    seoTitle: "Free Offer Letter Generator: Job Offer Letter Format India",
+    keywords: [
+      "offer letter generator",
+      "offer letter format",
+      "job offer letter",
+      "offer letter template",
+      "offer letter maker",
+      "appointment offer letter",
+      "employment offer letter India",
+      "how to write an offer letter",
+    ],
+    directAnswer:
+      "An offer letter generator creates a job offer letter from the company, candidate, designation, annual CTC, joining date and location, with standard clauses for documents at joining, six-month probation, confidentiality and candidate acceptance.",
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "candidateName", label: "Candidate name", type: "text", placeholder: "Rahul Verma" },
@@ -451,7 +585,20 @@ export const tools: ToolConfig[] = [
     name: "Appointment Letter Generator",
     tagline: "Generate a complete appointment letter with standard employment terms.",
     seoDescription:
-      "Free appointment letter generator. Create a complete appointment letter with position, salary, probation, notice period and confidentiality terms — ready to sign.",
+      "Free appointment letter generator. Create an appointment letter with position, salary, probation, notice period and confidentiality terms — ready to sign.",
+    seoTitle: "Free Appointment Letter Generator: Format with Notice Terms",
+    keywords: [
+      "appointment letter generator",
+      "appointment letter format",
+      "appointment letter template",
+      "employee appointment letter",
+      "job appointment letter",
+      "appointment letter with probation",
+      "appointment letter India",
+      "how to write an appointment letter",
+    ],
+    directAnswer:
+      "An appointment letter generator creates a formal letter of appointment with the employee's designation, joining date, CTC and work location, plus clauses on transfer, six-month probation, your chosen notice period, leave, confidentiality, jurisdiction and an acceptance block.",
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "employeeName", label: "Employee name", type: "text", placeholder: "Rahul Verma" },
@@ -496,6 +643,19 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a professional experience/relieving certificate.",
     seoDescription:
       "Free experience letter generator. Create a professional 'to whomsoever it may concern' experience certificate confirming employment dates and conduct.",
+    seoTitle: "Free Experience Letter Generator: Relieving Certificate",
+    keywords: [
+      "experience letter generator",
+      "experience letter format",
+      "experience certificate",
+      "relieving letter",
+      "relieving letter format",
+      "service certificate",
+      "to whomsoever it may concern letter",
+      "experience letter template",
+    ],
+    directAnswer:
+      "An experience letter generator creates a 'to whomsoever it may concern' experience certificate confirming the employee's name, designation and dates of employment, with an excellent, good or satisfactory conduct remark and a note that dues are settled.",
     fields: [
       { name: "companyName", label: "Company name", type: "text", placeholder: "Avexora Technologies Pvt Ltd" },
       { name: "employeeName", label: "Employee name", type: "text", placeholder: "Rahul Verma" },
@@ -549,6 +709,20 @@ export const tools: ToolConfig[] = [
     tagline: "Build a clean, ATS-friendly resume from a simple form.",
     seoDescription:
       "Free resume builder. Enter your details, work experience and education to generate a clean, ATS-friendly resume you can copy or download instantly.",
+    seoTitle: "Free Resume Builder: ATS-Friendly CV Maker",
+    keywords: [
+      "resume builder",
+      "CV maker",
+      "ATS-friendly resume",
+      "resume maker",
+      "CV builder",
+      "free resume builder online",
+      "ATS resume format",
+      "plain text resume",
+      "how to make a resume",
+    ],
+    directAnswer:
+      "A resume builder turns your contact details, summary, skills, work experience and education into a single-column, ATS-friendly plain-text resume with standard section headings, which you can copy or download as a .txt file.",
     component: ResumeBuilder,
     emailGate: true,
     steps: [
