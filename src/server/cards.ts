@@ -62,6 +62,7 @@ const cardSchema = z.object({
   photo: z.string().max(500_000).optional(),
   logo: z.string().max(400_000).optional(),
   photoRatio: z.number().min(0.3).max(3).optional(),
+  morePhotos: z.array(z.string().max(500_000)).max(3).optional(),
   photoMotion: z.boolean().optional(),
 });
 

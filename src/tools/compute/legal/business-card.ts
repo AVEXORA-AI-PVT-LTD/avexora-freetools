@@ -45,7 +45,9 @@ export interface BusinessCardInput {
   logo?: string;
   /** Width ÷ height of the photo, so the header can show it whole. */
   photoRatio?: number;
-  /** Cycle the photo through its five layouts (see PHOTO_LAYOUTS). */
+  /** Up to three more photos (same outfit, other poses) that the header cycles through. */
+  morePhotos?: string[];
+  /** Animate the header: crossfade the photos with a slow zoom. */
   photoMotion?: boolean;
 }
 
@@ -55,6 +57,9 @@ const HEX_RE = /^#[0-9a-f]{6}$/i;
 const EMAIL_RE = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/;
 const HANDLE_RE = /^[A-Za-z0-9._-]{1,100}$/;
 const PHOTO_RE = /^data:image\/(png|jpeg);base64,([A-Za-z0-9+/=]+)$/;
+
+/** Photos per card: the main one plus up to three more poses. */
+export const MAX_PHOTOS = 4;
 
 export const LIMITS = { name: 80, title: 80, company: 80, tagline: 160, address: 200, photoBytes: 400_000, logoBytes: 300_000 } as const;
 
@@ -152,6 +157,14 @@ export function validateBusinessCard(input: BusinessCardInput): string | null {
     if (!PHOTO_RE.test(input.photo)) return "The photo must be a PNG or JPEG image.";
     if (input.photo.length > LIMITS.photoBytes) return "That photo is too large — try a smaller image.";
   }
+  if (input.morePhotos?.length) {
+    if (!input.photo) return "Add your main photo first.";
+    if (input.morePhotos.length > MAX_PHOTOS - 1) return `You can add up to ${MAX_PHOTOS} photos.`;
+    for (const extra of input.morePhotos) {
+      if (!PHOTO_RE.test(extra)) return "Each photo must be a PNG or JPEG image.";
+      if (extra.length > LIMITS.photoBytes) return "One of the photos is too large — try a smaller image.";
+    }
+  }
   if (input.photoRatio !== undefined && !(input.photoRatio >= 0.3 && input.photoRatio <= 3)) {
     return "Choose the photo again.";
   }
@@ -240,134 +253,66 @@ export function buildVCard(input: BusinessCardInput, opts: { includePhoto?: bool
 
 // --- animated photo -----------------------------------------------------------
 
-/**
- * The five ways the header presents the photo. The card crossfades through
- * them in a loop; each is a different composition of the one uploaded image
- * (stored once, referenced through a CSS variable), always anchored at the top
- * so the head is never cut off.
- */
-export const PHOTO_LAYOUTS = [
-  { id: "portrait", label: "Full portrait" },
-  { id: "spotlight", label: "Spotlight" },
-  { id: "polaroid", label: "Polaroid" },
-  { id: "split", label: "Split panel" },
-  { id: "cover", label: "Magazine cover" },
-] as const;
-export type PhotoLayoutId = (typeof PHOTO_LAYOUTS)[number]["id"];
-
-/** Seconds each layout stays on screen before the next fades in. */
-const LAYOUT_SECONDS = 3.2;
+/** Seconds each photo stays on screen before the next fades in. */
+const PHOTO_SECONDS = 3.5;
 const DEFAULT_RATIO = 0.8;
-
-const HERO_CSS = `.banner.hero{height:auto;background:#0f172a}
-.stage{position:relative;width:100%;aspect-ratio:var(--ratio);max-height:520px;min-height:260px;overflow:hidden}
-.lay{position:absolute;inset:0;overflow:hidden;container-type:size}
-.pic{position:absolute;inset:0;background:var(--photo) center top/cover no-repeat}
-.lay-spotlight,.lay-polaroid,.lay-split .panel{background:linear-gradient(135deg,var(--primary),var(--accent))}
-.lay-spotlight .disc{position:absolute;left:50%;top:48%;width:min(78cqw,74cqh);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:var(--photo) center 12%/cover no-repeat;box-shadow:0 0 0 6px rgba(255,255,255,.92),0 22px 50px rgba(0,0,0,.35)}
-.lay-spotlight .disc::after{content:"";position:absolute;inset:-18px;border-radius:50%;border:2px solid rgba(255,255,255,.45)}
-.lay-polaroid{background:radial-gradient(circle at 25% 15%,color-mix(in srgb,var(--accent) 55%,#fff),transparent 55%),linear-gradient(135deg,var(--primary),var(--accent))}
-.lay-polaroid .print{position:absolute;left:50%;top:50%;width:min(78cqw,70cqh);aspect-ratio:.82;transform:translate(-50%,-50%) rotate(-4deg);background:#fff;border-radius:4px;box-shadow:0 24px 50px rgba(0,0,0,.35)}
-.lay-polaroid .print .pic{inset:5% 5% 19% 5%;border-radius:2px}
-.lay-polaroid figcaption{position:absolute;left:0;right:0;bottom:4%;text-align:center;font:600 clamp(15px,4.4vw,20px)/1.1 "Segoe Print","Bradley Hand","Comic Sans MS",cursive;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px}
-.lay-split .pic{right:44%}
-.lay-split .panel{position:absolute;top:0;bottom:0;right:0;width:44%;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:18px 16px;color:#fff}
-.lay-split .panel b{font-size:clamp(18px,5.4vw,24px);line-height:1.1;overflow-wrap:anywhere}
-.lay-split .panel span{font-size:13px;opacity:.9;overflow-wrap:anywhere}
-.lay-split .panel i{width:36px;height:3px;border-radius:3px;background:rgba(255,255,255,.8)}
-.lay-cover{background:linear-gradient(180deg,var(--primary),color-mix(in srgb,var(--primary) 40%,#000))}
-.lay-cover .pic{top:min(17%,64px)}
-.lay-cover .mast{position:absolute;top:14px;left:58px;right:58px;text-align:center;color:#fff;font-weight:900;font-size:clamp(24px,8vw,38px);line-height:1;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:clip}
-.lay-cover .lines{position:absolute;left:16px;right:16px;bottom:14px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-.lay-cover .lines small{display:inline-block;padding:2px 8px;border-radius:3px;background:var(--accent);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-shadow:none}
-.lay-cover .lines b{display:block;margin-top:6px;font-size:clamp(17px,5vw,22px);line-height:1.15}
-.lay-cover::after{content:"";position:absolute;inset:auto 0 0;height:42%;background:linear-gradient(transparent,rgba(0,0,0,.55))}
-.lay-cover .lines{z-index:1}
-.hero-scrim{position:absolute;inset:0 0 auto;height:80px;background:linear-gradient(rgba(0,0,0,.28),transparent);pointer-events:none}`;
-
-function layoutHtml(id: PhotoLayoutId, text: { name: string; title: string; company: string }): string {
-  const name = esc(text.name);
-  const title = esc(text.title);
-  const company = esc(text.company);
-  switch (id) {
-    case "portrait":
-      return `<i class="pic"></i>`;
-    case "spotlight":
-      return `<i class="disc"></i>`;
-    case "polaroid":
-      return `<figure class="print"><i class="pic"></i><figcaption>${name}</figcaption></figure>`;
-    case "split":
-      return `<i class="pic"></i><div class="panel"><i></i><b>${name}</b>${title ? `<span>${title}</span>` : ""}${company ? `<span>${company}</span>` : ""}</div>`;
-    case "cover":
-      return `<i class="pic"></i><div class="mast">${company || name}</div><div class="lines"><small>In focus</small><b>${name}${title ? ` — ${title}` : ""}</b></div>`;
-  }
-}
-
-/** Header markup and CSS for a photo card: every layout, or just `only`. */
-function heroParts(
-  photo: string,
-  ratio: number,
-  text: { name: string; title: string; company: string },
-  opts: { animate: boolean; only?: PhotoLayoutId },
-): { html: string; css: string } {
-  const layouts = opts.only
-    ? PHOTO_LAYOUTS.filter((l) => l.id === opts.only)
-    : opts.animate
-      ? PHOTO_LAYOUTS
-      : PHOTO_LAYOUTS.slice(0, 1);
-  const html = `<div class="stage" role="img" aria-label="${esc(text.name)}" style="--photo:url('${photo}');--ratio:${ratio}">${layouts
-    .map((l, i) => `<div class="lay lay-${l.id}${i === 0 ? " base" : ""}">${layoutHtml(l.id, text)}</div>`)
-    .join("")}</div>`;
-  if (!opts.animate || opts.only) return { html, css: HERO_CSS };
-
-  // Keyframe stops as a percentage of the loop: each layout holds for one slot
-  // and crossfades into the next over FADE; its entrance move plays as it arrives.
-  const cycle = PHOTO_LAYOUTS.length * LAYOUT_SECONDS;
-  const SLOT = Math.round(100 / PHOTO_LAYOUTS.length);
-  const FADE = 4;
-  const OUT = SLOT + FADE;
-  const delay = (i: number) => `${(i * LAYOUT_SECONDS).toFixed(1)}s`;
-  const css = `${HERO_CSS}
-.lay{opacity:0;animation:lay ${cycle}s linear infinite}
-.lay.base{opacity:1;animation-name:lay-base}
-${PHOTO_LAYOUTS.map((l, i) => `.lay-${l.id}{animation-delay:${delay(i)}}`).join("\n")}
-.lay-portrait .pic,.lay-spotlight .disc,.lay-polaroid .print,.lay-split .panel,.lay-cover .mast{animation:${cycle}s var(--ease) infinite both}
-.lay-portrait .pic{transform-origin:50% 0;animation-name:m-portrait;animation-delay:${delay(0)}}
-.lay-spotlight .disc{animation-name:m-spotlight;animation-delay:${delay(1)}}
-.lay-polaroid .print{animation-name:m-polaroid;animation-delay:${delay(2)}}
-.lay-split .panel{animation-name:m-split;animation-delay:${delay(3)}}
-.lay-cover .mast{animation-name:m-cover;animation-delay:${delay(4)}}
-@keyframes lay{0%{opacity:0}${FADE}%{opacity:1}${SLOT}%{opacity:1}${OUT}%{opacity:0}100%{opacity:0}}
-@keyframes lay-base{0%,${SLOT}%{opacity:1}${OUT}%,${100 - FADE}%{opacity:0}100%{opacity:1}}
-@keyframes m-portrait{0%{transform:scale(1)}${OUT}%,100%{transform:scale(1.05)}}
-@keyframes m-spotlight{0%{transform:translate(-50%,-50%) scale(.86)}${Math.round(OUT / 2)}%,100%{transform:translate(-50%,-50%) scale(1)}}
-@keyframes m-polaroid{0%{transform:translate(-50%,-44%) rotate(-9deg)}${Math.round(OUT / 2)}%,100%{transform:translate(-50%,-50%) rotate(-4deg)}}
-@keyframes m-split{0%{transform:translateX(100%)}${Math.round(OUT / 2)}%,100%{transform:none}}
-@keyframes m-cover{0%{opacity:0;transform:translateY(-30%)}${Math.round(OUT / 2)}%,100%{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){.lay{display:none}.lay.base{display:block;opacity:1}.lay .pic,.lay .disc,.lay .print,.lay .panel,.lay .mast{animation:none!important}}`;
-  return { html, css };
-}
-
-/**
- * A tiny standalone page showing one layout, for the form's thumbnails (the
- * same markup and CSS the card uses, rendered at card width).
- */
-export function photoLayoutDoc(input: BusinessCardInput, id: PhotoLayoutId): string {
-  const photo = input.photo && PHOTO_RE.test(input.photo) ? input.photo : "";
-  const primary = safeHex(input.primaryColor, DEFAULT_CARD_COLORS.primaryColor);
-  const accent = safeHex(input.accentColor, DEFAULT_CARD_COLORS.accentColor);
-  const { html, css } = heroParts(
-    photo,
-    photoRatio(input),
-    { name: input.name.trim() || "Your Name", title: input.title.trim(), company: input.company.trim() },
-    { animate: false, only: id },
-  );
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>:root{--primary:${primary};--accent:${accent}}*{box-sizing:border-box}body{margin:0;width:390px;font-family:ui-sans-serif,system-ui,sans-serif;background:#0f172a}figure{margin:0}${css}.lay{opacity:1}</style></head><body>${html}</body></html>`;
-}
 
 function photoRatio(input: BusinessCardInput): number {
   const r = input.photoRatio;
   return r && r >= 0.3 && r <= 3 ? Math.round(r * 1000) / 1000 : DEFAULT_RATIO;
+}
+
+/** The main photo followed by any valid extra poses, capped at MAX_PHOTOS. */
+export function cardPhotos(input: BusinessCardInput): string[] {
+  if (!input.photo || !PHOTO_RE.test(input.photo)) return [];
+  return [input.photo, ...(input.morePhotos ?? []).filter((p) => PHOTO_RE.test(p))].slice(0, MAX_PHOTOS);
+}
+
+/**
+ * The header for a photo card: the photos shown whole (the header takes the
+ * main photo's proportions, every photo is anchored at the top so heads are
+ * never cut), crossfading one into the next with a slow zoom — a motion
+ * picture made from the poses the customer uploaded. Each image appears once,
+ * as a CSS variable. Still first photo when motion is off or reduced.
+ */
+function heroParts(photos: string[], ratio: number, label: string, animate: boolean): { html: string; css: string } {
+  const shown = animate ? photos : photos.slice(0, 1);
+  const vars = shown.map((p, i) => `--p${i}:url('${p}')`).join(";");
+  const html = `<div class="stage" role="img" aria-label="${esc(label)}" style="${vars};--ratio:${ratio}">${shown
+    .map((_, i) => `<i class="shot${i === 0 ? " base" : ""}" style="background-image:var(--p${i})"></i>`)
+    .join("")}</div>`;
+  const base = `.banner.hero{height:auto;background:#0f172a}
+.stage{position:relative;width:100%;aspect-ratio:var(--ratio);max-height:520px;min-height:260px;overflow:hidden}
+.shot{position:absolute;inset:0;background-position:center top;background-size:cover;background-repeat:no-repeat;transform-origin:50% 20%}
+.hero-scrim{position:absolute;inset:0 0 auto;height:80px;background:linear-gradient(rgba(0,0,0,.28),transparent);pointer-events:none}`;
+  if (!animate) return { html, css: base };
+
+  if (shown.length === 1) {
+    // One photo: no crossfade, just a slow breathing zoom.
+    return {
+      html,
+      css: `${base}
+.shot{animation:zoom1 12s ease-in-out infinite alternate}
+@keyframes zoom1{to{transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.shot{animation:none}}`,
+    };
+  }
+
+  // Each photo holds for one slot and crossfades into the next over FADE,
+  // zooming gently while it is on screen.
+  const cycle = shown.length * PHOTO_SECONDS;
+  const SLOT = 100 / shown.length;
+  const FADE = Math.min(8, SLOT / 3);
+  const pct = (n: number) => `${Math.round(n * 100) / 100}%`;
+  const css = `${base}
+.shot{opacity:0;animation:shot ${cycle}s linear infinite,zoom ${cycle}s linear infinite}
+.shot.base{opacity:1;animation-name:shot-base,zoom}
+${shown.map((_, i) => `.shot:nth-child(${i + 1}){animation-delay:${(i * PHOTO_SECONDS).toFixed(2)}s}`).join("\n")}
+@keyframes shot{0%{opacity:0}${pct(FADE)}{opacity:1}${pct(SLOT)}{opacity:1}${pct(SLOT + FADE)}{opacity:0}100%{opacity:0}}
+@keyframes shot-base{0%,${pct(SLOT)}{opacity:1}${pct(SLOT + FADE)},${pct(100 - FADE)}{opacity:0}100%{opacity:1}}
+@keyframes zoom{0%{transform:scale(1)}${pct(SLOT + FADE)}{transform:scale(1.07)}100%{transform:scale(1.07)}}
+@media(prefers-reduced-motion:reduce){.shot{display:none}.shot.base{display:block;opacity:1;animation:none}}`;
+  return { html, css };
 }
 
 // --- icons (shared by the preview and the export) ----------------------------
@@ -453,21 +398,22 @@ export function buildCardHtml(input: BusinessCardInput, opts: CardHtmlOptions = 
   const vcfHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
 
   const role = [title && esc(title), company && `<strong>${esc(company)}</strong>`].filter(Boolean).join(" at ");
-  const photo = input.photo && PHOTO_RE.test(input.photo) ? input.photo : null;
+  const photos = cardPhotos(input);
+  const photo = photos[0] ?? null;
   const logo = input.logo && PHOTO_RE.test(input.logo) ? input.logo : null;
   const motion = Boolean(photo && input.photoMotion !== false);
-  // With a photo, the header shows it whole and loops through its layouts.
-  const hero = photo
-    ? heroParts(photo, photoRatio(input), { name, title, company }, { animate: motion })
-    : null;
+  // With photos, the header shows them whole as a motion picture.
+  const hero = photo ? heroParts(photos, photoRatio(input), name, motion) : null;
   const heroHtml = hero
     ? `${hero.html}<div class="hero-scrim"></div>`
     : `<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>\n<div class="shape ring"></div><div class="shape sq"></div>`;
   const frameCss = hero?.css ?? "";
   // The circle carries the logo when there is one, initials when there is no
   // photo either, and is left out when the photo already fills the header.
+  // The logo sits on a wide white panel over the header's bottom edge, sized
+  // for wordmarks as well as square marks; initials only when there's neither.
   const avatar = logo
-    ? `<div class="avatar logo"><div><img src="${logo}" alt="${esc(company || name)} logo"></div></div>`
+    ? `<div class="brandbar rise" style="--d:600ms"><img src="${logo}" alt="${esc(company || name)} logo"></div>`
     : photo
       ? ""
       : `<div class="avatar"><div><span aria-hidden="true">${esc(initials(name))}</span></div></div>`;
@@ -541,9 +487,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 .avatar>div{width:100%;height:100%;border-radius:50%;overflow:hidden;display:grid;place-items:center;color:#fff;font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--accent))}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .banner.hero canvas{opacity:.45}
-figure{margin:0}
-.avatar.logo>div{background:#fff;padding:14px}
-.avatar.logo img{object-fit:contain}
+.brandbar{position:relative;z-index:3;display:flex;align-items:center;justify-content:center;width:fit-content;min-width:132px;max-width:82%;min-height:64px;margin:-34px auto 0;padding:12px 24px;border-radius:18px;background:#fff;box-shadow:0 14px 34px -12px rgba(15,23,42,.35),0 0 0 1px rgba(15,23,42,.06)}
+.brandbar img{display:block;height:44px;width:auto;max-width:100%;object-fit:contain}
 .id.flush{padding-top:22px}
 ${frameCss}
 .id{text-align:center;padding:14px 24px 0}

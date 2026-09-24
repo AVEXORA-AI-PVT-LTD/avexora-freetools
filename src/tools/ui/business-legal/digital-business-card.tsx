@@ -11,8 +11,7 @@ import {
   DEFAULT_CARD_COLORS,
   LIMITS,
   normalizeUrl,
-  PHOTO_LAYOUTS,
-  photoLayoutDoc,
+  MAX_PHOTOS,
   SOCIAL_META,
   SOCIAL_NETWORKS,
   validateBusinessCard,
@@ -109,28 +108,45 @@ function qrText(input: BusinessCardInput, target: QrTarget, savedUrl: string | u
   return buildVCard(input, { includePhoto: false });
 }
 
-const THUMB_W = 132;
-const CARD_W = 390;
+/** Width ÷ height of an image data URL (to size the header from the main photo). */
+function ratioOf(dataUrl: string): Promise<number> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img.naturalWidth / img.naturalHeight || 0.8);
+    img.onerror = () => resolve(0.8);
+    img.src = dataUrl;
+  });
+}
 
-/** One layout, drawn at card width and scaled down, so the thumbnail is the real thing. */
-function LayoutThumb({ label, doc, ratio }: { label: string; doc: string; ratio: number }) {
-  const cardH = Math.max(260, Math.min(520, CARD_W / ratio));
-  const scale = THUMB_W / CARD_W;
+/** A button that opens the file picker (the input itself stays visually hidden). */
+function FileButton({
+  id,
+  label,
+  multiple,
+  onFiles,
+}: {
+  id: string;
+  label: string;
+  multiple: boolean;
+  onFiles: (files: FileList | null) => void;
+}) {
   return (
-    <figure className="shrink-0 space-y-1" style={{ width: THUMB_W }}>
-      <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-900" style={{ height: cardH * scale }}>
-        <iframe
-          title={`${label} layout`}
-          srcDoc={doc}
-          sandbox=""
-          tabIndex={-1}
-          aria-hidden="true"
-          className="pointer-events-none origin-top-left border-0"
-          style={{ width: CARD_W, height: cardH, transform: `scale(${scale})` }}
-        />
-      </div>
-      <figcaption className="text-center text-[11px] leading-tight text-slate-500">{label}</figcaption>
-    </figure>
+    <>
+      <label className={secondaryBtn + " cursor-pointer"} htmlFor={id}>
+        {label}
+      </label>
+      <input
+        id={id}
+        type="file"
+        multiple={multiple}
+        accept="image/png,image/jpeg,image/webp"
+        className="sr-only"
+        onChange={(e) => {
+          onFiles(e.target.files);
+          e.target.value = "";
+        }}
+      />
+    </>
   );
 }
 
@@ -203,21 +219,76 @@ export default function DigitalBusinessCard() {
     setReplayKey((k) => k + 1);
   };
 
-  const onImage = async (key: "photo" | "logo", file: File | undefined) => {
+  const photos = [input.photo, ...(input.morePhotos ?? [])].filter((p): p is string => Boolean(p));
+
+  /** Store the photo list; the first is the main photo and sets the header's shape. */
+  const setPhotos = (list: string[], mainRatio?: number) =>
+    setInput((prev) => ({
+      ...prev,
+      photo: list[0],
+      morePhotos: list.slice(1),
+      photoRatio: list.length ? (mainRatio ?? prev.photoRatio) : undefined,
+    }));
+
+  const onPhotos = async (files: FileList | null) => {
+    if (!files?.length) return;
+    const room = MAX_PHOTOS - photos.length;
+    if (room <= 0) {
+      setError(`You can add up to ${MAX_PHOTOS} photos — remove one first.`);
+      return;
+    }
+    // Copy now: the input is reset right after this handler starts, which empties the live FileList.
+    const all = Array.from(files);
+    const picked = all.slice(0, room);
+    const added: { dataUrl: string; ratio: number }[] = [];
+    for (const file of picked) {
+      if (!ACCEPTED_IMAGE.test(file.type)) {
+        setError("Choose PNG, JPEG or WebP images.");
+        return;
+      }
+      try {
+        const photo = await readPhoto(file);
+        if (photo.dataUrl.length > LIMITS.photoBytes) {
+          setError("One of the photos is too detailed to embed — try a smaller image.");
+          return;
+        }
+        added.push(photo);
+      } catch {
+        setError("One of the images couldn't be read — try another file.");
+        return;
+      }
+    }
+    const list = [...photos, ...added.map((a) => a.dataUrl)];
+    setPhotos(list, photos.length ? undefined : added[0]?.ratio);
+    setError(all.length > room ? `Only ${MAX_PHOTOS} photos fit — the extra ones were skipped.` : null);
+    replay();
+  };
+
+  const removePhoto = async (index: number) => {
+    const list = photos.filter((_, i) => i !== index);
+    setPhotos(list, index === 0 && list[0] ? await ratioOf(list[0]) : undefined);
+    replay();
+  };
+
+  const makeMain = async (index: number) => {
+    const list = [photos[index]!, ...photos.filter((_, i) => i !== index)];
+    setPhotos(list, await ratioOf(list[0]!));
+    replay();
+  };
+
+  const onLogo = async (file: File | undefined) => {
     if (!file) return;
     if (!ACCEPTED_IMAGE.test(file.type)) {
       setError("Choose a PNG, JPEG or WebP image.");
       return;
     }
     try {
-      const photo = key === "photo" ? await readPhoto(file) : null;
-      const dataUrl = photo ? photo.dataUrl : await readLogo(file);
-      if (dataUrl.length > (key === "photo" ? LIMITS.photoBytes : LIMITS.logoBytes)) {
-        setError(`That ${key} is too detailed to embed — try a smaller or simpler image.`);
+      const dataUrl = await readLogo(file);
+      if (dataUrl.length > LIMITS.logoBytes) {
+        setError("That logo is too detailed to embed — try a smaller or simpler image.");
         return;
       }
-      if (photo) setInput((prev) => ({ ...prev, photo: photo.dataUrl, photoRatio: photo.ratio }));
-      else set("logo", dataUrl);
+      set("logo", dataUrl);
       setError(null);
     } catch {
       setError("That image couldn't be read — try another file.");
@@ -311,24 +382,6 @@ export default function DigitalBusinessCard() {
     </div>
   );
 
-  const upload = (key: "photo" | "logo", label: string) => (
-    <>
-      <label className={secondaryBtn + " cursor-pointer"} htmlFor={`${id}-${key}`}>
-        {input[key] ? `Change ${label}` : `Add ${label}`}
-      </label>
-      <input
-        id={`${id}-${key}`}
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-        className="sr-only"
-        onChange={(e) => {
-          void onImage(key, e.target.files?.[0]);
-          e.target.value = "";
-        }}
-      />
-    </>
-  );
-
   return (
     <div className="space-y-6">
       <RestoredDownload restored={restored} />
@@ -341,26 +394,52 @@ export default function DigitalBusinessCard() {
             <div className="space-y-3 rounded-lg border border-slate-200 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-medium text-slate-800">Your photo</p>
-                  <p className={hintCls}>Shown whole across the top of the card — never cropped. A head-and-shoulders photo works best.</p>
+                  <p className="text-sm font-medium text-slate-800">Your photos</p>
+                  <p className={hintCls}>
+                    Add up to {MAX_PHOTOS} photos in the same outfit — different poses or expressions. The card plays them
+                    as a motion picture across the top, each shown whole.
+                  </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  {upload("photo", "photo")}
-                  {input.photo && (
-                    <button type="button" className={smallLink} onClick={() => set("photo", undefined)}>
-                      Remove
-                    </button>
-                  )}
-                </div>
+                {photos.length < MAX_PHOTOS && (
+                  <FileButton
+                    id={`${id}-photos`}
+                    label={photos.length ? "Add more photos" : "Add photos"}
+                    multiple
+                    onFiles={(files) => void onPhotos(files)}
+                  />
+                )}
               </div>
 
-              {input.photo && (
+              {photos.length > 0 && (
                 <>
-                  <div className="flex gap-3 overflow-x-auto pb-1" aria-label="The five layouts your photo cycles through">
-                    {PHOTO_LAYOUTS.map((l) => (
-                      <LayoutThumb key={l.id} label={l.label} doc={photoLayoutDoc(card, l.id)} ratio={input.photoRatio ?? 0.8} />
+                  <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="Your photos, in the order they play">
+                    {photos.map((p, i) => (
+                      <li key={i} className="space-y-1.5">
+                        <div className="relative aspect-[4/5] overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+                          {/* A local data URL; next/image adds nothing here. */}
+                          <img src={p} alt={`Photo ${i + 1}`} className="h-full w-full object-cover object-top" />
+                          {i === 0 && (
+                            <span className="absolute left-1.5 top-1.5 rounded bg-orange-600 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                              Main
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap justify-between gap-x-2 gap-y-1 whitespace-nowrap text-xs">
+                          {i === 0 ? (
+                            <span className="text-slate-400">Plays first</span>
+                          ) : (
+                            <button type="button" className="font-medium text-orange-700 hover:text-orange-900" onClick={() => void makeMain(i)}>
+                              Make main
+                            </button>
+                          )}
+                          <button type="button" className="font-medium text-slate-500 hover:text-red-600" onClick={() => void removePhoto(i)}>
+                            Remove
+                          </button>
+                        </div>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
+                  <p className={hintCls}>The main photo is also used in the contact file and in link previews.</p>
                   <label className="flex items-center gap-2 text-sm text-slate-700">
                     <input
                       type="checkbox"
@@ -368,7 +447,9 @@ export default function DigitalBusinessCard() {
                       checked={input.photoMotion !== false}
                       onChange={(e) => set("photoMotion", e.target.checked)}
                     />
-                    Animate the photo: cycle through these five layouts in the card&apos;s header
+                    {photos.length > 1
+                      ? "Animate: crossfade through the photos with a slow zoom"
+                      : "Animate: a slow zoom (add more photos for a motion picture)"}
                   </label>
                 </>
               )}
@@ -376,16 +457,21 @@ export default function DigitalBusinessCard() {
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white text-[10px] text-slate-400">
+                <div className="flex h-12 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white text-[10px] text-slate-400">
                   {input.logo ? <img src={input.logo} alt="" className="h-full w-full object-contain p-1.5" /> : "Logo"}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-800">Company logo</p>
-                  <p className={hintCls}>Shown in the circle under the photo. PNG with a transparent background looks best.</p>
+                  <p className={hintCls}>Shown large on a white panel under the photos. Wide wordmarks and square marks both fit.</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {upload("logo", "logo")}
+                <FileButton
+                  id={`${id}-logo`}
+                  label={input.logo ? "Change logo" : "Add logo"}
+                  multiple={false}
+                  onFiles={(files) => void onLogo(files?.[0])}
+                />
                 {input.logo && (
                   <button type="button" className={smallLink} onClick={() => set("logo", undefined)}>
                     Remove
