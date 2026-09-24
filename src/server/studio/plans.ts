@@ -1,4 +1,5 @@
-import { prisma } from "@/server/db";
+import type { Prisma, Plan as PlanRow } from "@prisma/client";
+import { isDatabaseConfigured, prisma } from "@/server/db";
 /**
  * Single source of truth for plan pricing and limits (spec 22 §6).
  *
@@ -177,55 +178,46 @@ export const PLAN_ORDER: PlanId[] = ["free", "launch", "growth", "agency"];
 // We keep the hardcoded PLANS as a fallback/seed template, but the active
 // configuration is pulled from the DB.
 
+function fromRow(p: PlanRow): Plan {
+  return {
+    id: p.slug as PlanId,
+    name: p.name,
+    monthlyPaise: p.monthlyPrice,
+    yearlyPaise: p.yearlyPrice,
+    tagline: p.tagline || "",
+    limits: p.limits as unknown as PlanLimits,
+    capabilities: p.capabilities as unknown as Record<Capability, boolean>,
+    watermark: p.watermark,
+    highlights: p.highlights,
+    isActive: p.isActive,
+    displayOrder: p.displayOrder,
+    razorpayMonthlyId: p.razorpayMonthlyId,
+    razorpayYearlyId: p.razorpayYearlyId,
+  };
+}
+
 export async function getAllPlans(): Promise<Plan[]> {
+  // Without a database (CI, `next build`, a bare container) the hardcoded
+  // plans are the configuration.
+  if (!isDatabaseConfigured()) return PLAN_ORDER.map(id => PLANS[id]);
+
   const dbPlans = await prisma.plan.findMany({
     orderBy: { displayOrder: "asc" }
   });
-  
-  if (dbPlans.length > 0) {
-    return dbPlans.map(p => ({
-      id: p.slug as PlanId,
-      name: p.name,
-      monthlyPaise: p.monthlyPrice,
-      yearlyPaise: p.yearlyPrice,
-      tagline: p.tagline || "",
-      limits: p.limits as unknown as PlanLimits,
-      capabilities: p.capabilities as unknown as Record<Capability, boolean>,
-      watermark: p.watermark,
-      highlights: p.highlights,
-      isActive: p.isActive,
-      displayOrder: p.displayOrder,
-      razorpayMonthlyId: p.razorpayMonthlyId,
-      razorpayYearlyId: p.razorpayYearlyId,
-    }));
-  }
-  
+
+  if (dbPlans.length > 0) return dbPlans.map(fromRow);
+
   // Fallback to hardcoded if DB is empty
   return PLAN_ORDER.map(id => PLANS[id]);
 }
 
 export async function getPlanAsync(id: string | null | undefined): Promise<Plan> {
+  if (!isDatabaseConfigured()) return getPlan(id);
   if (!id) return (await getAllPlans()).find(p => p.id === "free") || PLANS.free;
-  
+
   const dbPlan = await prisma.plan.findUnique({ where: { slug: id } });
-  if (dbPlan) {
-    return {
-      id: dbPlan.slug as PlanId,
-      name: dbPlan.name,
-      monthlyPaise: dbPlan.monthlyPrice,
-      yearlyPaise: dbPlan.yearlyPrice,
-      tagline: dbPlan.tagline || "",
-      limits: dbPlan.limits as unknown as PlanLimits,
-      capabilities: dbPlan.capabilities as unknown as Record<Capability, boolean>,
-      watermark: dbPlan.watermark,
-      highlights: dbPlan.highlights,
-      isActive: dbPlan.isActive,
-      displayOrder: dbPlan.displayOrder,
-      razorpayMonthlyId: dbPlan.razorpayMonthlyId,
-      razorpayYearlyId: dbPlan.razorpayYearlyId,
-    };
-  }
-  
+  if (dbPlan) return fromRow(dbPlan);
+
   return PLANS[id as PlanId] ?? PLANS.free;
 }
 
@@ -242,8 +234,8 @@ export async function seedPlansIfEmpty() {
         monthlyPrice: plan.monthlyPaise,
         yearlyPrice: plan.yearlyPaise,
         tagline: plan.tagline,
-        limits: plan.limits as any,
-        capabilities: plan.capabilities as any,
+        limits: plan.limits as unknown as Prisma.InputJsonValue,
+        capabilities: plan.capabilities as unknown as Prisma.InputJsonValue,
         watermark: plan.watermark,
         highlights: plan.highlights,
         isActive: true,

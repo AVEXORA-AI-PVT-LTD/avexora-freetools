@@ -19,6 +19,9 @@ const eslintConfig = defineConfig([
     // the app's build or runtime.
     "check-aeo.js",
     "check-aeo.py",
+    // Same: a one-off usage query and an already-applied codemod.
+    "query-usage.js",
+    "replace-quickactions.js",
   ]),
 ]);
 

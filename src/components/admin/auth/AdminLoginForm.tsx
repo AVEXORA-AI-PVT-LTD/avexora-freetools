@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { adminLoginAction } from "@/app/actions/admin-auth";
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
@@ -72,9 +73,9 @@ export function AdminLoginForm() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-sm font-medium text-orange-950">Password</label>
-              <a href="/admin/login/forgot" className="text-xs font-medium text-orange-600 hover:text-orange-500 hover:underline">
+              <Link href="/admin/login/forgot" className="text-xs font-medium text-orange-600 hover:text-orange-500 hover:underline">
                 Forgot password?
-              </a>
+              </Link>
             </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-orange-900/40">

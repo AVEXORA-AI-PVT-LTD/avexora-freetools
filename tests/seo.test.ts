@@ -131,7 +131,7 @@ describe("§46 SEO acceptance: sitemap", () => {
 describe("§46 SEO acceptance: robots", () => {
   it("allows public crawling, blocks only /api/, references the correct sitemap", async () => {
     const r = await robots();
-    const text = await (r as any).text();
+    const text = await (r as Response).text();
     expect(text).toContain("Allow: /");
     expect(text).toContain("Disallow: /api/");
     expect(text).toContain(`${PROD_DOMAIN}/sitemap.xml`);

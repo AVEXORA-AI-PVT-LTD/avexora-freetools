@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { verify2FALoginAction } from "@/app/actions/admin-2fa";
 import { AlertCircle, ShieldCheck } from "lucide-react";
@@ -80,9 +81,9 @@ export function Verify2FAForm({ userId }: { userId: string }) {
         </form>
         
         <div className="mt-6 text-center">
-          <a href="/admin/login" className="text-sm font-medium text-orange-600 hover:text-orange-500 hover:underline">
+          <Link href="/admin/login" className="text-sm font-medium text-orange-600 hover:text-orange-500 hover:underline">
             Back to login
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -57,8 +57,16 @@ process.env.RAZORPAY_PLAN_GROWTH_MONTHLY = "plan_growth_m";
 
 // --- in-memory subscription store, so the webhook has somewhere to land ------
 const subscriptions = new Map<string, Record<string, unknown>>();
+// Admin-managed plan rows (Phase 16). Empty by default: an unseeded table falls
+// back to the hardcoded plans and the env-configured Razorpay ids.
+const planRows = new Map<string, Record<string, unknown>>();
 vi.mock("@/server/db", () => ({
+  isDatabaseConfigured: () => true,
   prisma: {
+    plan: {
+      findUnique: async ({ where }: { where: { slug: string } }) => planRows.get(where.slug) ?? null,
+      findMany: async () => [...planRows.values()],
+    },
     subscription: {
       findUnique: async ({ where }: { where: { userId: string } }) =>
         subscriptions.get(where.userId) ?? null,
@@ -112,6 +120,7 @@ afterAll(async () => {
 beforeEach(() => {
   captured = [];
   subscriptions.clear();
+  planRows.clear();
 });
 
 function subscriptionResponse(over: Record<string, unknown> = {}) {
@@ -148,10 +157,26 @@ describe("configuration", () => {
     expect(razorpayEnabled).toBe(true);
   });
 
-  it("resolves one plan id per plan and cycle from env", () => {
-    expect(razorpayPlanId("launch", "monthly")).toBe("plan_launch_m");
-    expect(razorpayPlanId("launch", "yearly")).toBe("plan_launch_y");
-    expect(razorpayPlanId("agency", "monthly")).toBeUndefined();
+  it("resolves one plan id per plan and cycle from env", async () => {
+    expect(await razorpayPlanId("launch", "monthly")).toBe("plan_launch_m");
+    expect(await razorpayPlanId("launch", "yearly")).toBe("plan_launch_y");
+    expect(await razorpayPlanId("agency", "monthly")).toBeUndefined();
+  });
+
+  it("prefers a Razorpay id set on the plan in the admin panel over env", async () => {
+    planRows.set("launch", {
+      ...PLANS.launch,
+      slug: "launch",
+      monthlyPrice: PLANS.launch.monthlyPaise,
+      yearlyPrice: PLANS.launch.yearlyPaise,
+      isActive: true,
+      displayOrder: 1,
+      razorpayMonthlyId: "plan_launch_m_from_admin",
+      razorpayYearlyId: null,
+    });
+    expect(await razorpayPlanId("launch", "monthly")).toBe("plan_launch_m_from_admin");
+    // A cycle the admin left blank still falls back to env.
+    expect(await razorpayPlanId("launch", "yearly")).toBe("plan_launch_y");
   });
 
   it("refuses a plan whose Razorpay id has not been created", async () => {
