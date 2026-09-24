@@ -11,6 +11,9 @@ import {
   reorderNavigationLinks
 } from "./actions";
 
+/** Payload accepted by the navigation server actions (location/type are validated server-side). */
+type NavigationLinkInput = Parameters<typeof createNavigationLink>[0];
+
 type NavLink = {
   id: string;
   label: string;
@@ -61,14 +64,14 @@ export default function NavigationManager({ initialLinks }: { initialLinks: NavL
     startTransition(async () => {
       try {
         if (editingLink) {
-          await updateNavigationLink(editingLink.id, formData as any);
+          await updateNavigationLink(editingLink.id, formData as NavigationLinkInput);
         } else {
-          await createNavigationLink(formData as any);
+          await createNavigationLink(formData as NavigationLinkInput);
         }
         setModalOpen(false);
         router.refresh();
-      } catch (err: any) {
-        alert(err.message || "Failed to save link");
+      } catch (err) {
+        alert((err instanceof Error ? err.message : String(err)) || "Failed to save link");
       }
     });
   };

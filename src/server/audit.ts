@@ -34,7 +34,7 @@ interface AuditLogOptions {
   action: AuditAction;
   targetType: TargetType;
   targetId?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   ip?: string;
   userAgent?: string;
 }
@@ -56,7 +56,7 @@ export async function logAdminAction(options: AuditLogOptions) {
     await prisma.auditLog.create({
       data: {
         actorId: session.user.id,
-        actorRole: (session.user as any).role || "user",
+        actorRole: session.user.role || "user",
         action,
         targetType,
         targetId,

@@ -58,7 +58,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
     "dateModified": post.updatedAt,
     "author": {
       "@type": "Person",
-      "name": (post as any).author?.name || "Avex Tools Team"
+      "name": post.author?.name || "Avex Tools Team"
     }
   };
 
@@ -78,9 +78,9 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
         </h1>
         
         <div className="flex items-center justify-center gap-4 text-sm text-slate-500">
-          {(post as any).author?.name && (
+          {post.author?.name && (
             <div className="flex items-center gap-2">
-              <span className="font-medium text-slate-900">{(post as any).author.name}</span>
+              <span className="font-medium text-slate-900">{post.author.name}</span>
               <span>&bull;</span>
             </div>
           )}
@@ -119,13 +119,13 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
             </div>
           )}
           
-          {(post as any).author && (
+          {post.author && (
              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
                <h3 className="font-semibold text-slate-900 mb-2">Written by</h3>
-               <p className="font-bold text-lg text-slate-900">{(post as any).author.name || "Avex Tools Team"}</p>
-               {((post as any).author.jobRole || (post as any).author.companyName) && (
+               <p className="font-bold text-lg text-slate-900">{post.author.name || "Avex Tools Team"}</p>
+               {(post.author.jobRole || post.author.companyName) && (
                  <p className="text-sm text-slate-500 mb-3">
-                   {[(post as any).author.jobRole, (post as any).author.companyName].filter(Boolean).join(" at ")}
+                   {[post.author.jobRole, post.author.companyName].filter(Boolean).join(" at ")}
                  </p>
                )}
              </div>
@@ -149,7 +149,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
                <h3 className="font-semibold text-orange-900 mb-4">Related Tools</h3>
                <div className="space-y-3">
                  {post.relatedTools.map((toolSlug: string) => {
-                   const tool = allTools.find((t: any) => t.slug === toolSlug);
+                   const tool = allTools.find((t) => t.slug === toolSlug);
                    if (!tool) return null;
                    return (
                      <Link key={tool.slug} href={`/tools/${tool.slug}`} className="block bg-white p-3 rounded-lg shadow-sm border border-orange-100 hover:border-orange-300 transition-colors group">

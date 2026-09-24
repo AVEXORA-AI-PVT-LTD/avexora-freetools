@@ -7,6 +7,7 @@ import { allTools } from "@/tools/registry";
 import { hasPermission } from "@/lib/admin/permissions";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 import type { ToolFormData } from "@/types/admin-tool-form";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -56,7 +57,8 @@ export async function saveToolData(data: ToolFormData) {
     howToUse: sanitizeHtml(data.howToUse),
     steps: data.steps,
     examples: data.examples,
-    faqs: data.faqs,
+    // FAQItem is an interface (no index signature), so it needs widening to a JSON object type.
+    faqs: data.faqs as unknown as Prisma.InputJsonObject[],
     relatedTools: data.relatedTools,
     disclaimer: data.disclaimer,
     formula: data.formula,
@@ -152,10 +154,10 @@ export async function saveToolData(data: ToolFormData) {
       thumbnail: data.thumbnail,
       homepageVisible: data.homepageVisible,
       currentVersion: data.currentVersion || "1.0.0",
-      content: content as any,
-      runtimeConfig: runtimeConfig as any,
-      technicalConfig: technicalConfig as any,
-      publishingConfig: publishingConfig as any,
+      content,
+      runtimeConfig,
+      technicalConfig,
+      publishingConfig,
       seoMetadata,
       updatedBy: user.id,
     },
@@ -172,10 +174,10 @@ export async function saveToolData(data: ToolFormData) {
       thumbnail: data.thumbnail,
       homepageVisible: data.homepageVisible,
       currentVersion: data.currentVersion || "1.0.0",
-      content: content as any,
-      runtimeConfig: runtimeConfig as any,
-      technicalConfig: technicalConfig as any,
-      publishingConfig: publishingConfig as any,
+      content,
+      runtimeConfig,
+      technicalConfig,
+      publishingConfig,
       seoMetadata,
       updatedBy: user.id,
     }
@@ -207,7 +209,7 @@ export async function saveToolData(data: ToolFormData) {
           technicalConfig,
           publishingConfig,
           seoMetadata,
-        } as any
+        }
       }
     });
   }

@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import type { DateRange } from "@/server/analytics";
+import type {
+  DateRange,
+  getAnalyticsSummary,
+  getAuthVsAnon,
+  getCategoryUsage,
+  getTimelineData,
+  getTopTools,
+} from "@/server/analytics";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export function AnalyticsDashboard({
@@ -11,7 +18,13 @@ export function AnalyticsDashboard({
   catUsage,
   timeline,
   authAnon
-}: any) {
+}: {
+  summary: Awaited<ReturnType<typeof getAnalyticsSummary>>;
+  topTools: Awaited<ReturnType<typeof getTopTools>>;
+  catUsage: Awaited<ReturnType<typeof getCategoryUsage>>;
+  timeline: Awaited<ReturnType<typeof getTimelineData>>;
+  authAnon: Awaited<ReturnType<typeof getAuthVsAnon>>;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentRange = (searchParams.get("range") || "30d") as DateRange;
@@ -110,7 +123,7 @@ export function AnalyticsDashboard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {topTools.map((t: any, i: number) => (
+                  {topTools.map((t, i) => (
                     <tr key={t.slug}>
                       <td className="py-3 pr-4 font-medium text-slate-900">
                         {i + 1}. {t.name}
@@ -132,7 +145,7 @@ export function AnalyticsDashboard({
             <h2 className="mb-4 text-lg font-semibold text-slate-900">Category Usage</h2>
             {catUsage.length > 0 ? (
               <div className="space-y-4">
-                {catUsage.map((c: any) => (
+                {catUsage.map((c) => (
                   <div key={c.slug} className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-700">{c.name}</span>
                     <span className="text-sm font-semibold text-slate-900">{c.count.toLocaleString()}</span>

@@ -31,8 +31,8 @@ export function SeoEditor({ initialData, onSave, onReset, fallbackUrl }: SeoEdit
         await onSave(formData);
         alert("SEO saved successfully.");
         router.refresh();
-      } catch (err: any) {
-        alert(err.message || "Failed to save SEO");
+      } catch (err) {
+        alert((err instanceof Error ? err.message : String(err)) || "Failed to save SEO");
       }
     });
   };

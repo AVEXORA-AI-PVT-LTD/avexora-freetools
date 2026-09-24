@@ -1,7 +1,9 @@
 import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { ContentEditor } from "./ContentEditor";
+import type { ContentFormData } from "./ContentEditor";
 import { ContentType, ContentStatus } from "@prisma/client";
+import type { ContentRevision } from "@prisma/client";
 import { getAllCategoriesAdmin } from "@/server/category-service";
 import { allTools } from "@/tools/registry";
 
@@ -19,7 +21,7 @@ export default async function ContentEditorPage(props: { params: Promise<{ id: s
   });
 
   const allRegisteredTools = allTools;
-  const tools = allRegisteredTools.map((t: any) => ({ id: t.slug, title: t.name, slug: t.slug }));
+  const tools = allRegisteredTools.map((t) => ({ id: t.slug, title: t.name, slug: t.slug }));
 
   const categories = await getAllCategoriesAdmin();
   
@@ -28,7 +30,7 @@ export default async function ContentEditorPage(props: { params: Promise<{ id: s
   });
 
   
-  let initialData: any = {
+  let initialData: ContentFormData = {
     title: "",
     slug: "",
     contentType: ContentType.PAGE,
@@ -51,7 +53,7 @@ export default async function ContentEditorPage(props: { params: Promise<{ id: s
     relatedPosts: [],
   };
 
-  let revisions: any[] = [];
+  let revisions: ContentRevision[] = [];
 
   if (!isNew) {
     const existing = await prisma.contentItem.findUnique({ where: { id: params.id } });

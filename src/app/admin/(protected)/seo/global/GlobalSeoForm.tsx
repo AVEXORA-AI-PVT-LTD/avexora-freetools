@@ -4,21 +4,23 @@ import { useState, useTransition } from "react";
 import { updateGlobalSeo } from "../actions";
 import { useDialog } from "@/components/admin/DialogProvider";
 import { Save } from "lucide-react";
+import type { SeoMetadata } from "@/server/seo-manager";
 
-export function GlobalSeoForm({ initialData }: { initialData: any }) {
-  const [data, setData] = useState(initialData);
+export function GlobalSeoForm({ initialData }: { initialData: SeoMetadata }) {
+  const [data, setData] = useState<SeoMetadata>(initialData);
   const [isPending, startTransition] = useTransition();
   const { showAlert } = useDialog();
 
-  const update = (field: string, value: any) => setData((prev: any) => ({ ...prev, [field]: value }));
+  const update = <K extends keyof SeoMetadata>(field: K, value: SeoMetadata[K]) =>
+    setData((prev) => ({ ...prev, [field]: value }));
 
   const handleSave = () => {
     startTransition(async () => {
       try {
         await updateGlobalSeo(data);
         showAlert("Success", "Global SEO defaults saved successfully.");
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to save.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to save.");
       }
     });
   };

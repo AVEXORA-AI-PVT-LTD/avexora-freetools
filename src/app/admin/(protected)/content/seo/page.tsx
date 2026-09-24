@@ -1,6 +1,6 @@
 import { requireAdminAuth } from "@/server/admin-auth";
-import { getGlobalSeoOverride } from "@/server/seo-manager";
-import { SITE_URL, SITE_NAME } from "@/tools/categories";
+import { getGlobalSeoOverride, type SeoMetadata } from "@/server/seo-manager";
+import { SITE_URL } from "@/tools/categories";
 import { SeoEditor } from "@/components/admin/SeoEditor";
 import { updateGlobalSeo, resetGlobalSeo } from "@/app/admin/(protected)/seo/actions";
 import Link from "next/link";
@@ -11,7 +11,7 @@ export default async function GlobalSeoPage() {
   const seoOverride = await getGlobalSeoOverride();
   const fallbackUrl = SITE_URL;
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: Partial<SeoMetadata>) => {
     "use server";
     await updateGlobalSeo(data);
   };
@@ -27,7 +27,7 @@ export default async function GlobalSeoPage() {
         <div>
           <Link href="/admin/content" className="text-orange-600 text-sm hover:underline mb-2 inline-block">← Back to Content</Link>
           <h1 className="text-2xl font-bold">Global SEO Defaults</h1>
-          <p className="text-sm text-slate-500">Applied across the site when a page doesn't have a specific override.</p>
+          <p className="text-sm text-slate-500">Applied across the site when a page doesn&apos;t have a specific override.</p>
         </div>
       </div>
       

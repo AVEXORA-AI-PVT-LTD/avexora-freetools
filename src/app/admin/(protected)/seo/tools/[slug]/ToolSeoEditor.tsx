@@ -3,21 +3,29 @@ import { useState, useTransition } from "react";
 import { updateToolSeo } from "../../actions";
 import { useDialog } from "@/components/admin/DialogProvider";
 import { Save } from "lucide-react";
+import type { Prisma } from "@prisma/client";
+import type { SeoMetadata } from "@/server/seo-manager";
+import type { ToolConfig } from "@/types/tools";
 
-export function ToolSeoEditor({ tool, initialData, siteUrl }: { tool: any, initialData: any, siteUrl: string }) {
-  const [data, setData] = useState(initialData);
+type SeoEditorTool = Pick<ToolConfig, "slug" | "category" | "name" | "seoDescription"> & {
+  description?: string;
+};
+
+export function ToolSeoEditor({ tool, initialData, siteUrl }: { tool: SeoEditorTool, initialData: Prisma.JsonValue, siteUrl: string }) {
+  const [data, setData] = useState<SeoMetadata>(initialData as SeoMetadata);
   const [isPending, startTransition] = useTransition();
   const { showAlert } = useDialog();
 
-  const update = (field: string, value: any) => setData((prev: any) => ({ ...prev, [field]: value }));
+  const update = <K extends keyof SeoMetadata>(field: K, value: SeoMetadata[K]) =>
+    setData((prev) => ({ ...prev, [field]: value }));
 
   const handleSave = () => {
     startTransition(async () => {
       try {
         await updateToolSeo(tool.slug, tool.category, data);
         showAlert("Success", "Tool SEO updated successfully.");
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to update.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to update.");
       }
     });
   };

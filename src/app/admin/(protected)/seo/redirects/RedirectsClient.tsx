@@ -4,8 +4,9 @@ import { createRedirect, updateRedirect, toggleRedirect, deleteRedirect, bulkTog
 import { useDialog } from "@/components/admin/DialogProvider";
 import { Plus, Trash2, Power, ExternalLink, Search, Filter, Edit, Play, Save } from "lucide-react";
 import Link from "next/link";
+import type { Redirect } from "@prisma/client";
 
-export function RedirectsClient({ initialRedirects }: { initialRedirects: any[] }) {
+export function RedirectsClient({ initialRedirects }: { initialRedirects: Redirect[] }) {
   const [redirects, setRedirects] = useState(initialRedirects);
   const [isPending, startTransition] = useTransition();
   const { showAlert, showConfirm } = useDialog();
@@ -23,7 +24,7 @@ export function RedirectsClient({ initialRedirects }: { initialRedirects: any[] 
 
   // Derived state
   const filtered = useMemo(() => {
-    let result = redirects.filter(r => {
+    const result = redirects.filter(r => {
       if (search && !r.source.toLowerCase().includes(search.toLowerCase()) && !r.destination.toLowerCase().includes(search.toLowerCase())) return false;
       if (filter === "ACTIVE" && !r.active) return false;
       if (filter === "INACTIVE" && r.active) return false;
@@ -78,19 +79,19 @@ export function RedirectsClient({ initialRedirects }: { initialRedirects: any[] 
           setRedirects([res.created, ...redirects]);
         }
         resetForm();
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to save redirect.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to save redirect.");
       }
     });
   };
 
-  const handleEdit = (r: any) => {
+  const handleEdit = (r: Redirect) => {
     setForm({ id: r.id, source: r.source, destination: r.destination, statusCode: r.statusCode, reason: r.reason || "", active: r.active });
     setIsEditing(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleTest = (r: any) => {
+  const handleTest = (r: Redirect) => {
     showAlert("Test Redirect", `Request to ${r.source} will return ${r.statusCode} to ${r.destination}. To test in reality, visit the source URL in a new tab.`);
   };
 
@@ -99,8 +100,8 @@ export function RedirectsClient({ initialRedirects }: { initialRedirects: any[] 
       try {
         await toggleRedirect(id, active);
         setRedirects(prev => prev.map(r => r.id === id ? { ...r, active } : r));
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to toggle.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to toggle.");
       }
     });
   };
@@ -112,8 +113,8 @@ export function RedirectsClient({ initialRedirects }: { initialRedirects: any[] 
         setRedirects(prev => prev.filter(r => r.id !== id));
         selectedIds.delete(id);
         setSelectedIds(new Set(selectedIds));
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to delete.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to delete.");
       }
     });
   };
@@ -134,8 +135,8 @@ export function RedirectsClient({ initialRedirects }: { initialRedirects: any[] 
         }
         setSelectedIds(new Set());
         showAlert("Success", "Bulk action completed.");
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to execute bulk action.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to execute bulk action.");
       }
     });
   };

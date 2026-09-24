@@ -3,6 +3,7 @@ import { prisma } from "@/server/db";
 import Link from "next/link";
 import { Search, Filter, RefreshCcw } from "lucide-react";
 import SubscriptionList from "./SubscriptionList";
+import type { Prisma } from "@prisma/client";
 
 export const metadata = {
   title: "Subscriptions | Avex Tools Admin",
@@ -11,7 +12,7 @@ export const metadata = {
 export default async function SubscriptionsAdminPage(props: {
   searchParams: Promise<{ q?: string; status?: string; plan?: string; page?: string }>
 }) {
-  await requireAdminAuth("settings.view" as any);
+  await requireAdminAuth("settings.view");
   
   const searchParams = await props.searchParams;
   const q = searchParams.q || "";
@@ -21,7 +22,7 @@ export default async function SubscriptionsAdminPage(props: {
   const take = 20;
   const skip = (page - 1) * take;
 
-  const where: any = {};
+  const where: Prisma.SubscriptionWhereInput = {};
   
   if (status !== "all") {
     where.status = status;

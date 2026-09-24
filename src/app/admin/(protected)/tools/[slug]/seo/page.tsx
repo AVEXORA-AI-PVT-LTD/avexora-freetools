@@ -1,7 +1,7 @@
 import { requireAdminAuth } from "@/server/admin-auth";
 import { getTool } from "@/tools/registry";
 import { notFound } from "next/navigation";
-import { getToolSeoOverride } from "@/server/seo-manager";
+import { getToolSeoOverride, type SeoMetadata } from "@/server/seo-manager";
 import { SITE_URL } from "@/tools/categories";
 import { SeoEditor } from "@/components/admin/SeoEditor";
 import { updateToolSeo, resetToolSeo } from "@/app/admin/(protected)/seo/actions";
@@ -22,7 +22,7 @@ export default async function ToolSeoPage({
   const fallbackUrl = `${SITE_URL}/${tool.category}/${tool.slug}`;
 
   // Server actions wrapped for the client
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: Partial<SeoMetadata>) => {
     "use server";
     await updateToolSeo(slug, tool.category, data);
   };
@@ -37,7 +37,7 @@ export default async function ToolSeoPage({
       <div className="mb-6 flex items-center justify-between">
         <div>
           <Link href="/admin/tools" className="text-orange-600 text-sm hover:underline mb-2 inline-block">← Back to Tools</Link>
-          <h1 className="text-2xl font-bold">SEO settings for "{tool.name}"</h1>
+          <h1 className="text-2xl font-bold">SEO settings for &quot;{tool.name}&quot;</h1>
         </div>
         <a href={`/${tool.category}/${tool.slug}`} target="_blank" rel="noopener" className="px-3 py-1.5 border rounded-md text-sm hover:bg-slate-50">View Live</a>
       </div>

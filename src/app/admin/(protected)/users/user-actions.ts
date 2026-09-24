@@ -2,6 +2,7 @@
 import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { revalidateTag } from "next/cache";
+import type { Prisma } from "@prisma/client";
 
 export async function updateUserStatus(userId: string, status: "ACTIVE" | "DISABLED" | "BLOCKED", reason?: string) {
   const admin = await requireAdminAuth("users.edit"); // Need strict permissions
@@ -10,7 +11,7 @@ export async function updateUserStatus(userId: string, status: "ACTIVE" | "DISAB
     throw new Error("You cannot change your own account status.");
   }
 
-  const updateData: any = { status };
+  const updateData: Prisma.UserUpdateInput = { status };
   const now = new Date();
   
   if (status === "DISABLED") updateData.disabledAt = now;
@@ -48,7 +49,7 @@ export async function bulkUpdateUserStatus(userIds: string[], status: "ACTIVE" |
   const safeIds = userIds.filter(id => id !== admin.id);
   if (safeIds.length === 0) throw new Error("Cannot modify selected users.");
 
-  const updateData: any = { status };
+  const updateData: Prisma.UserUpdateManyMutationInput = { status };
   const now = new Date();
   if (status === "DISABLED") updateData.disabledAt = now;
   if (status === "BLOCKED") updateData.blockedAt = now;

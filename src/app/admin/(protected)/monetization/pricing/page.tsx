@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default async function PricingAdminPage() {
-  await requireAdminAuth("settings.view" as any);
+  await requireAdminAuth("settings.view");
   
   // Ensure DB is seeded from legacy plans.ts if empty
   await seedPlansIfEmpty();

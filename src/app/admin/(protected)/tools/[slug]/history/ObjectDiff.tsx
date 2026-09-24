@@ -2,18 +2,23 @@
 
 import React from "react";
 
-function isObject(val: any) {
+function isObject(val: unknown): val is Record<string, unknown> {
   return val !== null && typeof val === "object" && !Array.isArray(val);
 }
 
-function gatherKeys(obj1: any, obj2: any): string[] {
+/** Equivalent to `obj?.[key]` for an arbitrary (possibly non-object) value. */
+function getKey(obj: unknown, key: string): unknown {
+  return obj == null ? undefined : (obj as Record<string, unknown>)[key];
+}
+
+function gatherKeys(obj1: unknown, obj2: unknown): string[] {
   const keys = new Set<string>();
   if (isObject(obj1)) Object.keys(obj1).forEach((k) => keys.add(k));
   if (isObject(obj2)) Object.keys(obj2).forEach((k) => keys.add(k));
   return Array.from(keys).sort();
 }
 
-export function ObjectDiff({ oldObj, newObj }: { oldObj: any; newObj: any }) {
+export function ObjectDiff({ oldObj, newObj }: { oldObj: unknown; newObj: unknown }) {
   if (!isObject(oldObj) && !isObject(newObj)) {
     return null;
   }
@@ -23,8 +28,8 @@ export function ObjectDiff({ oldObj, newObj }: { oldObj: any; newObj: any }) {
   return (
     <div className="space-y-4">
       {keys.map((key) => {
-        const oldVal = oldObj?.[key];
-        const newVal = newObj?.[key];
+        const oldVal = getKey(oldObj, key);
+        const newVal = getKey(newObj, key);
 
         const oldStr = typeof oldVal === "object" ? JSON.stringify(oldVal, null, 2) : String(oldVal ?? "");
         const newStr = typeof newVal === "object" ? JSON.stringify(newVal, null, 2) : String(newVal ?? "");

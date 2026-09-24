@@ -57,7 +57,7 @@ export async function enable2FAAction(code: string) {
   });
 
   await logAdminAction({
-    action: "LOGIN" as any, // Add to audit types later
+    action: "LOGIN", // Add to audit types later
     targetType: "USER",
     targetId: userId,
     metadata: { action: "two_factor_enabled" }
@@ -93,7 +93,7 @@ export async function verify2FALoginAction(userId: string, code: string, remembe
         });
         
         await logAdminAction({
-          action: "LOGIN" as any,
+          action: "LOGIN",
           targetType: "USER",
           targetId: userId,
           metadata: { action: "recovery_code_used" }

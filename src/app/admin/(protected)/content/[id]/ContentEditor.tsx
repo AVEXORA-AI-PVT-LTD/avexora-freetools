@@ -6,15 +6,42 @@ import { Save, ArrowLeft, Clock, Globe, Eye } from "lucide-react";
 import { useDialog } from "@/components/admin/DialogProvider";
 import { saveContent } from "../content-actions";
 import { ContentType, ContentStatus } from "@prisma/client";
+import type { ContentItem, ContentRevision, User } from "@prisma/client";
 
-export function ContentEditor({ initialData, isNew, revisions, userRole, authors, tools, allContent }: { initialData: any, isNew: boolean, revisions: any[], userRole: string, authors: any[], tools: any[], allContent: any[] }) {
+/**
+ * Editor form state: a full ContentItem when editing, or a blank draft when
+ * creating. `scheduledAt` becomes an ISO string once edited in the form.
+ */
+export type ContentFormData = Omit<Partial<ContentItem>, "scheduledAt"> &
+  Pick<ContentItem, "title" | "slug" | "contentType"> & {
+    scheduledAt?: Date | string | null;
+  };
+
+export interface ContentEditorTool {
+  id: string;
+  title: string;
+  slug: string;
+}
+
+interface ContentEditorProps {
+  initialData: ContentFormData;
+  isNew: boolean;
+  revisions: ContentRevision[];
+  userRole: string;
+  authors: Pick<User, "id" | "name" | "email">[];
+  tools: ContentEditorTool[];
+  allContent: Pick<ContentItem, "id" | "title" | "slug">[];
+}
+
+export function ContentEditor({ initialData, isNew, revisions, userRole, authors, tools, allContent }: ContentEditorProps) {
   const router = useRouter();
   const { showAlert } = useDialog();
   const [isPending, startTransition] = useTransition();
   const [data, setData] = useState(initialData);
   const [activeTab, setActiveTab] = useState("content");
 
-  const update = (field: string, value: any) => setData((prev: any) => ({ ...prev, [field]: value }));
+  const update = <K extends keyof ContentFormData>(field: K, value: ContentFormData[K]) =>
+    setData((prev) => ({ ...prev, [field]: value }));
 
   const canPublish = userRole === "admin" || userRole === "superadmin";
 
@@ -24,7 +51,8 @@ export function ContentEditor({ initialData, isNew, revisions, userRole, authors
         const payload = { ...data };
         if (statusOverride) payload.status = statusOverride;
         
-        const res = await saveContent(payload);
+        // The server action receives scheduledAt as a serialized ISO string once edited.
+        const res = await saveContent(payload as Parameters<typeof saveContent>[0]);
         if (res.success) {
           showAlert("Success", "Content saved successfully.");
           if (isNew) {
@@ -33,8 +61,8 @@ export function ContentEditor({ initialData, isNew, revisions, userRole, authors
             router.refresh();
           }
         }
-      } catch (err: any) {
-        showAlert("Error", err.message || "Failed to save content.");
+      } catch (err) {
+        showAlert("Error", (err instanceof Error ? err.message : String(err)) || "Failed to save content.");
       }
     });
   };
@@ -81,7 +109,7 @@ export function ContentEditor({ initialData, isNew, revisions, userRole, authors
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-900 mb-1">Content Type</label>
-                    <select value={data.contentType} onChange={e => update("contentType", e.target.value)} className="w-full border-slate-300 rounded-md py-2 px-3 focus:ring-orange-500 focus:border-orange-500">
+                    <select value={data.contentType} onChange={e => update("contentType", e.target.value as ContentType)} className="w-full border-slate-300 rounded-md py-2 px-3 focus:ring-orange-500 focus:border-orange-500">
                       {Object.values(ContentType).map(type => (
                         <option key={type} value={type}>{type}</option>
                       ))}
@@ -227,7 +255,7 @@ export function ContentEditor({ initialData, isNew, revisions, userRole, authors
             <label className="block text-sm font-medium text-slate-700 mb-1">Author</label>
             <select value={data.authorId || ""} onChange={e => update("authorId", e.target.value)} className="w-full border-slate-300 rounded-md py-1.5 px-3 focus:ring-orange-500 text-sm">
               <option value="">Select Author...</option>
-              {authors?.map((a: any) => (
+              {authors?.map((a) => (
                 <option key={a.id} value={a.id}>{a.name || a.email}</option>
               ))}
             </select>
@@ -247,7 +275,7 @@ export function ContentEditor({ initialData, isNew, revisions, userRole, authors
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Related Tools</label>
             <select multiple value={data.relatedTools || []} onChange={e => update("relatedTools", Array.from(e.target.selectedOptions, option => option.value))} className="w-full border-slate-300 rounded-md py-1.5 px-3 focus:ring-orange-500 text-sm" size={5}>
-              {tools?.map((t: any) => (
+              {tools?.map((t) => (
                 <option key={t.id} value={t.id}>{t.title}</option>
               ))}
             </select>
@@ -257,7 +285,7 @@ export function ContentEditor({ initialData, isNew, revisions, userRole, authors
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Related Posts</label>
             <select multiple value={data.relatedPosts || []} onChange={e => update("relatedPosts", Array.from(e.target.selectedOptions, option => option.value))} className="w-full border-slate-300 rounded-md py-1.5 px-3 focus:ring-orange-500 text-sm" size={5}>
-              {allContent?.filter(c => c.id !== data.id).map((c: any) => (
+              {allContent?.filter(c => c.id !== data.id).map((c) => (
                 <option key={c.id} value={c.id}>{c.title}</option>
               ))}
             </select>

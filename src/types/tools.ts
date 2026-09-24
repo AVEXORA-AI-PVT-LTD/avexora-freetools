@@ -127,12 +127,26 @@ interface ToolBase {
   requireAuth?: boolean;
   /** True if the tool was dynamically created via the Admin Panel and lacks a hardcoded client implementation. */
   isDynamic?: boolean;
-  howTo?: any;
+  /**
+   * HowTo schema.org data (name + ordered steps), declared in a few tool configs.
+   * Not currently rendered; `steps` above is what drives the visible HowTo block.
+   */
+  howTo?: ToolHowTo;
   /** Active status override from the database. */
   status?: boolean;
   /** Priority override from the database. */
   /** Display order override from the database. */
   displayOrder?: number;
+}
+
+export interface ToolHowToStep {
+  name: string;
+  text: string;
+}
+
+export interface ToolHowTo {
+  name: string;
+  steps: ToolHowToStep[];
 }
 
 export interface CalculatorTool extends ToolBase {

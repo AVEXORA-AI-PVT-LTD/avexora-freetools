@@ -1,5 +1,39 @@
 import { prisma } from "@/server/db";
 import { categories as staticCategories } from "@/tools/categories";
+import type { Prisma } from "@prisma/client";
+import type { CategoryDef } from "@/types/tools";
+
+/** A category as served publicly: static definition merged with its DB override (or a DB-only category). */
+export interface ActiveCategory extends Omit<CategoryDef, "slug"> {
+  slug: string;
+  status: boolean;
+  featured: boolean;
+  displayOrder: number;
+  icon: string | null;
+  image: string | null;
+  parentId: string | null;
+  seoMetadata: Prisma.JsonValue;
+  id: string | null;
+}
+
+/** A category row for the admin list: static or DB-only, with tool count. */
+export interface AdminCategory {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  status: boolean;
+  featured: boolean;
+  displayOrder: number;
+  icon: string | null;
+  image: string | null;
+  parentId: string | null;
+  updatedAt: Date | null;
+  updatedBy: string | null;
+  toolCount: number;
+  isStatic: boolean;
+  hasDbConfig: boolean;
+}
 
 export async function getActiveCategories() {
   const dbConfigs = await prisma.categoryConfig.findMany({
@@ -9,7 +43,7 @@ export async function getActiveCategories() {
   const dbConfigMap = new Map(dbConfigs.map(c => [c.slug, c]));
 
   // Merge static with DB, prioritizing DB config if it exists
-  const merged = staticCategories.map(staticCat => {
+  const merged: ActiveCategory[] = staticCategories.map(staticCat => {
     const override = dbConfigMap.get(staticCat.slug);
     return {
       ...staticCat,
@@ -21,7 +55,7 @@ export async function getActiveCategories() {
       icon: override?.icon || null,
       image: override?.image || null,
       parentId: override?.parentId || null,
-      seoMetadata: (override?.seoMetadata as any) || null,
+      seoMetadata: override?.seoMetadata || null,
       id: override?.id || null,
     };
   });
@@ -30,7 +64,7 @@ export async function getActiveCategories() {
   dbConfigs.forEach(dbCat => {
     if (!staticCategories.some(s => s.slug === dbCat.slug)) {
       merged.push({
-        slug: dbCat.slug as any, // fallback type
+        slug: dbCat.slug,
         name: dbCat.name,
         shortName: dbCat.name, // fallback
         description: dbCat.description || "",
@@ -44,7 +78,7 @@ export async function getActiveCategories() {
         icon: dbCat.icon,
         image: dbCat.image,
         parentId: dbCat.parentId,
-        seoMetadata: dbCat.seoMetadata as any,
+        seoMetadata: dbCat.seoMetadata,
         id: dbCat.id,
       });
     }
@@ -70,7 +104,7 @@ export async function getAllCategoriesAdmin() {
   });
   const toolCountMap = new Map(toolCountsAgg.map(a => [a.categorySlug, a._count.toolSlug]));
 
-  const merged = staticCategories.map(staticCat => {
+  const merged: AdminCategory[] = staticCategories.map(staticCat => {
     const override = dbConfigMap.get(staticCat.slug);
     return {
       id: override?.id || `static-${staticCat.slug}`,
@@ -96,7 +130,7 @@ export async function getAllCategoriesAdmin() {
     if (!staticCategories.some(s => s.slug === dbCat.slug)) {
       merged.push({
         id: dbCat.id,
-        slug: dbCat.slug as any,
+        slug: dbCat.slug,
         name: dbCat.name,
         description: dbCat.description || "",
         status: dbCat.status,

@@ -1,6 +1,7 @@
 import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { UsersClient } from "./UsersClient";
+import type { Prisma } from "@prisma/client";
 
 export const metadata = { title: "User Management | Admin" };
 
@@ -20,7 +21,7 @@ export default async function UsersAdminPage({
   const role = typeof params.role === "string" ? params.role : "";
   const status = typeof params.status === "string" ? params.status : "";
   
-  const where: any = {};
+  const where: Prisma.UserWhereInput = {};
   if (q) {
     where.OR = [
       { name: { contains: q, mode: 'insensitive' } },

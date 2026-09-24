@@ -5,8 +5,22 @@ import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/lib/admin/permissions";
 import { categories as staticCategories } from "@/tools/categories";
+import type { Prisma } from "@prisma/client";
 
-export async function saveCategory(data: any) {
+interface SaveCategoryInput {
+  name?: string;
+  slug: string;
+  description?: string | null;
+  icon?: string | null;
+  image?: string | null;
+  status?: boolean;
+  featured?: boolean;
+  displayOrder?: number;
+  seoMetadata?: Prisma.InputJsonValue | null;
+  parentId?: string | null;
+}
+
+export async function saveCategory(data: SaveCategoryInput) {
   const user = await requireAdminAuth();
   if (!hasPermission(user.role, "categories.create") && !hasPermission(user.role, "categories.edit")) {
     throw new Error("Unauthorized");

@@ -14,8 +14,8 @@ export function RobotsForm({ initialContent, defaultContent }: { initialContent:
       try {
         await updateRobotsTxt(content);
         showAlert("Success", "Robots.txt updated successfully.");
-      } catch (e: any) {
-        showAlert("Error", e.message || "Failed to update.");
+      } catch (e) {
+        showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to update.");
       }
     });
   };
@@ -27,8 +27,8 @@ export function RobotsForm({ initialContent, defaultContent }: { initialContent:
           await resetRobotsTxt();
           setContent(defaultContent);
           showAlert("Success", "Reset to default.");
-        } catch (e: any) {
-          showAlert("Error", e.message || "Failed to reset.");
+        } catch (e) {
+          showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to reset.");
         }
       });
     });
