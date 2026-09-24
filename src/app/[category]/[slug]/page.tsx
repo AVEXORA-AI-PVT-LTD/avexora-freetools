@@ -12,6 +12,14 @@ import { CtaBlock } from "@/components/lead/cta-block";
 import { NewsletterBlock } from "@/components/lead/newsletter";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 import { checkAdminPermission } from "@/server/admin-auth";
+import { AvexoraProductCards } from "@/components/avexora/avexora-product-cards";
+import {
+  toolCanonical,
+  toolPageDescription,
+  toolPageJsonLd,
+  toolPageKeywords,
+  toolPageTitle,
+} from "@/lib/tool-page-seo";
 
 export const dynamicParams = true;
 
@@ -28,18 +36,18 @@ export async function generateMetadata({
   const toolData = await getToolFormData(slug);
   if (!toolData || toolData.category !== category) return {};
   
-  const defaultCanonical = `${SITE_URL}/${toolData.category}/${toolData.slug}`;
-  const defaultTitle = `${toolData.name} — ${SITE_NAME}`;
-  
+  // The layout's title template appends the site name, so the title here is bare.
   const fallback = {
-    title: toolData.seoTitle || defaultTitle,
-    description: toolData.metaDescription || toolData.description,
-    canonical: toolData.canonicalUrl || defaultCanonical,
+    title: toolPageTitle(toolData),
+    description: toolPageDescription(toolData),
+    canonical: toolData.canonicalUrl || toolCanonical(toolData),
     siteName: SITE_NAME,
     ogImage: toolData.ogImage || `${SITE_URL}/logo.png`,
   };
 
-  return resolveToolSeo(slug, category, fallback);
+  const keywords = toolPageKeywords(toolData);
+  const seo = await resolveToolSeo(slug, category, fallback);
+  return keywords.length ? { ...seo, keywords } : seo;
 }
 
 export default async function ToolPage({
@@ -60,13 +68,13 @@ export default async function ToolPage({
   if (!toolData || !cat || toolData.category !== cat.slug) notFound();
   if (toolData.status !== "Published" && !isPreview) notFound();
 
-  const defaultCanonical = `${SITE_URL}/${toolData.category}/${toolData.slug}`;
-  const fallback = { 
-    title: toolData.seoTitle || toolData.name, 
-    description: toolData.metaDescription || toolData.description, 
-    canonical: toolData.canonicalUrl || defaultCanonical, 
-    siteName: SITE_NAME, 
-    ogImage: toolData.ogImage || "" 
+  const defaultCanonical = toolCanonical(toolData);
+  const fallback = {
+    title: toolPageTitle(toolData),
+    description: toolPageDescription(toolData),
+    canonical: toolData.canonicalUrl || defaultCanonical,
+    siteName: SITE_NAME,
+    ogImage: toolData.ogImage || "",
   };
   const resolvedSeo = await resolveToolSeo(slug, category, fallback);
   const canonical = resolvedSeo.alternates?.canonical || defaultCanonical;
@@ -84,36 +92,10 @@ export default async function ToolPage({
     }
   }
 
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": toolData.schemaType || "SoftwareApplication",
-      name: toolData.name,
-      description: resolvedSeo.description || toolData.description,
-      url: canonical,
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web",
-      offers: { "@type": "Offer", price: toolData.pricing === "Free" ? "0" : "99", priceCurrency: "INR" },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: toolData.faqs.filter(f => f.active).map((f) => ({
-        "@type": "Question",
-        name: f.question,
-        acceptedAnswer: { "@type": "Answer", text: f.answer },
-      })),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
-        { "@type": "ListItem", position: 2, name: cat.name, item: `${SITE_URL}/${cat.slug}` },
-        { "@type": "ListItem", position: 3, name: toolData.name, item: canonical },
-      ],
-    }
-  ];
+  const jsonLd = toolPageJsonLd(toolData, cat, {
+    canonical,
+    description: resolvedSeo.description || undefined,
+  });
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -226,9 +208,10 @@ export default async function ToolPage({
           </section>
         )}
 
+        {staticTool?.showAvexoraProducts && <AvexoraProductCards placement={toolData.slug} />}
+
         <NewsletterBlock toolSlug={toolData.slug} category={toolData.category} />
 
-        
         {related.length > 0 && (
           <section>
             <h2 className="text-xl font-semibold text-slate-900">Related tools</h2>

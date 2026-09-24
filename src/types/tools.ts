@@ -115,6 +115,15 @@ interface ToolBase {
   faq: FaqItem[];
   /** Slugs of related tools for internal linking. */
   related: string[];
+  /**
+   * Search-result title, keyword first; at most 60 characters. The site name
+   * is appended by the layout's title template. Defaults to `name`.
+   */
+  seoTitle?: string;
+  /** Search keywords: the first is the focus keyword, the rest secondary. */
+  keywords?: string[];
+  /** Show the "More from Avexora" product cards on this tool's page. */
+  showAvexoraProducts?: boolean;
   /** Explicit sort order for this tool (lower numbers appear first). If unset, defaults to 999. */
   priority?: number;
   /** Require an email before download/copy of produced documents. */

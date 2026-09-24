@@ -118,6 +118,7 @@ describe("§46 SEO acceptance: sitemap", () => {
       "/privacy-policy",
       "/terms",
       "/refund-policy",
+      "/products",
       ...categories.map((c) => `/${c.slug}`),
       ...allTools.map((t) => `/${t.category}/${t.slug}`),
     ]);

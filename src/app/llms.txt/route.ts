@@ -1,3 +1,4 @@
+import { AVEXORA_PRODUCTS } from "@/config/avexora-products";
 import { SITE_NAME, SITE_URL } from "@/tools/categories";
 import { getEffectiveCategories } from "@/server/categories";
 import { getEffectiveToolsByCategory } from "@/server/tools";
@@ -27,6 +28,13 @@ export async function GET() {
   lines.push(`- Homepage — ${SITE_URL}`);
   lines.push(`- Brand Studio — ${SITE_URL}/studio`);
   lines.push(`- Pricing — ${SITE_URL}/studio/pricing`);
+  lines.push(`- Avexora products — ${SITE_URL}/products`);
+  lines.push("");
+  lines.push("## Avexora products");
+  lines.push("");
+  for (const p of AVEXORA_PRODUCTS) {
+    lines.push(`- [${p.name}](${p.url}): ${p.tagline} ${p.description}`);
+  }
   lines.push("");
 
   for (const category of categories) {
