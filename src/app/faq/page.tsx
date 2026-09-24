@@ -4,7 +4,7 @@ import { SITE_NAME } from "@/tools/categories";
 import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
 
 export const metadata = {
-  title: `Frequently Asked Questions | ${SITE_NAME}`,
+  title: "Frequently Asked Questions",
   description: `Answers to common questions about ${SITE_NAME} tools and services.`,
 };
 

@@ -181,7 +181,10 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
       active: true,
     })) || [],
     // Add steps mapping
-    steps: staticTool?.steps?.map((s) => typeof s === 'string' ? s : s.title) || [],
+    steps:
+      staticTool?.steps?.map((s) => (typeof s === "string" ? s : `${s.title}: ${s.description}`)) ??
+      staticTool?.howTo?.steps.map((s) => `${s.name}: ${s.text}`) ??
+      [],
     // Search metadata from the static config; admin SEO overrides replace these below.
     seoTitle: staticTool?.seoTitle || "",
     metaDescription: staticTool?.seoDescription || "",

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getPublishedContent } from "@/server/content-service";
 import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
 import { ContentType } from "@prisma/client";
-import { SITE_NAME, SITE_URL } from "@/tools/categories";
+import { SITE_URL } from "@/tools/categories";
 import { allTools } from "@/tools/registry";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -13,7 +13,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   if (!post) return {};
   
   return {
-    title: post.seoTitle || `${post.title} | ${SITE_NAME} Blog`,
+    title: post.seoTitle || `${post.title} | Blog`,
     description: post.metaDesc || post.excerpt,
     alternates: {
       canonical: post.canonicalUrl || `${SITE_URL}/blog/${post.slug}`

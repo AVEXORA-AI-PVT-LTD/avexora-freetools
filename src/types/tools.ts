@@ -122,7 +122,7 @@ interface ToolBase {
   seoTitle?: string;
   /** Search keywords: the first is the focus keyword, the rest secondary. */
   keywords?: string[];
-  /** Show the "More from Avexora" product cards on this tool's page. */
+  /** Set false to hide the "More from Avexora" product cards on this tool's page (shown by default). */
   showAvexoraProducts?: boolean;
   /** Explicit sort order for this tool (lower numbers appear first). If unset, defaults to 999. */
   priority?: number;
@@ -138,7 +138,7 @@ interface ToolBase {
   isDynamic?: boolean;
   /**
    * HowTo schema.org data (name + ordered steps), declared in a few tool configs.
-   * Not currently rendered; `steps` above is what drives the visible HowTo block.
+   * Used as the tool's visible steps and HowTo JSON-LD when `steps` is not set.
    */
   howTo?: ToolHowTo;
   /** Active status override from the database. */

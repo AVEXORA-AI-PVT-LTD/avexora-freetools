@@ -2,14 +2,14 @@ import { notFound } from "next/navigation";
 import { getPublishedContent } from "@/server/content-service";
 import { MarkdownRenderer } from "@/components/content/MarkdownRenderer";
 import { ContentType } from "@prisma/client";
-import { SITE_NAME, SITE_URL } from "@/tools/categories";
+import { SITE_URL } from "@/tools/categories";
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = await getPublishedContent(params.slug, ContentType.GUIDE);
   if (!post) return {};
   
   return {
-    title: post.seoTitle || `${post.title} | ${SITE_NAME} Blog`,
+    title: post.seoTitle || `${post.title} | Guides`,
     description: post.metaDesc || post.excerpt,
     alternates: {
       canonical: post.canonicalUrl || `${SITE_URL}/blog/${post.slug}`

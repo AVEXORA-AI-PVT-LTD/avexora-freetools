@@ -171,6 +171,26 @@ export default async function ToolPage({
               return text ? <p key={i}><ToolAboutText text={text} /></p> : null;
             })}
             
+            {toolData.steps.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-slate-800">How to use the {toolData.name}</h3>
+                <ol className="mt-2 list-decimal space-y-1.5 pl-5">
+                  {toolData.steps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {toolData.examples.filter(Boolean).length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-slate-800">Worked example</h3>
+                {toolData.examples.filter(Boolean).map((example, i) => (
+                  <p key={i} className="mt-2">{example.replace(/^Example:\s*/, "")}</p>
+                ))}
+              </div>
+            )}
+
             {toolData.howToUse && (
               <div className="mt-6">
                 <h3 className="text-lg font-semibold text-slate-800">How to Use</h3>
@@ -208,7 +228,7 @@ export default async function ToolPage({
           </section>
         )}
 
-        {staticTool?.showAvexoraProducts && <AvexoraProductCards placement={toolData.slug} />}
+        {staticTool?.showAvexoraProducts !== false && <AvexoraProductCards placement={toolData.slug} />}
 
         <NewsletterBlock toolSlug={toolData.slug} category={toolData.category} />
 
