@@ -567,7 +567,7 @@ export const tools: ToolConfig[] = [
     example:
       "Example: Enter \"Priya Sharma\", \"Founder & CEO\", \"Northwind Labs\", a phone number and your website, pick the Ocean palette, and download a single HTML card page, priya-sharma.vcf and a QR code that saves Priya to any phone's contacts.",
     steps: [
-      "Upload your photo — it fills the top of the card and animates through five styled versions — and your company logo.",
+      "Upload your photo — it's shown whole across the top of the card and animates through five layouts — and your company logo.",
       "Add your name, designation, company and a one-line tagline.",
       "Fill in the ways to reach you: phone, WhatsApp, email, website and address. Leave any field blank to hide it.",
       "Paste your social profile links or usernames for LinkedIn, Instagram, Facebook, X, YouTube or GitHub.",
@@ -577,7 +577,7 @@ export const tools: ToolConfig[] = [
     ],
     component: DigitalBusinessCard,
     about: [
-      "A digital business card is a small web page that does everything a paper visiting card does, and more: one tap calls you, opens a WhatsApp chat, starts an email or shows your office on Google Maps, and a Save Contact button adds you to the other person's phone in one step. This generator builds that page from a short form. Your photo fills the top of the card and comes alive as a motion picture, crossfading through five styled versions of the same shot (original, brand duotone, mono, warm glow and a vivid close-up) with a slow camera move, while your company logo sits in the circle beneath it. Contact rows, social icons and a QR code follow, all in your brand colours and previewed live as you type.",
+      "A digital business card is a small web page that does everything a paper visiting card does, and more: one tap calls you, opens a WhatsApp chat, starts an email or shows your office on Google Maps, and a Save Contact button adds you to the other person's phone in one step. This generator builds that page from a short form. Your photo is shown whole across the top of the card, never cropped, and comes alive as it crossfades through five layouts: a full portrait, a spotlight circle, a tilted polaroid with your name, a split panel with your name and title, and a magazine cover with your company as the masthead. Your company logo sits in the circle beneath it. Contact rows, social icons and a QR code follow, all in your brand colours and previewed live as you type.",
       "Designing and downloading are free. Three files come out of it. The card page is a single self-contained HTML file with its styles, animations and the Share button built in and no external requests, so it loads fast and can be hosted anywhere: on your own website, a company intranet or a free static host. The .vcf file is a standard vCard 3.0 that iPhone, Android, Gmail and Outlook contacts import directly, with your photo embedded. The QR code can either save your contact straight into the phone that scans it or open your website. Print it on the back of a paper card, a standee at your counter or the footer of your [invoices](/invoicing-billing/invoice-generator). For a plain QR code for any other link, use the [QR code generator](/developer-web/qr-code-generator).",
       "On a paid plan you can also save the card to your account and get a shareable link, such as tools.avexora.in/card/your-name. Copy it, share it from your phone or send it on WhatsApp; the link shows a proper preview with your photo, and the QR code can point to it. Edit the card whenever your details change and the link stays the same. If you only download the files, everything happens in your browser: your details and photo are not uploaded, and the form is saved only on your own device so you don't lose your work between visits. The card respects each visitor's reduced-motion setting and has light and dark modes, so it stays readable and accessible on any phone. If you need company stationery that meets the Companies Act's disclosure rules as well, check your letterhead with the [letterhead compliance checker](/business-legal/letterhead-compliance-checker).",
     ],
@@ -595,7 +595,7 @@ export const tools: ToolConfig[] = [
       {
         question: "How does the animated photo work?",
         answer:
-          "Your photo fills the top of the card and loops through five versions of itself: the original, a duotone in your brand colours, black and white, a warm glow and a vivid close-up, each with its own slow zoom or pan. They are styles applied to the one photo you upload, so they always match your colours. Turn the animation off to show the original only; visitors who prefer reduced motion also see the still photo.",
+          "Your photo is shown whole across the top of the card and loops through five layouts: full portrait, spotlight, polaroid, split panel and magazine cover, each arriving with a gentle movement. Every layout keeps the photo anchored at the top, so heads are never cut off, and they use your brand colours. Turn the animation off to show the full portrait only; visitors who prefer reduced motion also see the still portrait.",
       },
       {
         question: "Will the Save Contact button work on iPhone and Android?",

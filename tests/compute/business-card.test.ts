@@ -7,7 +7,8 @@ import {
   DEFAULT_CARD_COLORS,
   initials,
   normalizeSocial,
-  PHOTO_VARIANTS,
+  PHOTO_LAYOUTS,
+  photoLayoutDoc,
   normalizeUrl,
   socialLinks,
   telHref,
@@ -204,22 +205,42 @@ describe("buildCardHtml", () => {
     expect(html).toContain(`--primary:${DEFAULT_CARD_COLORS.primaryColor}`);
   });
 
-  it("fills the header with the photo, cycling its five versions", () => {
-    const html = buildCardHtml(card({ photo: PHOTO }));
+  it("shows the whole photo in the header, cycling its five layouts", () => {
+    const html = buildCardHtml(card({ photo: PHOTO, photoRatio: 0.75 }));
     expect(html).toContain('class="banner hero"');
-    expect(html).toContain(`--photo:url('${PHOTO}')`);
-    for (const v of PHOTO_VARIANTS) expect(html).toContain(`f-${v.id}`);
-    // One copy of the image however many versions animate.
+    expect(html).toContain(`--photo:url('${PHOTO}');--ratio:0.75`);
+    for (const l of PHOTO_LAYOUTS) expect(html).toContain(`lay-${l.id}`);
+    // The header takes the photo's proportions and anchors it at the top: no cropped heads.
+    expect(html).toContain("aspect-ratio:var(--ratio)");
+    expect(html).toContain("background:var(--photo) center top/cover");
+    // One copy of the image however many layouts animate.
     expect(html.split(PHOTO).length - 1).toBe(1);
-    // No circle avatar when the photo is the header and there's no logo.
+    // Layouts that print the name escape it.
+    expect(buildCardHtml(card({ photo: PHOTO, name: "<b>X</b> Y" }))).not.toContain("<b>X</b>");
     expect(html).not.toContain('class="avatar');
     expect(html).toContain("prefers-reduced-motion");
   });
 
-  it("shows one still photo when motion is off", () => {
+  it("falls back to a portrait ratio for missing or absurd ratios", () => {
+    expect(buildCardHtml(card({ photo: PHOTO }))).toContain("--ratio:0.8");
+    expect(buildCardHtml(card({ photo: PHOTO, photoRatio: 50 }))).toContain("--ratio:0.8");
+    expect(validateBusinessCard(card({ photo: PHOTO, photoRatio: 50 }))).toMatch(/photo/);
+  });
+
+  it("shows only the full portrait when motion is off", () => {
     const html = buildCardHtml(card({ photo: PHOTO, photoMotion: false }));
-    expect(html).toContain('class="f f-original base"');
-    expect(html).not.toContain("f-duotone");
+    expect(html).toContain('class="lay lay-portrait base"');
+    expect(html).not.toContain('class="lay lay-polaroid');
+    expect(html).not.toContain("@keyframes lay");
+  });
+
+  it("renders each layout on its own for the thumbnails", () => {
+    for (const l of PHOTO_LAYOUTS) {
+      const doc = photoLayoutDoc(card({ photo: PHOTO }), l.id);
+      expect(doc).toContain(`lay-${l.id}`);
+      expect(doc).not.toContain("@keyframes lay");
+    }
+    expect(photoLayoutDoc(card({ photo: PHOTO }), "polaroid")).toContain("<figcaption>Priya Sharma</figcaption>");
   });
 
   it("puts the logo in the circle and ignores invalid logos", () => {

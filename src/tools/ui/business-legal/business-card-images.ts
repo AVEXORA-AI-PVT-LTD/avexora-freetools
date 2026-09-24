@@ -4,9 +4,9 @@
  * small data URL.
  */
 
-/** Header photo: the card's top section is about 4:3. */
-const PHOTO_W = 800;
-const PHOTO_H = 600;
+/** Header photo: kept whole (never cropped), scaled to fit this box. */
+const PHOTO_MAX_W = 900;
+const PHOTO_MAX_H = 1100;
 /** Logos keep their aspect ratio and transparency inside this box. */
 const LOGO_MAX = 256;
 
@@ -38,23 +38,18 @@ function canvas(w: number, h: number): [HTMLCanvasElement, CanvasRenderingContex
 export const ACCEPTED_IMAGE = /^image\/(png|jpeg|webp)$/;
 
 /**
- * Crop to 4:3 and scale to 800×600 JPEG. Portrait photos are cropped nearer the
- * top than the centre, where faces usually are.
+ * Scale the photo down to fit 900×1100 as JPEG, keeping all of it: the card's
+ * header takes the photo's own proportions, so nothing (least of all the
+ * head) is cropped. Returns the width ÷ height ratio alongside.
  */
-export async function readPhoto(file: File): Promise<string> {
+export async function readPhoto(file: File): Promise<{ dataUrl: string; ratio: number }> {
   const img = await loadImage(file);
-  const target = PHOTO_W / PHOTO_H;
-  let sw = img.naturalWidth;
-  let sh = img.naturalHeight;
-  if (sw / sh > target) sw = sh * target;
-  else sh = sw / target;
-  const sx = (img.naturalWidth - sw) / 2;
-  const sy = (img.naturalHeight - sh) * 0.3;
-  const w = Math.min(PHOTO_W, Math.round(sw));
-  const h = Math.round(w / target);
+  const scale = Math.min(1, PHOTO_MAX_W / img.naturalWidth, PHOTO_MAX_H / img.naturalHeight);
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
   const [c, ctx] = canvas(w, h);
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
-  return c.toDataURL("image/jpeg", 0.82);
+  ctx.drawImage(img, 0, 0, w, h);
+  return { dataUrl: c.toDataURL("image/jpeg", 0.82), ratio: w / h };
 }
 
 /** Fit inside 256×256 as PNG so transparent logos stay transparent. */
