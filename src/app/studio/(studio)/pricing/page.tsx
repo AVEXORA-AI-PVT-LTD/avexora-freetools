@@ -50,7 +50,7 @@ export default async function PricingPage() {
         {activePlans.map((plan) => {
           const id = plan.id;
           const free = plan.monthlyPaise === 0;
-          const savings = annualSavingMonths(plan as any);
+          const savings = annualSavingMonths(plan);
           const featured = id === "launch";
 
           return (

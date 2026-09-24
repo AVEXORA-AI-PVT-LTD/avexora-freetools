@@ -1,4 +1,5 @@
 import { prisma } from "@/server/db";
+import type { Prisma } from "@prisma/client";
 
 export type ActivityType = 
   | "USER_CREATED" 
@@ -15,7 +16,7 @@ export interface ActivityItem {
   title: string;
   description: string;
   timestamp: Date;
-  metadata?: any;
+  metadata?: Prisma.JsonValue;
   actor?: string;
   target?: string;
   href?: string;
@@ -78,8 +79,11 @@ export async function getRecentActivity(limit = 20): Promise<ActivityItem[]> {
         severity = "error";
       }
 
-      const description = log.metadata 
-        ? (log.metadata as any)?.reason || `${log.action} on ${log.targetType}` 
+      const meta = log.metadata;
+      const reason =
+        meta && typeof meta === "object" && !Array.isArray(meta) ? meta.reason : undefined;
+      const description = meta
+        ? (typeof reason === "string" && reason) || `${log.action} on ${log.targetType}`
         : `${log.action} performed`;
 
       activities.push({

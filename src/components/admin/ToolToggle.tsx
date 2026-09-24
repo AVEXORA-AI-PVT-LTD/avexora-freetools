@@ -14,10 +14,11 @@ export function ToolToggle({ slug, initialStatus }: { slug: string; initialStatu
     setError(null);
 
     startTransition(async () => {
-      const result = await toggleToolStatus(slug, newStatus);
+      // Widened so a failure result carrying an error message is handled if the action ever returns one.
+      const result: { success: boolean; error?: string } = await toggleToolStatus(slug, newStatus);
       if (!result.success) {
         setStatus(!newStatus);
-        setError((result as any).error || "Failed to update status");
+        setError(result.error || "Failed to update status");
       }
     });
   };

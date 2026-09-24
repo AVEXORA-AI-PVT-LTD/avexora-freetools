@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+type OpenGraphType = Extract<NonNullable<Metadata["openGraph"]>, { type: string }>["type"];
+type TwitterCard = Extract<NonNullable<Metadata["twitter"]>, { card: string }>["card"];
+
 const DEFAULT_DESCRIPTION =
   "Free calculators, generators, PDF & image utilities and AI writing tools for your business. No sign-up, no cost — by Avexora, makers of Enterprise Business OS.";
 
@@ -48,11 +51,11 @@ export async function generateMetadata(): Promise<Metadata> {
       description: globalSeo?.ogDescription || description,
       url: canonical,
       siteName: SITE_NAME,
-      type: (globalSeo?.ogType as any) || "website",
+      type: (globalSeo?.ogType as OpenGraphType | undefined) || "website",
       images: [{ url: ogImage, width: 400, height: 100, alt: SITE_NAME }],
     },
     twitter: {
-      card: (globalSeo?.twitterCard as any) || "summary_large_image",
+      card: (globalSeo?.twitterCard as TwitterCard | undefined) || "summary_large_image",
       title: globalSeo?.twitterTitle || title,
       description: globalSeo?.twitterDescription || description,
       images: [globalSeo?.twitterImage || ogImage],

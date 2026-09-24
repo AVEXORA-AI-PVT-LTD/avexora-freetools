@@ -37,7 +37,7 @@ export default async function ToolReorderPage({
       name: t.name,
       slug: t.slug,
       category: t.category,
-      displayOrder: (t as any).displayOrder || t.priority || 999
+      displayOrder: t.displayOrder || t.priority || 999
     }));
 
   return (

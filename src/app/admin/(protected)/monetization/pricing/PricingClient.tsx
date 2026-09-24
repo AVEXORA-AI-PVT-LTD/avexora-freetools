@@ -6,22 +6,25 @@ import { Plus, Edit, Copy, Trash2, Power, GripVertical, Check } from "lucide-rea
 import { updatePlan, reorderPlans, deletePlan } from "./pricing-actions";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import type { Plan } from "@prisma/client";
 
-export default function PricingClient({ initialPlans }: { initialPlans: any[] }) {
+type PlanWithCount = Plan & { subscribersCount: number };
+
+export default function PricingClient({ initialPlans }: { initialPlans: PlanWithCount[] }) {
   const [plans, setPlans] = useState(initialPlans);
   const [isReordering, setIsReordering] = useState(false);
   const router = useRouter();
 
-  const handleToggleStatus = async (plan: any) => {
+  const handleToggleStatus = async (plan: PlanWithCount) => {
     try {
       await updatePlan(plan.id, { ...plan, isActive: !plan.isActive });
       router.refresh();
-    } catch (e: any) {
-      alert(e.message);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : String(e));
     }
   };
 
-  const handleDelete = async (plan: any) => {
+  const handleDelete = async (plan: PlanWithCount) => {
     if (plan.subscribersCount > 0) {
       alert(`Cannot delete ${plan.name} because it has ${plan.subscribersCount} active subscribers. Deactivate it instead.`);
       return;
@@ -30,8 +33,8 @@ export default function PricingClient({ initialPlans }: { initialPlans: any[] })
       try {
         await deletePlan(plan.id);
         router.refresh();
-      } catch (e: any) {
-        alert(e.message);
+      } catch (e) {
+        alert(e instanceof Error ? e.message : String(e));
       }
     }
   };

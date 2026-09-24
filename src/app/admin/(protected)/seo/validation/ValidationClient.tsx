@@ -3,7 +3,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { AlertCircle, AlertTriangle, CheckCircle, ExternalLink } from "lucide-react";
 
-export function ValidationClient({ validations }: { validations: any[] }) {
+interface ToolSeoValidation {
+  slug: string;
+  name: string;
+  category: string;
+  isOverride: boolean;
+  errors: string[];
+  warnings: string[];
+  status: string;
+}
+
+export function ValidationClient({ validations }: { validations: ToolSeoValidation[] }) {
   const [filter, setFilter] = useState("ALL");
 
   const filtered = validations.filter(v => filter === "ALL" || v.status === filter);

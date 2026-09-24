@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hasPermission } from "@/lib/admin/permissions";
@@ -8,18 +8,17 @@ import { adminNavigation, AdminNavItem } from "@/config/admin-navigation";
 import { Menu, X } from "lucide-react";
 import { LogoutButton } from "@/components/admin/auth/LogoutButton";
 
+import type { requireAdminAuth } from "@/server/admin-auth";
+
 export function AdminSidebar({ user }: { user: Awaited<ReturnType<typeof requireAdminAuth>> }) {
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  
+  // The mobile drawer remembers the route it was opened on, so navigating
+  // anywhere else closes it without an effect.
+  const [drawerPath, setDrawerPath] = useState<string | null>(null);
+
   const pathname = usePathname();
-
-  
-
-  // Close mobile drawer on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  const mobileOpen = drawerPath !== null && drawerPath === pathname;
+  const setMobileOpen = (open: boolean) => setDrawerPath(open ? pathname : null);
 
   let activeParentIndex = -1;
   let longestMatchLength = -1;

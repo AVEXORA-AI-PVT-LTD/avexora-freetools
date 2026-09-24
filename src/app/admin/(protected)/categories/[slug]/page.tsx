@@ -1,5 +1,5 @@
 import { requireAdminAuth } from "@/server/admin-auth";
-import { getAllCategoriesAdmin } from "@/server/category-service";
+import { getAllCategoriesAdmin, type AdminCategory } from "@/server/category-service";
 import { CategoryEditor } from "./CategoryEditor";
 
 export const metadata = { title: "Edit Category | Avex Tools Admin" };
@@ -10,7 +10,7 @@ export default async function CategoryEditorPage({ params }: { params: { slug: s
   const allCategories = await getAllCategoriesAdmin();
   const isNew = params.slug === "new";
   
-  let initialData = {
+  const emptyCategory = {
     name: "",
     slug: "",
     description: "",
@@ -18,11 +18,12 @@ export default async function CategoryEditorPage({ params }: { params: { slug: s
     featured: false,
     seoMetadata: null,
   };
+  let initialData: typeof emptyCategory | AdminCategory = emptyCategory;
 
   if (!isNew) {
     const existing = allCategories.find(c => c.slug === params.slug);
     if (existing) {
-      initialData = { ...existing } as any;
+      initialData = { ...existing };
     }
   }
 

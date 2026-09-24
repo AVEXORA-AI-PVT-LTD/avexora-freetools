@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPlan, updatePlan } from "../pricing-actions";
+import type { Plan } from "@prisma/client";
 
-export default function PlanForm({ initialData }: { initialData: any }) {
+export default function PlanForm({ initialData }: { initialData: Plan | null }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,8 +41,8 @@ export default function PlanForm({ initialData }: { initialData: any }) {
       }
       router.push("/admin/monetization/pricing");
       router.refresh();
-    } catch (err: any) {
-      alert(err.message || "An error occurred");
+    } catch (err) {
+      alert((err instanceof Error ? err.message : String(err)) || "An error occurred");
     } finally {
       setIsSubmitting(false);
     }

@@ -4,6 +4,38 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/lib/admin/permissions";
+import type { Prisma, ToolConfig } from "@prisma/client";
+
+/** Shape of `ToolRevision.snapshot`, as written by the tool editor (editor-actions.ts). */
+type ToolSnapshot = Partial<
+  Pick<
+    ToolConfig,
+    | "categorySlug"
+    | "status"
+    | "featured"
+    | "pricing"
+    | "nameOverride"
+    | "description"
+    | "subCategory"
+    | "tags"
+    | "icon"
+    | "thumbnail"
+    | "homepageVisible"
+    | "content"
+    | "runtimeConfig"
+    | "technicalConfig"
+    | "publishingConfig"
+    | "seoMetadata"
+  >
+>;
+
+/**
+ * Pass a stored JSON value back into a Json? column unchanged. A null from the DB
+ * is forwarded as-is, exactly as before this helper existed.
+ */
+function asJsonInput(value: Prisma.JsonValue | undefined): Prisma.InputJsonValue | undefined {
+  return value as Prisma.InputJsonValue | undefined;
+}
 
 /** Bump the patch number of a semver string, keeping it in x.y.z form. */
 function bumpPatch(version: string): string {
@@ -36,7 +68,7 @@ export async function restoreToolRevision(revisionId: string) {
       return { success: false, error: "Tool not found." };
     }
 
-    const snap = revision.snapshot as any;
+    const snap = revision.snapshot as ToolSnapshot;
     
     // The restored tool becomes the next patch of the restored version (x.y.z form).
     const newVersionStr = bumpPatch(revision.version);
@@ -58,11 +90,11 @@ export async function restoreToolRevision(revisionId: string) {
         icon: snap.icon || tool.icon,
         thumbnail: snap.thumbnail || tool.thumbnail,
         homepageVisible: snap.homepageVisible ?? tool.homepageVisible,
-        content: snap.content || tool.content,
-        runtimeConfig: snap.runtimeConfig || tool.runtimeConfig,
-        technicalConfig: snap.technicalConfig || tool.technicalConfig,
-        publishingConfig: snap.publishingConfig || tool.publishingConfig,
-        seoMetadata: snap.seoMetadata || tool.seoMetadata,
+        content: asJsonInput(snap.content || tool.content),
+        runtimeConfig: asJsonInput(snap.runtimeConfig || tool.runtimeConfig),
+        technicalConfig: asJsonInput(snap.technicalConfig || tool.technicalConfig),
+        publishingConfig: asJsonInput(snap.publishingConfig || tool.publishingConfig),
+        seoMetadata: asJsonInput(snap.seoMetadata || tool.seoMetadata),
         updatedBy: user.id,
       }
     });
@@ -76,7 +108,7 @@ export async function restoreToolRevision(revisionId: string) {
         revisionType: "Restored",
         isPublished: snap.status ?? tool.status,
         createdBy: user.id,
-        snapshot: snap,
+        snapshot: revision.snapshot as Prisma.InputJsonValue,
       }
     });
 
@@ -98,8 +130,8 @@ export async function restoreToolRevision(revisionId: string) {
     revalidatePath(`/${newCategory}/${revision.toolSlug}`);
 
     return { success: true };
-  } catch (err: any) {
+  } catch (err) {
     console.error("Restore error:", err);
-    return { success: false, error: err.message || "An unexpected error occurred." };
+    return { success: false, error: (err instanceof Error ? err.message : String(err)) || "An unexpected error occurred." };
   }
 }

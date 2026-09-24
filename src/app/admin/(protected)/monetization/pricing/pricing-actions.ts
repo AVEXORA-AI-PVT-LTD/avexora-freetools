@@ -3,9 +3,34 @@
 import { prisma } from "@/server/db";
 import { requireAdminAuth } from "@/server/admin-auth";
 import { revalidatePath, revalidateTag } from "next/cache";
+import type { Prisma } from "@prisma/client";
 
-export async function createPlan(data: any) {
-  const admin = await requireAdminAuth("settings.view" as any);
+/** Numeric fields may arrive as numbers (from a Plan) or strings (from form inputs); they are parsed with parseInt. */
+type NumericInput = string | number | null | undefined;
+
+/** Plan payload sent by PlanForm / PricingClient. */
+export interface PlanInput {
+  slug: string;
+  name: string;
+  description?: string | null;
+  tagline?: string | null;
+  monthlyPrice?: NumericInput;
+  yearlyPrice?: NumericInput;
+  razorpayMonthlyId?: string | null;
+  razorpayYearlyId?: string | null;
+  hasTrial?: boolean;
+  trialDays?: NumericInput;
+  limits?: Prisma.InputJsonValue | null;
+  capabilities?: Prisma.InputJsonValue | null;
+  watermark?: boolean;
+  highlights?: string[];
+  isActive?: boolean;
+  isFeatured?: boolean;
+  displayOrder?: NumericInput;
+}
+
+export async function createPlan(data: PlanInput) {
+  const admin = await requireAdminAuth("settings.view");
   
   const plan = await prisma.plan.create({
     data: {
@@ -13,20 +38,20 @@ export async function createPlan(data: any) {
       name: data.name,
       description: data.description,
       tagline: data.tagline,
-      monthlyPrice: parseInt(data.monthlyPrice) || 0,
-      yearlyPrice: parseInt(data.yearlyPrice) || 0,
+      monthlyPrice: parseInt(String(data.monthlyPrice)) || 0,
+      yearlyPrice: parseInt(String(data.yearlyPrice)) || 0,
       currency: "INR",
       razorpayMonthlyId: data.razorpayMonthlyId || null,
       razorpayYearlyId: data.razorpayYearlyId || null,
       hasTrial: data.hasTrial || false,
-      trialDays: parseInt(data.trialDays) || 0,
+      trialDays: parseInt(String(data.trialDays)) || 0,
       limits: data.limits || {},
       capabilities: data.capabilities || {},
       watermark: data.watermark || false,
       highlights: data.highlights || [],
       isActive: data.isActive !== false,
       isFeatured: data.isFeatured || false,
-      displayOrder: parseInt(data.displayOrder) || 0,
+      displayOrder: parseInt(String(data.displayOrder)) || 0,
     }
   });
 
@@ -47,8 +72,8 @@ export async function createPlan(data: any) {
   return plan;
 }
 
-export async function updatePlan(id: string, data: any) {
-  const admin = await requireAdminAuth("settings.view" as any);
+export async function updatePlan(id: string, data: PlanInput) {
+  const admin = await requireAdminAuth("settings.view");
   
   const plan = await prisma.plan.update({
     where: { id },
@@ -56,12 +81,12 @@ export async function updatePlan(id: string, data: any) {
       name: data.name,
       description: data.description,
       tagline: data.tagline,
-      monthlyPrice: parseInt(data.monthlyPrice) || 0,
-      yearlyPrice: parseInt(data.yearlyPrice) || 0,
+      monthlyPrice: parseInt(String(data.monthlyPrice)) || 0,
+      yearlyPrice: parseInt(String(data.yearlyPrice)) || 0,
       razorpayMonthlyId: data.razorpayMonthlyId || null,
       razorpayYearlyId: data.razorpayYearlyId || null,
       hasTrial: data.hasTrial || false,
-      trialDays: parseInt(data.trialDays) || 0,
+      trialDays: parseInt(String(data.trialDays)) || 0,
       limits: data.limits || {},
       capabilities: data.capabilities || {},
       watermark: data.watermark || false,
@@ -89,7 +114,7 @@ export async function updatePlan(id: string, data: any) {
 }
 
 export async function reorderPlans(orderedIds: string[]) {
-  const admin = await requireAdminAuth("settings.view" as any);
+  const admin = await requireAdminAuth("settings.view");
 
   const ops = orderedIds.map((id, index) => 
     prisma.plan.update({
@@ -117,7 +142,7 @@ export async function reorderPlans(orderedIds: string[]) {
 }
 
 export async function deletePlan(id: string) {
-  const admin = await requireAdminAuth("settings.view" as any);
+  const admin = await requireAdminAuth("settings.view");
   
   const plan = await prisma.plan.findUnique({ where: { id } });
   if (!plan) throw new Error("Plan not found");

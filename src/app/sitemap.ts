@@ -2,8 +2,13 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/tools/categories";
 import { getEffectiveCategories } from "@/server/categories";
 import { getEffectiveTools } from "@/server/tools";
-import { prisma } from "@/server/db";
-import { ContentStatus } from "@prisma/client";
+import { isDatabaseConfigured, prisma } from "@/server/db";
+import { ContentStatus, type Prisma } from "@prisma/client";
+
+function isNoIndex(seoMetadata: Prisma.JsonValue | undefined): boolean {
+  if (!seoMetadata || typeof seoMetadata !== "object" || Array.isArray(seoMetadata)) return false;
+  return seoMetadata.robotsIndex === false;
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [categories, tools] = await Promise.all([
@@ -54,21 +59,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const toolConfigs = await prisma.toolConfig.findMany({ select: { toolSlug: true, seoMetadata: true }});
-  const catConfigs = await prisma.categoryConfig.findMany({ select: { slug: true, seoMetadata: true }});
+  // Admin overrides (noindex, CMS content, redirects) live in the database.
+  // Without one, the sitemap is the static catalog.
+  const hasDb = isDatabaseConfigured();
+  const [toolConfigs, catConfigs] = hasDb
+    ? await Promise.all([
+        prisma.toolConfig.findMany({ select: { toolSlug: true, seoMetadata: true } }),
+        prisma.categoryConfig.findMany({ select: { slug: true, seoMetadata: true } }),
+      ])
+    : [[], []];
 
   // Filter out noindex categories
   const indexableCategories = categories.filter(cat => {
     const config = catConfigs.find(c => c.slug === cat.slug);
-    const meta: any = config?.seoMetadata || {};
-    return meta.robotsIndex !== false;
+    return !isNoIndex(config?.seoMetadata);
   });
 
   // Filter out noindex tools
   const indexableTools = tools.filter(tool => {
     const config = toolConfigs.find(c => c.toolSlug === tool.slug);
-    const meta: any = config?.seoMetadata || {};
-    return meta.robotsIndex !== false;
+    return !isNoIndex(config?.seoMetadata);
   });
 
   // Category pages
@@ -89,10 +99,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 
   // Content Items (Blog, Page, Guide, FAQ)
-  const publishedContent = await prisma.contentItem.findMany({
-    where: { status: ContentStatus.PUBLISHED, noIndex: false },
-    select: { slug: true, contentType: true, updatedAt: true, publishedAt: true }
-  });
+  const publishedContent = hasDb
+    ? await prisma.contentItem.findMany({
+        where: { status: ContentStatus.PUBLISHED, noIndex: false },
+        select: { slug: true, contentType: true, updatedAt: true, publishedAt: true }
+      })
+    : [];
 
   const contentRoutes = publishedContent.map((c) => {
     let path = `/${c.slug}`; // Default for PAGE
@@ -116,7 +128,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const allRoutes = [...routes, ...catRoutes, ...toolRoutes, ...uniqueContentRoutes];
   
   // Filter out any routes that are actively redirected
-  const activeRedirects = await prisma.redirect.findMany({ where: { active: true }, select: { source: true } });
+  const activeRedirects = hasDb
+    ? await prisma.redirect.findMany({ where: { active: true }, select: { source: true } })
+    : [];
   const redirectedPaths = new Set(activeRedirects.map(r => r.source));
   
   return allRoutes.filter(route => {

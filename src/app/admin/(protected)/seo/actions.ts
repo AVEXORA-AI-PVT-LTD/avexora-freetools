@@ -4,6 +4,7 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { SeoMetadataSchema, SeoMetadata } from "@/server/seo-manager";
 import { revalidatePath, revalidateTag } from "next/cache";
+import type { Prisma } from "@prisma/client";
 
 export async function updateToolSeo(toolSlug: string, categorySlug: string, data: Partial<SeoMetadata>) {
   await requireAdminAuth("seo.edit");
@@ -22,10 +23,10 @@ export async function updateToolSeo(toolSlug: string, categorySlug: string, data
     create: {
       toolSlug,
       categorySlug,
-      seoMetadata: merged as any,
+      seoMetadata: merged as Prisma.InputJsonObject,
     },
     update: {
-      seoMetadata: merged as any,
+      seoMetadata: merged as Prisma.InputJsonObject,
     }
   });
 
@@ -38,7 +39,7 @@ export async function resetToolSeo(toolSlug: string, categorySlug: string) {
 
   await prisma.toolConfig.updateMany({
     where: { toolSlug },
-    data: { seoMetadata: null as any }
+    data: { seoMetadata: null }
   });
 
   revalidateTag("seo-tool", "max");
@@ -60,10 +61,10 @@ export async function updateCategorySeo(categorySlug: string, data: Partial<SeoM
     where: { slug: categorySlug },
     create: {
       slug: categorySlug,
-      seoMetadata: merged as any,
+      seoMetadata: merged as Prisma.InputJsonObject,
     },
     update: {
-      seoMetadata: merged as any,
+      seoMetadata: merged as Prisma.InputJsonObject,
     }
   });
 
@@ -76,7 +77,7 @@ export async function resetCategorySeo(categorySlug: string) {
 
   await prisma.categoryConfig.update({
     where: { slug: categorySlug },
-    data: { seoMetadata: null as any }
+    data: { seoMetadata: null }
   });
 
   revalidateTag("seo-category", "max");

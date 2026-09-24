@@ -33,9 +33,9 @@ function getClient(): Razorpay {
 export type BillingCycle = "monthly" | "yearly";
 
 /**
- * Razorpay plan IDs are created in the Razorpay dashboard (or via their API)
- * and referenced here by env var, one per plan × cycle. Keeping them in env
- * rather than the database means test and live accounts can differ without a
+ * Razorpay plan IDs are created in the Razorpay dashboard (or via their API).
+ * An id set on the plan in the admin panel wins; otherwise it comes from env,
+ * one var per plan × cycle, so test and live accounts can differ without a
  * data migration.
  */
 export async function razorpayPlanId(planId: string, cycle: BillingCycle): Promise<string | undefined> {

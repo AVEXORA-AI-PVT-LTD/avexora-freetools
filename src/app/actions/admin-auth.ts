@@ -2,6 +2,7 @@
 
 import { prisma } from "@/server/db";
 import bcrypt from "bcryptjs";
+import type { User } from "@prisma/client";
 import { cookies, headers } from "next/headers";
 import { randomBytes } from "crypto";
 import { logAdminAction } from "@/server/audit";
@@ -59,7 +60,7 @@ export async function adminLoginAction(formData: FormData): Promise<AdminLoginRe
   const allowedRoles = ["superadmin", "admin", "editor"];
   if (!user.role || !allowedRoles.includes(user.role.toLowerCase().replace('_', ''))) {
     await logAdminAction({
-      action: "LOGIN" as any,
+      action: "LOGIN",
       targetType: "USER",
       targetId: user.id,
       metadata: { success: false, reason: "unauthorized_role" },
@@ -75,7 +76,7 @@ export async function adminLoginAction(formData: FormData): Promise<AdminLoginRe
   return await createAdminSession(user, rememberMe);
 }
 
-export async function createAdminSession(user: any, rememberMe: boolean = false): Promise<AdminLoginResult> {
+export async function createAdminSession(user: Pick<User, "id">, rememberMe: boolean = false): Promise<AdminLoginResult> {
   const reqHeaders = await headers();
   const ip = reqHeaders.get("x-forwarded-for") || reqHeaders.get("x-real-ip") || "unknown";
   const userAgent = reqHeaders.get("user-agent") || "unknown";
@@ -115,7 +116,7 @@ export async function createAdminSession(user: any, rememberMe: boolean = false)
   });
 
   await logAdminAction({
-    action: "LOGIN" as any,
+    action: "LOGIN",
     targetType: "USER",
     targetId: user.id,
     metadata: { success: true, method: "password" },
@@ -138,7 +139,7 @@ export async function adminLogoutAction() {
   
   // Log action
   await logAdminAction({
-    action: "LOGOUT" as any,
+    action: "LOGOUT",
     targetType: "USER",
   });
   
@@ -157,7 +158,7 @@ export async function adminLogoutAllAction() {
       });
       
       await logAdminAction({
-        action: "LOGOUT" as any, // We might need to add LOGOUT_ALL to types if TS complains, but as any is fine for now
+        action: "LOGOUT",
         targetType: "USER",
         metadata: { success: true, method: "logout_all" },
       });
@@ -196,7 +197,7 @@ export async function requestPasswordResetAction(email: string) {
 
   // Log action
   await logAdminAction({
-    action: "LOGIN" as any,
+    action: "LOGIN",
     targetType: "USER",
     targetId: user.id,
     metadata: { action: "password_reset_requested" }
@@ -252,7 +253,7 @@ export async function resetPasswordAction(token: string, newPassword: string) {
   ]);
 
   await logAdminAction({
-    action: "USER_UPDATED" as any,
+    action: "USER_UPDATED",
     targetType: "USER",
     targetId: user.id,
     metadata: { action: "password_reset_completed" }
@@ -295,7 +296,7 @@ export async function revokeSessionAction(sessionId: string) {
   });
 
   await logAdminAction({
-    action: "USER_UPDATED" as any,
+    action: "USER_UPDATED",
     targetType: "USER",
     targetId: userId,
     metadata: { action: "session_revoked", sessionId }

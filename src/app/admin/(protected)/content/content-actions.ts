@@ -4,7 +4,7 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/lib/admin/permissions";
-import { ContentType, ContentStatus, ContentItem } from "@prisma/client";
+import { ContentType, ContentStatus, ContentItem, Prisma } from "@prisma/client";
 
 export async function saveContent(data: Partial<ContentItem> & { slug: string, title: string, contentType: ContentType }) {
   const user = await requireAdminAuth();
@@ -20,7 +20,7 @@ export async function saveContent(data: Partial<ContentItem> & { slug: string, t
     effectiveStatus = ContentStatus.REVIEW; // Fallback for editors
   }
   
-  const upsertData: any = {
+  const upsertData: Prisma.ContentItemUncheckedCreateInput = {
     title: data.title,
     slug: data.slug,
     contentType: data.contentType,
@@ -52,6 +52,7 @@ export async function saveContent(data: Partial<ContentItem> & { slug: string, t
   }
 
   let savedItem;
+  let versionUpdate: Prisma.IntFieldUpdateOperationsInput | undefined;
   if (isNew) {
     savedItem = await prisma.contentItem.create({
       data: { ...upsertData, authorId: user.id }
@@ -64,16 +65,16 @@ export async function saveContent(data: Partial<ContentItem> & { slug: string, t
         data: {
           contentId: existing.id,
           version: existing.version,
-          data: existing as any,
+          data: existing as unknown as Prisma.InputJsonObject,
           createdBy: user.id
         }
       });
-      upsertData.version = { increment: 1 };
+      versionUpdate = { increment: 1 };
     }
     
     savedItem = await prisma.contentItem.update({
       where: { id: data.id },
-      data: upsertData
+      data: versionUpdate ? { ...upsertData, version: versionUpdate } : upsertData
     });
   }
 

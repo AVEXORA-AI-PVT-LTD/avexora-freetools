@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getPublishedList } from "@/server/content-service";
-import { ContentType } from "@prisma/client";
+import { ContentType, type ContentItem } from "@prisma/client";
 import { SITE_NAME } from "@/tools/categories";
 
 export const metadata = {
@@ -50,7 +50,13 @@ export default async function BlogIndexPage() {
   );
 }
 
-function BlogCard({ post }: { post: any }) {
+/** Same estimate as the post page: 200 words a minute, rounded up. */
+function readingMinutes(content: string): number {
+  return Math.ceil(content.trim().split(/\s+/).filter(Boolean).length / 200);
+}
+
+function BlogCard({ post }: { post: ContentItem }) {
+  const readingTime = readingMinutes(post.content);
   return (
     <Link href={`/blog/${post.slug}`} className="group flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
       {post.featuredImage ? (
@@ -72,7 +78,7 @@ function BlogCard({ post }: { post: any }) {
         </p>
         <div className="flex items-center text-xs text-slate-500 justify-between mt-auto">
           <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
-          {post.readingTime && <span>{post.readingTime} min read</span>}
+          {readingTime > 0 && <span>{readingTime} min read</span>}
         </div>
       </div>
     </Link>

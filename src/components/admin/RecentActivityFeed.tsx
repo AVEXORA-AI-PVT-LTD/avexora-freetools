@@ -50,7 +50,7 @@ export function RecentActivityFeed({ activities }: Props) {
         <select 
           className="text-sm border-zinc-200 rounded-lg py-1.5 px-3 bg-zinc-50 text-zinc-700 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-shadow"
           value={filter}
-          onChange={(e) => setFilter(e.target.value as any)}
+          onChange={(e) => setFilter(e.target.value as ActivityType | "ALL")}
         >
           <option value="ALL">All Activity</option>
           <option value="USER_CREATED">Users</option>

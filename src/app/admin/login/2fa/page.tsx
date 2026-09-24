@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Verify2FAForm } from "@/components/admin/auth/Verify2FAForm";
 
 export const metadata = {
@@ -16,7 +17,7 @@ export default function Verify2FAPage({
       <div className="min-h-screen bg-zinc-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md mx-auto text-center">
           <p className="text-red-600">Missing user context. Please sign in again.</p>
-          <a href="/admin/login" className="mt-4 text-orange-600 hover:underline inline-block">Back to Login</a>
+          <Link href="/admin/login" className="mt-4 text-orange-600 hover:underline inline-block">Back to Login</Link>
         </div>
       </div>
     );

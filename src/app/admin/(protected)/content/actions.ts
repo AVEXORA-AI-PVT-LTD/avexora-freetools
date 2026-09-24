@@ -19,7 +19,7 @@ export async function updateContentBlock(formData: FormData) {
 
   const parsed = updateContentBlockSchema.safeParse({ key, value });
   if (!parsed.success) {
-    return { error: (parsed.error as any).errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const { key: validKey, value: validValue } = parsed.data;

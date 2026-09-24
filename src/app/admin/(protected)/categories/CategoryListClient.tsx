@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useDialog } from "@/components/admin/DialogProvider";
 import { deleteCategory, reorderCategories } from "./category-actions";
 import { Eye, Edit, Trash2, Plus, GripVertical, Save } from "lucide-react";
+import type { AdminCategory } from "@/server/category-service";
 
-export function CategoryListClient({ initialCategories }: { initialCategories: any[] }) {
+export function CategoryListClient({ initialCategories }: { initialCategories: AdminCategory[] }) {
   const [categories, setCategories] = useState([...initialCategories].sort((a,b) => a.displayOrder - b.displayOrder));
   const { showConfirm, showAlert } = useDialog();
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
@@ -48,7 +49,7 @@ export function CategoryListClient({ initialCategories }: { initialCategories: a
     }
   };
 
-  const handleDelete = (cat: any) => {
+  const handleDelete = (cat: AdminCategory) => {
     showConfirm(
       "Delete Category",
       `Are you sure you want to delete '${cat.name}'?`,
@@ -59,8 +60,8 @@ export function CategoryListClient({ initialCategories }: { initialCategories: a
             setCategories(prev => prev.filter(c => c.slug !== cat.slug));
             showAlert("Success", "Category deleted.");
           }
-        } catch (e: any) {
-          showAlert("Error", e.message || "Failed to delete.");
+        } catch (e) {
+          showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to delete.");
         }
       }
     );

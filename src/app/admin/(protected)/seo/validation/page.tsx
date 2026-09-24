@@ -3,6 +3,7 @@ import { prisma } from "@/server/db";
 import { allTools } from "@/tools/registry";
 import { SITE_URL } from "@/tools/categories";
 import { ValidationClient } from "./ValidationClient";
+import type { SeoMetadata } from "@/server/seo-manager";
 
 export const metadata = { title: "SEO Validation | Admin" };
 
@@ -14,7 +15,7 @@ export default async function ValidationPage() {
   });
 
   const validations = allTools.map(t => {
-    const override = configs.find(c => c.toolSlug === t.slug)?.seoMetadata as any;
+    const override = configs.find(c => c.toolSlug === t.slug)?.seoMetadata as SeoMetadata | null | undefined;
     const isOverride = !!override && Object.keys(override).length > 0;
     const title = override?.title || t.name;
     const description = override?.description || t.seoDescription;

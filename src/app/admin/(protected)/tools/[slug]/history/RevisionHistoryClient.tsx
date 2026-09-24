@@ -6,6 +6,7 @@ import { ArrowLeft, Clock, Eye, GitCompare, RotateCcw } from "lucide-react";
 import { useDialog } from "@/components/admin/DialogProvider";
 import { restoreToolRevision } from "./history-actions";
 import { ObjectDiff } from "./ObjectDiff";
+import type { Prisma } from "@prisma/client";
 
 type Revision = {
   id: string;
@@ -15,7 +16,7 @@ type Revision = {
   isPublished: boolean;
   createdAt: string;
   createdByName: string;
-  snapshot: any;
+  snapshot: Prisma.JsonValue;
 };
 
 export function RevisionHistoryClient({
@@ -49,8 +50,8 @@ export function RevisionHistoryClient({
           } else {
             showAlert("Error", res.error || "Failed to restore.");
           }
-        } catch (e: any) {
-          showAlert("Error", e.message || "Failed to restore.");
+        } catch (e) {
+          showAlert("Error", (e instanceof Error ? e.message : String(e)) || "Failed to restore.");
         } finally {
           setIsRestoring(false);
         }

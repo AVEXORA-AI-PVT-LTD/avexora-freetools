@@ -8,6 +8,18 @@ import { saveToolData } from "./editor-actions";
 import type { ToolFormData, FAQItem } from "@/types/admin-tool-form";
 import { Save, ArrowLeft, Eye, LayoutTemplate, Settings, Code, FileText, Globe, CheckCircle, History } from "lucide-react";
 
+type UpdateField = <K extends keyof ToolFormData>(field: K, value: ToolFormData[K]) => void;
+
+interface TabProps {
+  data: ToolFormData;
+  update: UpdateField;
+}
+
+interface CategoryOption {
+  slug: string;
+  name: string;
+}
+
 const TABS = [
   { id: "basic", label: "Basic Info", icon: LayoutTemplate },
   { id: "content", label: "Tool Content", icon: FileText },
@@ -26,7 +38,7 @@ export function ToolEditor({ initialData, isNew, categories, allSlugs }: { initi
   const [data, setData] = useState<ToolFormData>(initialData);
   const [error, setError] = useState("");
 
-  const update = (field: keyof ToolFormData, value: any) => {
+  const update: UpdateField = (field, value) => {
     setData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -43,8 +55,8 @@ export function ToolEditor({ initialData, isNew, categories, allSlugs }: { initi
           router.push(`/admin/tools/${res.slug}`);
         }
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to save tool.");
+    } catch (err) {
+      setError((err instanceof Error ? err.message : String(err)) || "Failed to save tool.");
     }
   };
 
@@ -140,7 +152,7 @@ export function ToolEditor({ initialData, isNew, categories, allSlugs }: { initi
 // TAB COMPONENTS
 // -----------------------------------------------------------------------------
 
-function BasicTab({ data, update, categories }: any) {
+function BasicTab({ data, update, categories }: TabProps & { categories: CategoryOption[] }) {
   return (
     <div className="space-y-4 max-w-3xl">
       <h2 className="text-lg font-medium text-slate-900 mb-4">Basic Information</h2>
@@ -180,7 +192,7 @@ function BasicTab({ data, update, categories }: any) {
             className="mt-2 block w-full rounded-md border-0 pl-3 pr-8 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
           >
             <option value="">Select Category...</option>
-            {categories.map((c: any) => (
+            {categories.map((c) => (
               <option key={c.slug} value={c.slug}>{c.name || c.slug}</option>
             ))}
           </select>
@@ -246,13 +258,13 @@ function BasicTab({ data, update, categories }: any) {
   );
 }
 
-function ContentTab({ data, update, allSlugs = [] }: any) {
+function ContentTab({ data, update, allSlugs = [] }: TabProps & { allSlugs?: CategoryOption[] }) {
   const addFAQ = () => {
     const next = [...data.faqs, { id: Date.now().toString(), question: "", answer: "", order: data.faqs.length, active: true }];
     update("faqs", next);
   };
   
-  const updateFAQ = (index: number, field: string, value: any) => {
+  const updateFAQ = <K extends keyof FAQItem>(index: number, field: K, value: FAQItem[K]) => {
     const next = [...data.faqs];
     next[index] = { ...next[index], [field]: value };
     update("faqs", next);
@@ -318,7 +330,7 @@ function ContentTab({ data, update, allSlugs = [] }: any) {
         </div>
         
         <div className="space-y-4">
-          {data.faqs.map((faq: any, idx: number) => (
+          {data.faqs.map((faq, idx) => (
             <div key={faq.id} className="p-4 border border-slate-200 rounded-lg bg-slate-50 flex gap-4">
               <div className="flex-1 space-y-3">
                 <input
@@ -348,7 +360,7 @@ function ContentTab({ data, update, allSlugs = [] }: any) {
   );
 }
 
-function RuntimeTab({ data, update }: any) {
+function RuntimeTab({ data, update }: TabProps) {
   return (
     <div className="space-y-6 max-w-3xl">
       <h2 className="text-lg font-medium text-slate-900">Runtime Settings</h2>
@@ -358,7 +370,7 @@ function RuntimeTab({ data, update }: any) {
           <label className="block text-sm font-medium leading-6 text-slate-900">Pricing Tier</label>
           <select
             value={data.pricing}
-            onChange={(e) => update("pricing", e.target.value)}
+            onChange={(e) => update("pricing", e.target.value as ToolFormData["pricing"])}
             className="mt-2 block w-full rounded-md border-0 pl-3 pr-8 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
           >
             <option value="Free">Free</option>
@@ -402,7 +414,7 @@ function RuntimeTab({ data, update }: any) {
   );
 }
 
-function TechnicalTab({ data, update }: any) {
+function TechnicalTab({ data, update }: TabProps) {
   return (
     <div className="space-y-6 max-w-3xl">
       <h2 className="text-lg font-medium text-slate-900">Technical Configuration</h2>
@@ -443,7 +455,7 @@ function TechnicalTab({ data, update }: any) {
   );
 }
 
-function SEOTab({ data, update }: any) {
+function SEOTab({ data, update }: TabProps) {
   return (
     <div className="space-y-6 max-w-3xl">
       <h2 className="text-lg font-medium text-slate-900">SEO Configuration</h2>
@@ -505,7 +517,7 @@ function SEOTab({ data, update }: any) {
   );
 }
 
-function PublishingTab({ data, update }: any) {
+function PublishingTab({ data, update }: TabProps) {
   return (
     <div className="space-y-6 max-w-3xl">
       <h2 className="text-lg font-medium text-slate-900">Publishing Settings</h2>
@@ -551,7 +563,7 @@ function PublishingTab({ data, update }: any) {
   );
 }
 
-function VersioningTab({ data, update }: any) {
+function VersioningTab({ data, update }: TabProps) {
   return (
     <div className="space-y-6 max-w-3xl">
       <h2 className="text-lg font-medium text-slate-900 mb-4">Version Control</h2>

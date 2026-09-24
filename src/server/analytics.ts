@@ -140,7 +140,7 @@ export async function getTimelineData(range: DateRange) {
 
   const results = await db.toolUsage.aggregateRaw({
     pipeline
-  }) as unknown as any[];
+  }) as unknown as { _id: string; count: number }[];
   
   // Parse the raw results
   const formatted = results.map(r => ({

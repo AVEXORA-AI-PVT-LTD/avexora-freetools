@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
 export function ToolActions({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);

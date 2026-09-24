@@ -73,6 +73,12 @@ function applyUpdate(row: CounterRow, data: Record<string, unknown>) {
 }
 
 const prismaDouble = {
+  // The admin-managed plan table, unseeded: plans resolve to the hardcoded
+  // defaults, which is what every assertion below is written against.
+  plan: {
+    findUnique: async () => null,
+    findMany: async () => [],
+  },
   subscription: {
     findUnique: async ({ where }: { where: { userId: string } }) =>
       db.subscriptions.get(where.userId) ?? null,
@@ -147,7 +153,7 @@ const prismaDouble = {
 
 let signedInUser: string | null = "user-1";
 
-vi.mock("@/server/db", () => ({ prisma: prismaDouble }));
+vi.mock("@/server/db", () => ({ prisma: prismaDouble, isDatabaseConfigured: () => true }));
 vi.mock("@/server/auth", () => ({
   currentUserId: async () => signedInUser,
   auth: async () => (signedInUser ? { user: { id: signedInUser } } : null),

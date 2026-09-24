@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import PlanForm from "./PlanForm";
 
 export default async function EditPlanPage({ params }: { params: Promise<{ planId: string }> }) {
-  await requireAdminAuth("settings.view" as any);
+  await requireAdminAuth("settings.view");
   const { planId } = await params;
   
   let plan = null;

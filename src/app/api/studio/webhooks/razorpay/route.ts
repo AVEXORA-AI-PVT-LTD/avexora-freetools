@@ -25,11 +25,22 @@ interface RazorpaySubscriptionEntity {
   notes?: unknown;
 }
 
+/** The fields of Razorpay's payment entity the ledger records. */
+interface RazorpayPaymentEntity {
+  id: string;
+  /** In paise. */
+  amount: number;
+  currency?: string | null;
+  status?: string;
+  /** Unix seconds. */
+  created_at?: number | null;
+}
+
 interface RazorpayWebhookPayload {
   event?: string;
   payload?: {
     subscription?: { entity?: RazorpaySubscriptionEntity };
-    payment?: { entity?: unknown };
+    payment?: { entity?: RazorpayPaymentEntity };
   };
 }
 
@@ -110,7 +121,7 @@ export async function POST(req: Request) {
   
   // Sync Payment Ledger
   if (event === "subscription.charged" && payload.payload?.payment?.entity) {
-    const paymentEntity = payload.payload.payment.entity as any;
+    const paymentEntity = payload.payload.payment.entity;
     
     // We must find the Subscription row by razorpaySubscriptionId or userId
     const sub = await prisma.subscription.findUnique({ where: { userId } });

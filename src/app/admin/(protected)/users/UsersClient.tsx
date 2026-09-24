@@ -6,8 +6,33 @@ import { Search, Filter, Shield, MoreVertical, Ban, Trash2, Power, Eye, External
 import Link from "next/link";
 import { bulkUpdateUserStatus } from "./user-actions";
 import Image from "next/image";
+import type { Prisma } from "@prisma/client";
 
-export function UsersClient({ users, total, page, limit, initialFilters, adminRole }: any) {
+/** A user row as selected by the users admin page (page.tsx). */
+export type AdminUserRow = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    email: true;
+    image: true;
+    role: true;
+    status: true;
+    createdAt: true;
+    lastActiveAt: true;
+    subscription: { select: { plan: true; status: true } };
+  };
+}>;
+
+interface UsersClientProps {
+  users: AdminUserRow[];
+  total: number;
+  page: number;
+  limit: number;
+  initialFilters: { q: string; role: string; status: string };
+  adminRole: string;
+}
+
+export function UsersClient({ users, total, page, limit, initialFilters, adminRole }: UsersClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { showConfirm, showAlert } = useDialog();
@@ -39,7 +64,7 @@ export function UsersClient({ users, total, page, limit, initialFilters, adminRo
 
   const handleSelectAll = () => {
     if (selectedIds.size === users.length) setSelectedIds(new Set());
-    else setSelectedIds(new Set(users.map((u: any) => u.id)));
+    else setSelectedIds(new Set(users.map((u) => u.id)));
   };
 
   const toggleSelect = (id: string) => {
@@ -59,8 +84,8 @@ export function UsersClient({ users, total, page, limit, initialFilters, adminRo
         setSelectedIds(new Set());
         showAlert("Success", "Bulk action applied.");
         router.refresh();
-      } catch (e: any) {
-        showAlert("Error", e.message);
+      } catch (e) {
+        showAlert("Error", e instanceof Error ? e.message : String(e));
       }
     });
   };
@@ -127,7 +152,7 @@ export function UsersClient({ users, total, page, limit, initialFilters, adminRo
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
-            {users.map((u: any) => (
+            {users.map((u) => (
               <tr key={u.id} className="bg-white hover:bg-slate-50">
                 <td className="px-4 py-4">
                   <input type="checkbox" checked={selectedIds.has(u.id)} onChange={() => toggleSelect(u.id)} className="rounded text-orange-600 focus:ring-orange-500" />

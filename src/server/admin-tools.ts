@@ -1,4 +1,4 @@
-import { prisma } from "@/server/db";
+import { isDatabaseConfigured, prisma } from "@/server/db";
 import { allTools } from "@/tools/registry";
 import type { CategorySlug } from "@/types/tools";
 import type { Prisma } from "@prisma/client";
@@ -81,11 +81,74 @@ export async function getAdminToolsData(): Promise<AdminTool[]> {
 
 import { INITIAL_TOOL_FORM_DATA, type ToolFormData } from "@/types/admin-tool-form";
 
+// Shapes of the JSON blobs written to ToolConfig by saveToolData (editor-actions.ts).
+type StoredToolContent = Partial<
+  Pick<
+    ToolFormData,
+    | "pageHeading"
+    | "introduction"
+    | "howToUse"
+    | "steps"
+    | "examples"
+    | "faqs"
+    | "relatedTools"
+    | "disclaimer"
+    | "formula"
+  >
+>;
+
+type StoredRuntimeConfig = Partial<
+  Pick<
+    ToolFormData,
+    | "loginRequired"
+    | "dailyLimit"
+    | "monthlyLimit"
+    | "rateLimit"
+    | "fileUploadEnabled"
+    | "maxUploadSizeMB"
+    | "allowedMimeTypes"
+    | "allowedExtensions"
+    | "apiRequired"
+    | "maintenanceMode"
+  >
+>;
+
+type StoredTechnicalConfig = Partial<
+  Pick<
+    ToolFormData,
+    | "route"
+    | "internalServiceId"
+    | "apiEndpointId"
+    | "version"
+    | "executionTimeoutMs"
+    | "maxConcurrentJobs"
+    | "featureFlags"
+  >
+>;
+
+type StoredPublishingConfig = Partial<Pick<ToolFormData, "publishDate" | "unpublishDate">>;
+
+interface StoredSeoMetadata {
+  title?: string;
+  description?: string;
+  focusKeyword?: string;
+  secondaryKeywords?: string[];
+  canonicalUrl?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  schemaType?: string;
+  index?: boolean;
+}
+
 export async function getToolFormData(slug: string): Promise<ToolFormData | null> {
-  const [config, dynamicTool] = await Promise.all([
-    prisma.toolConfig.findUnique({ where: { toolSlug: slug } }),
-    prisma.dynamicTool.findUnique({ where: { slug } }),
-  ]);
+  // Without a database, a tool is exactly its static definition.
+  const [config, dynamicTool] = isDatabaseConfigured()
+    ? await Promise.all([
+        prisma.toolConfig.findUnique({ where: { toolSlug: slug } }),
+        prisma.dynamicTool.findUnique({ where: { slug } }),
+      ])
+    : [null, null];
 
   const staticTool = allTools.find((t) => t.slug === slug);
 
@@ -110,7 +173,7 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     formula: staticTool?.formula || "",
     examples: staticTool?.example ? [staticTool.example] : [],
     relatedTools: staticTool?.related || [],
-    faqs: staticTool?.faq?.map((f: any, i: number) => ({
+    faqs: staticTool?.faq?.map((f, i) => ({
       id: String(i),
       question: f.question,
       answer: f.answer,
@@ -118,7 +181,7 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
       active: true,
     })) || [],
     // Add steps mapping
-    steps: staticTool?.steps?.map((s: any) => typeof s === 'string' ? s : s.title) || [],
+    steps: staticTool?.steps?.map((s) => typeof s === 'string' ? s : s.title) || [],
   };
 
   if (config) {
@@ -132,11 +195,11 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     merged.status = config.status ? "Published" : "Draft";
     merged.currentVersion = config.currentVersion || merged.currentVersion;
     merged.featured = config.featured;
-    merged.pricing = (config.pricing as any) || merged.pricing;
+    merged.pricing = (config.pricing as ToolFormData["pricing"]) || merged.pricing;
     merged.homepageVisible = config.homepageVisible;
 
     if (config.content && typeof config.content === "object") {
-      const c = config.content as any;
+      const c = config.content as StoredToolContent;
       merged.pageHeading = c.pageHeading ?? merged.pageHeading;
       merged.introduction = c.introduction ?? merged.introduction;
       merged.howToUse = c.howToUse ?? merged.howToUse;
@@ -149,7 +212,7 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     }
 
     if (config.runtimeConfig && typeof config.runtimeConfig === "object") {
-      const r = config.runtimeConfig as any;
+      const r = config.runtimeConfig as StoredRuntimeConfig;
       merged.loginRequired = r.loginRequired ?? merged.loginRequired;
       merged.dailyLimit = r.dailyLimit ?? merged.dailyLimit;
       merged.monthlyLimit = r.monthlyLimit ?? merged.monthlyLimit;
@@ -163,7 +226,7 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     }
 
     if (config.technicalConfig && typeof config.technicalConfig === "object") {
-      const t = config.technicalConfig as any;
+      const t = config.technicalConfig as StoredTechnicalConfig;
       merged.route = t.route ?? merged.route;
       merged.internalServiceId = t.internalServiceId ?? merged.internalServiceId;
       merged.apiEndpointId = t.apiEndpointId ?? merged.apiEndpointId;
@@ -174,7 +237,7 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     }
 
     if (config.seoMetadata && typeof config.seoMetadata === "object") {
-      const s = config.seoMetadata as any;
+      const s = config.seoMetadata as StoredSeoMetadata;
       merged.seoTitle = s.title ?? merged.seoTitle;
       merged.metaDescription = s.description ?? merged.metaDescription;
       merged.focusKeyword = s.focusKeyword ?? merged.focusKeyword;
@@ -188,7 +251,7 @@ export async function getToolFormData(slug: string): Promise<ToolFormData | null
     }
 
     if (config.publishingConfig && typeof config.publishingConfig === "object") {
-      const p = config.publishingConfig as any;
+      const p = config.publishingConfig as StoredPublishingConfig;
       merged.publishDate = p.publishDate ?? merged.publishDate;
       merged.unpublishDate = p.unpublishDate ?? merged.unpublishDate;
     }

@@ -4,8 +4,33 @@ import { useDialog } from "@/components/admin/DialogProvider";
 import { updateUserStatus, updateUserRole, deleteUser, revokeUserSessions, changeUserPlan } from "../user-actions";
 import { ShieldAlert, Trash2, Shield, Activity, CreditCard, Power, Lock, Key } from "lucide-react";
 import Image from "next/image";
+import type { Prisma } from "@prisma/client";
 
-export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
+type UserDetail = Prisma.UserGetPayload<{
+  include: {
+    subscription: true;
+    accounts: true;
+    sessions: true;
+    auditLogs: true;
+    _count: { select: { toolUsages: true } };
+  };
+}>;
+
+interface TopTool {
+  slug: string;
+  count: number;
+}
+
+interface UserDetailClientProps {
+  user: UserDetail;
+  topTools: TopTool[];
+  adminRole: string;
+  adminId: string;
+}
+
+const errorMessage = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
+export function UserDetailClient({ user, topTools, adminRole, adminId }: UserDetailClientProps) {
   const [activeTab, setActiveTab] = useState("profile");
   const { showConfirm, showAlert } = useDialog();
   const [isPending, startTransition] = useTransition();
@@ -23,8 +48,8 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
         await updateUserStatus(user.id, newStatus, `Status changed by admin`);
         setStatus(newStatus);
         showAlert("Success", "User status updated.");
-      } catch (e: any) {
-        showAlert("Error", e.message);
+      } catch (e) {
+        showAlert("Error", errorMessage(e));
       }
     });
   };
@@ -36,8 +61,8 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
       try {
         await changeUserPlan(user.id, newPlan);
         showAlert("Success", "Plan changed successfully.");
-      } catch (err: any) {
-        showAlert("Error", err.message);
+      } catch (err) {
+        showAlert("Error", errorMessage(err));
       }
     });
   };
@@ -51,8 +76,8 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
         await updateUserRole(user.id, newRole);
         setRole(newRole);
         showAlert("Success", "User role updated.");
-      } catch (err: any) {
-        showAlert("Error", err.message);
+      } catch (err) {
+        showAlert("Error", errorMessage(err));
         e.target.value = role; // Reset
       }
     });
@@ -66,8 +91,8 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
         await deleteUser(user.id);
         setStatus("DELETED");
         showAlert("Success", "User deleted.");
-      } catch (e: any) {
-        showAlert("Error", e.message);
+      } catch (e) {
+        showAlert("Error", errorMessage(e));
       }
     });
   };
@@ -77,8 +102,8 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
       try {
         await revokeUserSessions(user.id);
         showAlert("Success", "All sessions revoked.");
-      } catch (e: any) {
-        showAlert("Error", e.message);
+      } catch (e) {
+        showAlert("Error", errorMessage(e));
       }
     });
   };
@@ -142,7 +167,7 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
               <div>
                 <h4 className="text-sm font-medium text-slate-500 mb-1">Account Connections</h4>
                 <div className="flex gap-2 mt-1">
-                  {user.accounts.length > 0 ? user.accounts.map((acc: any) => (
+                  {user.accounts.length > 0 ? user.accounts.map((acc) => (
                     <span key={acc.provider} className="inline-flex items-center rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 capitalize">
                       {acc.provider}
                     </span>
@@ -166,7 +191,7 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
               <div>
                 <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-4">Most Used Tools</h4>
                 <div className="space-y-3">
-                  {topTools.map((t: any) => (
+                  {topTools.map((t) => (
                     <div key={t.slug} className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50">
                       <span className="font-medium text-slate-800">{t.slug}</span>
                       <span className="bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-bold">{t.count} uses</span>
@@ -249,13 +274,13 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: any) {
             <h3 className="text-lg font-bold text-slate-900 border-b pb-2">Recent Security & Admin Activity</h3>
             {user.auditLogs.length > 0 ? (
               <div className="space-y-4">
-                {user.auditLogs.map((log: any) => (
+                {user.auditLogs.map((log) => (
                   <div key={log.id} className="flex gap-4 p-4 rounded-lg border border-slate-100 bg-slate-50/50">
                     <div className="mt-1"><Activity className="w-4 h-4 text-slate-400" /></div>
                     <div>
                       <p className="text-sm font-medium text-slate-900">{log.action}</p>
                       <p className="text-xs text-slate-500 mt-1">By {log.actorRole} ({log.actorId}) on {new Date(log.createdAt).toLocaleString()}</p>
-                      {log.metadata && <pre className="mt-2 text-[10px] bg-slate-100 p-2 rounded text-slate-600 font-mono">{JSON.stringify(log.metadata, null, 2)}</pre>}
+                      {!!log.metadata && <pre className="mt-2 text-[10px] bg-slate-100 p-2 rounded text-slate-600 font-mono">{JSON.stringify(log.metadata, null, 2)}</pre>}
                     </div>
                   </div>
                 ))}

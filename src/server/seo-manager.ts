@@ -21,6 +21,15 @@ export const SeoMetadataSchema = z.object({
 
 export type SeoMetadata = z.infer<typeof SeoMetadataSchema>;
 
+/** Page-level defaults used when no tool/category/global override sets a field. */
+export interface SeoFallbackMetadata {
+  title: string;
+  description: string;
+  canonical: string;
+  siteName: string;
+  ogImage: string;
+}
+
 export const getToolSeoOverride = unstable_cache(
   async (toolSlug: string): Promise<SeoMetadata | null> => {
     try {
@@ -74,13 +83,13 @@ export const getGlobalSeoOverride = unstable_cache(
 export async function resolveToolSeo(
   toolSlug: string,
   categorySlug: string,
-  fallbackMetadata: any
+  fallbackMetadata: SeoFallbackMetadata
 ) {
   const toolSeo = await getToolSeoOverride(toolSlug);
   const catSeo = await getCategorySeoOverride(categorySlug);
   const globalSeo = await getGlobalSeoOverride();
 
-  const resolveField = (field: keyof SeoMetadata) => {
+  const resolveField = <K extends keyof SeoMetadata>(field: K): SeoMetadata[K] | null => {
     if (toolSeo && toolSeo[field]) return toolSeo[field];
     if (catSeo && catSeo[field]) return catSeo[field];
     if (globalSeo && globalSeo[field]) return globalSeo[field];
@@ -131,12 +140,12 @@ export async function resolveToolSeo(
 
 export async function resolveCategorySeo(
   categorySlug: string,
-  fallbackMetadata: any
+  fallbackMetadata: SeoFallbackMetadata
 ) {
   const catSeo = await getCategorySeoOverride(categorySlug);
   const globalSeo = await getGlobalSeoOverride();
 
-  const resolveField = (field: keyof SeoMetadata) => {
+  const resolveField = <K extends keyof SeoMetadata>(field: K): SeoMetadata[K] | null => {
     if (catSeo && catSeo[field]) return catSeo[field];
     if (globalSeo && globalSeo[field]) return globalSeo[field];
     return null;

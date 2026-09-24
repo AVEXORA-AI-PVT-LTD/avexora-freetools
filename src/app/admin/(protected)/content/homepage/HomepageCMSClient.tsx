@@ -5,8 +5,19 @@ import { reorderHomepageSections, saveHomepageSection } from "./homepage-actions
 import { GripVertical, Save, Edit, Eye, Power } from "lucide-react";
 import { HomepageSection, SectionKey } from "@/server/homepage-service";
 import { SectionEditor } from "./SectionEditor";
+import type { getAllCategoriesAdmin } from "@/server/category-service";
 
-export function HomepageCMSClient({ initialSections, allCategories, allTools }: { initialSections: HomepageSection[], allCategories: any[], allTools: any[] }) {
+type AdminCategory = Awaited<ReturnType<typeof getAllCategoriesAdmin>>[number];
+
+interface SelectableTool {
+  slug: string;
+  name?: string;
+  toolSlug?: string;
+  categorySlug: string;
+  status: boolean;
+}
+
+export function HomepageCMSClient({ initialSections, allCategories, allTools }: { initialSections: HomepageSection[], allCategories: AdminCategory[], allTools: SelectableTool[] }) {
   const [sections, setSections] = useState([...initialSections].sort((a,b) => a.sortOrder - b.sortOrder));
   const { showAlert } = useDialog();
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
@@ -61,8 +72,9 @@ export function HomepageCMSClient({ initialSections, allCategories, allTools }: 
       await saveHomepageSection(updated);
     } catch(err) {
       // revert
-      newSections[idx] = section;
-      setSections([...newSections]);
+      const reverted = [...newSections];
+      reverted[idx] = section;
+      setSections(reverted);
       showAlert("Error", "Failed to toggle section.");
     }
   };

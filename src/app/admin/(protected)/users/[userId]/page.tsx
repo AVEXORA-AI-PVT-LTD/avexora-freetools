@@ -40,7 +40,7 @@ export default async function UserDetailPage({ params }: { params: Promise<{ use
   if (!user) notFound();
 
   // Basic tool usage aggregation if they have usages
-  let topTools: any[] = [];
+  let topTools: { slug: string; count: number }[] = [];
   if (user._count.toolUsages > 0) {
     const usageGroups = await prisma.toolUsage.groupBy({
       by: ['toolSlug'],

@@ -1,4 +1,4 @@
-import { prisma } from "@/server/db";
+import { isDatabaseConfigured, prisma } from "@/server/db";
 
 export type SectionKey = 
   | "hero" 
@@ -10,6 +10,38 @@ export type SectionKey =
   | "categories" 
   | "footer";
 
+// A type alias (not an interface) so it stays assignable to Prisma's JSON input type.
+export type HomepageFeature = {
+  icon: string;
+  title: string;
+  description: string;
+};
+
+export type HomepageLink = {
+  label: string;
+  url: string;
+};
+
+/** Per-section settings stored in `HomepageConfig.config`; which keys apply depends on the section. */
+export type HomepageSectionConfig = {
+  searchPlaceholder?: string;
+  ctaEnabled?: boolean;
+  ctaText?: string;
+  ctaUrl?: string;
+  label?: string;
+  features?: HomepageFeature[];
+  pricingText?: string;
+  image?: string;
+  maxItems?: number;
+  mode?: string;
+  tools?: string[];
+  categories?: string[];
+  navigation?: HomepageLink[];
+  socialLinks?: HomepageLink[];
+  legalLinks?: HomepageLink[];
+  copyright?: string;
+};
+
 export interface HomepageSection {
   id?: string;
   sectionKey: SectionKey;
@@ -17,7 +49,7 @@ export interface HomepageSection {
   sortOrder: number;
   heading: string;
   description: string;
-  config: any;
+  config: HomepageSectionConfig;
 }
 
 export const DEFAULT_HOMEPAGE_CONFIG: HomepageSection[] = [
@@ -107,9 +139,10 @@ export const DEFAULT_HOMEPAGE_CONFIG: HomepageSection[] = [
 ];
 
 export async function getHomepageSections(): Promise<HomepageSection[]> {
-  const dbConfigs = await prisma.homepageConfig.findMany({
-    orderBy: { sortOrder: 'asc' }
-  });
+  // Without a database the defaults above are the homepage.
+  const dbConfigs = isDatabaseConfigured()
+    ? await prisma.homepageConfig.findMany({ orderBy: { sortOrder: 'asc' } })
+    : [];
 
   const dbMap = new Map(dbConfigs.map(c => [c.sectionKey, c]));
 
@@ -123,7 +156,7 @@ export async function getHomepageSections(): Promise<HomepageSection[]> {
       sortOrder: override.sortOrder,
       heading: override.heading ?? defaultConfig.heading,
       description: override.description ?? defaultConfig.description,
-      config: override.config ? (override.config as any) : defaultConfig.config
+      config: override.config ? (override.config as HomepageSectionConfig) : defaultConfig.config
     };
   });
 

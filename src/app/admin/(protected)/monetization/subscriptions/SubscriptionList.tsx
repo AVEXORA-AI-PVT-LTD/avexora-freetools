@@ -5,15 +5,29 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, Filter, MoreVertical, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
+import type { Plan, Subscription, User } from "@prisma/client";
 
-export default function SubscriptionList({ subscriptions, total, totalPages, currentPage, plans, currentQuery }: any) {
+type SubscriptionWithUser = Subscription & {
+  user: Pick<User, "id" | "name" | "email" | "image">;
+};
+
+interface SubscriptionListProps {
+  subscriptions: SubscriptionWithUser[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+  plans: Pick<Plan, "slug" | "name">[];
+  currentQuery: { q: string; status: string; plan: string };
+}
+
+export default function SubscriptionList({ subscriptions, total, totalPages, currentPage, plans, currentQuery }: SubscriptionListProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   
   const [q, setQ] = useState(currentQuery.q);
   
-  const updateQuery = (updates: any) => {
+  const updateQuery = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, value]) => {
       if (value) {
@@ -49,7 +63,7 @@ export default function SubscriptionList({ subscriptions, total, totalPages, cur
           className="block rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6"
         >
           <option value="all">All Plans</option>
-          {plans.map((p: any) => (
+          {plans.map((p) => (
             <option key={p.slug} value={p.slug}>{p.name}</option>
           ))}
         </select>
@@ -79,7 +93,7 @@ export default function SubscriptionList({ subscriptions, total, totalPages, cur
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-slate-200">
-            {subscriptions.map((sub: any) => (
+            {subscriptions.map((sub) => (
               <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">

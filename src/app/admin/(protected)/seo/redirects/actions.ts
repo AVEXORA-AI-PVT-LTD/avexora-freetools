@@ -15,8 +15,8 @@ function validateDestination(dest: string) {
     if (!['http:', 'https:'].includes(url.protocol)) {
       throw new Error(`Invalid protocol: ${url.protocol}. Only http and https are allowed for external URLs.`);
     }
-  } catch (e: any) {
-    throw new Error(e.message || "Invalid destination URL format.");
+  } catch (e) {
+    throw new Error((e instanceof Error ? e.message : String(e)) || "Invalid destination URL format.");
   }
 }
 

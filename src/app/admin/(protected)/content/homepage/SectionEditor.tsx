@@ -4,11 +4,20 @@ import { ArrowLeft, Save, Plus, Trash2, GripVertical } from "lucide-react";
 import { HomepageSection, SectionKey } from "@/server/homepage-service";
 import { saveHomepageSection } from "./homepage-actions";
 import { useDialog } from "@/components/admin/DialogProvider";
+import type { getAllCategoriesAdmin } from "@/server/category-service";
+
+/** Tool entries assembled for the homepage selectors (static registry merged with DB overrides). */
+interface HomepageToolOption {
+  slug: string;
+  name?: string;
+  categorySlug: string;
+  status: boolean;
+}
 
 export function SectionEditor({ section, allCategories, allTools, onBack, onSaved }: { 
   section: HomepageSection, 
-  allCategories: any[], 
-  allTools: any[],
+  allCategories: Awaited<ReturnType<typeof getAllCategoriesAdmin>>, 
+  allTools: HomepageToolOption[],
   onBack: () => void,
   onSaved: (s: HomepageSection) => void
 }) {
@@ -24,13 +33,13 @@ export function SectionEditor({ section, allCategories, allTools, onBack, onSave
           showAlert("Success", "Section configuration saved.");
           onSaved(data);
         }
-      } catch (err: any) {
-        showAlert("Error", err.message || "Failed to save section.");
+      } catch (err) {
+        showAlert("Error", (err instanceof Error ? err.message : String(err)) || "Failed to save section.");
       }
     });
   };
 
-  const updateConfig = (key: string, value: any) => {
+  const updateConfig = (key: string, value: string | number) => {
     setData(prev => ({ ...prev, config: { ...prev.config, [key]: value } }));
   };
 

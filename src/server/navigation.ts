@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { prisma } from "@/server/db";
+import { isDatabaseConfigured, prisma } from "@/server/db";
 
 export type NavLocation = "HEADER" | "FOOTER";
 
@@ -26,6 +26,8 @@ const safeHref = (href: string) => {
 };
 
 async function fetchNavigation(location: NavLocation): Promise<NavigationLinkItem[]> {
+  // Admin-managed links only; the layout's static links render regardless.
+  if (!isDatabaseConfigured()) return [];
   try {
     const links = await prisma.navigationLink.findMany({
       where: {
@@ -38,8 +40,8 @@ async function fetchNavigation(location: NavLocation): Promise<NavigationLinkIte
     });
 
     return links
-      .filter((link: any) => safeHref(link.href))
-      .map((link: any) => ({
+      .filter((link) => safeHref(link.href))
+      .map((link) => ({
         id: link.id,
         label: link.label.trim(),
         href: link.href.trim(),
