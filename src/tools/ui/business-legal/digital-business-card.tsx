@@ -11,6 +11,7 @@ import {
   DEFAULT_CARD_COLORS,
   LIMITS,
   normalizeUrl,
+  PHOTO_VARIANTS,
   SOCIAL_META,
   SOCIAL_NETWORKS,
   validateBusinessCard,
@@ -19,19 +20,21 @@ import {
   type QrTarget,
   type SocialNetwork,
 } from "@/tools/compute/legal/business-card";
+import { ACCEPTED_IMAGE, readLogo, readPhoto } from "./business-card-images";
+import { SaveSharePanel, type SavedCard } from "./business-card-save-panel";
 
 /**
  * Digital Business Card Generator.
  *
  * The live preview is the exported HTML itself, rendered in a sandboxed
- * iframe, so what you see is exactly the file you download. Everything runs in
- * the browser; the form is kept as a local draft so the sign-in round trip for
- * downloads never loses what was typed.
+ * iframe, so what you see is exactly the file you download or the page a
+ * saved card serves. Designing and downloading run entirely in the browser;
+ * saving and sharing a link (paid plans) goes through /api/cards. The form is
+ * kept as a local draft so the sign-in round trip never loses what was typed.
  */
 
 const DRAFT_KEY = "avexora:digital-business-card:draft";
 const PREVIEW_DEBOUNCE_MS = 350;
-const PHOTO_SIZE = 320;
 
 const EMPTY: BusinessCardInput = {
   name: "",
@@ -47,6 +50,8 @@ const EMPTY: BusinessCardInput = {
   ...DEFAULT_CARD_COLORS,
   theme: "light",
   photo: undefined,
+  logo: undefined,
+  photoMotion: true,
 };
 
 /** Brand palettes to start from; the colour pickers override them freely. */
@@ -60,83 +65,66 @@ const PRESETS: { name: string; primaryColor: string; accentColor: string }[] = [
 
 const PREVIEW_SAMPLE = { name: "Your Name", title: "Your Title", company: "Company Name" };
 
-function loadDraft(): BusinessCardInput {
+interface Draft {
+  input: BusinessCardInput;
+  qrTarget: QrTarget;
+  whatsappSame: boolean;
+  saved: SavedCard | null;
+}
+
+const EMPTY_DRAFT: Draft = { input: EMPTY, qrTarget: "contact", whatsappSame: false, saved: null };
+
+function loadDraft(): Draft {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
-    if (!raw) return EMPTY;
-    const parsed = JSON.parse(raw) as Partial<BusinessCardInput>;
-    return { ...EMPTY, ...parsed, socials: { ...parsed.socials } };
+    if (!raw) return EMPTY_DRAFT;
+    const parsed = JSON.parse(raw) as Partial<Draft> & Partial<BusinessCardInput>;
+    // Drafts from the first release stored the card fields at the top level.
+    const input = (parsed.input ?? parsed) as Partial<BusinessCardInput>;
+    return {
+      input: { ...EMPTY, ...input, socials: { ...input.socials } },
+      qrTarget: parsed.qrTarget ?? "contact",
+      whatsappSame: parsed.whatsappSame ?? false,
+      saved: parsed.saved ?? null,
+    };
   } catch {
-    return EMPTY;
+    return EMPTY_DRAFT;
   }
 }
 
-function saveDraft(input: BusinessCardInput) {
+function saveDraft(draft: Draft) {
   try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(input));
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
   } catch {
     // Storage full or blocked (private mode): the draft is a convenience only.
   }
 }
 
-/** Centre-crop and downscale a photo to a small JPEG data URL. */
-function readPhoto(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      const side = Math.min(img.naturalWidth, img.naturalHeight);
-      const canvas = document.createElement("canvas");
-      canvas.width = PHOTO_SIZE;
-      canvas.height = PHOTO_SIZE;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        URL.revokeObjectURL(url);
-        reject(new Error("canvas"));
-        return;
-      }
-      ctx.drawImage(
-        img,
-        (img.naturalWidth - side) / 2,
-        (img.naturalHeight - side) / 2,
-        side,
-        side,
-        0,
-        0,
-        PHOTO_SIZE,
-        PHOTO_SIZE,
-      );
-      URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL("image/jpeg", 0.85));
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("decode"));
-    };
-    img.src = url;
-  });
-}
-
-function qrText(input: BusinessCardInput, target: QrTarget): string | null {
+/** What the QR code encodes; null when it can't be built yet. */
+function qrText(input: BusinessCardInput, target: QrTarget, savedUrl: string | undefined): string | null {
   if (target === "website") return normalizeUrl(input.website);
+  if (target === "card") return savedUrl ?? null;
   // The photo would make the code too dense to scan; the .vcf download keeps it.
   return buildVCard(input, { includePhoto: false });
 }
 
 const sectionTitle = "text-sm font-semibold text-slate-900";
 const hintCls = "mt-1 text-xs text-slate-500";
+const smallLink = "block text-xs font-medium text-slate-500 hover:text-red-600";
 
 export default function DigitalBusinessCard() {
   const id = useId();
-  const [input, setInput] = useState<BusinessCardInput>(loadDraft);
-  const [qrTarget, setQrTarget] = useState<QrTarget>("contact");
-  const [whatsappSame, setWhatsappSame] = useState(false);
+  const [initial] = useState(loadDraft);
+  const [input, setInput] = useState<BusinessCardInput>(initial.input);
+  const [qrTarget, setQrTarget] = useState<QrTarget>(initial.qrTarget);
+  const [whatsappSame, setWhatsappSame] = useState(initial.whatsappSame);
+  const [saved, setSaved] = useState<SavedCard | null>(initial.saved);
   const [previewHtml, setPreviewHtml] = useState("");
   const [replayKey, setReplayKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const firstPreview = useRef(true);
-  const { download, downloadOne } = useAuthDownload();
+  const { download, downloadOne, requireAuth } = useAuthDownload();
   const { restored } = useRestoredDownload();
 
   const card = useMemo<BusinessCardInput>(
@@ -150,8 +138,8 @@ export default function DigitalBusinessCard() {
     setInput((prev) => ({ ...prev, socials: { ...prev.socials, [network]: value } }));
 
   useEffect(() => {
-    saveDraft(input);
-  }, [input]);
+    saveDraft({ input, qrTarget, whatsappSame, saved });
+  }, [input, qrTarget, whatsappSame, saved]);
 
   // Rebuild the preview shortly after typing stops. The entrance animation only
   // plays on the first render and on "Replay" so every keystroke doesn't restart it.
@@ -165,7 +153,7 @@ export default function DigitalBusinessCard() {
         company: card.name.trim() ? card.company : card.company || PREVIEW_SAMPLE.company,
       };
       let qrSvg: string | undefined;
-      const text = qrText(shown, qrTarget);
+      const text = qrText(shown, qrTarget, saved?.url);
       if (text) {
         try {
           const QRCode = (await import("qrcode")).default;
@@ -175,52 +163,69 @@ export default function DigitalBusinessCard() {
         }
       }
       if (!alive) return;
-      setPreviewHtml(buildCardHtml(shown, { qrSvg, qrTarget, entrance: firstPreview.current }));
+      setPreviewHtml(buildCardHtml(shown, { qrSvg, qrTarget, shareUrl: saved?.url, entrance: firstPreview.current }));
       firstPreview.current = false;
     }, firstPreview.current ? 0 : PREVIEW_DEBOUNCE_MS);
     return () => {
       alive = false;
       clearTimeout(timer);
     };
-  }, [card, qrTarget, replayKey]);
+  }, [card, qrTarget, saved, replayKey]);
 
   const replay = () => {
     firstPreview.current = true;
     setReplayKey((k) => k + 1);
   };
 
-  const onPhoto = async (file: File | undefined) => {
+  const onImage = async (key: "photo" | "logo", file: File | undefined) => {
     if (!file) return;
-    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+    if (!ACCEPTED_IMAGE.test(file.type)) {
       setError("Choose a PNG, JPEG or WebP image.");
       return;
     }
     try {
-      set("photo", await readPhoto(file));
+      const dataUrl = key === "photo" ? await readPhoto(file) : await readLogo(file);
+      if (dataUrl.length > (key === "photo" ? LIMITS.photoBytes : LIMITS.logoBytes)) {
+        setError(`That ${key} is too detailed to embed — try a smaller or simpler image.`);
+        return;
+      }
+      set(key, dataUrl);
       setError(null);
     } catch {
       setError("That image couldn't be read — try another file.");
     }
   };
 
+  const check = (): string | null => {
+    const problem = validateBusinessCard(card);
+    if (problem) return problem;
+    if (qrTarget === "website" && !normalizeUrl(card.website)) {
+      return "Add your website, or set the QR code to save your contact instead.";
+    }
+    return null;
+  };
+
   /** Validates, then builds every export; null (with the error shown) if the card isn't ready. */
   const buildExports = async () => {
-    const problem = validateBusinessCard(card);
+    const problem = check();
     if (problem) {
       setError(problem);
       return null;
     }
-    if (qrTarget === "website" && !normalizeUrl(card.website)) {
-      setError("Add your website, or set the QR code to save your contact instead.");
+    const text = qrText(card, qrTarget, saved?.url);
+    if (!text) {
+      setError("Save the card first to put its link in the QR code, or choose another QR option.");
       return null;
     }
     setError(null);
     const QRCode = (await import("qrcode")).default;
-    const text = qrText(card, qrTarget)!;
     const qrSvg = await QRCode.toString(text, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
     const qrPng = await (await fetch(await QRCode.toDataURL(text, { width: 1024, margin: 2 }))).blob();
     return {
-      html: { blob: new Blob([buildCardHtml(card, { qrSvg, qrTarget })], { type: "text/html" }), filename: cardFilename(card.name, "html") },
+      html: {
+        blob: new Blob([buildCardHtml(card, { qrSvg, qrTarget, shareUrl: saved?.url })], { type: "text/html" }),
+        filename: cardFilename(card.name, "html"),
+      },
       vcf: { blob: new Blob([buildVCard(card)], { type: "text/vcard" }), filename: cardFilename(card.name, "vcf") },
       png: { blob: qrPng, filename: cardFilename(card.name, "png") },
     };
@@ -238,10 +243,20 @@ export default function DigitalBusinessCard() {
     }
   };
 
-  const reset = () => {
+  const startNew = () => {
     setInput(EMPTY);
     setWhatsappSame(false);
     setQrTarget("contact");
+    setSaved(null);
+    setError(null);
+    replay();
+  };
+
+  const loadSaved = (summary: SavedCard, data: BusinessCardInput) => {
+    setInput({ ...EMPTY, ...data, socials: { ...data.socials } });
+    setWhatsappSame(false);
+    setQrTarget(summary.qrTarget);
+    setSaved(summary);
     setError(null);
     replay();
   };
@@ -268,6 +283,24 @@ export default function DigitalBusinessCard() {
     </div>
   );
 
+  const upload = (key: "photo" | "logo", label: string) => (
+    <>
+      <label className={secondaryBtn + " cursor-pointer"} htmlFor={`${id}-${key}`}>
+        {input[key] ? `Change ${label}` : `Add ${label}`}
+      </label>
+      <input
+        id={`${id}-${key}`}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        className="sr-only"
+        onChange={(e) => {
+          void onImage(key, e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+    </>
+  );
+
   return (
     <div className="space-y-6">
       <RestoredDownload restored={restored} />
@@ -275,38 +308,83 @@ export default function DigitalBusinessCard() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
         <form className="space-y-8" onSubmit={(e) => e.preventDefault()} noValidate>
           <fieldset className="space-y-4">
-            <legend className={sectionTitle}>Profile</legend>
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 text-xs text-slate-400">
-                {input.photo ? (
-                  <img src={input.photo} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  "Photo"
-                )}
+            <legend className={sectionTitle}>Photo &amp; logo</legend>
+
+            <div className="space-y-3 rounded-lg border border-slate-200 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-slate-800">Your photo</p>
+                  <p className={hintCls}>Fills the whole top of the card. A landscape or head-and-shoulders photo works best.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {upload("photo", "photo")}
+                  {input.photo && (
+                    <button type="button" className={smallLink} onClick={() => set("photo", undefined)}>
+                      Remove
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="space-y-1">
-                <label className={secondaryBtn + " cursor-pointer"} htmlFor={`${id}-photo`}>
-                  {input.photo ? "Change photo or logo" : "Add photo or logo"}
-                </label>
-                <input
-                  id={`${id}-photo`}
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp"
-                  className="sr-only"
-                  onChange={(e) => {
-                    void onPhoto(e.target.files?.[0]);
-                    e.target.value = "";
-                  }}
-                />
-                {input.photo ? (
-                  <button type="button" className="block text-xs font-medium text-slate-500 hover:text-red-600" onClick={() => set("photo", undefined)}>
-                    Remove photo
+
+              {input.photo && (
+                <>
+                  <div className="grid grid-cols-5 gap-2" aria-label="The five versions of your photo">
+                    {PHOTO_VARIANTS.map((v) => (
+                      <figure key={v.id} className="space-y-1">
+                        <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+                          {/* A local data URL; next/image adds nothing here. */}
+                          <img src={input.photo} alt="" className="h-full w-full object-cover" style={{ filter: v.filter }} />
+                          {v.tint && (
+                            <span
+                              className="absolute inset-0"
+                              style={{
+                                background: `linear-gradient(135deg, ${input.primaryColor}, ${input.accentColor})`,
+                                mixBlendMode: "color",
+                                opacity: 0.85,
+                              }}
+                            />
+                          )}
+                        </div>
+                        <figcaption className="text-center text-[11px] leading-tight text-slate-500">{v.label}</figcaption>
+                      </figure>
+                    ))}
+                  </div>
+                  <label className="flex items-center gap-2 text-sm text-slate-700">
+                    <input
+                      type="checkbox"
+                      className="accent-orange-600"
+                      checked={input.photoMotion !== false}
+                      onChange={(e) => set("photoMotion", e.target.checked)}
+                    />
+                    Animate the photo: crossfade through these five versions with a slow camera move
+                  </label>
+                </>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white text-[10px] text-slate-400">
+                  {input.logo ? <img src={input.logo} alt="" className="h-full w-full object-contain p-1.5" /> : "Logo"}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-800">Company logo</p>
+                  <p className={hintCls}>Shown in the circle under the photo. PNG with a transparent background looks best.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {upload("logo", "logo")}
+                {input.logo && (
+                  <button type="button" className={smallLink} onClick={() => set("logo", undefined)}>
+                    Remove
                   </button>
-                ) : (
-                  <p className={hintCls}>Optional. Cropped to a square; without one your initials are shown.</p>
                 )}
               </div>
             </div>
+          </fieldset>
+
+          <fieldset className="space-y-4">
+            <legend className={sectionTitle}>Profile</legend>
             <div className="grid gap-4 sm:grid-cols-2">
               {field("name", "Full name", "Priya Sharma", { maxLength: LIMITS.name, autoComplete: "name" })}
               {field("title", "Designation", "Founder & CEO", { maxLength: LIMITS.title, autoComplete: "organization-title" })}
@@ -432,6 +510,9 @@ export default function DigitalBusinessCard() {
               <select id={`${id}-qr`} className={inputCls} value={qrTarget} onChange={(e) => setQrTarget(e.target.value as QrTarget)}>
                 <option value="contact">Save contact — adds you to their phone</option>
                 <option value="website">Your website</option>
+                <option value="card" disabled={!saved}>
+                  {saved ? "This card's link" : "This card's link (save the card first)"}
+                </option>
               </select>
             </div>
           </fieldset>
@@ -441,6 +522,17 @@ export default function DigitalBusinessCard() {
               {error}
             </p>
           )}
+
+          <SaveSharePanel
+            card={card}
+            qrTarget={qrTarget}
+            saved={saved}
+            onSaved={setSaved}
+            onLoad={loadSaved}
+            onNew={startNew}
+            requireAuth={requireAuth}
+            validate={check}
+          />
 
           <div className={`${panelCls} space-y-3 p-4`}>
             <p className="text-sm font-semibold text-slate-900">Download your card</p>
@@ -465,10 +557,10 @@ export default function DigitalBusinessCard() {
               </button>
             </div>
             <p className={hintCls}>
-              The .html file is your complete card in one file — upload it to your website or any static host to get a
-              shareable link. The .vcf imports straight into phone contacts.
+              Free on every plan. The .html file is your complete card in one file — host it anywhere. The .vcf imports
+              straight into phone contacts.
             </p>
-            <button type="button" className="text-xs font-medium text-slate-500 hover:text-red-600" onClick={reset}>
+            <button type="button" className={smallLink} onClick={startNew}>
               Clear the form
             </button>
           </div>
@@ -493,7 +585,7 @@ export default function DigitalBusinessCard() {
               <div className="h-[760px] animate-pulse bg-slate-100" />
             )}
           </div>
-          <p className={hintCls}>Tap the rows and buttons to try them. Links open for real in the downloaded card.</p>
+          <p className={hintCls}>Tap the rows and buttons to try them. Links open for real on the saved or downloaded card.</p>
         </aside>
       </div>
     </div>

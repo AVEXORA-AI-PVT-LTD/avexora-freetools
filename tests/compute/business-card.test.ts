@@ -7,6 +7,7 @@ import {
   DEFAULT_CARD_COLORS,
   initials,
   normalizeSocial,
+  PHOTO_VARIANTS,
   normalizeUrl,
   socialLinks,
   telHref,
@@ -110,6 +111,7 @@ describe("validateBusinessCard", () => {
     expect(validateBusinessCard(card({ primaryColor: "red;}body{display:none" }))).toMatch(/colours/);
     expect(validateBusinessCard(card({ photo: "https://evil.example/x.png" }))).toMatch(/PNG or JPEG/);
     expect(validateBusinessCard(card({ photo: PHOTO }))).toBeNull();
+    expect(validateBusinessCard(card({ logo: "data:image/svg+xml;base64,PHN2Zz4=" }))).toMatch(/logo/);
   });
 
   it("enforces the length limits", () => {
@@ -202,8 +204,49 @@ describe("buildCardHtml", () => {
     expect(html).toContain(`--primary:${DEFAULT_CARD_COLORS.primaryColor}`);
   });
 
-  it("uses the photo when valid, initials otherwise, and can skip the entrance", () => {
-    expect(buildCardHtml(card({ photo: PHOTO }))).toContain(`<img src="${PHOTO}"`);
+  it("fills the header with the photo, cycling its five versions", () => {
+    const html = buildCardHtml(card({ photo: PHOTO }));
+    expect(html).toContain('class="banner hero"');
+    expect(html).toContain(`--photo:url('${PHOTO}')`);
+    for (const v of PHOTO_VARIANTS) expect(html).toContain(`f-${v.id}`);
+    // One copy of the image however many versions animate.
+    expect(html.split(PHOTO).length - 1).toBe(1);
+    // No circle avatar when the photo is the header and there's no logo.
+    expect(html).not.toContain('class="avatar');
+    expect(html).toContain("prefers-reduced-motion");
+  });
+
+  it("shows one still photo when motion is off", () => {
+    const html = buildCardHtml(card({ photo: PHOTO, photoMotion: false }));
+    expect(html).toContain('class="f f-original base"');
+    expect(html).not.toContain("f-duotone");
+  });
+
+  it("puts the logo in the circle and ignores invalid logos", () => {
+    const html = buildCardHtml(card({ photo: PHOTO, logo: PHOTO }));
+    expect(html).toContain('class="avatar logo"');
+    expect(html).toContain(`<img src="${PHOTO}" alt="Northwind Labs logo">`);
+    expect(buildCardHtml(card({ logo: "javascript:alert(1)" }))).not.toContain("javascript:");
+  });
+
+  it("adds share metadata for saved cards, escaping the URL into the script", () => {
+    const html = buildCardHtml(card(), {
+      shareUrl: "https://tools.avexora.in/card/priya-sharma-abc123",
+      ogImageUrl: "https://tools.avexora.in/card/priya-sharma-abc123/photo",
+      noindex: true,
+      qrTarget: "card",
+      qrSvg: "<svg></svg>",
+    });
+    expect(html).toContain('<meta name="robots" content="noindex">');
+    expect(html).toContain('<link rel="canonical" href="https://tools.avexora.in/card/priya-sharma-abc123">');
+    expect(html).toContain('<meta property="og:image" content="https://tools.avexora.in/card/priya-sharma-abc123/photo">');
+    expect(html).toContain('var url="https://tools.avexora.in/card/priya-sharma-abc123"');
+    expect(html).toContain("Scan to open this card");
+    const evil = buildCardHtml(card(), { shareUrl: "https://x.test/</script><script>alert(1)</script>" });
+    expect(evil).not.toContain("</script><script>alert(1)");
+  });
+
+  it("uses initials without a photo and can skip the entrance", () => {
     expect(buildCardHtml(card())).toContain(">PS</span>");
     expect(buildCardHtml(card(), { entrance: false })).toContain('class="no-entrance"');
     expect(buildCardHtml(card({ theme: "dark" }))).toContain('data-theme="dark"');

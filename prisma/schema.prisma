@@ -67,6 +67,7 @@ model User {
   usageCounters UsageCounter[]
   toolUsages    ToolUsage[]
   contentItems  ContentItem[]
+  digitalCards  DigitalCard[]
 
   payments Payment[]
 }
@@ -603,4 +604,22 @@ model Payment {
 
   subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// A saved Digital Business Card, served publicly at /card/<slug>.
+/// `data` holds the card's BusinessCardInput (validated on write) including
+/// the photo and logo as small data URLs, so one read renders the whole page.
+model DigitalCard {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  slug      String   @unique
+  data      Json
+  qrTarget  String   @default("contact") // contact | website | card
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, updatedAt])
 }

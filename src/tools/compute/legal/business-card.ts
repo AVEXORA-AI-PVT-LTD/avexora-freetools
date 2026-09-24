@@ -22,7 +22,8 @@ export const SOCIAL_META: Record<SocialNetwork, { label: string; color: string; 
 };
 
 export type CardTheme = "light" | "dark";
-export type QrTarget = "contact" | "website";
+/** What the card's QR code opens: the contact (vCard), the website, or the saved card's own link. */
+export type QrTarget = "contact" | "website" | "card";
 
 export interface BusinessCardInput {
   name: string;
@@ -40,6 +41,10 @@ export interface BusinessCardInput {
   theme: CardTheme;
   /** A `data:image/(png|jpeg);base64,…` URL, already resized by the UI. */
   photo?: string;
+  /** Company logo, same format as the photo (PNG keeps transparency). */
+  logo?: string;
+  /** Cycle the photo through its five styled versions (see PHOTO_VARIANTS). */
+  photoMotion?: boolean;
 }
 
 export const DEFAULT_CARD_COLORS = { primaryColor: "#EA580C", accentColor: "#7C3AED" } as const;
@@ -49,7 +54,7 @@ const EMAIL_RE = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/;
 const HANDLE_RE = /^[A-Za-z0-9._-]{1,100}$/;
 const PHOTO_RE = /^data:image\/(png|jpeg);base64,([A-Za-z0-9+/=]+)$/;
 
-export const LIMITS = { name: 80, title: 80, company: 80, tagline: 160, address: 200, photoBytes: 400_000 } as const;
+export const LIMITS = { name: 80, title: 80, company: 80, tagline: 160, address: 200, photoBytes: 400_000, logoBytes: 300_000 } as const;
 
 // --- normalisers ------------------------------------------------------------
 
@@ -145,6 +150,10 @@ export function validateBusinessCard(input: BusinessCardInput): string | null {
     if (!PHOTO_RE.test(input.photo)) return "The photo must be a PNG or JPEG image.";
     if (input.photo.length > LIMITS.photoBytes) return "That photo is too large — try a smaller image.";
   }
+  if (input.logo) {
+    if (!PHOTO_RE.test(input.logo)) return "The logo must be a PNG or JPEG image.";
+    if (input.logo.length > LIMITS.logoBytes) return "That logo is too large — try a smaller image.";
+  }
   return null;
 }
 
@@ -224,6 +233,25 @@ export function buildVCard(input: BusinessCardInput, opts: { includePhoto?: bool
   return lines.map(vFold).join("\r\n") + "\r\n";
 }
 
+// --- animated photo -----------------------------------------------------------
+
+/**
+ * The five versions of the photo that the avatar cycles through. Each is a CSS
+ * treatment of the one uploaded image — so they follow the brand colours live
+ * and the image is stored once — plus its own slow camera move. The form's
+ * thumbnails use the same `filter` values, so what you pick is what you get.
+ */
+export const PHOTO_VARIANTS = [
+  { id: "original", label: "Original", filter: "none", tint: false },
+  { id: "duotone", label: "Brand duotone", filter: "grayscale(1) contrast(1.15)", tint: true },
+  { id: "mono", label: "Mono", filter: "grayscale(1) contrast(1.25) brightness(1.05)", tint: false },
+  { id: "warm", label: "Warm glow", filter: "sepia(.35) saturate(1.45) contrast(1.05) hue-rotate(-8deg)", tint: false },
+  { id: "vivid", label: "Vivid close-up", filter: "saturate(1.6) contrast(1.1)", tint: false },
+] as const;
+
+/** Seconds each version stays on screen before the next fades in. */
+const VARIANT_SECONDS = 3;
+
 // --- icons (shared by the preview and the export) ----------------------------
 
 export const CARD_ICONS: Record<ContactKind | SocialNetwork | "download" | "share" | "sun" | "moon", string> = {
@@ -273,6 +301,12 @@ const ROW_COLOR: Record<ContactKind, string> = {
 };
 
 export interface CardHtmlOptions {
+  /** Public URL of the saved card: used for Share, canonical and link previews. */
+  shareUrl?: string;
+  /** Absolute URL of the photo for link previews (og:image). */
+  ogImageUrl?: string;
+  /** Keep the page out of search engines (saved cards default to this). */
+  noindex?: boolean;
   /** SVG markup from the `qrcode` library (it emits only rects/paths). */
   qrSvg?: string;
   /** What the QR code opens, for its caption. */
@@ -301,9 +335,49 @@ export function buildCardHtml(input: BusinessCardInput, opts: CardHtmlOptions = 
   const vcfHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
 
   const role = [title && esc(title), company && `<strong>${esc(company)}</strong>`].filter(Boolean).join(" at ");
-  const avatar = input.photo && PHOTO_RE.test(input.photo)
-    ? `<img src="${input.photo}" alt="${esc(name)}">`
-    : `<span aria-hidden="true">${esc(initials(name))}</span>`;
+  const photo = input.photo && PHOTO_RE.test(input.photo) ? input.photo : null;
+  const logo = input.logo && PHOTO_RE.test(input.logo) ? input.logo : null;
+  const motion = Boolean(photo && input.photoMotion !== false);
+  // With a photo, it fills the whole header; the five versions share one copy
+  // of the image through a CSS variable. Without motion only the first shows.
+  const heroHtml = photo
+    ? `<div class="frames" role="img" aria-label="${esc(name)}" style="--photo:url('${photo}')">${(motion ? PHOTO_VARIANTS : PHOTO_VARIANTS.slice(0, 1))
+        .map((v, i) => `<i class="f f-${v.id}${i === 0 ? " base" : ""}"></i>`)
+        .join("")}</div><div class="scrim"></div>`
+    : `<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>\n<div class="shape ring"></div><div class="shape sq"></div>`;
+  // The circle carries the logo when there is one, initials when there is no
+  // photo either, and is left out when the photo already fills the header.
+  const avatar = logo
+    ? `<div class="avatar logo"><div><img src="${logo}" alt="${esc(company || name)} logo"></div></div>`
+    : photo
+      ? ""
+      : `<div class="avatar"><div><span aria-hidden="true">${esc(initials(name))}</span></div></div>`;
+  const cycle = PHOTO_VARIANTS.length * VARIANT_SECONDS;
+  // Keyframe stops as a percentage of the loop: each version holds for one
+  // slot and crossfades into the next over FADE.
+  const SLOT = Math.round(100 / PHOTO_VARIANTS.length);
+  const FADE = 4;
+  const OUT = SLOT + FADE;
+  const frameCss = !photo
+    ? ""
+    : !motion
+      ? `.f{position:absolute;inset:0;background:var(--photo) center/cover no-repeat}`
+      : `.f{position:absolute;inset:-8%;background:var(--photo) center/cover no-repeat;opacity:0;animation:frame ${cycle}s linear infinite}
+.f.base{opacity:1;animation-name:frame-base}
+${PHOTO_VARIANTS.map(
+  (v, i) =>
+    `.f-${v.id}{filter:${v.filter};animation-delay:${i * VARIANT_SECONDS}s,${i * VARIANT_SECONDS}s;animation-name:${i === 0 ? "frame-base" : "frame"},move-${v.id}${v.id === "vivid" ? ";background-position:center 25%" : ""}}${
+      v.tint ? `\n.f-${v.id}::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--primary),var(--accent));mix-blend-mode:color;opacity:.85}` : ""
+    }`,
+).join("\n")}
+@keyframes frame{0%{opacity:0}${FADE}%{opacity:1}${SLOT}%{opacity:1}${OUT}%{opacity:0}100%{opacity:0}}
+@keyframes frame-base{0%,${SLOT}%{opacity:1}${OUT}%,${100 - FADE}%{opacity:0}100%{opacity:1}}
+@keyframes move-original{0%{transform:scale(1)}${OUT}%,100%{transform:scale(1.12)}}
+@keyframes move-duotone{0%{transform:scale(1.12) translateX(4%)}${OUT}%,100%{transform:scale(1.12) translateX(-4%)}}
+@keyframes move-mono{0%{transform:scale(1.18)}${OUT}%,100%{transform:scale(1)}}
+@keyframes move-warm{0%{transform:scale(1.1) translateY(4%)}${OUT}%,100%{transform:scale(1.1) translateY(-3%)}}
+@keyframes move-vivid{0%{transform:scale(1.35) rotate(-2deg)}${OUT}%,100%{transform:scale(1.5) rotate(2deg)}}
+@media(prefers-reduced-motion:reduce){.f{display:none}.f.base{display:block;opacity:1}}`;
 
   const rowHtml = rows
     .map((r, i) => {
@@ -314,7 +388,8 @@ export function buildCardHtml(input: BusinessCardInput, opts: CardHtmlOptions = 
     .join("");
   let t = 1250 + rows.length * 120 + 60;
 
-  const qrCaption = opts.qrTarget === "website" ? "Scan to visit the website" : "Scan to save this contact";
+  const qrCaption =
+    opts.qrTarget === "website" ? "Scan to visit the website" : opts.qrTarget === "card" ? "Scan to open this card" : "Scan to save this contact";
   const qrHtml = opts.qrSvg
     ? `<section class="qr rise" style="--d:${t}ms"><div class="qr-code" role="img" aria-label="QR code">${opts.qrSvg}</div><p>${qrCaption}</p></section>`
     : "";
@@ -341,6 +416,13 @@ export function buildCardHtml(input: BusinessCardInput, opts: CardHtmlOptions = 
 <title>${esc(pageTitle)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="theme-color" content="${primary}">
+${opts.noindex ? '<meta name="robots" content="noindex">\n' : ""}${
+    opts.shareUrl
+      ? `<link rel="canonical" href="${esc(opts.shareUrl)}">\n<meta property="og:type" content="profile">\n<meta property="og:url" content="${esc(opts.shareUrl)}">\n`
+      : ""
+  }<meta property="og:title" content="${esc(pageTitle)}">
+<meta property="og:description" content="${esc(description)}">
+${opts.ogImageUrl ? `<meta property="og:image" content="${esc(opts.ogImageUrl)}">\n<meta name="twitter:card" content="summary">\n` : ""}
 <style>
 :root{--primary:${primary};--accent:${accent};--bg:#eef0f6;--card:#fff;--text:#0f172a;--muted:#64748b;--line:rgba(15,23,42,.08);--row:#f6f7fb;--row-h:#fff;--ease:cubic-bezier(.22,1,.36,1);--back:cubic-bezier(.34,1.56,.64,1);color-scheme:light}
 [data-theme=dark]{--bg:#0b0d14;--card:#151823;--text:#f1f5f9;--muted:#94a3b8;--line:rgba(255,255,255,.08);--row:#1c2030;--row-h:#232839;color-scheme:dark}
@@ -358,13 +440,21 @@ a{color:inherit;text-decoration:none}
 .ring{width:110px;height:110px;border-radius:50%;right:16%;top:20%;animation:spinf 24s linear infinite}
 .sq{width:42px;height:42px;border-radius:12px;left:14%;top:40%;animation:spinf 30s linear infinite reverse}
 canvas{position:absolute;inset:0;width:100%;height:100%}
-.chip{position:absolute;top:14px;left:14px;z-index:2;max-width:65%;padding:6px 12px;border-radius:999px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(10px)}
+.chip{position:absolute;top:14px;left:14px;z-index:2;display:inline-flex;align-items:center;gap:8px;max-width:65%;padding:6px 12px;border-radius:999px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(10px)}
 .toggle{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;color:#fff;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);cursor:pointer;transition:transform .25s var(--back)}
 .toggle:hover{transform:rotate(-12deg)}.toggle svg{width:18px;height:18px}.toggle .moon,[data-theme=dark] .toggle .sun{display:none}[data-theme=dark] .toggle .moon{display:block}
 .avatar{position:relative;z-index:3;width:120px;height:120px;margin:-60px auto 0;padding:5px;border-radius:50%;background:var(--card);animation:pop-in .9s var(--ease) both;animation-delay:450ms}
 .avatar::before{content:"";position:absolute;inset:-3px;border-radius:50%;z-index:-1;background:conic-gradient(var(--primary),var(--accent),var(--primary));animation:spin 9s linear infinite}
 .avatar>div{width:100%;height:100%;border-radius:50%;overflow:hidden;display:grid;place-items:center;color:#fff;font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--accent))}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.banner.hero{height:300px;background:#0f172a}
+.banner.hero canvas{opacity:.55}
+.frames{position:absolute;inset:0;overflow:hidden}
+.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.32) 0%,transparent 30%,transparent 62%,rgba(0,0,0,.28) 100%)}
+.avatar.logo>div{background:#fff;padding:14px}
+.avatar.logo img{object-fit:contain}
+.id.flush{padding-top:22px}
+${frameCss}
 .id{text-align:center;padding:14px 24px 0}
 h1{margin:0;font-size:26px;line-height:1.2;letter-spacing:-.015em}
 .role{margin:6px 0 0;font-size:14.5px;color:var(--muted);font-weight:500}
@@ -417,15 +507,14 @@ ul{list-style:none;margin:0;padding:14px 20px 4px;display:grid;gap:10px}
 </head>
 <body>
 <main class="card">
-<header class="banner">
-<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-<div class="shape ring"></div><div class="shape sq"></div>
+<header class="banner${photo ? " hero" : ""}">
+${heroHtml}
 <canvas aria-hidden="true"></canvas>
 ${company ? `<span class="chip">${esc(company)}</span>` : ""}
 <button class="toggle" type="button" aria-label="Toggle light and dark mode"><span class="sun">${icon("sun")}</span><span class="moon">${icon("moon")}</span></button>
 </header>
-<div class="avatar"><div>${avatar}</div></div>
-<section class="id">
+${avatar}
+<section class="id${avatar ? "" : " flush"}">
 <h1 class="rise" style="--d:750ms">${esc(name)}</h1>
 ${role ? `<p class="role rise" style="--d:880ms">${role}</p>` : ""}
 ${tagline ? `<p class="tag rise" style="--d:1010ms">${esc(tagline)}</p>` : ""}
@@ -437,7 +526,7 @@ ${tagline ? `<p class="tag rise" style="--d:1010ms">${esc(tagline)}</p>` : ""}
 ${rowHtml ? `<ul aria-label="Contact details">${rowHtml}</ul>` : ""}
 ${qrHtml}
 ${socialHtml}
-<p class="foot">${esc(company || name)}</p>
+<footer class="foot">${esc(company || name)}</footer>
 </main>
 <div class="toast" role="status" aria-live="polite"></div>
 <script>
@@ -446,7 +535,7 @@ var root=document.documentElement,toast=document.querySelector(".toast"),timer;
 function say(m){toast.textContent=m;toast.classList.add("show");clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove("show")},2200)}
 document.querySelector(".toggle").addEventListener("click",function(){root.dataset.theme=root.dataset.theme==="dark"?"light":"dark"});
 document.querySelector("[data-share]").addEventListener("click",function(){
-var url=location.href.split("#")[0],data={title:document.title,url:url};
+var url=${opts.shareUrl ? JSON.stringify(opts.shareUrl).replace(/</g, "\\u003c") : 'location.href.split("#")[0]'},data={title:document.title,url:url};
 if(navigator.share){navigator.share(data).catch(function(){});return}
 if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){say("Link copied")},function(){say(url)})}else{say(url)}
 });
