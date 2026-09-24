@@ -11,7 +11,8 @@ import {
   DEFAULT_CARD_COLORS,
   LIMITS,
   normalizeUrl,
-  PHOTO_VARIANTS,
+  PHOTO_LAYOUTS,
+  photoLayoutDoc,
   SOCIAL_META,
   SOCIAL_NETWORKS,
   validateBusinessCard,
@@ -108,6 +109,31 @@ function qrText(input: BusinessCardInput, target: QrTarget, savedUrl: string | u
   return buildVCard(input, { includePhoto: false });
 }
 
+const THUMB_W = 132;
+const CARD_W = 390;
+
+/** One layout, drawn at card width and scaled down, so the thumbnail is the real thing. */
+function LayoutThumb({ label, doc, ratio }: { label: string; doc: string; ratio: number }) {
+  const cardH = Math.max(260, Math.min(520, CARD_W / ratio));
+  const scale = THUMB_W / CARD_W;
+  return (
+    <figure className="shrink-0 space-y-1" style={{ width: THUMB_W }}>
+      <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-900" style={{ height: cardH * scale }}>
+        <iframe
+          title={`${label} layout`}
+          srcDoc={doc}
+          sandbox=""
+          tabIndex={-1}
+          aria-hidden="true"
+          className="pointer-events-none origin-top-left border-0"
+          style={{ width: CARD_W, height: cardH, transform: `scale(${scale})` }}
+        />
+      </div>
+      <figcaption className="text-center text-[11px] leading-tight text-slate-500">{label}</figcaption>
+    </figure>
+  );
+}
+
 const sectionTitle = "text-sm font-semibold text-slate-900";
 const hintCls = "mt-1 text-xs text-slate-500";
 const smallLink = "block text-xs font-medium text-slate-500 hover:text-red-600";
@@ -184,12 +210,14 @@ export default function DigitalBusinessCard() {
       return;
     }
     try {
-      const dataUrl = key === "photo" ? await readPhoto(file) : await readLogo(file);
+      const photo = key === "photo" ? await readPhoto(file) : null;
+      const dataUrl = photo ? photo.dataUrl : await readLogo(file);
       if (dataUrl.length > (key === "photo" ? LIMITS.photoBytes : LIMITS.logoBytes)) {
         setError(`That ${key} is too detailed to embed — try a smaller or simpler image.`);
         return;
       }
-      set(key, dataUrl);
+      if (photo) setInput((prev) => ({ ...prev, photo: photo.dataUrl, photoRatio: photo.ratio }));
+      else set("logo", dataUrl);
       setError(null);
     } catch {
       setError("That image couldn't be read — try another file.");
@@ -307,14 +335,14 @@ export default function DigitalBusinessCard() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
         <form className="space-y-8" onSubmit={(e) => e.preventDefault()} noValidate>
-          <fieldset className="space-y-4">
+          <fieldset className="min-w-0 space-y-4">
             <legend className={sectionTitle}>Photo &amp; logo</legend>
 
             <div className="space-y-3 rounded-lg border border-slate-200 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium text-slate-800">Your photo</p>
-                  <p className={hintCls}>Fills the whole top of the card. A landscape or head-and-shoulders photo works best.</p>
+                  <p className={hintCls}>Shown whole across the top of the card — never cropped. A head-and-shoulders photo works best.</p>
                 </div>
                 <div className="flex items-center gap-3">
                   {upload("photo", "photo")}
@@ -328,25 +356,9 @@ export default function DigitalBusinessCard() {
 
               {input.photo && (
                 <>
-                  <div className="grid grid-cols-5 gap-2" aria-label="The five versions of your photo">
-                    {PHOTO_VARIANTS.map((v) => (
-                      <figure key={v.id} className="space-y-1">
-                        <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-200 bg-slate-100">
-                          {/* A local data URL; next/image adds nothing here. */}
-                          <img src={input.photo} alt="" className="h-full w-full object-cover" style={{ filter: v.filter }} />
-                          {v.tint && (
-                            <span
-                              className="absolute inset-0"
-                              style={{
-                                background: `linear-gradient(135deg, ${input.primaryColor}, ${input.accentColor})`,
-                                mixBlendMode: "color",
-                                opacity: 0.85,
-                              }}
-                            />
-                          )}
-                        </div>
-                        <figcaption className="text-center text-[11px] leading-tight text-slate-500">{v.label}</figcaption>
-                      </figure>
+                  <div className="flex gap-3 overflow-x-auto pb-1" aria-label="The five layouts your photo cycles through">
+                    {PHOTO_LAYOUTS.map((l) => (
+                      <LayoutThumb key={l.id} label={l.label} doc={photoLayoutDoc(card, l.id)} ratio={input.photoRatio ?? 0.8} />
                     ))}
                   </div>
                   <label className="flex items-center gap-2 text-sm text-slate-700">
@@ -356,7 +368,7 @@ export default function DigitalBusinessCard() {
                       checked={input.photoMotion !== false}
                       onChange={(e) => set("photoMotion", e.target.checked)}
                     />
-                    Animate the photo: crossfade through these five versions with a slow camera move
+                    Animate the photo: cycle through these five layouts in the card&apos;s header
                   </label>
                 </>
               )}
@@ -383,7 +395,7 @@ export default function DigitalBusinessCard() {
             </div>
           </fieldset>
 
-          <fieldset className="space-y-4">
+          <fieldset className="min-w-0 space-y-4">
             <legend className={sectionTitle}>Profile</legend>
             <div className="grid gap-4 sm:grid-cols-2">
               {field("name", "Full name", "Priya Sharma", { maxLength: LIMITS.name, autoComplete: "name" })}
@@ -403,7 +415,7 @@ export default function DigitalBusinessCard() {
             </div>
           </fieldset>
 
-          <fieldset className="space-y-4">
+          <fieldset className="min-w-0 space-y-4">
             <legend className={sectionTitle}>Contact</legend>
             <div className="grid gap-4 sm:grid-cols-2">
               {field("phone", "Phone", "+91 98765 43210", { type: "tel", autoComplete: "tel" })}
@@ -441,7 +453,7 @@ export default function DigitalBusinessCard() {
             </div>
           </fieldset>
 
-          <fieldset className="space-y-4">
+          <fieldset className="min-w-0 space-y-4">
             <legend className={sectionTitle}>Social profiles</legend>
             <p className="-mt-2 text-xs text-slate-500">Paste a full link or just the username. Leave any blank to hide it.</p>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -460,7 +472,7 @@ export default function DigitalBusinessCard() {
             </div>
           </fieldset>
 
-          <fieldset className="space-y-4">
+          <fieldset className="min-w-0 space-y-4">
             <legend className={sectionTitle}>Style</legend>
             <div className="flex flex-wrap gap-2">
               {PRESETS.map((p) => {

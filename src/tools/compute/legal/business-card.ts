@@ -43,7 +43,9 @@ export interface BusinessCardInput {
   photo?: string;
   /** Company logo, same format as the photo (PNG keeps transparency). */
   logo?: string;
-  /** Cycle the photo through its five styled versions (see PHOTO_VARIANTS). */
+  /** Width ÷ height of the photo, so the header can show it whole. */
+  photoRatio?: number;
+  /** Cycle the photo through its five layouts (see PHOTO_LAYOUTS). */
   photoMotion?: boolean;
 }
 
@@ -150,6 +152,9 @@ export function validateBusinessCard(input: BusinessCardInput): string | null {
     if (!PHOTO_RE.test(input.photo)) return "The photo must be a PNG or JPEG image.";
     if (input.photo.length > LIMITS.photoBytes) return "That photo is too large — try a smaller image.";
   }
+  if (input.photoRatio !== undefined && !(input.photoRatio >= 0.3 && input.photoRatio <= 3)) {
+    return "Choose the photo again.";
+  }
   if (input.logo) {
     if (!PHOTO_RE.test(input.logo)) return "The logo must be a PNG or JPEG image.";
     if (input.logo.length > LIMITS.logoBytes) return "That logo is too large — try a smaller image.";
@@ -236,21 +241,134 @@ export function buildVCard(input: BusinessCardInput, opts: { includePhoto?: bool
 // --- animated photo -----------------------------------------------------------
 
 /**
- * The five versions of the photo that the avatar cycles through. Each is a CSS
- * treatment of the one uploaded image — so they follow the brand colours live
- * and the image is stored once — plus its own slow camera move. The form's
- * thumbnails use the same `filter` values, so what you pick is what you get.
+ * The five ways the header presents the photo. The card crossfades through
+ * them in a loop; each is a different composition of the one uploaded image
+ * (stored once, referenced through a CSS variable), always anchored at the top
+ * so the head is never cut off.
  */
-export const PHOTO_VARIANTS = [
-  { id: "original", label: "Original", filter: "none", tint: false },
-  { id: "duotone", label: "Brand duotone", filter: "grayscale(1) contrast(1.15)", tint: true },
-  { id: "mono", label: "Mono", filter: "grayscale(1) contrast(1.25) brightness(1.05)", tint: false },
-  { id: "warm", label: "Warm glow", filter: "sepia(.35) saturate(1.45) contrast(1.05) hue-rotate(-8deg)", tint: false },
-  { id: "vivid", label: "Vivid close-up", filter: "saturate(1.6) contrast(1.1)", tint: false },
+export const PHOTO_LAYOUTS = [
+  { id: "portrait", label: "Full portrait" },
+  { id: "spotlight", label: "Spotlight" },
+  { id: "polaroid", label: "Polaroid" },
+  { id: "split", label: "Split panel" },
+  { id: "cover", label: "Magazine cover" },
 ] as const;
+export type PhotoLayoutId = (typeof PHOTO_LAYOUTS)[number]["id"];
 
-/** Seconds each version stays on screen before the next fades in. */
-const VARIANT_SECONDS = 3;
+/** Seconds each layout stays on screen before the next fades in. */
+const LAYOUT_SECONDS = 3.2;
+const DEFAULT_RATIO = 0.8;
+
+const HERO_CSS = `.banner.hero{height:auto;background:#0f172a}
+.stage{position:relative;width:100%;aspect-ratio:var(--ratio);max-height:520px;min-height:260px;overflow:hidden}
+.lay{position:absolute;inset:0;overflow:hidden;container-type:size}
+.pic{position:absolute;inset:0;background:var(--photo) center top/cover no-repeat}
+.lay-spotlight,.lay-polaroid,.lay-split .panel{background:linear-gradient(135deg,var(--primary),var(--accent))}
+.lay-spotlight .disc{position:absolute;left:50%;top:48%;width:min(78cqw,74cqh);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:var(--photo) center 12%/cover no-repeat;box-shadow:0 0 0 6px rgba(255,255,255,.92),0 22px 50px rgba(0,0,0,.35)}
+.lay-spotlight .disc::after{content:"";position:absolute;inset:-18px;border-radius:50%;border:2px solid rgba(255,255,255,.45)}
+.lay-polaroid{background:radial-gradient(circle at 25% 15%,color-mix(in srgb,var(--accent) 55%,#fff),transparent 55%),linear-gradient(135deg,var(--primary),var(--accent))}
+.lay-polaroid .print{position:absolute;left:50%;top:50%;width:min(78cqw,70cqh);aspect-ratio:.82;transform:translate(-50%,-50%) rotate(-4deg);background:#fff;border-radius:4px;box-shadow:0 24px 50px rgba(0,0,0,.35)}
+.lay-polaroid .print .pic{inset:5% 5% 19% 5%;border-radius:2px}
+.lay-polaroid figcaption{position:absolute;left:0;right:0;bottom:4%;text-align:center;font:600 clamp(15px,4.4vw,20px)/1.1 "Segoe Print","Bradley Hand","Comic Sans MS",cursive;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+.lay-split .pic{right:44%}
+.lay-split .panel{position:absolute;top:0;bottom:0;right:0;width:44%;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:18px 16px;color:#fff}
+.lay-split .panel b{font-size:clamp(18px,5.4vw,24px);line-height:1.1;overflow-wrap:anywhere}
+.lay-split .panel span{font-size:13px;opacity:.9;overflow-wrap:anywhere}
+.lay-split .panel i{width:36px;height:3px;border-radius:3px;background:rgba(255,255,255,.8)}
+.lay-cover{background:linear-gradient(180deg,var(--primary),color-mix(in srgb,var(--primary) 40%,#000))}
+.lay-cover .pic{top:min(17%,64px)}
+.lay-cover .mast{position:absolute;top:14px;left:58px;right:58px;text-align:center;color:#fff;font-weight:900;font-size:clamp(24px,8vw,38px);line-height:1;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.lay-cover .lines{position:absolute;left:16px;right:16px;bottom:14px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.lay-cover .lines small{display:inline-block;padding:2px 8px;border-radius:3px;background:var(--accent);font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;text-shadow:none}
+.lay-cover .lines b{display:block;margin-top:6px;font-size:clamp(17px,5vw,22px);line-height:1.15}
+.lay-cover::after{content:"";position:absolute;inset:auto 0 0;height:42%;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+.lay-cover .lines{z-index:1}
+.hero-scrim{position:absolute;inset:0 0 auto;height:80px;background:linear-gradient(rgba(0,0,0,.28),transparent);pointer-events:none}`;
+
+function layoutHtml(id: PhotoLayoutId, text: { name: string; title: string; company: string }): string {
+  const name = esc(text.name);
+  const title = esc(text.title);
+  const company = esc(text.company);
+  switch (id) {
+    case "portrait":
+      return `<i class="pic"></i>`;
+    case "spotlight":
+      return `<i class="disc"></i>`;
+    case "polaroid":
+      return `<figure class="print"><i class="pic"></i><figcaption>${name}</figcaption></figure>`;
+    case "split":
+      return `<i class="pic"></i><div class="panel"><i></i><b>${name}</b>${title ? `<span>${title}</span>` : ""}${company ? `<span>${company}</span>` : ""}</div>`;
+    case "cover":
+      return `<i class="pic"></i><div class="mast">${company || name}</div><div class="lines"><small>In focus</small><b>${name}${title ? ` — ${title}` : ""}</b></div>`;
+  }
+}
+
+/** Header markup and CSS for a photo card: every layout, or just `only`. */
+function heroParts(
+  photo: string,
+  ratio: number,
+  text: { name: string; title: string; company: string },
+  opts: { animate: boolean; only?: PhotoLayoutId },
+): { html: string; css: string } {
+  const layouts = opts.only
+    ? PHOTO_LAYOUTS.filter((l) => l.id === opts.only)
+    : opts.animate
+      ? PHOTO_LAYOUTS
+      : PHOTO_LAYOUTS.slice(0, 1);
+  const html = `<div class="stage" role="img" aria-label="${esc(text.name)}" style="--photo:url('${photo}');--ratio:${ratio}">${layouts
+    .map((l, i) => `<div class="lay lay-${l.id}${i === 0 ? " base" : ""}">${layoutHtml(l.id, text)}</div>`)
+    .join("")}</div>`;
+  if (!opts.animate || opts.only) return { html, css: HERO_CSS };
+
+  // Keyframe stops as a percentage of the loop: each layout holds for one slot
+  // and crossfades into the next over FADE; its entrance move plays as it arrives.
+  const cycle = PHOTO_LAYOUTS.length * LAYOUT_SECONDS;
+  const SLOT = Math.round(100 / PHOTO_LAYOUTS.length);
+  const FADE = 4;
+  const OUT = SLOT + FADE;
+  const delay = (i: number) => `${(i * LAYOUT_SECONDS).toFixed(1)}s`;
+  const css = `${HERO_CSS}
+.lay{opacity:0;animation:lay ${cycle}s linear infinite}
+.lay.base{opacity:1;animation-name:lay-base}
+${PHOTO_LAYOUTS.map((l, i) => `.lay-${l.id}{animation-delay:${delay(i)}}`).join("\n")}
+.lay-portrait .pic,.lay-spotlight .disc,.lay-polaroid .print,.lay-split .panel,.lay-cover .mast{animation:${cycle}s var(--ease) infinite both}
+.lay-portrait .pic{transform-origin:50% 0;animation-name:m-portrait;animation-delay:${delay(0)}}
+.lay-spotlight .disc{animation-name:m-spotlight;animation-delay:${delay(1)}}
+.lay-polaroid .print{animation-name:m-polaroid;animation-delay:${delay(2)}}
+.lay-split .panel{animation-name:m-split;animation-delay:${delay(3)}}
+.lay-cover .mast{animation-name:m-cover;animation-delay:${delay(4)}}
+@keyframes lay{0%{opacity:0}${FADE}%{opacity:1}${SLOT}%{opacity:1}${OUT}%{opacity:0}100%{opacity:0}}
+@keyframes lay-base{0%,${SLOT}%{opacity:1}${OUT}%,${100 - FADE}%{opacity:0}100%{opacity:1}}
+@keyframes m-portrait{0%{transform:scale(1)}${OUT}%,100%{transform:scale(1.05)}}
+@keyframes m-spotlight{0%{transform:translate(-50%,-50%) scale(.86)}${Math.round(OUT / 2)}%,100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes m-polaroid{0%{transform:translate(-50%,-44%) rotate(-9deg)}${Math.round(OUT / 2)}%,100%{transform:translate(-50%,-50%) rotate(-4deg)}}
+@keyframes m-split{0%{transform:translateX(100%)}${Math.round(OUT / 2)}%,100%{transform:none}}
+@keyframes m-cover{0%{opacity:0;transform:translateY(-30%)}${Math.round(OUT / 2)}%,100%{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.lay{display:none}.lay.base{display:block;opacity:1}.lay .pic,.lay .disc,.lay .print,.lay .panel,.lay .mast{animation:none!important}}`;
+  return { html, css };
+}
+
+/**
+ * A tiny standalone page showing one layout, for the form's thumbnails (the
+ * same markup and CSS the card uses, rendered at card width).
+ */
+export function photoLayoutDoc(input: BusinessCardInput, id: PhotoLayoutId): string {
+  const photo = input.photo && PHOTO_RE.test(input.photo) ? input.photo : "";
+  const primary = safeHex(input.primaryColor, DEFAULT_CARD_COLORS.primaryColor);
+  const accent = safeHex(input.accentColor, DEFAULT_CARD_COLORS.accentColor);
+  const { html, css } = heroParts(
+    photo,
+    photoRatio(input),
+    { name: input.name.trim() || "Your Name", title: input.title.trim(), company: input.company.trim() },
+    { animate: false, only: id },
+  );
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>:root{--primary:${primary};--accent:${accent}}*{box-sizing:border-box}body{margin:0;width:390px;font-family:ui-sans-serif,system-ui,sans-serif;background:#0f172a}figure{margin:0}${css}.lay{opacity:1}</style></head><body>${html}</body></html>`;
+}
+
+function photoRatio(input: BusinessCardInput): number {
+  const r = input.photoRatio;
+  return r && r >= 0.3 && r <= 3 ? Math.round(r * 1000) / 1000 : DEFAULT_RATIO;
+}
 
 // --- icons (shared by the preview and the export) ----------------------------
 
@@ -338,13 +456,14 @@ export function buildCardHtml(input: BusinessCardInput, opts: CardHtmlOptions = 
   const photo = input.photo && PHOTO_RE.test(input.photo) ? input.photo : null;
   const logo = input.logo && PHOTO_RE.test(input.logo) ? input.logo : null;
   const motion = Boolean(photo && input.photoMotion !== false);
-  // With a photo, it fills the whole header; the five versions share one copy
-  // of the image through a CSS variable. Without motion only the first shows.
-  const heroHtml = photo
-    ? `<div class="frames" role="img" aria-label="${esc(name)}" style="--photo:url('${photo}')">${(motion ? PHOTO_VARIANTS : PHOTO_VARIANTS.slice(0, 1))
-        .map((v, i) => `<i class="f f-${v.id}${i === 0 ? " base" : ""}"></i>`)
-        .join("")}</div><div class="scrim"></div>`
+  // With a photo, the header shows it whole and loops through its layouts.
+  const hero = photo
+    ? heroParts(photo, photoRatio(input), { name, title, company }, { animate: motion })
+    : null;
+  const heroHtml = hero
+    ? `${hero.html}<div class="hero-scrim"></div>`
     : `<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>\n<div class="shape ring"></div><div class="shape sq"></div>`;
+  const frameCss = hero?.css ?? "";
   // The circle carries the logo when there is one, initials when there is no
   // photo either, and is left out when the photo already fills the header.
   const avatar = logo
@@ -352,32 +471,6 @@ export function buildCardHtml(input: BusinessCardInput, opts: CardHtmlOptions = 
     : photo
       ? ""
       : `<div class="avatar"><div><span aria-hidden="true">${esc(initials(name))}</span></div></div>`;
-  const cycle = PHOTO_VARIANTS.length * VARIANT_SECONDS;
-  // Keyframe stops as a percentage of the loop: each version holds for one
-  // slot and crossfades into the next over FADE.
-  const SLOT = Math.round(100 / PHOTO_VARIANTS.length);
-  const FADE = 4;
-  const OUT = SLOT + FADE;
-  const frameCss = !photo
-    ? ""
-    : !motion
-      ? `.f{position:absolute;inset:0;background:var(--photo) center/cover no-repeat}`
-      : `.f{position:absolute;inset:-8%;background:var(--photo) center/cover no-repeat;opacity:0;animation:frame ${cycle}s linear infinite}
-.f.base{opacity:1;animation-name:frame-base}
-${PHOTO_VARIANTS.map(
-  (v, i) =>
-    `.f-${v.id}{filter:${v.filter};animation-delay:${i * VARIANT_SECONDS}s,${i * VARIANT_SECONDS}s;animation-name:${i === 0 ? "frame-base" : "frame"},move-${v.id}${v.id === "vivid" ? ";background-position:center 25%" : ""}}${
-      v.tint ? `\n.f-${v.id}::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--primary),var(--accent));mix-blend-mode:color;opacity:.85}` : ""
-    }`,
-).join("\n")}
-@keyframes frame{0%{opacity:0}${FADE}%{opacity:1}${SLOT}%{opacity:1}${OUT}%{opacity:0}100%{opacity:0}}
-@keyframes frame-base{0%,${SLOT}%{opacity:1}${OUT}%,${100 - FADE}%{opacity:0}100%{opacity:1}}
-@keyframes move-original{0%{transform:scale(1)}${OUT}%,100%{transform:scale(1.12)}}
-@keyframes move-duotone{0%{transform:scale(1.12) translateX(4%)}${OUT}%,100%{transform:scale(1.12) translateX(-4%)}}
-@keyframes move-mono{0%{transform:scale(1.18)}${OUT}%,100%{transform:scale(1)}}
-@keyframes move-warm{0%{transform:scale(1.1) translateY(4%)}${OUT}%,100%{transform:scale(1.1) translateY(-3%)}}
-@keyframes move-vivid{0%{transform:scale(1.35) rotate(-2deg)}${OUT}%,100%{transform:scale(1.5) rotate(2deg)}}
-@media(prefers-reduced-motion:reduce){.f{display:none}.f.base{display:block;opacity:1}}`;
 
   const rowHtml = rows
     .map((r, i) => {
@@ -447,10 +540,8 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 .avatar::before{content:"";position:absolute;inset:-3px;border-radius:50%;z-index:-1;background:conic-gradient(var(--primary),var(--accent),var(--primary));animation:spin 9s linear infinite}
 .avatar>div{width:100%;height:100%;border-radius:50%;overflow:hidden;display:grid;place-items:center;color:#fff;font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--accent))}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.banner.hero{height:300px;background:#0f172a}
-.banner.hero canvas{opacity:.55}
-.frames{position:absolute;inset:0;overflow:hidden}
-.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.32) 0%,transparent 30%,transparent 62%,rgba(0,0,0,.28) 100%)}
+.banner.hero canvas{opacity:.45}
+figure{margin:0}
 .avatar.logo>div{background:#fff;padding:14px}
 .avatar.logo img{object-fit:contain}
 .id.flush{padding-top:22px}
@@ -510,7 +601,7 @@ ul{list-style:none;margin:0;padding:14px 20px 4px;display:grid;gap:10px}
 <header class="banner${photo ? " hero" : ""}">
 ${heroHtml}
 <canvas aria-hidden="true"></canvas>
-${company ? `<span class="chip">${esc(company)}</span>` : ""}
+${company && !photo ? `<span class="chip">${esc(company)}</span>` : ""}
 <button class="toggle" type="button" aria-label="Toggle light and dark mode"><span class="sun">${icon("sun")}</span><span class="moon">${icon("moon")}</span></button>
 </header>
 ${avatar}
