@@ -1,6 +1,7 @@
 import type { ToolConfig } from "../../types/tools";
 import LetterheadComplianceChecker from "../ui/business-legal/letterhead-compliance-checker";
 import IfscCodeFinder from "../ui/business-legal/ifsc-code-finder";
+import DigitalBusinessCard from "../ui/business-legal/digital-business-card";
 import { computeGstinVerification } from "../compute/legal/gstin-verification";
 import { generateNda } from "../compute/legal/nda";
 import { generatePrivacyPolicy } from "../compute/legal/privacy-policy";
@@ -552,6 +553,72 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["letterhead-compliance-checker", "invoice-generator", "gst-calculator", "ifsc-code-finder"],
+  },
+  {
+    kind: "generator",
+    slug: "digital-business-card-generator",
+    category: "business-legal",
+    name: "Digital Business Card Generator",
+    tagline: "Design an animated digital business card with your photo, logo, tap-to-call, WhatsApp, Save Contact and a QR code.",
+    seoDescription:
+      "Free digital business card generator. Add your details, an animated photo, your company logo and brand colours to get a mobile-first card with tap-to-call, WhatsApp, maps, social links, a vCard, a QR code and a shareable link.",
+    directAnswer:
+      "A free digital business card generator that turns your name, contact details, photo, logo and brand colours into an animated, mobile-first card page, a .vcf contact file and a scannable QR code, with a shareable link on paid plans.",
+    example:
+      "Example: Enter \"Priya Sharma\", \"Founder & CEO\", \"Northwind Labs\", a phone number and your website, pick the Ocean palette, and download a single HTML card page, priya-sharma.vcf and a QR code that saves Priya to any phone's contacts.",
+    steps: [
+      "Upload your photo — it fills the top of the card and animates through five styled versions — and your company logo.",
+      "Add your name, designation, company and a one-line tagline.",
+      "Fill in the ways to reach you: phone, WhatsApp, email, website and address. Leave any field blank to hide it.",
+      "Paste your social profile links or usernames for LinkedIn, Instagram, Facebook, X, YouTube or GitHub.",
+      "Choose a colour palette or your own brand colours, a light or dark default theme, and what the QR code opens.",
+      "Check the live preview, then download the card page (.html), the contact file (.vcf) and the QR code (.png) for free.",
+      "On a paid plan, save the card to get a shareable link, then copy it, share it or send it on WhatsApp. Edit it any time and the link stays the same.",
+    ],
+    component: DigitalBusinessCard,
+    about: [
+      "A digital business card is a small web page that does everything a paper visiting card does, and more: one tap calls you, opens a WhatsApp chat, starts an email or shows your office on Google Maps, and a Save Contact button adds you to the other person's phone in one step. This generator builds that page from a short form. Your photo fills the top of the card and comes alive as a motion picture, crossfading through five styled versions of the same shot (original, brand duotone, mono, warm glow and a vivid close-up) with a slow camera move, while your company logo sits in the circle beneath it. Contact rows, social icons and a QR code follow, all in your brand colours and previewed live as you type.",
+      "Designing and downloading are free. Three files come out of it. The card page is a single self-contained HTML file with its styles, animations and the Share button built in and no external requests, so it loads fast and can be hosted anywhere: on your own website, a company intranet or a free static host. The .vcf file is a standard vCard 3.0 that iPhone, Android, Gmail and Outlook contacts import directly, with your photo embedded. The QR code can either save your contact straight into the phone that scans it or open your website. Print it on the back of a paper card, a standee at your counter or the footer of your [invoices](/invoicing-billing/invoice-generator). For a plain QR code for any other link, use the [QR code generator](/developer-web/qr-code-generator).",
+      "On a paid plan you can also save the card to your account and get a shareable link, such as tools.avexora.in/card/your-name. Copy it, share it from your phone or send it on WhatsApp; the link shows a proper preview with your photo, and the QR code can point to it. Edit the card whenever your details change and the link stays the same. If you only download the files, everything happens in your browser: your details and photo are not uploaded, and the form is saved only on your own device so you don't lose your work between visits. The card respects each visitor's reduced-motion setting and has light and dark modes, so it stays readable and accessible on any phone. If you need company stationery that meets the Companies Act's disclosure rules as well, check your letterhead with the [letterhead compliance checker](/business-legal/letterhead-compliance-checker).",
+    ],
+    faq: [
+      {
+        question: "How do I share my digital business card?",
+        answer:
+          "On a paid plan, click Save & get link to publish the card at its own address, then copy the link, use your phone's share sheet or send it on WhatsApp. On the free plan, upload the downloaded .html file to your own website or any static host and share that link. Either way, people can also scan the QR code.",
+      },
+      {
+        question: "What does the QR code do when someone scans it?",
+        answer:
+          "You choose. \"Save contact\" encodes your vCard, so scanning offers to add you to the phone's contacts with no internet needed. \"Your website\" opens your site. The contact QR leaves out the photo to keep the code easy to scan; the .vcf download includes it.",
+      },
+      {
+        question: "How does the animated photo work?",
+        answer:
+          "Your photo fills the top of the card and loops through five versions of itself: the original, a duotone in your brand colours, black and white, a warm glow and a vivid close-up, each with its own slow zoom or pan. They are styles applied to the one photo you upload, so they always match your colours. Turn the animation off to show the original only; visitors who prefer reduced motion also see the still photo.",
+      },
+      {
+        question: "Will the Save Contact button work on iPhone and Android?",
+        answer:
+          "Yes. It downloads a standard vCard 3.0 file, which both iOS and Android open in the Contacts app, pre-filled with your name, company, title, phone numbers, email, website, address, social profiles and photo.",
+      },
+      {
+        question: "Is my information uploaded anywhere?",
+        answer:
+          "Only if you save the card. Downloads are built in your browser and your photo is resized on your device, so nothing is sent to our servers. Saving stores the card on your account so its link can show it, and deleting the card takes the link down straight away. The form draft stays in your browser's local storage until you clear it.",
+      },
+      {
+        question: "Can I use my own brand colours and logo?",
+        answer:
+          "Yes. Pick one of the palettes or set any primary and accent colour with the colour pickers. Upload your company logo separately from your photo: it appears in the circle under the photo, and transparent PNG logos keep their transparency. Without a photo or logo, your initials are shown in your brand gradient.",
+      },
+      {
+        question: "Does the card work offline or without JavaScript?",
+        answer:
+          "The card is one file with no external requests, so it opens even on a slow connection. With JavaScript turned off, the contact links and Save Contact still work; only the animated particles, the theme toggle and the Share button need it.",
+      },
+    ],
+    related: ["qr-code-generator", "letterhead-compliance-checker", "invoice-generator", "resume-builder"],
   },
   {
     kind: "generator",
