@@ -8,6 +8,8 @@ import { adminNavigation, AdminNavItem } from "@/config/admin-navigation";
 import { Menu, X } from "lucide-react";
 import { LogoutButton } from "@/components/admin/auth/LogoutButton";
 
+import type { requireAdminAuth } from "@/server/admin-auth";
+
 export function AdminSidebar({ user }: { user: Awaited<ReturnType<typeof requireAdminAuth>> }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);

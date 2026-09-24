@@ -1,5 +1,6 @@
-import { categories, SITE_NAME, SITE_URL } from "@/tools/categories";
-import { toolsByCategory } from "@/tools/registry";
+import { SITE_NAME, SITE_URL } from "@/tools/categories";
+import { getEffectiveCategories } from "@/server/categories";
+import { getEffectiveToolsByCategory } from "@/server/tools";
 
 // Follows the llms.txt convention (https://llmstxt.org/) so AI crawlers and
 // answer engines can discover the tool catalog without guessing from HTML.

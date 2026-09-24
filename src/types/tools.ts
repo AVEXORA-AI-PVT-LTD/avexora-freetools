@@ -128,6 +128,11 @@ interface ToolBase {
   /** True if the tool was dynamically created via the Admin Panel and lacks a hardcoded client implementation. */
   isDynamic?: boolean;
   howTo?: any;
+  /** Active status override from the database. */
+  status?: boolean;
+  /** Priority override from the database. */
+  /** Display order override from the database. */
+  displayOrder?: number;
 }
 
 export interface CalculatorTool extends ToolBase {
