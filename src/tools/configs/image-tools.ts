@@ -18,6 +18,21 @@ export const tools: ToolConfig[] = [
     tagline: "Shrink an image's file size with an adjustable quality slider, in your browser.",
     seoDescription:
       "Free image compressor. Reduce photo file size with an adjustable quality slider — see the before/after size — entirely in your browser, no upload required.",
+    seoTitle: "Free Image Compressor: Reduce Photo File Size Online",
+    keywords: [
+      "image compressor",
+      "compress image online",
+      "reduce image size",
+      "reduce photo file size",
+      "image size reducer",
+      "photo compressor",
+      "compress jpg",
+      "compress png without losing transparency",
+      "compress webp image",
+      "how to reduce image size for email",
+    ],
+    directAnswer:
+      "An image compressor shrinks the file size of a JPG, PNG or WebP image without changing its format, using a quality slider for JPG and WebP, and shows the before-and-after size and percentage saved. It runs in your browser, so the photo is never uploaded.",
     component: ImageCompressor,
     about: [
       "This tool re-encodes your image at an adjustable quality level, cutting file size while keeping the picture visually indistinguishable at any reasonable quality setting. A photo straight off a phone camera can easily run 3-5 MB — far more than any website, email attachment or WhatsApp share actually needs, and often the reason a page loads slowly or an email bounces for being too large.",
@@ -34,7 +49,7 @@ export const tools: ToolConfig[] = [
       {
         question: "Does compression convert my image to JPEG?",
         answer:
-          "Photos and other opaque images are compressed to JPEG — the format that gives the biggest size reductions, and which the quality slider adjusts. Transparent PNGs are kept as PNG so their alpha channel is never lost; opaque PNGs (like a photo saved as PNG) have no transparency to preserve, so they are converted to JPEG automatically.",
+          "No. The output keeps your original format: a PNG stays a PNG (re-encoded losslessly or with a reduced colour palette, keeping any transparency), a JPEG stays a JPEG and a WebP stays a WebP. The quality slider applies to JPEG and WebP. If an image can't be made smaller in its own format, the tool tells you instead of converting it.",
       },
       {
         question: "Is my photo uploaded anywhere?",
@@ -52,6 +67,20 @@ export const tools: ToolConfig[] = [
     tagline: "Resize any image to exact pixel dimensions, with optional aspect-ratio lock.",
     seoDescription:
       "Free image resizer. Resize any image to exact width and height in pixels, with aspect-ratio lock — entirely in your browser, no upload required.",
+    seoTitle: "Free Image Resizer: Resize Images to Exact Pixels",
+    keywords: [
+      "image resizer",
+      "resize image online",
+      "resize image in pixels",
+      "change image dimensions",
+      "photo resizer",
+      "picture resizer",
+      "resize image keep aspect ratio",
+      "resize image for social media",
+      "resize photo width and height",
+    ],
+    directAnswer:
+      "An image resizer changes a photo's width and height to the exact pixel dimensions you enter, with an optional aspect-ratio lock so it never stretches. PNGs stay PNG and other images export as JPG; resizing happens in your browser without uploading the file.",
     component: ImageResizer,
     about: [
       "This tool resizes any image to precise pixel dimensions, with an aspect-ratio lock so you don't accidentally stretch or squash the picture while adjusting one dimension. Every platform has its own required dimensions — a 1200×630 social share image, a 500×500 product thumbnail, a 1920×1080 banner — and a source photo rarely arrives in exactly the size needed.",
@@ -86,6 +115,20 @@ export const tools: ToolConfig[] = [
     tagline: "Crop any image to exactly the area you need, in your browser.",
     seoDescription:
       "Free image cropper. Drag to select the area you want and crop any image precisely — entirely in your browser, no upload required.",
+    seoTitle: "Free Image Cropper: Crop Photos Online in Your Browser",
+    keywords: [
+      "image cropper",
+      "crop image online",
+      "crop photo",
+      "crop picture online",
+      "photo cropper",
+      "trim image",
+      "crop screenshot",
+      "crop png image",
+      "cut out part of an image",
+    ],
+    directAnswer:
+      "An image cropper lets you drag a box over a photo to select the area to keep, then exports just that region at the image's real resolution, as PNG for PNG files and JPG for everything else. It works in your browser, so the image is not uploaded.",
     component: ImageCropper,
     about: [
       "This tool lets you drag a selection box directly on your image and crop to exactly that area. Sometimes the problem with a photo isn't its size but its content — a great subject surrounded by clutter, an ID photo with too much background, a screenshot that includes browser chrome you don't want in the final image.",
@@ -120,6 +163,19 @@ export const tools: ToolConfig[] = [
     tagline: "Convert PNG images to JPG, with transparency flattened to white.",
     seoDescription:
       "Free PNG to JPG converter. Convert PNG images to JPG format instantly, with transparent areas flattened to white — entirely in your browser.",
+    seoTitle: "Free PNG to JPG Converter: Convert PNG to JPEG Online",
+    keywords: [
+      "png to jpg",
+      "png to jpg converter",
+      "convert png to jpg",
+      "png to jpeg",
+      "change png to jpg",
+      "png to jpg white background",
+      "png to jpg online free",
+      "reduce png file size",
+    ],
+    directAnswer:
+      "A PNG to JPG converter re-saves a PNG image as a high-quality JPG file, filling any transparent areas with white because JPG has no transparency, which usually makes the file smaller. Conversion happens in your browser with no upload.",
     component: PngToJpg,
     about: [
       "This tool converts your PNG to JPG in one click. PNG and JPG solve different problems — PNG for lossless quality and transparency, JPG for smaller file sizes on photographic content — and converting between them is a routine need whenever a form, upload widget, or print service insists on one format over the other.",
@@ -154,6 +210,19 @@ export const tools: ToolConfig[] = [
     tagline: "Convert JPG images to lossless PNG format, in your browser.",
     seoDescription:
       "Free JPG to PNG converter. Convert JPG images to lossless PNG format instantly, ready for further editing — entirely in your browser, no upload required.",
+    seoTitle: "Free JPG to PNG Converter: Convert JPEG to PNG Online",
+    keywords: [
+      "jpg to png",
+      "jpg to png converter",
+      "convert jpg to png",
+      "jpeg to png",
+      "change jpg to png",
+      "jpg to png online free",
+      "convert photo to png",
+      "lossless png from jpg",
+    ],
+    directAnswer:
+      "A JPG to PNG converter re-encodes a JPG or JPEG image as a lossless PNG file, so later edits and re-saves don't add compression artefacts. The PNG is usually larger and fully opaque; conversion runs in your browser without uploading the image.",
     component: JpgToPng,
     about: [
       "This tool converts a JPG to PNG in one click — useful when a design tool, upload form, or workflow specifically requires PNG. PNG's lossless compression and support for transparency make it the format of choice for logos, icons, screenshots and any graphic that needs to be edited further without accumulating compression artifacts.",
@@ -188,6 +257,19 @@ export const tools: ToolConfig[] = [
     tagline: "Convert any image to the modern, smaller WebP format.",
     seoDescription:
       "Free WebP converter. Convert JPG, PNG or other images to the modern WebP format for smaller file sizes and faster websites — entirely in your browser.",
+    seoTitle: "Free WebP Converter: Convert JPG & PNG to WebP Online",
+    keywords: [
+      "webp converter",
+      "convert image to webp",
+      "jpg to webp",
+      "png to webp",
+      "image to webp converter",
+      "webp format",
+      "convert images to webp for website",
+      "make images smaller for website",
+    ],
+    directAnswer:
+      "A WebP converter turns a JPG, PNG or other image your browser can open into WebP, a web format that is usually smaller than JPEG at similar quality and also supports transparency. It uses the browser's own encoder, so the image is not uploaded.",
     component: WebpConverter,
     about: [
       "WebP is a modern image format built specifically for the web: it typically produces 25-35% smaller files than JPEG at equivalent visual quality, and unlike JPEG it also supports transparency — giving PNG-like flexibility with JPEG-like compression efficiency. Every major browser has supported it for years, making it a safe default for web images today.",
@@ -222,6 +304,20 @@ export const tools: ToolConfig[] = [
     tagline: "Convert an image into a base64 data URL you can embed directly in code.",
     seoDescription:
       "Free image to base64 converter. Turn any image into a base64 data URL for embedding directly in HTML, CSS or JSON — entirely in your browser.",
+    seoTitle: "Free Image to Base64 Converter: Get an Image Data URL",
+    keywords: [
+      "image to base64",
+      "image to base64 converter",
+      "convert image to base64",
+      "png to base64",
+      "jpg to base64",
+      "image to data url",
+      "image to data uri",
+      "base64 image for html and css",
+      "embed image in html",
+    ],
+    directAnswer:
+      "An image to Base64 converter reads an image file and outputs its full data URL (data:image/…;base64,…) with one-click copy, ready to paste into an HTML img src, a CSS background or JSON. The file is read in your browser and never uploaded.",
     component: ImageToBase64,
     about: [
       "This tool converts any image file into a base64-encoded data URL, ready to paste directly into your code. Embedding a small image directly in your HTML or CSS this way avoids an extra network request — useful for tiny icons, inline SVG-style graphics, or email templates where linking to external images is unreliable (many email clients block remote image loading by default).",
@@ -256,6 +352,19 @@ export const tools: ToolConfig[] = [
     tagline: "Decode a base64 string back into a viewable, downloadable image.",
     seoDescription:
       "Free base64 to image converter. Paste a base64 string or data URL to preview and download the decoded image — entirely in your browser.",
+    seoTitle: "Free Base64 to Image Converter: Decode & Download",
+    keywords: [
+      "base64 to image",
+      "base64 to image converter",
+      "decode base64 image",
+      "base64 to png",
+      "base64 to jpg",
+      "data url to image",
+      "view base64 image online",
+      "convert base64 string to image",
+    ],
+    directAnswer:
+      "A Base64 to image converter decodes a Base64 string or data:image URL, previews the picture and lets you download it as a file with the matching extension. Raw Base64 without a prefix is treated as PNG, and decoding runs in your browser.",
     component: Base64ToImage,
     about: [
       "This tool decodes any base64 image data, whether it's a full data URL (data:image/png;base64,…) or just the raw base64 characters, and shows you the resulting image with a download button. It's the reverse of embedding: sometimes you have a base64 string — pulled from an API response, a database export, or someone else's code — and need to actually see what image it represents, or save it as a real file.",
@@ -290,10 +399,24 @@ export const tools: ToolConfig[] = [
     tagline: "Generate a full set of favicon PNGs plus the HTML to reference them.",
     seoDescription:
       "Free favicon generator. Upload a logo image and get a complete set of favicon PNGs at every standard size, plus the HTML snippet to add them to your site.",
+    seoTitle: "Free Favicon Generator: All Sizes Plus HTML Link Tags",
+    keywords: [
+      "favicon generator",
+      "favicon maker",
+      "create favicon from image",
+      "favicon png",
+      "favicon sizes",
+      "png to favicon",
+      "apple touch icon generator",
+      "favicon html code",
+      "website icon generator",
+    ],
+    directAnswer:
+      "A favicon generator resizes one logo image into PNG favicons at 16, 32, 48, 180, 192 and 512 pixels, packs them into a single ZIP and gives you the HTML <link> tags for your page's <head>. It runs in your browser without uploading your logo.",
     component: FaviconGenerator,
     about: [
       "A favicon is the small icon that appears in browser tabs, bookmarks, and mobile home-screen shortcuts — a detail easy to overlook but one that makes a site look unfinished when missing or blurry. Different contexts want different sizes: browser tabs use tiny 16×16 and 32×32 icons, Apple's home-screen shortcuts want a crisper 180×180, and Android/PWA manifests often request 192×192 or 512×512. This tool generates the full set from a single source image.",
-      "Upload a square logo or icon — ideally already close to square, since the generator resizes to each target dimension without cropping — and it produces PNG files at every standard size: 16, 32, 48, 180, 192 and 512 pixels. Each downloads individually, ready to drop into your site's root or assets folder, along with the HTML `<link>` tags needed to reference them correctly in your page's `<head>`.",
+      "Upload a square logo or icon — ideally already close to square, since the generator resizes to each target dimension without cropping — and it produces PNG files at every standard size: 16, 32, 48, 180, 192 and 512 pixels. They download together as one ZIP file, ready to drop into your site's root or assets folder, along with the HTML `<link>` tags for the 16, 32, 180 and 192 pixel icons to paste into your page's `<head>`.",
       "For best results, start with a simple, high-contrast source image — intricate detail disappears at 16×16, so a bold letterform or simple icon reads far better than a busy logo at favicon scale. Processing happens entirely in your browser; your logo is never uploaded to generate these variants.",
       "Once generated, test the result across a few contexts before considering the job done — open the site in a browser tab, add it to a phone's home screen, and check a bookmark bar. It only takes a minute, and it's the easiest way to catch a favicon that looked fine on a large canvas but turns into an unrecognisable blur at 16×16.",
     ],
@@ -324,6 +447,20 @@ export const tools: ToolConfig[] = [
     tagline: "Click anywhere on an image to get its exact hex and RGB colour.",
     seoDescription:
       "Free image color picker. Click any point on an image to instantly get its hex and RGB colour value — entirely in your browser, no upload required.",
+    seoTitle: "Free Image Color Picker: Get HEX & RGB From a Photo",
+    keywords: [
+      "image color picker",
+      "color picker from image",
+      "get color from image",
+      "hex code from image",
+      "rgb color picker",
+      "colour picker from image",
+      "eyedropper tool online",
+      "pick color from screenshot",
+      "find color code of image",
+    ],
+    directAnswer:
+      "An image color picker shows the exact HEX and RGB value of any pixel you click on an uploaded photo or screenshot, with one-click copy of the hex code. The image is read in your browser and never uploaded.",
     component: ImageColorPicker,
     about: [
       "This tool removes the guesswork: click anywhere on your uploaded image and get the exact hex and RGB value at that pixel. Matching a specific colour from a photo, screenshot or design mockup — a brand's exact blue, the background colour behind a logo, a shade you liked in someone else's design — usually means eyeballing it and guessing, which never quite matches.",
@@ -358,6 +495,20 @@ export const tools: ToolConfig[] = [
     tagline: "Rotate or mirror any image in your browser.",
     seoDescription:
       "Free image rotator and flipper. Rotate any image by 90, 180 or 270 degrees, or flip it horizontally/vertically — entirely in your browser, no upload required.",
+    seoTitle: "Free Image Rotator & Flipper: Rotate or Mirror Photos",
+    keywords: [
+      "image rotator",
+      "rotate image online",
+      "flip image",
+      "mirror image online",
+      "rotate photo 90 degrees",
+      "flip image horizontally",
+      "flip image vertically",
+      "rotate picture",
+      "image flipper",
+    ],
+    directAnswer:
+      "An image rotator and flipper turns a photo 90° clockwise, 180° or 90° anti-clockwise and can mirror it horizontally or vertically in the same step, with a live preview. PNGs stay PNG with transparency; other images export as JPG, all in your browser.",
     component: ImageRotatorFlipper,
     about: [
       "This tool rotates any image by 90°, 180° or 270°, and independently flips it horizontally or vertically, all combinable in one pass. Photos taken sideways, screenshots captured upside-down, or a graphic that needs to be mirrored for a specific layout — these small orientation fixes shouldn't require opening a full editor.",
@@ -391,7 +542,21 @@ export const tools: ToolConfig[] = [
     name: "Background Remover",
     tagline: "Remove the background from any photo, instantly and entirely in your browser.",
     seoDescription:
-      "Free background remover. Remove the background from a photo automatically — get a transparent PNG for product photos, ID photos or graphics. No upload, no watermark — a free account is needed to download.",
+      "Free background remover: AI erases a photo's background in your browser, with no upload or watermark. Download a transparent PNG or WebP with a free account.",
+    seoTitle: "Free Background Remover: Transparent PNG in Your Browser",
+    keywords: [
+      "background remover",
+      "remove background from image",
+      "remove background online",
+      "remove background from photo free",
+      "transparent background maker",
+      "background eraser",
+      "remove white background",
+      "make background transparent",
+      "product photo background remover",
+    ],
+    directAnswer:
+      "A background remover uses an AI segmentation model to separate the main subject of a photo from its background and outputs a transparent PNG or WebP. The model runs in your browser, so the photo is never uploaded; very large images are scaled down first.",
     component: BackgroundRemover,
     howTo: {
       name: "How to remove a background from a photo",
@@ -403,7 +568,7 @@ export const tools: ToolConfig[] = [
     },
     about: [
       "This tool automatically cuts a subject cleanly out of its background: upload a photo and an AI model identifies the foreground subject and removes everything else, leaving a transparent PNG you can drop onto any background. Doing that used to mean a photo editor and a patient hand with the lasso tool.",
-      "It runs an open-source segmentation model entirely inside your browser using WebAssembly — there is no server upload at any point, so a personal or ID photo never leaves your device. The trade-off for that privacy and cost (this is a genuinely capable AI model, running for free) is a short one-time delay the first time you use it: your browser downloads a few megabytes of model data, cached afterward so every subsequent image processes in seconds.",
+      "It runs an open-source segmentation model entirely inside your browser using WebAssembly — there is no server upload at any point, so a personal or ID photo never leaves your device. The trade-off for that privacy and cost (this is a genuinely capable AI model, running for free) is a short one-time delay the first time you use it: your browser downloads the model (about 44 MB), cached afterward so every subsequent image processes in seconds.",
       "Common uses: an e-commerce product photo that needs a clean white or transparent background, a headshot for a passport or ID photo template, or a subject you want to place onto a different background in a design tool. Works best on photos with a clear subject against a reasonably distinct background — very fine detail like loose hair or fur, or a subject that blends closely into its background in color and tone, is harder for any automatic tool (including this one) to get perfectly clean.",
     ],
     faq: [
@@ -415,7 +580,7 @@ export const tools: ToolConfig[] = [
       {
         question: "Why does the first image take longer than the second?",
         answer:
-          "The first run downloads the segmentation model to your browser (a few megabytes, cached afterward). Every image after that in the same browser session processes in a few seconds with no further download.",
+          "The first run downloads the segmentation model to your browser (about 44 MB, cached afterward). Every image after that in the same browser session processes in a few seconds with no further download.",
       },
       {
         question: "What format is the output?",

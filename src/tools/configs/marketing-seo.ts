@@ -479,7 +479,7 @@ export const tools: ToolConfig[] = [
       {
         question: "Why did some characters disappear from my generated hashtags?",
         answer:
-          "Hashtags technically only allow letters and numbers. If you include a space, it ends the tag right there. If you use punctuation (like commas, ampersands, or apostrophes), it breaks the tag. This tool automatically strips those out to ensure your tags actually work ('D2C & retail' cleanly becomes #D2CRetail).",
+          "Hashtags technically only allow letters and numbers. If you include a space, it ends the tag right there. If you use punctuation (like commas, ampersands, or apostrophes), it breaks the tag. This tool automatically strips those out to ensure your tags actually work ('small business & growth' cleanly becomes #SmallBusinessGrowth).",
       },
       {
         question: "Should I stick to broad hashtags or use super niche ones?",
