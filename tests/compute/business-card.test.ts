@@ -7,8 +7,8 @@ import {
   DEFAULT_CARD_COLORS,
   initials,
   normalizeSocial,
-  PHOTO_LAYOUTS,
-  photoLayoutDoc,
+  cardPhotos,
+  MAX_PHOTOS,
   normalizeUrl,
   socialLinks,
   telHref,
@@ -205,48 +205,53 @@ describe("buildCardHtml", () => {
     expect(html).toContain(`--primary:${DEFAULT_CARD_COLORS.primaryColor}`);
   });
 
-  it("shows the whole photo in the header, cycling its five layouts", () => {
+  it("shows the whole photo in the header", () => {
     const html = buildCardHtml(card({ photo: PHOTO, photoRatio: 0.75 }));
     expect(html).toContain('class="banner hero"');
-    expect(html).toContain(`--photo:url('${PHOTO}');--ratio:0.75`);
-    for (const l of PHOTO_LAYOUTS) expect(html).toContain(`lay-${l.id}`);
+    expect(html).toContain(`--p0:url('${PHOTO}');--ratio:0.75`);
     // The header takes the photo's proportions and anchors it at the top: no cropped heads.
     expect(html).toContain("aspect-ratio:var(--ratio)");
-    expect(html).toContain("background:var(--photo) center top/cover");
-    // One copy of the image however many layouts animate.
-    expect(html.split(PHOTO).length - 1).toBe(1);
-    // Layouts that print the name escape it.
-    expect(buildCardHtml(card({ photo: PHOTO, name: "<b>X</b> Y" }))).not.toContain("<b>X</b>");
-    expect(html).not.toContain('class="avatar');
+    expect(html).toContain("background-position:center top");
+    // One photo: a slow zoom, no crossfade.
+    expect(html).toContain("@keyframes zoom1");
+    expect(html).not.toContain("@keyframes shot");
+  });
+
+  it("plays several poses as a motion picture, each image embedded once", () => {
+    const poses = ["A", "B", "C", "D"].map((c) => `data:image/jpeg;base64,${c.repeat(40)}`);
+    const html = buildCardHtml(card({ photo: poses[0], morePhotos: poses.slice(1) }));
+    for (let i = 0; i < 4; i++) {
+      expect(html).toContain(`--p${i}:url('${poses[i]}')`);
+      expect(html.split(poses[i]!).length - 1).toBe(1);
+    }
+    expect(html.match(/class="shot/g)).toHaveLength(4);
+    expect(html).toContain("@keyframes shot");
+    expect(html).toContain(".shot:nth-child(4){animation-delay:10.50s}");
     expect(html).toContain("prefers-reduced-motion");
   });
 
-  it("falls back to a portrait ratio for missing or absurd ratios", () => {
-    expect(buildCardHtml(card({ photo: PHOTO }))).toContain("--ratio:0.8");
-    expect(buildCardHtml(card({ photo: PHOTO, photoRatio: 50 }))).toContain("--ratio:0.8");
+  it("shows only the main photo, still, when motion is off", () => {
+    const html = buildCardHtml(card({ photo: PHOTO, morePhotos: [PHOTO.replace("AAAQ", "BBBQ")], photoMotion: false }));
+    expect(html.match(/class="shot/g)).toHaveLength(1);
+    expect(html).not.toContain("@keyframes shot");
+    expect(html).not.toContain("@keyframes zoom");
+  });
+
+  it("validates the extra photos", () => {
+    expect(validateBusinessCard(card({ photo: PHOTO, morePhotos: [PHOTO, PHOTO, PHOTO] }))).toBeNull();
+    expect(validateBusinessCard(card({ photo: PHOTO, morePhotos: [PHOTO, PHOTO, PHOTO, PHOTO] }))).toMatch(new RegExp(`${MAX_PHOTOS} photos`));
+    expect(validateBusinessCard(card({ morePhotos: [PHOTO] }))).toMatch(/main photo/);
+    expect(validateBusinessCard(card({ photo: PHOTO, morePhotos: ["javascript:alert(1)"] }))).toMatch(/PNG or JPEG/);
+    expect(cardPhotos(card({ photo: PHOTO, morePhotos: ["javascript:x", PHOTO] }))).toEqual([PHOTO, PHOTO]);
     expect(validateBusinessCard(card({ photo: PHOTO, photoRatio: 50 }))).toMatch(/photo/);
+    expect(buildCardHtml(card({ photo: PHOTO, photoRatio: 50 }))).toContain("--ratio:0.8");
   });
 
-  it("shows only the full portrait when motion is off", () => {
-    const html = buildCardHtml(card({ photo: PHOTO, photoMotion: false }));
-    expect(html).toContain('class="lay lay-portrait base"');
-    expect(html).not.toContain('class="lay lay-polaroid');
-    expect(html).not.toContain("@keyframes lay");
-  });
-
-  it("renders each layout on its own for the thumbnails", () => {
-    for (const l of PHOTO_LAYOUTS) {
-      const doc = photoLayoutDoc(card({ photo: PHOTO }), l.id);
-      expect(doc).toContain(`lay-${l.id}`);
-      expect(doc).not.toContain("@keyframes lay");
-    }
-    expect(photoLayoutDoc(card({ photo: PHOTO }), "polaroid")).toContain("<figcaption>Priya Sharma</figcaption>");
-  });
-
-  it("puts the logo in the circle and ignores invalid logos", () => {
+  it("shows the logo large on a white panel", () => {
     const html = buildCardHtml(card({ photo: PHOTO, logo: PHOTO }));
-    expect(html).toContain('class="avatar logo"');
+    expect(html).toContain('class="brandbar');
     expect(html).toContain(`<img src="${PHOTO}" alt="Northwind Labs logo">`);
+    expect(html).not.toContain('class="avatar');
     expect(buildCardHtml(card({ logo: "javascript:alert(1)" }))).not.toContain("javascript:");
   });
 
