@@ -18,7 +18,7 @@ export function DashboardMetrics({ stats }: { stats: Awaited<ReturnType<typeof g
       <KpiCard title="Revenue" metric={stats.metrics.revenue} href="/admin/monetization" formatter={formatCurrency} />
       <KpiCard title="Active Subscriptions" metric={stats.metrics.activeSubscriptions} href="/admin/monetization/subscriptions" />
       <KpiCard title="Failed Executions" metric={stats.metrics.failedExecutions} href="/admin/error-logs" />
-      <KpiCard title="Open Feedback" metric={stats.metrics.openFeedback} href="/admin/contact-feedback" />
+      <KpiCard title="Open Feedback" metric={stats.metrics.openFeedback} href="/admin/feedback" />
     </div>
   );
 }

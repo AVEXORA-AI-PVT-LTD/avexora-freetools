@@ -755,3 +755,37 @@ model AiUsageLog {
   @@index([createdAt(sort: Desc)])
   @@index([userId, createdAt(sort: Desc)])
 }
+
+model ContactSubmission {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  referenceId     String    @unique
+  type            String    @default("Contact") // "Contact" | "Bug Report" | "Feature Request" | "Tool Feedback" | "Review"
+  userId          String?   @db.ObjectId
+  name            String
+  email           String
+  subject         String
+  message         String
+  toolSlug        String?
+  priority        String    @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
+  status          String    @default("New") // "New" | "In Progress" | "Resolved" | "Closed" | "Spam"
+  assignedAdminId String?   @db.ObjectId
+  internalNotes   Json?
+  attachments     String[]  @default([])
+  browser         String?
+  device          String?
+  ipHash          String?
+  userAgent       String?
+  source          String?   @default("website")
+  resolvedAt      DateTime?
+  resolvedBy      String?   @db.ObjectId
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([type])
+  @@index([priority])
+  @@index([assignedAdminId])
+  @@index([toolSlug])
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+}

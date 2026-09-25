@@ -156,8 +156,10 @@ export async function getDashboardStats(rangeType: DateRange) {
     prisma.auditLog.count({ where: { action: "TOOL_FAILURE", createdAt: { gte: previousStart, lte: previousEnd } } })
   ]);
 
-  const currentFeedback = 0;
-  const prevFeedback = 0;
+  const [currentFeedback, prevFeedback] = await Promise.all([
+    prisma.contactSubmission.count({ where: { status: { in: ["NEW", "IN_PROGRESS"] } } }),
+    prisma.contactSubmission.count({ where: { status: { in: ["NEW", "IN_PROGRESS"] }, createdAt: { lte: previousEnd } } })
+  ]);
 
   const currentRevenue = 0;
   const prevRevenue = 0;

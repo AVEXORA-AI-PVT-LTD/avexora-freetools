@@ -122,7 +122,7 @@ export const adminNavigation: AdminNavItem[] = [
     label: "Contact & Feedback",
     href: "/admin/feedback",
     icon: MessageSquare,
-    permission: "content.view",
+    permission: "feedback.view",
   },
   {
     label: "Error Logs",

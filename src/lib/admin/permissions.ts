@@ -112,7 +112,14 @@ export type Permission =
   | "ai.manage_limits"
   | "ai.view_usage"
   | "ai.view_costs"
-  | "ai.manage_models";
+  | "ai.manage_models"
+
+  | "feedback.view"
+  | "feedback.update"
+  | "feedback.assign"
+  | "feedback.delete"
+  | "feedback.manage"
+  | "feedback.export";
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   superadmin: [
@@ -127,7 +134,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "settings.view", "settings.edit", "analytics.view", "audit_logs.view", "content.view", "content.edit",
     "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview", "ads.manage_code",
     "media.view", "media.upload", "media.edit", "media.rename", "media.replace", "media.move", "media.delete", "media.manage_folders", "media.manage_tags", "media.copy_url",
-    "ai.view", "ai.edit", "ai.enable", "ai.disable", "ai.test", "ai.manage_prompts", "ai.restore_prompts", "ai.manage_limits", "ai.view_usage", "ai.view_costs", "ai.manage_models"
+    "ai.view", "ai.edit", "ai.enable", "ai.disable", "ai.test", "ai.manage_prompts", "ai.restore_prompts", "ai.manage_limits", "ai.view_usage", "ai.view_costs", "ai.manage_models",
+    "feedback.view", "feedback.update", "feedback.assign", "feedback.delete", "feedback.manage", "feedback.export"
   ],
   admin: [
     "dashboard.view", "categories.view", "categories.edit", "categories.toggle", 
@@ -139,14 +147,16 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "analytics.view", "content.view", "content.edit",
     "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview",
     "media.view", "media.upload", "media.edit", "media.rename", "media.replace", "media.move", "media.delete", "media.manage_folders", "media.manage_tags", "media.copy_url",
-    "ai.view", "ai.edit", "ai.enable", "ai.disable", "ai.test", "ai.manage_prompts", "ai.restore_prompts", "ai.manage_limits", "ai.view_usage", "ai.view_costs"
+    "ai.view", "ai.edit", "ai.enable", "ai.disable", "ai.test", "ai.manage_prompts", "ai.restore_prompts", "ai.manage_limits", "ai.view_usage", "ai.view_costs",
+    "feedback.view", "feedback.update", "feedback.assign", "feedback.manage", "feedback.export"
   ],
   editor: [
     "dashboard.view", "categories.view", "categories.edit", "tools.view", 
     "tools.edit", "tools.reorder", "homepage.view", "seo.view", "seo.edit", "content.view", "content.edit",
     "ads.view",
     "media.view", "media.upload", "media.copy_url",
-    "ai.view"
+    "ai.view",
+    "feedback.view", "feedback.update"
   ],
   user: []
 };
