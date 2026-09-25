@@ -152,16 +152,15 @@ export const adminNavigation: AdminNavItem[] = [
     label: "Admin & Roles",
     icon: ShieldAlert,
     children: [
-      { label: "Administrators", href: "/admin/admins", permission: "roles.view" },
-      { label: "Roles", href: "/admin/roles", permission: "roles.view" },
-      { label: "Permissions", href: "/admin/permissions", permission: "roles.view" },
+      { label: "Administrators", href: "/admin/admins", permission: "admins.view" },
+      { label: "Roles & Permissions", href: "/admin/roles", permission: "roles.view" },
     ],
   },
   {
     label: "Audit Logs",
     href: "/admin/audit-logs",
     icon: History,
-    permission: "audit_logs.view",
+    permission: "audit.view",
   },
   {
     label: "Settings",

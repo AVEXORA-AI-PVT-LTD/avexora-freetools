@@ -1,18 +1,18 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as { prisma_v23?: PrismaClient };
+const globalForPrisma = globalThis as unknown as { prisma_v24?: PrismaClient };
 
 function getPrismaClient(): PrismaClient {
   if (process.env.NODE_ENV === "production") {
-    if (!globalForPrisma.prisma_v23) {
-      globalForPrisma.prisma_v23 = new PrismaClient();
+    if (!globalForPrisma.prisma_v24) {
+      globalForPrisma.prisma_v24 = new PrismaClient();
     }
-    return globalForPrisma.prisma_v23;
+    return globalForPrisma.prisma_v24;
   }
-  if (!globalForPrisma.prisma_v23 || !(globalForPrisma.prisma_v23 as any).errorLog) {
-    globalForPrisma.prisma_v23 = new PrismaClient();
+  if (!globalForPrisma.prisma_v24 || !(globalForPrisma.prisma_v24 as any).role) {
+    globalForPrisma.prisma_v24 = new PrismaClient();
   }
-  return globalForPrisma.prisma_v23;
+  return globalForPrisma.prisma_v24;
 }
 
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {

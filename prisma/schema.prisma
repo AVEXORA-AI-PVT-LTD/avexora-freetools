@@ -51,6 +51,7 @@ model User {
   lockedUntil      DateTime?
   
   status           String    @default("ACTIVE") // ACTIVE, DISABLED, BLOCKED
+  customRoles      String[]  @default([])
   lastActiveAt     DateTime?
   disabledAt       DateTime?
   blockedAt        DateTime?
@@ -826,4 +827,20 @@ model ErrorLog {
   @@index([fingerprint])
   @@index([createdAt(sort: Desc)])
 }
+
+model Role {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  slug         String   @unique // e.g. "super_admin", "admin", "content_manager", "support", "finance", "seo_lead"
+  description  String?
+  permissions  String[] @default([]) // Array of permission keys e.g. ["tools.view", "content.create"]
+  isSystemRole Boolean  @default(false)
+  status       Boolean  @default(true)
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isSystemRole])
+}
+
 

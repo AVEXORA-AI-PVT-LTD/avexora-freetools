@@ -18,7 +18,13 @@ export type AuditAction =
   | "SEO_UPDATED"
   | "CONTENT_UPDATED"
   | "NAVIGATION_UPDATED"
-  | "SETTINGS_UPDATED";
+  | "SETTINGS_UPDATED"
+  | "ROLE_CREATED"
+  | "ROLE_UPDATED"
+  | "ROLE_DELETED"
+  | "ADMIN_ROLE_ASSIGNED"
+  | "ADMIN_STATUS_CHANGED"
+  | "PRIVILEGE_ESCALATION_ATTEMPT";
 
 export type TargetType = 
   | "TOOL"
@@ -28,7 +34,8 @@ export type TargetType =
   | "CONTENT"
   | "NAVIGATION"
   | "SETTINGS"
-  | "SYSTEM";
+  | "SYSTEM"
+  | "ROLE";
 
 interface AuditLogOptions {
   action: AuditAction;
