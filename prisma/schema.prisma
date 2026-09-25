@@ -701,3 +701,57 @@ model MediaAsset {
   @@index([mimeType])
   @@index([createdAt])
 }
+
+model AiToolConfig {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug            String   @unique
+  enabled             Boolean  @default(true)
+  provider            String   @default("anthropic") // "anthropic" | "openai" | "gemini"
+  model               String   @default("claude-opus-4-8")
+  temperature         Float    @default(0.7)
+  maxTokens           Int      @default(2048)
+  inputLimitChars     Int      @default(5000)
+  dailyLimitPerUser   Int      @default(50)
+  monthlyLimitPerUser Int      @default(500)
+  maintenanceMessage String?
+  activePromptVersion Int      @default(1)
+  updatedBy           String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model AiPromptRevision {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug           String
+  version            Int
+  systemPrompt       String
+  userPromptTemplate String
+  variables          String[] @default([])
+  status             String   @default("active") // "active" | "draft" | "archived"
+  changeReason       String   @default("Initial release")
+  createdBy          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([toolSlug, version])
+  @@index([toolSlug, status])
+}
+
+model AiUsageLog {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug         String
+  userId           String?  @db.ObjectId
+  provider         String   @default("anthropic")
+  model            String   @default("claude-opus-4-8")
+  promptTokens     Int      @default(0)
+  completionTokens Int      @default(0)
+  totalTokens      Int      @default(0)
+  estimatedCost    Float    @default(0)
+  success          Boolean  @default(true)
+  errorMessage     String?
+  createdAt        DateTime @default(now())
+
+  @@index([toolSlug, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+}

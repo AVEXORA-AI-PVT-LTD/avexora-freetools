@@ -16,6 +16,7 @@ import {
   ShieldAlert,
   History,
   Settings,
+  Sparkles,
   LucideIcon
 } from "lucide-react";
 
@@ -110,6 +111,12 @@ export const adminNavigation: AdminNavItem[] = [
     href: "/admin/media",
     icon: ImageIcon,
     permission: "media.view",
+  },
+  {
+    label: "AI Writer",
+    href: "/admin/ai-writer",
+    icon: Sparkles,
+    permission: "ai.view",
   },
   {
     label: "Contact & Feedback",
