@@ -39,7 +39,8 @@ export type PermissionCategory =
   | "Roles"
   | "Audit Logs"
   | "Settings"
-  | "Backup";
+  | "Backup"
+  | "Reports";
 
 export const PERMISSION_REGISTRY: PermissionDefinition[] = [
   // Dashboard
@@ -122,6 +123,20 @@ export const PERMISSION_REGISTRY: PermissionDefinition[] = [
   { key: "backup.view", name: "View Maintenance & Backups", description: "Inspect system health and backup logs", category: "Backup" },
   { key: "backup.create", name: "Create Backups", description: "Generate new database & asset snapshots", category: "Backup" },
   { key: "backup.restore", name: "Restore Backups", description: "Execute system database restores", category: "Backup" },
+
+  // Reports
+  { key: "reports.view", name: "View Reports Dashboard", description: "Access reports dashboard and view history", category: "Reports" },
+  { key: "reports.create", name: "Generate Reports", description: "Configure and generate report exports", category: "Reports" },
+  { key: "reports.download", name: "Download Reports", description: "Download generated CSV, XLSX, and PDF reports", category: "Reports" },
+  { key: "reports.delete", name: "Delete Reports", description: "Delete or expire report files and job history", category: "Reports" },
+  { key: "reports.tools", name: "Tool Usage Reports", description: "Generate and view tool performance reports", category: "Reports" },
+  { key: "reports.users", name: "User Activity Reports", description: "Generate and view user activity reports", category: "Reports" },
+  { key: "reports.revenue", name: "Revenue Reports", description: "Generate and view financial revenue reports", category: "Reports" },
+  { key: "reports.subscriptions", name: "Subscription Reports", description: "Generate and view subscription reports", category: "Reports" },
+  { key: "reports.analytics", name: "Website Traffic Reports", description: "Generate and view website traffic reports", category: "Reports" },
+  { key: "reports.seo", name: "SEO Health Reports", description: "Generate and view SEO metadata reports", category: "Reports" },
+  { key: "reports.errors", name: "Error Diagnostic Reports", description: "Generate and view error diagnostic reports", category: "Reports" },
+  { key: "reports.feedback", name: "Feedback Reports", description: "Generate and view user feedback reports", category: "Reports" },
 ];
 
 export type Permission = string;
@@ -159,6 +174,7 @@ export const SYSTEM_ROLES: Record<string, SystemRoleDefinition> = {
       "errors.view", "errors.manage",
       "audit.view",
       "ads.view", "ads.manage",
+      "reports.view", "reports.create", "reports.download", "reports.delete", "reports.tools", "reports.users", "reports.analytics", "reports.seo", "reports.errors", "reports.feedback",
     ],
   },
   content_manager: {
@@ -173,6 +189,7 @@ export const SYSTEM_ROLES: Record<string, SystemRoleDefinition> = {
       "media.view", "media.upload",
       "tools.view",
       "categories.view",
+      "reports.view", "reports.seo",
     ],
   },
   support: {
@@ -186,6 +203,7 @@ export const SYSTEM_ROLES: Record<string, SystemRoleDefinition> = {
       "feedback.view", "feedback.manage",
       "errors.view", "errors.manage",
       "audit.view",
+      "reports.view", "reports.feedback", "reports.errors", "reports.users",
     ],
   },
   finance: {
@@ -198,6 +216,7 @@ export const SYSTEM_ROLES: Record<string, SystemRoleDefinition> = {
       "subscriptions.view", "subscriptions.manage",
       "payments.view", "payments.refund",
       "settings.view",
+      "reports.view", "reports.create", "reports.download", "reports.revenue", "reports.subscriptions",
     ],
   },
 };

@@ -968,3 +968,34 @@ model AnalyticsEvent {
   @@index([country])
   @@index([device])
 }
+
+// ---------------------------------------------------------------------------
+// Phase 28 — Reports & Export Management
+// ---------------------------------------------------------------------------
+
+model ReportJob {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  reportType       String    // "tool_usage" | "user_activity" | "revenue" | "subscription" | "website_traffic" | "seo" | "error" | "feedback"
+  format           String    // "csv" | "xlsx" | "pdf"
+  requestedBy      String    @db.ObjectId
+  requestedByEmail String?
+  status           String    @default("QUEUED") // "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED"
+  filters          String?   // JSON serialized parameters
+  dateFrom         DateTime?
+  dateTo           DateTime?
+  fileReference    String?   // Relative file path e.g. "storage/reports/rpt_12345.pdf"
+  fileSize         Int?      // Size in bytes
+  progress         Int       @default(0) // 0 to 100
+  errorMessage     String?
+  downloadCount    Int       @default(0)
+
+  createdAt        DateTime  @default(now())
+  startedAt        DateTime?
+  completedAt      DateTime?
+  expiresAt        DateTime?
+
+  @@index([requestedBy])
+  @@index([status])
+  @@index([reportType])
+}
+

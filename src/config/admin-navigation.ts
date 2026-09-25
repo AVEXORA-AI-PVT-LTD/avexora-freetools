@@ -145,9 +145,13 @@ export const adminNavigation: AdminNavItem[] = [
   },
   {
     label: "Reports",
-    href: "/admin/reports",
     icon: FileSpreadsheet,
     permission: "analytics.view",
+    children: [
+      { label: "Dashboard", href: "/admin/reports", permission: "analytics.view" },
+      { label: "Generator", href: "/admin/reports/generate", permission: "analytics.view" },
+      { label: "History", href: "/admin/reports/history", permission: "analytics.view" },
+    ],
   },
   {
     label: "Admin & Roles",
