@@ -654,3 +654,50 @@ model AdSlot {
   @@index([categorySlug])
   @@index([toolSlug])
 }
+
+model MediaFolder {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String   @unique
+  parentId  String?  @db.ObjectId
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   MediaFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children MediaFolder[] @relation("FolderHierarchy")
+  assets   MediaAsset[]
+
+  @@index([parentId])
+}
+
+model MediaAsset {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  filename         String   // Display filename (e.g. "logo-2026.png")
+  originalFilename String   // Original file name on upload
+  storageKey       String   // Relative storage path or key (e.g. "uploads/2026/09/uuid.png")
+  storageProvider  String   @default("local") // "local" | "s3" | "vercel-blob"
+  storageUrl       String   // Full storage URL
+  cdnUrl           String   // Public CDN / relative URL for web rendering
+  mimeType         String   // e.g. "image/png"
+  extension        String   // e.g. "png"
+  size             Int      // File size in bytes
+  width            Int?     // Image width in px if applicable
+  height           Int?     // Image height in px if applicable
+  altText          String?
+  title            String?
+  description      String?
+  folderId         String?  @db.ObjectId
+  tags             String[] @default([])
+  assetType        String   @default("image") // "image" | "document" | "icon" | "thumbnail" | "brand"
+  uploadedBy       String?  // Admin User ID or name
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  folder MediaFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([folderId])
+  @@index([assetType])
+  @@index([mimeType])
+  @@index([createdAt])
+}

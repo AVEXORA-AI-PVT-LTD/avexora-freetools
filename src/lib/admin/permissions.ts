@@ -89,7 +89,18 @@ export type Permission =
   | "ads.deactivate"
   | "ads.delete"
   | "ads.preview"
-  | "ads.manage_code";
+  | "ads.manage_code"
+
+  | "media.view"
+  | "media.upload"
+  | "media.edit"
+  | "media.rename"
+  | "media.replace"
+  | "media.move"
+  | "media.delete"
+  | "media.manage_folders"
+  | "media.manage_tags"
+  | "media.copy_url";
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   superadmin: [
@@ -102,7 +113,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "brand_studio.view", "brand_studio.edit", "brand_studio.toggle", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
     "settings.view", "settings.edit", "analytics.view", "audit_logs.view", "content.view", "content.edit",
-    "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview", "ads.manage_code"
+    "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview", "ads.manage_code",
+    "media.view", "media.upload", "media.edit", "media.rename", "media.replace", "media.move", "media.delete", "media.manage_folders", "media.manage_tags", "media.copy_url"
   ],
   admin: [
     "dashboard.view", "categories.view", "categories.edit", "categories.toggle", 
@@ -112,12 +124,14 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "users.edit", "brand_studio.view", "brand_studio.edit", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
     "analytics.view", "content.view", "content.edit",
-    "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview"
+    "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview",
+    "media.view", "media.upload", "media.edit", "media.rename", "media.replace", "media.move", "media.delete", "media.manage_folders", "media.manage_tags", "media.copy_url"
   ],
   editor: [
     "dashboard.view", "categories.view", "categories.edit", "tools.view", 
     "tools.edit", "tools.reorder", "homepage.view", "seo.view", "seo.edit", "content.view", "content.edit",
-    "ads.view"
+    "ads.view",
+    "media.view", "media.upload", "media.copy_url"
   ],
   user: []
 };

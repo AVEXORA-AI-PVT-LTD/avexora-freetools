@@ -109,7 +109,7 @@ export const adminNavigation: AdminNavItem[] = [
     label: "Media Library",
     href: "/admin/media",
     icon: ImageIcon,
-    permission: "content.view",
+    permission: "media.view",
   },
   {
     label: "Contact & Feedback",
