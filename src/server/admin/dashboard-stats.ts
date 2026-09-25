@@ -152,8 +152,8 @@ export async function getDashboardStats(rangeType: DateRange) {
   ]);
 
   const [currentFailures, prevFailures] = await Promise.all([
-    prisma.auditLog.count({ where: { action: "TOOL_FAILURE", createdAt: { gte: start, lte: end } } }),
-    prisma.auditLog.count({ where: { action: "TOOL_FAILURE", createdAt: { gte: previousStart, lte: previousEnd } } })
+    prisma.errorLog.count({ where: { status: { in: ["Open", "Investigating"] } } }),
+    prisma.errorLog.count({ where: { status: { in: ["Open", "Investigating"] }, createdAt: { lte: previousEnd } } })
   ]);
 
   const [currentFeedback, prevFeedback] = await Promise.all([

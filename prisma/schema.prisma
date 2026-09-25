@@ -789,3 +789,41 @@ model ContactSubmission {
   @@index([userId])
   @@index([createdAt(sort: Desc)])
 }
+
+model ErrorLog {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  errorId         String    @unique // e.g. "ERR-20260925-000124"
+  fingerprint     String?   // e.g. "fp_ai_timeout_resume_writer" for deduplication
+  occurrences     Int       @default(1)
+  firstSeenAt     DateTime  @default(now())
+  lastSeenAt      DateTime  @default(now())
+  errorType       String    @default("Server Error") // "Tool Failure" | "API Failure" | "Server Error" | "404 Error" | "Upload Failure" | "AI Failure" | "Payment Failure" | "Authentication Failure" | "Database Failure" | "External Service Failure"
+  toolSlug        String?
+  userId          String?   @db.ObjectId
+  errorCode       String?   // e.g. "AI_PROVIDER_TIMEOUT", "HTTP_404"
+  message         String
+  requestId       String?   // e.g. "req_8f92a71c"
+  severity        String    @default("Medium") // "Low" | "Medium" | "High" | "Critical"
+  status          String    @default("Open") // "Open" | "Investigating" | "Resolved" | "Ignored"
+  environment     String    @default("Production") // "Development" | "Staging" | "Production"
+  stackTrace      String?
+  endpoint        String?
+  method          String?
+  metadata        Json?     // Sanitized params, headers, device info
+  assignedAdminId String?   @db.ObjectId
+  resolutionNote  String?
+  resolvedAt      DateTime?
+  resolvedBy      String?   @db.ObjectId
+  internalNotes   Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, severity, createdAt(sort: Desc)])
+  @@index([errorType])
+  @@index([toolSlug])
+  @@index([userId])
+  @@index([requestId])
+  @@index([fingerprint])
+  @@index([createdAt(sort: Desc)])
+}
+

@@ -1,16 +1,30 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient; prisma_v22?: PrismaClient };
+const globalForPrisma = globalThis as unknown as { prisma_v23?: PrismaClient };
 
-if (process.env.NODE_ENV !== "production") {
-  if (!globalForPrisma.prisma_v22 || !(globalForPrisma.prisma_v22 as any).contactSubmission) {
-    globalForPrisma.prisma_v22 = new PrismaClient();
+function getPrismaClient(): PrismaClient {
+  if (process.env.NODE_ENV === "production") {
+    if (!globalForPrisma.prisma_v23) {
+      globalForPrisma.prisma_v23 = new PrismaClient();
+    }
+    return globalForPrisma.prisma_v23;
   }
+  if (!globalForPrisma.prisma_v23 || !(globalForPrisma.prisma_v23 as any).errorLog) {
+    globalForPrisma.prisma_v23 = new PrismaClient();
+  }
+  return globalForPrisma.prisma_v23;
 }
 
-export const prisma: PrismaClient = globalForPrisma.prisma_v22 ?? new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma_v22 = prisma;
+export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrismaClient();
+    const val = (client as any)[prop];
+    if (typeof val === "function") {
+      return val.bind(client);
+    }
+    return val;
+  },
+});
 
 export function isDatabaseConfigured(): boolean {
   const url = process.env.DATABASE_URL;

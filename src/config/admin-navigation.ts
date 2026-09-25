@@ -125,10 +125,16 @@ export const adminNavigation: AdminNavItem[] = [
     permission: "feedback.view",
   },
   {
-    label: "Error Logs",
-    href: "/admin/error-logs",
+    label: "Error Monitoring",
     icon: AlertTriangle,
-    permission: "audit_logs.view",
+    permission: "errors.view",
+    children: [
+      { label: "All Errors", href: "/admin/error-monitoring", permission: "errors.view" },
+      { label: "Open", href: "/admin/error-monitoring?status=Open", permission: "errors.view" },
+      { label: "Investigating", href: "/admin/error-monitoring?status=Investigating", permission: "errors.view" },
+      { label: "Resolved", href: "/admin/error-monitoring?status=Resolved", permission: "errors.view" },
+      { label: "Ignored", href: "/admin/error-monitoring?status=Ignored", permission: "errors.view" },
+    ],
   },
   {
     label: "Notifications",

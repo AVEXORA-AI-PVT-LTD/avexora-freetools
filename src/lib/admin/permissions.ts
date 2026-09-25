@@ -119,7 +119,16 @@ export type Permission =
   | "feedback.assign"
   | "feedback.delete"
   | "feedback.manage"
-  | "feedback.export";
+  | "feedback.export"
+
+  | "errors.view"
+  | "errors.update"
+  | "errors.assign"
+  | "errors.resolve"
+  | "errors.ignore"
+  | "errors.delete"
+  | "errors.export"
+  | "errors.manage";
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   superadmin: [
@@ -135,7 +144,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview", "ads.manage_code",
     "media.view", "media.upload", "media.edit", "media.rename", "media.replace", "media.move", "media.delete", "media.manage_folders", "media.manage_tags", "media.copy_url",
     "ai.view", "ai.edit", "ai.enable", "ai.disable", "ai.test", "ai.manage_prompts", "ai.restore_prompts", "ai.manage_limits", "ai.view_usage", "ai.view_costs", "ai.manage_models",
-    "feedback.view", "feedback.update", "feedback.assign", "feedback.delete", "feedback.manage", "feedback.export"
+    "feedback.view", "feedback.update", "feedback.assign", "feedback.delete", "feedback.manage", "feedback.export",
+    "errors.view", "errors.update", "errors.assign", "errors.resolve", "errors.ignore", "errors.delete", "errors.export", "errors.manage"
   ],
   admin: [
     "dashboard.view", "categories.view", "categories.edit", "categories.toggle", 
@@ -148,7 +158,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview",
     "media.view", "media.upload", "media.edit", "media.rename", "media.replace", "media.move", "media.delete", "media.manage_folders", "media.manage_tags", "media.copy_url",
     "ai.view", "ai.edit", "ai.enable", "ai.disable", "ai.test", "ai.manage_prompts", "ai.restore_prompts", "ai.manage_limits", "ai.view_usage", "ai.view_costs",
-    "feedback.view", "feedback.update", "feedback.assign", "feedback.manage", "feedback.export"
+    "feedback.view", "feedback.update", "feedback.assign", "feedback.manage", "feedback.export",
+    "errors.view", "errors.update", "errors.assign", "errors.resolve", "errors.ignore", "errors.export", "errors.manage"
   ],
   editor: [
     "dashboard.view", "categories.view", "categories.edit", "tools.view", 
@@ -156,7 +167,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "ads.view",
     "media.view", "media.upload", "media.copy_url",
     "ai.view",
-    "feedback.view", "feedback.update"
+    "feedback.view", "feedback.update",
+    "errors.view"
   ],
   user: []
 };
