@@ -935,5 +935,36 @@ model WebhookDeliveryLog {
   @@index([createdAt(sort: Desc)])
 }
 
+// ---------------------------------------------------------------------------
+// Phase 27 — Analytics Events
+// ---------------------------------------------------------------------------
 
+model AnalyticsEvent {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventType     String   // "pageview" | "tool_execution" | "tool_view" | "signup" | "subscription"
+  userId        String?  @db.ObjectId
+  sessionId     String?
+  toolSlug      String?
+  path          String?
+  referrer      String?
+  source        String?  @default("Direct") // utm_source or referrer
+  medium        String?  // utm_medium
+  campaign      String?  // utm_campaign
+  country       String?  @default("India")
+  device        String?  @default("desktop") // "desktop" | "mobile" | "tablet"
+  browser       String?  @default("Chrome")
+  os            String?  @default("macOS")
+  success       Boolean  @default(true)
+  executionTime Int?     // Duration in ms
+  metadata      Json?
+  createdAt     DateTime @default(now())
 
+  @@index([createdAt(sort: Desc)])
+  @@index([eventType])
+  @@index([toolSlug])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([source])
+  @@index([country])
+  @@index([device])
+}

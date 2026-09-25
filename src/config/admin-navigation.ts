@@ -89,8 +89,9 @@ export const adminNavigation: AdminNavItem[] = [
     label: "Analytics",
     icon: LineChart,
     children: [
+      { label: "Overview", href: "/admin/analytics", permission: "analytics.view" },
       { label: "Website", href: "/admin/analytics/website", permission: "analytics.view" },
-      { label: "Tools", href: "/admin/analytics", permission: "analytics.view" },
+      { label: "Tools", href: "/admin/analytics/tools", permission: "analytics.view" },
       { label: "Users", href: "/admin/analytics/users", permission: "analytics.view" },
       { label: "Revenue", href: "/admin/analytics/revenue", permission: "analytics.view" },
     ],
