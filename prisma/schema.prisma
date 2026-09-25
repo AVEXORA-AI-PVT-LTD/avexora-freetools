@@ -856,4 +856,84 @@ model Role {
   @@index([isSystemRole])
 }
 
+// ---------------------------------------------------------------------------
+// Phase 26 — Admin Notifications & Webhooks
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  type            String    // "NEW_USER" | "NEW_PAYMENT" | "FAILED_PAYMENT" | "TOOL_ERROR" | "SERVER_ERROR" | "NEW_FEEDBACK" | "NEW_CONTACT_REQUEST" | "SUBSCRIPTION_CANCELLED" | "BACKUP_FAILURE"
+  title           String
+  message         String
+  severity        String    @default("INFO") // "INFO" | "SUCCESS" | "WARNING" | "ERROR" | "CRITICAL"
+  status          String    @default("UNREAD") // "UNREAD" | "READ" | "ARCHIVED"
+  recipientId     String?   @db.ObjectId // Specific target user ID or null for role-based broadcast
+  eligibleRoles   String[]  @default([]) // Eligible role slugs or permissions
+  targetType      String?   // "User", "Payment", "Tool", "Error", "Feedback", etc.
+  targetId        String?
+  targetName      String?
+  actionUrl       String?   // Deep-link redirect URL
+  groupKey        String?   // For deduplication & event aggregation
+  occurrenceCount Int       @default(1)
+  metadata        Json?
+  readAt          DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([recipientId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@index([type])
+  @@index([targetId])
+  @@index([groupKey])
+}
+
+model NotificationPreference {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @db.ObjectId
+  eventType        String   // e.g. "NEW_USER", "NEW_PAYMENT"
+  dashboardEnabled Boolean  @default(true)
+  emailEnabled     Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([userId, eventType])
+  @@index([userId])
+}
+
+model WebhookConfig {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  url       String
+  secret    String?
+  events    String[] @default([])
+  status    String   @default("ACTIVE") // "ACTIVE" | "INACTIVE"
+  createdBy String?  @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deliveries WebhookDeliveryLog[]
+
+  @@index([status])
+}
+
+model WebhookDeliveryLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  webhookId    String   @db.ObjectId
+  eventType    String
+  payload      Json
+  status       String   @default("PENDING") // "PENDING" | "SENT" | "FAILED" | "RETRYING"
+  responseCode Int?
+  errorMessage String?
+  attempts     Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  webhook WebhookConfig @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+}
+
+
 
