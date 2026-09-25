@@ -29,6 +29,15 @@ export async function updateCategoryStatus(slug: string, status: boolean) {
       create: { slug, status },
     });
 
+    const { logAdminAction } = await import("@/server/audit");
+    await logAdminAction({
+      action: status ? "ACTIVATE_CATEGORY" : "DEACTIVATE_CATEGORY",
+      targetType: "Category",
+      targetId: slug,
+      targetName: slug,
+      metadata: { status },
+    });
+
     // Revalidate public surfaces
     revalidatePath("/");
     revalidatePath(`/${slug}`);

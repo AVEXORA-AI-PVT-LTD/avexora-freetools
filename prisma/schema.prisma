@@ -426,23 +426,36 @@ model NavigationLink {
 // ---------------------------------------------------------------------------
 
 model AuditLog {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  actorId    String   @db.ObjectId
-  actorRole  String
-  action     String   // e.g., "TOOL_UPDATED", "CATEGORY_CREATED", "USER_BLOCKED"
-  targetType String   // e.g., "TOOL", "CATEGORY", "USER", "SEO"
-  targetId   String?  // ID or slug of the affected resource
-  metadata   Json?    // Stores what changed, reason, etc.
-  ip         String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String?  @unique // e.g., "AUD-20260926-000124"
+  actorId     String?  @db.ObjectId
+  actorName   String?
+  actorEmail  String?
+  actorRole   String   @default("user")
+  action      String   // Machine readable action name (e.g. "UPDATE_TOOL", "CREATE_ROLE")
+  targetType  String   // Entity type (e.g. "Tool", "User", "Category", "Role")
+  targetId    String?  // ID or slug of the affected resource
+  targetName  String?  // Human readable title/name of the target resource
+  status      String   @default("SUCCESS") // "SUCCESS" | "FAILED" | "DENIED"
+  severity    String   @default("INFO") // "INFO" | "WARNING" | "CRITICAL"
+  environment String   @default("production")
+  ip          String?
+  userAgent   String?
+  requestId   String?
+  metadata    Json?
+  before      Json?
+  after       Json?
+  changes     Json?
+  createdAt   DateTime @default(now())
 
-  actor      User     @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actor       User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([createdAt(sort: Desc)])
   @@index([actorId])
   @@index([action])
   @@index([targetType, targetId])
+  @@index([status])
+  @@index([requestId])
 }
 
 model ToolRevision {
