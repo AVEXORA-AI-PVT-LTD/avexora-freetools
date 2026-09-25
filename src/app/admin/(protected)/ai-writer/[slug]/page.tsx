@@ -17,12 +17,13 @@ export default async function AiToolEditorPage({
   const slug = resolvedParams.slug;
 
   try {
-    const { toolMeta, effectiveConfig, revisions, stats } = await getAiToolDetailAction(slug);
+    const { toolMeta, effectiveConfig, isCategoryEnabled, revisions, stats } = await getAiToolDetailAction(slug);
 
     return (
       <AiToolEditor
         toolMeta={toolMeta}
         effectiveConfig={effectiveConfig}
+        isCategoryEnabled={isCategoryEnabled}
         revisions={revisions}
         stats={stats}
       />

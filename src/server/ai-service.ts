@@ -102,9 +102,13 @@ export async function getEffectiveAiConfig(slug: string): Promise<EffectiveAiCon
       }
     }
 
+    // Check parent category status
+    const categoryConfig = await prisma.categoryConfig?.findUnique({ where: { slug: "ai-writers" } }).catch(() => null);
+    const isCategoryEnabled = categoryConfig ? categoryConfig.status : true;
+
     return {
       slug,
-      enabled: config.enabled,
+      enabled: isCategoryEnabled && config.enabled,
       provider: config.provider,
       model: config.model,
       temperature: config.temperature,
@@ -112,7 +116,9 @@ export async function getEffectiveAiConfig(slug: string): Promise<EffectiveAiCon
       inputLimitChars: config.inputLimitChars,
       dailyLimitPerUser: config.dailyLimitPerUser,
       monthlyLimitPerUser: config.monthlyLimitPerUser,
-      maintenanceMessage: config.maintenanceMessage,
+      maintenanceMessage: !isCategoryEnabled
+        ? "The AI Writers category is currently disabled by administrators."
+        : config.maintenanceMessage,
       activeVersion: config.activePromptVersion,
       systemPrompt: activeRevision.systemPrompt,
       userPromptTemplate: activeRevision.userPromptTemplate,

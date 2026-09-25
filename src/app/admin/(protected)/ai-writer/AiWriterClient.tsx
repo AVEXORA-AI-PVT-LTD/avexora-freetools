@@ -13,7 +13,8 @@ import {
   Settings2, 
   Search, 
   Filter, 
-  Layers
+  Layers,
+  AlertTriangle
 } from "lucide-react";
 import { updateAiToolConfigAction } from "./ai-actions";
 
@@ -48,9 +49,11 @@ interface AnalyticsData {
 
 export function AiWriterClient({
   initialTools,
+  isCategoryEnabled = true,
   analytics,
 }: {
   initialTools: AiToolSummary[];
+  isCategoryEnabled?: boolean;
   analytics: AnalyticsData;
 }) {
   const [tools, setTools] = useState<AiToolSummary[]>(initialTools);
@@ -90,7 +93,7 @@ export function AiWriterClient({
   const totalExecutions = tools.reduce((acc, t) => acc + t.totalExecutions, 0);
   const totalTokens = tools.reduce((acc, t) => acc + t.totalTokens, 0);
   const totalCost = tools.reduce((acc, t) => acc + t.totalCost, 0);
-  const activeToolsCount = tools.filter((t) => t.enabled).length;
+  const activeToolsCount = isCategoryEnabled ? tools.filter((t) => t.enabled).length : 0;
 
   return (
     <div className="space-y-6">
@@ -107,6 +110,29 @@ export function AiWriterClient({
         </div>
       </div>
 
+      {/* Category Inactive Warning Banner */}
+      {!isCategoryEnabled && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900 shadow-xs">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-sm font-bold text-amber-900">
+                Parent Category "AI Writers" (/ai-writers) is Currently Inactive
+              </h3>
+              <p className="text-xs text-amber-800 mt-0.5">
+                This category is disabled in Category Management. Even if tools show "Enabled Config", all 13 AI Writer tools are <strong>effectively disabled</strong> for end-users on the public website.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/categories"
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 underline hover:text-amber-700 shrink-0 self-start sm:self-center"
+          >
+            Go to Category Management →
+          </Link>
+        </div>
+      )}
+
       {/* KPI Stats Bar */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -120,8 +146,14 @@ export function AiWriterClient({
             <span className="text-2xl font-bold text-slate-900">
               {activeToolsCount} / {tools.length}
             </span>
-            <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">
-              Active
+            <span
+              className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                isCategoryEnabled
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "bg-amber-100 text-amber-800"
+              }`}
+            >
+              {isCategoryEnabled ? "Active" : "Category Inactive"}
             </span>
           </div>
         </div>
@@ -291,27 +323,37 @@ export function AiWriterClient({
                         </td>
 
                         <td className="px-6 py-4">
-                          <button
-                            onClick={() => handleToggleStatus(tool.slug, tool.enabled)}
-                            disabled={togglingSlug === tool.slug}
-                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${
-                              tool.enabled
-                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
-                                : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
-                            }`}
-                          >
-                            {tool.enabled ? (
-                              <>
-                                <CheckCircle className="h-3.5 w-3.5 text-emerald-600" />
-                                <span>Enabled</span>
-                              </>
-                            ) : (
-                              <>
-                                <XCircle className="h-3.5 w-3.5 text-slate-400" />
-                                <span>Disabled</span>
-                              </>
+                          <div className="flex flex-col gap-1 items-start">
+                            <button
+                              onClick={() => handleToggleStatus(tool.slug, tool.enabled)}
+                              disabled={togglingSlug === tool.slug}
+                              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${
+                                tool.enabled
+                                  ? isCategoryEnabled
+                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                                    : "bg-emerald-50 text-emerald-700 border border-emerald-200 opacity-60"
+                                  : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
+                              }`}
+                            >
+                              {tool.enabled ? (
+                                <>
+                                  <CheckCircle className="h-3.5 w-3.5 text-emerald-600" />
+                                  <span>Enabled</span>
+                                </>
+                              ) : (
+                                <>
+                                  <XCircle className="h-3.5 w-3.5 text-slate-400" />
+                                  <span>Disabled</span>
+                                </>
+                              )}
+                            </button>
+
+                            {!isCategoryEnabled && (
+                              <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                Category Inactive
+                              </span>
                             )}
-                          </button>
+                          </div>
                         </td>
 
                         <td className="px-6 py-4">

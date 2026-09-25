@@ -6,8 +6,8 @@ export const metadata = {
 };
 
 export default async function AiWriterAdminPage() {
-  const tools = await getAiToolsAction();
+  const { isCategoryEnabled, tools } = await getAiToolsAction();
   const analytics = await getAiUsageAnalyticsAction();
 
-  return <AiWriterClient initialTools={tools} analytics={analytics} />;
+  return <AiWriterClient initialTools={tools} isCategoryEnabled={isCategoryEnabled} analytics={analytics} />;
 }

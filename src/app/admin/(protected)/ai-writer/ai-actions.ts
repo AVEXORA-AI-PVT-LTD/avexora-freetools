@@ -37,6 +37,10 @@ export async function getAiToolsAction() {
     ])
   );
 
+  // Fetch category config status for parent category ai-writers
+  const categoryConfig = await prisma.categoryConfig?.findUnique({ where: { slug: "ai-writers" } }).catch(() => null);
+  const isCategoryEnabled = categoryConfig ? categoryConfig.status : true;
+
   const tools = aiWritersList.map((tool) => {
     const dbConfig = configMap.get(tool.slug);
     const usage = usageMap.get(tool.slug) || { totalExecutions: 0, totalTokens: 0, totalCost: 0 };
@@ -59,7 +63,10 @@ export async function getAiToolsAction() {
     };
   });
 
-  return tools;
+  return {
+    isCategoryEnabled,
+    tools,
+  };
 }
 
 export async function getAiToolDetailAction(slug: string) {
@@ -89,9 +96,13 @@ export async function getAiToolDetailAction(slug: string) {
     _sum: { promptTokens: 0, completionTokens: 0, totalTokens: 0, estimatedCost: 0 },
   };
 
+  const categoryConfig = await prisma.categoryConfig?.findUnique({ where: { slug: "ai-writers" } }).catch(() => null);
+  const isCategoryEnabled = categoryConfig ? categoryConfig.status : true;
+
   return {
     toolMeta,
     effectiveConfig,
+    isCategoryEnabled,
     revisions,
     stats: {
       totalExecutions: usageStats._count.id,

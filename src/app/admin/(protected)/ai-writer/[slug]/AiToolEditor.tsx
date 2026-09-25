@@ -14,7 +14,8 @@ import {
   CheckCircle, 
   AlertCircle, 
   Clock, 
-  Code 
+  Code,
+  AlertTriangle 
 } from "lucide-react";
 import { 
   updateAiToolConfigAction, 
@@ -26,6 +27,7 @@ import {
 interface AiToolEditorProps {
   toolMeta: any;
   effectiveConfig: any;
+  isCategoryEnabled?: boolean;
   revisions: any[];
   stats: any;
 }
@@ -33,6 +35,7 @@ interface AiToolEditorProps {
 export function AiToolEditor({
   toolMeta,
   effectiveConfig,
+  isCategoryEnabled = true,
   revisions: initialRevisions,
   stats,
 }: AiToolEditorProps) {
@@ -247,6 +250,29 @@ export function AiToolEditor({
         <div className="flex items-center gap-2 rounded-lg bg-rose-50 p-4 text-sm text-rose-800 border border-rose-200">
           <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
           <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {/* Category Inactive Warning Banner */}
+      {!isCategoryEnabled && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900 shadow-xs">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-sm font-bold text-amber-900">
+                Parent Category "AI Writers" (/ai-writers) is Currently Inactive
+              </h3>
+              <p className="text-xs text-amber-800 mt-0.5">
+                Because the category is set to inactive in Category Management, this AI tool is <strong>effectively disabled</strong> for public users even when individual settings show enabled.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/categories"
+            className="inline-flex items-center gap-1 text-xs font-bold text-amber-900 underline hover:text-amber-700 shrink-0 self-start sm:self-center"
+          >
+            Reactivate Category →
+          </Link>
         </div>
       )}
 
