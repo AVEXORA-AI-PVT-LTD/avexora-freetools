@@ -87,8 +87,41 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  // 4. Maintenance Mode Edge Check
+  if (
+    request.method === "GET" &&
+    !url.pathname.startsWith("/admin") &&
+    !url.pathname.startsWith("/maintenance") &&
+    !url.pathname.startsWith("/api") &&
+    !url.pathname.startsWith("/studio") &&
+    !url.pathname.startsWith("/_next") &&
+    !url.pathname.includes(".")
+  ) {
+    const hasAdminSession =
+      SESSION_COOKIES.some((name) => request.cookies.has(name)) ||
+      request.cookies.has("next-auth.session-token") ||
+      request.cookies.has("__Secure-next-auth.session-token");
 
+    if (!hasAdminSession) {
+      try {
+        const protocol = request.headers.get("x-forwarded-proto") || "http";
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${hostname}`;
+        const res = await fetch(`${appUrl}/api/maintenance/status`, {
+          next: { revalidate: 10, tags: ["maintenance-status"] },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.enabled) {
+            return NextResponse.redirect(new URL("/maintenance", request.url));
+          }
+        }
+      } catch (e) {
+        // Fail open
+      }
+    }
+  }
+
+  return NextResponse.next();
 }
 
 interface RedirectRule {

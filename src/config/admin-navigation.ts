@@ -175,7 +175,7 @@ export const adminNavigation: AdminNavItem[] = [
       { label: "Email", href: "/admin/settings/email", permission: "settings.view" },
       { label: "API", href: "/admin/settings/api", permission: "settings.edit" },
       { label: "Security", href: "/admin/settings/security", permission: "settings.edit" },
-      { label: "Backup & Maintenance", href: "/admin/settings/backup", permission: "settings.edit" },
+      { label: "Backup & Maintenance", href: "/admin/settings/maintenance", permission: "maintenance.view" },
     ],
   },
 ];

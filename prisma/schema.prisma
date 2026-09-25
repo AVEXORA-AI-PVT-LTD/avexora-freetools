@@ -999,3 +999,66 @@ model ReportJob {
   @@index([reportType])
 }
 
+// ---------------------------------------------------------------------------
+// Phase 29 — Backup & Maintenance Management
+// ---------------------------------------------------------------------------
+
+model Backup {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  type               String    @default("MANUAL") // "MANUAL" | "SCHEDULED" | "SAFETY"
+  status             String    @default("Queued") // "Queued" | "Processing" | "Completed" | "Failed" | "Expired" | "Deleted"
+  storageReference   String?   // e.g. "storage/backups/backup_20260926_12345.json.gz"
+  storageProvider    String    @default("local") // "local" | "s3" | "gcs"
+  fileSize           Int?      // Size in bytes
+  checksum           String?   // SHA-256 hash string
+  encrypted          Boolean   @default(false)
+  createdBy          String?   @db.ObjectId
+  createdByEmail     String?
+  createdAt          DateTime  @default(now())
+  completedAt        DateTime?
+  expiresAt          DateTime?
+  verifiedAt         DateTime?
+  verificationStatus String?   @default("UNVERIFIED") // "VERIFIED" | "FAILED" | "UNVERIFIED"
+  errorMessage       String?
+  metadata           Json?     // Collections backed up, document counts, environment info
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt(sort: Desc)])
+}
+
+model RestoreJob {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  backupId         String    @db.ObjectId
+  requestedBy      String    @db.ObjectId
+  requestedByEmail String?
+  status           String    @default("Queued") // "Queued" | "Preparing" | "Processing" | "Verifying" | "Completed" | "Failed" | "Cancelled"
+  progress         Int       @default(0) // 0 to 100
+  safetyBackupId   String?   // Reference to pre-restore safety backup
+  startedAt        DateTime?
+  completedAt      DateTime?
+  errorMessage     String?
+  requestId        String?
+  metadata         Json?
+  createdAt        DateTime  @default(now())
+
+  @@index([backupId])
+  @@index([requestedBy])
+  @@index([status])
+}
+
+model MaintenanceConfig {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  key               String    @unique @default("system_maintenance")
+  enabled           Boolean   @default(false)
+  message           String?   @default("Avex Tools is currently undergoing scheduled maintenance. Please check back shortly.")
+  estimatedDuration String?   @default("30 minutes")
+  startedAt         DateTime?
+  expectedEndTime   DateTime?
+  enabledBy         String?   @db.ObjectId
+  enabledByEmail    String?
+  allowedIps        String[]  @default([])
+  bypassRoles       String[]  @default(["super_admin", "admin"])
+  updatedAt         DateTime  @updatedAt
+}
+

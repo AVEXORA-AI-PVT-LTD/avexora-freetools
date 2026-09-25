@@ -123,6 +123,18 @@ export const PERMISSION_REGISTRY: PermissionDefinition[] = [
   { key: "backup.view", name: "View Maintenance & Backups", description: "Inspect system health and backup logs", category: "Backup" },
   { key: "backup.create", name: "Create Backups", description: "Generate new database & asset snapshots", category: "Backup" },
   { key: "backup.restore", name: "Restore Backups", description: "Execute system database restores", category: "Backup" },
+  { key: "maintenance.view", name: "View Maintenance Dashboard", description: "Inspect system maintenance overview & health", category: "Backup" },
+  { key: "maintenance.backup.create", name: "Create Database Backups", description: "Generate manual database backup snapshots", category: "Backup" },
+  { key: "maintenance.backup.view", name: "View Backup History", description: "Inspect backup metadata, size, and checksums", category: "Backup" },
+  { key: "maintenance.backup.verify", name: "Verify Backup Integrity", description: "Verify SHA-256 checksums and backup readability", category: "Backup" },
+  { key: "maintenance.backup.download", name: "Download Backups", description: "Download database backup files securely", category: "Backup" },
+  { key: "maintenance.backup.delete", name: "Delete Backups", description: "Delete or expire backup snapshots", category: "Backup" },
+  { key: "maintenance.restore", name: "Restore Database", description: "Execute high-privilege system database restores", category: "Backup" },
+  { key: "maintenance.cache.clear", name: "Clear Application Caches", description: "Clear targeted or full application cache", category: "Backup" },
+  { key: "maintenance.reindex", name: "Rebuild Database Indexes", description: "Verify and re-index database collections", category: "Backup" },
+  { key: "maintenance.sitemap.rebuild", name: "Rebuild XML Sitemap", description: "Generate and validate XML sitemap with production domain", category: "Backup" },
+  { key: "maintenance.health.view", name: "View System Health", description: "Inspect latency & connectivity for DB, Storage, and APIs", category: "Backup" },
+  { key: "maintenance.mode.manage", name: "Manage Maintenance Mode", description: "Enable or disable platform maintenance mode", category: "Backup" },
 
   // Reports
   { key: "reports.view", name: "View Reports Dashboard", description: "Access reports dashboard and view history", category: "Reports" },
