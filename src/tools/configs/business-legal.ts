@@ -749,7 +749,7 @@ export const tools: ToolConfig[] = [
     steps: [
       "Upload up to four photos in the same outfit — they play as a motion picture across the top of the card — and your company logo.",
       "Add your name, designation, company and a one-line tagline.",
-      "Fill in the ways to reach you: phone, WhatsApp, email, website and address. Leave any field blank to hide it.",
+      "Fill in the ways to reach you: phone, WhatsApp, email, website and address, and add more websites if you run several products or businesses. Leave any field blank to hide it.",
       "Paste your social profile links or usernames for LinkedIn, Instagram, Facebook, X, YouTube or GitHub.",
       "Choose a colour palette or your own brand colours, a light or dark default theme, and what the QR code opens.",
       "Check the live preview, then download the card page (.html), the contact file (.vcf) and the QR code (.png) for free.",

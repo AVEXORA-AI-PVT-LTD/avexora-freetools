@@ -144,6 +144,16 @@ describe("validation on write", () => {
     expect((await saveCard({ card: card({ website: "javascript:alert(1)" }) })).res.status).toBe(400);
     expect((await saveCard({ card: card({ photo: "https://evil.test/x.png" }) })).res.status).toBe(400);
     expect((await saveCard({ card: card(), qrTarget: "evil" })).res.status).toBe(400);
+    expect((await saveCard({ card: card({ moreWebsites: [{ label: "", url: "javascript:alert(1)" }] }) })).res.status).toBe(400);
+    const sites = Array.from({ length: 6 }, (_, i) => ({ label: "", url: `site${i}.com` }));
+    expect((await saveCard({ card: card({ moreWebsites: sites }) })).res.status).toBe(400);
+  });
+
+  it("saves more websites and shows them on the public card", async () => {
+    const saved = (await saveCard({ card: card({ moreWebsites: [{ label: "WhatsApp API", url: "avexwa.com" }] }) })).body.card!;
+    const html = await (await publicRoute.GET(new Request("http://x"), ctx({ slug: saved.slug }))).text();
+    expect(html).toContain("WhatsApp API");
+    expect(html).toContain('href="https://avexwa.com/"');
   });
 
   it(`caps each account at ${MAX_CARDS_PER_USER} cards`, async () => {
