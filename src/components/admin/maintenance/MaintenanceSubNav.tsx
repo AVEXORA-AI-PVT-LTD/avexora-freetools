@@ -29,7 +29,7 @@ export function MaintenanceSubNav() {
   ];
 
   return (
-    <div className="flex items-center gap-1 overflow-x-auto border-b border-zinc-200 dark:border-zinc-800 pb-2 mb-6 scrollbar-thin">
+    <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-200 pb-2 mb-6 scrollbar-thin">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive =
@@ -43,8 +43,8 @@ export function MaintenanceSubNav() {
             href={item.href}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
               isActive
-                ? "bg-orange-500 text-white shadow-sm"
-                : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800"
+                ? "bg-orange-500 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
             <Icon className="h-4 w-4 shrink-0" />

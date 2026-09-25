@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import { requireAdminAuth } from "@/server/admin-auth";
 import {
@@ -43,6 +43,20 @@ export async function verifyBackupAction(backupId: string) {
   } catch (err: any) {
     console.error("Verify backup action error:", err);
     return { success: false, error: err.message || "Backup verification failed" };
+  }
+}
+
+// 2b. Download Backup
+export async function downloadBackupAction(backupId: string) {
+  try {
+    const adminUser = await requireAdminAuth("maintenance.backup.download");
+    const backup = await prisma.backup.findUnique({ where: { id: backupId } });
+    if (!backup || !backup.storageReference) throw new Error("Backup file reference not found");
+
+    return { success: true, downloadUrl: backup.storageReference };
+  } catch (err: any) {
+    console.error("Download backup action error:", err);
+    return { success: false, error: err.message || "Failed to download backup" };
   }
 }
 

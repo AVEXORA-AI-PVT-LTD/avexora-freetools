@@ -118,6 +118,19 @@ export const PERMISSION_REGISTRY: PermissionDefinition[] = [
   // Settings
   { key: "settings.view", name: "View System Settings", description: "View general settings and configurations", category: "Settings" },
   { key: "settings.manage", name: "Manage System Settings", description: "Update system secrets, APIs, and security rules", category: "Settings" },
+  { key: "settings.website.view", name: "View Website Settings", description: "Inspect public site branding, logo, and social links", category: "Settings" },
+  { key: "settings.website.update", name: "Update Website Settings", description: "Modify website name, logo, favicon, and social channels", category: "Settings" },
+  { key: "settings.general.view", name: "View General Settings", description: "Inspect site timezone, default currency, and language", category: "Settings" },
+  { key: "settings.general.update", name: "Update General Settings", description: "Modify platform timezone, default currency, and language", category: "Settings" },
+  { key: "settings.email.view", name: "View Email Settings", description: "Inspect SMTP configuration, sender details, and templates", category: "Settings" },
+  { key: "settings.email.update", name: "Update Email Settings", description: "Modify email provider credentials and email templates", category: "Settings" },
+  { key: "settings.security.view", name: "View Security Settings", description: "Inspect 2FA policy, session timeout, and IP rules", category: "Settings" },
+  { key: "settings.security.update", name: "Update Security Settings", description: "Modify security policies, session timeouts, and IP restrictions", category: "Settings" },
+  { key: "settings.integrations.view", name: "View Integrations", description: "Inspect Analytics, AI, Payment, Storage, and Webhook statuses", category: "Settings" },
+  { key: "settings.integrations.update", name: "Update Integrations", description: "Modify third-party provider keys, webhooks, and endpoints", category: "Settings" },
+  { key: "settings.secrets.manage", name: "Manage System Secrets", description: "Replace high-privilege API keys and signing secrets", category: "Settings" },
+  { key: "settings.email.test", name: "Send Test Email", description: "Trigger test email delivery from email settings", category: "Settings" },
+  { key: "settings.webhooks.test", name: "Send Test Webhook", description: "Dispatch test webhook payloads from integrations settings", category: "Settings" },
 
   // Backup
   { key: "backup.view", name: "View Maintenance & Backups", description: "Inspect system health and backup logs", category: "Backup" },

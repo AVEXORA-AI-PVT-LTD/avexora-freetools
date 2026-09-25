@@ -1062,3 +1062,37 @@ model MaintenanceConfig {
   updatedAt         DateTime  @updatedAt
 }
 
+// ---------------------------------------------------------------------------
+// Phase 30 — Global Settings Management
+// ---------------------------------------------------------------------------
+
+model GlobalSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique // e.g. "website_config", "email_config", "security_config", "integrations_config"
+  category  String   // "website" | "general" | "email" | "security" | "integrations"
+  value     Json     // Setting payload/value
+  type      String   @default("json") // "string" | "number" | "boolean" | "json" | "secret"
+  isPublic  Boolean  @default(false)
+  updatedBy String?  @db.ObjectId
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@index([isPublic])
+}
+
+model EmailTemplate {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String   @unique // e.g. "welcome_email", "password_reset", "payment_success"
+  name      String
+  subject   String
+  htmlBody  String
+  textBody  String?
+  status    Boolean  @default(true)
+  updatedBy String?  @db.ObjectId
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([status])
+}
+

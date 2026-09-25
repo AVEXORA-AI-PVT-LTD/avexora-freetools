@@ -81,12 +81,12 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
       <MaintenanceSubNav />
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
           <ShieldAlert className="h-6 w-6 text-rose-600" />
           Protected Database Restore Wizard
-        </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        </h2>
+        <p className="text-xs text-slate-600 mt-1">
           Execute protected database restores with multi-step verification, safety snapshot creation, and audit logging.
         </p>
       </div>
@@ -108,9 +108,9 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
       )}
 
       {/* Step Wizard Container */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
         {/* Wizard Steps Tracker */}
-        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4 mb-6 text-xs font-semibold">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6 text-xs font-semibold">
           {[
             { num: 1, label: "Select & Verify Backup" },
             { num: 2, label: "Warning & Impact" },
@@ -124,7 +124,7 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
                   ? "text-orange-600 font-bold"
                   : step > s.num
                   ? "text-emerald-600"
-                  : "text-zinc-400"
+                  : "text-slate-400"
               }`}
             >
               <span
@@ -133,7 +133,7 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
                     ? "bg-orange-600 text-white"
                     : step > s.num
                     ? "bg-emerald-600 text-white"
-                    : "bg-zinc-100 text-zinc-500"
+                    : "bg-slate-100 text-slate-500"
                 }`}
               >
                 {step > s.num ? "✓" : s.num}
@@ -146,22 +146,22 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
         {/* Step 1: Select & Verify Backup */}
         {step === 1 && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
               <Database className="h-4 w-4 text-orange-600" /> Step 1: Select Backup Snapshot to Restore
             </h3>
 
             {backups.length === 0 ? (
-              <p className="text-xs text-zinc-500 py-4">
+              <p className="text-xs text-slate-500 py-4">
                 No verified backup snapshots available for restore. Please generate a backup first.
               </p>
             ) : (
               <>
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-600 mb-1.5">Choose Backup Snapshot:</label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">Choose Backup Snapshot:</label>
                   <select
                     value={selectedBackupId}
                     onChange={(e) => setSelectedBackupId(e.target.value)}
-                    className="w-full max-w-md p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-mono"
+                    className="w-full max-w-md p-2.5 rounded-lg border border-slate-300 bg-white text-xs font-mono text-slate-900 outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     {backups.map((b) => (
                       <option key={b.id} value={b.id}>
@@ -173,21 +173,21 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
                 </div>
 
                 {selectedBackup && (
-                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 space-y-2 text-xs">
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-zinc-500">Backup ID:</span>
-                      <span className="font-mono font-bold">{selectedBackup.id}</span>
+                      <span className="text-slate-500">Backup ID:</span>
+                      <span className="font-mono font-bold text-slate-900">{selectedBackup.id}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-zinc-500">Creation Date:</span>
-                      <span>{new Date(selectedBackup.createdAt).toLocaleString()}</span>
+                      <span className="text-slate-500">Creation Date:</span>
+                      <span className="text-slate-900">{new Date(selectedBackup.createdAt).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-zinc-500">File Size:</span>
-                      <span>{selectedBackup.fileSize ? `${(selectedBackup.fileSize / (1024 * 1024)).toFixed(2)} MB` : "N/A"}</span>
+                      <span className="text-slate-500">File Size:</span>
+                      <span className="text-slate-900">{selectedBackup.fileSize ? `${(selectedBackup.fileSize / (1024 * 1024)).toFixed(2)} MB` : "N/A"}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-zinc-500">Checksum:</span>
+                      <span className="text-slate-500">Checksum:</span>
                       <span className="font-mono text-[10px] text-emerald-600">{selectedBackup.checksum || "Verified"}</span>
                     </div>
                   </div>
@@ -197,7 +197,7 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
                   <button
                     onClick={handleVerify}
                     disabled={loading || !selectedBackupId}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-600 text-white font-semibold text-xs hover:bg-orange-700 transition-colors cursor-pointer disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-600 text-white font-semibold text-xs hover:bg-orange-700 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCheck className="h-4 w-4" />}
                     <span>Verify Integrity & Proceed</span>
@@ -211,7 +211,7 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
         {/* Step 2: Warning & Impact */}
         {step === 2 && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-rose-600 flex items-center gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-rose-600 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-rose-600" /> Step 2: Warning & Restore Impact Verification
             </h3>
 
@@ -227,13 +227,13 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
             <div className="pt-4 flex justify-between">
               <button
                 onClick={() => setStep(1)}
-                className="px-4 py-2 rounded-xl bg-zinc-100 text-zinc-700 text-xs font-semibold hover:bg-zinc-200"
+                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 cursor-pointer"
               >
                 Back to Selection
               </button>
               <button
                 onClick={() => setStep(3)}
-                className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700"
+                className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 cursor-pointer"
               >
                 I Understand, Proceed to Final Confirmation
               </button>
@@ -244,36 +244,36 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
         {/* Step 3: Typed Confirmation */}
         {step === 3 && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-rose-600 flex items-center gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-rose-600 flex items-center gap-2">
               <Lock className="h-4 w-4 text-rose-600" /> Step 3: Mandatory Typed Confirmation
             </h3>
 
-            <p className="text-xs text-zinc-600 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               To execute the database restore from Backup <strong>{selectedBackupId}</strong>, please manually type the exact word <strong className="text-rose-600 font-mono">RESTORE</strong> into the field below.
             </p>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-700 mb-1">Type RESTORE to confirm:</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Type RESTORE to confirm:</label>
               <input
                 type="text"
                 value={typedConfirmation}
                 onChange={(e) => setTypedConfirmation(e.target.value)}
                 placeholder="RESTORE"
-                className="w-full max-w-sm p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 font-mono text-sm uppercase tracking-widest"
+                className="w-full max-w-sm p-2.5 rounded-lg border border-slate-300 bg-white font-mono text-sm uppercase tracking-widest text-slate-900 outline-none focus:ring-2 focus:ring-rose-500"
               />
             </div>
 
             <div className="pt-4 flex justify-between">
               <button
                 onClick={() => setStep(2)}
-                className="px-4 py-2 rounded-xl bg-zinc-100 text-zinc-700 text-xs font-semibold hover:bg-zinc-200"
+                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 cursor-pointer"
               >
                 Back
               </button>
               <button
                 onClick={handleExecuteRestore}
                 disabled={loading || typedConfirmation.trim().toUpperCase() !== "RESTORE"}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 shadow-md cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 shadow-xs cursor-pointer disabled:opacity-50"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
                 <span>Execute Production Restore</span>
@@ -291,13 +291,13 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
                   <CheckCircle2 className="h-10 w-10" />
                 </div>
                 <h3 className="text-lg font-bold text-emerald-800">Database Restore Completed Successfully!</h3>
-                <p className="text-xs text-zinc-500 max-w-md mx-auto">
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
                   Database restore job <strong>{restoreJob.id}</strong> has finished. Pre-restore safety backup reference: <strong>{restoreJob.safetyBackupId}</strong>.
                 </p>
                 <div className="pt-4">
                   <button
                     onClick={() => setStep(1)}
-                    className="px-4 py-2 rounded-xl bg-zinc-900 text-white text-xs font-semibold"
+                    className="px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold cursor-pointer"
                   >
                     Done
                   </button>
@@ -306,8 +306,8 @@ export function RestoreProtectionClient({ backups }: { backups: BackupOption[] }
             ) : (
               <div className="space-y-4">
                 <Loader2 className="h-10 w-10 animate-spin text-orange-600 mx-auto" />
-                <h3 className="text-base font-bold text-zinc-900">Executing Database Restore...</h3>
-                <p className="text-xs text-zinc-500">Creating pre-restore safety backup and restoring collection snapshots.</p>
+                <h3 className="text-base font-bold text-slate-900">Executing Database Restore...</h3>
+                <p className="text-xs text-slate-500">Creating pre-restore safety backup and restoring collection snapshots.</p>
               </div>
             )}
           </div>

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { MaintenanceSubNav } from "@/components/admin/maintenance/MaintenanceSubNav";
 import { clearCacheAction } from "../maintenance-actions";
 import { CacheTarget } from "@/server/admin/maintenance-service";
-import { Zap, RefreshCw, CheckCircle2, AlertTriangle, Loader2 } from "lucide-react";
+import { Zap, RefreshCw, CheckCircle2, Loader2 } from "lucide-react";
 
 export function CacheManagementClient() {
   const [loadingTarget, setLoadingTarget] = useState<string | null>(null);
@@ -43,12 +43,12 @@ export function CacheManagementClient() {
       <MaintenanceSubNav />
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
           <Zap className="h-6 w-6 text-amber-500" />
           Targeted Cache Management
-        </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+        </h2>
+        <p className="text-xs text-slate-600 mt-1">
           Revalidate targeted static pages, tool directories, SEO sitemaps, and application caches on demand.
         </p>
       </div>
@@ -67,12 +67,12 @@ export function CacheManagementClient() {
       )}
 
       {/* Cache Provider Summary */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">Cache Infrastructure Provider</h3>
-          <p className="text-xs text-zinc-500 mt-0.5">Next.js On-Demand Revalidation (ISR) & Data Tag Store</p>
+          <h3 className="font-bold text-sm text-slate-900">Cache Infrastructure Provider</h3>
+          <p className="text-xs text-slate-500 mt-0.5">Next.js On-Demand Revalidation (ISR) & Data Tag Store</p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 px-3 py-1.5 rounded-full">
+        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full">
           <CheckCircle2 className="h-4 w-4" />
           <span>Cache Store Active & Healthy</span>
         </div>
@@ -83,19 +83,19 @@ export function CacheManagementClient() {
         {targets.map((t) => (
           <div
             key={t.key}
-            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex flex-col justify-between"
+            className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 font-semibold">
+                <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">
                   {t.badge}
                 </span>
                 {lastCleared[t.key] && (
-                  <span className="text-[10px] text-zinc-400">Cleared: {lastCleared[t.key]}</span>
+                  <span className="text-[10px] text-slate-400">Cleared: {lastCleared[t.key]}</span>
                 )}
               </div>
-              <h4 className="font-bold text-base text-zinc-900 dark:text-zinc-100 mb-1">{t.title}</h4>
-              <p className="text-xs text-zinc-500 leading-relaxed mb-4">{t.desc}</p>
+              <h4 className="font-bold text-sm text-slate-900 mb-1">{t.title}</h4>
+              <p className="text-xs text-slate-500 leading-relaxed mb-4">{t.desc}</p>
             </div>
 
             <button
@@ -104,7 +104,7 @@ export function CacheManagementClient() {
               className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
                 t.key === "full_app"
                   ? "bg-rose-600 hover:bg-rose-700 text-white"
-                  : "bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                  : "bg-slate-900 hover:bg-slate-800 text-white"
               }`}
             >
               {loadingTarget === t.key ? (

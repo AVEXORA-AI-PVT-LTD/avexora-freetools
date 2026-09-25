@@ -7,12 +7,10 @@ import {
   Activity,
   RefreshCw,
   CheckCircle2,
-  AlertTriangle,
   Loader2,
   Database,
   HardDrive,
   Zap,
-  Search,
   Sparkles,
   CreditCard,
   Mail,
@@ -46,13 +44,13 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
       <MaintenanceSubNav />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <Activity className="h-6 w-6 text-purple-600" />
             System Health Diagnostics
-          </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          </h2>
+          <p className="text-xs text-slate-600 mt-1">
             Real-time ping latency, database read/write verification, storage accessibility, and external integration health.
           </p>
         </div>
@@ -60,7 +58,7 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
         <button
           onClick={handleRunDiagnostics}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 text-white font-semibold text-xs hover:bg-purple-700 transition-colors shadow-sm cursor-pointer disabled:opacity-50 self-start sm:self-center"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 text-white font-semibold text-xs hover:bg-purple-700 transition-colors shadow-xs cursor-pointer disabled:opacity-50 self-start sm:self-center"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           <span>Run Full System Diagnostics</span>
@@ -81,13 +79,13 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
       )}
 
       {/* Overall Status Banner */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex items-center justify-between">
         <div>
-          <span className="text-xs uppercase font-bold tracking-wider text-zinc-400">Overall System Health</span>
-          <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mt-1">
+          <span className="text-xs uppercase font-bold tracking-wider text-slate-500">Overall System Health</span>
+          <h3 className="text-xl font-bold text-slate-900 mt-1">
             Status: {health?.overallStatus || "Healthy"}
           </h3>
-          <p className="text-xs text-zinc-500 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Diagnostics run at: {health?.checkedAt ? new Date(health.checkedAt).toLocaleString() : "Just now"} (took {health?.totalCheckDurationMs || 0} ms)
           </p>
         </div>
@@ -107,7 +105,7 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
       {/* Components Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Database */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="p-2 rounded-lg bg-orange-100 text-orange-700">
               <Database className="h-5 w-5" />
@@ -116,15 +114,15 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
               {comps?.database?.status || "Healthy"}
             </span>
           </div>
-          <h4 className="font-bold text-base text-zinc-900 dark:text-zinc-100">Database Engine</h4>
-          <div className="text-xs space-y-1 text-zinc-500 border-t border-zinc-100 dark:border-zinc-800 pt-2">
-            <div className="flex justify-between"><span>Provider:</span><span className="font-semibold text-zinc-700 dark:text-zinc-300">{comps?.database?.provider || "MongoDB"}</span></div>
-            <div className="flex justify-between"><span>Ping Latency:</span><span className="font-mono font-semibold text-zinc-700 dark:text-zinc-300">{comps?.database?.latencyMs || 12} ms</span></div>
+          <h4 className="font-bold text-sm text-slate-900">Database Engine</h4>
+          <div className="text-xs space-y-1 text-slate-500 border-t border-slate-100 pt-2">
+            <div className="flex justify-between"><span>Provider:</span><span className="font-semibold text-slate-700">{comps?.database?.provider || "MongoDB"}</span></div>
+            <div className="flex justify-between"><span>Ping Latency:</span><span className="font-mono font-semibold text-slate-700">{comps?.database?.latencyMs || 12} ms</span></div>
           </div>
         </div>
 
         {/* Storage */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="p-2 rounded-lg bg-blue-100 text-blue-700">
               <HardDrive className="h-5 w-5" />
@@ -133,15 +131,15 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
               {comps?.storage?.status || "Healthy"}
             </span>
           </div>
-          <h4 className="font-bold text-base text-zinc-900 dark:text-zinc-100">Storage File System</h4>
-          <div className="text-xs space-y-1 text-zinc-500 border-t border-zinc-100 dark:border-zinc-800 pt-2">
-            <div className="flex justify-between"><span>Provider:</span><span className="font-semibold text-zinc-700 dark:text-zinc-300">{comps?.storage?.provider || "Local Storage"}</span></div>
+          <h4 className="font-bold text-sm text-slate-900">Storage File System</h4>
+          <div className="text-xs space-y-1 text-slate-500 border-t border-slate-100 pt-2">
+            <div className="flex justify-between"><span>Provider:</span><span className="font-semibold text-slate-700">{comps?.storage?.provider || "Local Storage"}</span></div>
             <div className="flex justify-between"><span>Read/Write:</span><span className="font-semibold text-emerald-600">Verified</span></div>
           </div>
         </div>
 
         {/* Cache */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="p-2 rounded-lg bg-amber-100 text-amber-700">
               <Zap className="h-5 w-5" />
@@ -150,49 +148,49 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
               {comps?.cache?.status || "Healthy"}
             </span>
           </div>
-          <h4 className="font-bold text-base text-zinc-900 dark:text-zinc-100">Cache Layer</h4>
-          <div className="text-xs space-y-1 text-zinc-500 border-t border-zinc-100 dark:border-zinc-800 pt-2">
-            <div className="flex justify-between"><span>Provider:</span><span className="font-semibold text-zinc-700 dark:text-zinc-300">{comps?.cache?.provider || "Next.js ISR Cache"}</span></div>
+          <h4 className="font-bold text-sm text-slate-900">Cache Layer</h4>
+          <div className="text-xs space-y-1 text-slate-500 border-t border-slate-100 pt-2">
+            <div className="flex justify-between"><span>Provider:</span><span className="font-semibold text-slate-700">{comps?.cache?.provider || "Next.js ISR Cache"}</span></div>
           </div>
         </div>
       </div>
 
       {/* External Integrations */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500">External Integrations & Services</h3>
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">External Integrations & Services</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           {/* AI */}
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+          <div className="p-4 rounded-xl border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-purple-600" />
               <div>
-                <h5 className="font-bold text-zinc-900 dark:text-zinc-100">AI Providers</h5>
-                <span className="text-zinc-400 text-[11px]">OpenAI / Gemini / Claude</span>
+                <h5 className="font-bold text-slate-900">AI Providers</h5>
+                <span className="text-slate-400 text-[11px]">OpenAI / Gemini / Claude</span>
               </div>
             </div>
             <span className="font-bold text-emerald-600">{comps?.externalIntegrations?.aiProvider || "Healthy"}</span>
           </div>
 
           {/* Payments */}
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+          <div className="p-4 rounded-xl border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <CreditCard className="h-5 w-5 text-emerald-600" />
               <div>
-                <h5 className="font-bold text-zinc-900 dark:text-zinc-100">Payment Gateways</h5>
-                <span className="text-zinc-400 text-[11px]">Razorpay / Stripe</span>
+                <h5 className="font-bold text-slate-900">Payment Gateways</h5>
+                <span className="text-slate-400 text-[11px]">Razorpay / Stripe</span>
               </div>
             </div>
             <span className="font-bold text-emerald-600">{comps?.externalIntegrations?.paymentProvider || "Healthy"}</span>
           </div>
 
           {/* Email */}
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+          <div className="p-4 rounded-xl border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-blue-600" />
               <div>
-                <h5 className="font-bold text-zinc-900 dark:text-zinc-100">Email SMTP</h5>
-                <span className="text-zinc-400 text-[11px]">Transactional Mail</span>
+                <h5 className="font-bold text-slate-900">Email SMTP</h5>
+                <span className="text-slate-400 text-[11px]">Transactional Mail</span>
               </div>
             </div>
             <span className="font-bold text-emerald-600">{comps?.externalIntegrations?.emailProvider || "Healthy"}</span>
