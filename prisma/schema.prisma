@@ -597,8 +597,10 @@ model Payment {
   userId         String   @db.ObjectId
   amount         Int      
   currency       String   @default("INR")
-  status         String   // "successful", "failed", "refunded"
+  status         String   // "successful", "failed", "refunded", "partially_refunded"
   providerTxId   String?  // Razorpay Payment ID
+  refundAmount   Int      @default(0) // Tracks refunded amount in paise
+  taxAmount      Int      @default(0)
   paymentDate    DateTime @default(now())
   createdAt      DateTime @default(now())
 

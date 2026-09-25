@@ -89,18 +89,19 @@ export const adminNavigation: AdminNavItem[] = [
     icon: LineChart,
     children: [
       { label: "Website", href: "/admin/analytics/website", permission: "analytics.view" },
-      { label: "Tools", href: "/admin/analytics", permission: "analytics.view" }, // Re-using existing /admin/analytics
+      { label: "Tools", href: "/admin/analytics", permission: "analytics.view" },
       { label: "Users", href: "/admin/analytics/users", permission: "analytics.view" },
-      { label: "Revenue", href: "/admin/analytics/revenue", permission: "analytics.view" },
+      { label: "Revenue", href: "/admin/monetization/revenue", permission: "analytics.view" },
     ],
   },
   {
     label: "Monetization",
     icon: BadgeDollarSign,
     children: [
+      { label: "Revenue Dashboard", href: "/admin/monetization/revenue", permission: "settings.view" },
+      { label: "Payments", href: "/admin/monetization/payments", permission: "settings.view" },
       { label: "Pricing", href: "/admin/monetization/pricing", permission: "settings.view" },
       { label: "Subscriptions", href: "/admin/monetization/subscriptions", permission: "settings.view" },
-      { label: "Payments", href: "/admin/monetization/payments", permission: "settings.view" },
       { label: "Ads", href: "/admin/monetization/ads", permission: "settings.view" },
     ],
   },

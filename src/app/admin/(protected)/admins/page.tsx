@@ -2,6 +2,7 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { prisma } from "@/server/db";
 import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
+import { format } from "date-fns";
 
 export const metadata = {
   title: "Administrators | Avex Tools Admin",
@@ -89,7 +90,7 @@ export default async function AdminsPage() {
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {format(new Date(user.createdAt), "dd/MM/yyyy")}
                     </td>
                   </tr>
                 ))

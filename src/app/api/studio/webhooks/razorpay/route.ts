@@ -53,6 +53,7 @@ const HANDLED = new Set([
   "subscription.paused",
   "subscription.resumed",
   "subscription.pending",
+  "refund.processed",
 ]);
 
 export async function POST(req: Request) {
@@ -74,6 +75,25 @@ export async function POST(req: Request) {
   if (!HANDLED.has(event)) {
     // Acknowledge unhandled events so Razorpay stops retrying them.
     return Response.json({ ok: true, ignored: event });
+  }
+
+  if (event === "refund.processed") {
+    const refundEntity = (payload.payload as any)?.refund?.entity;
+    if (refundEntity && refundEntity.payment_id) {
+      const payment = await prisma.payment.findFirst({ where: { providerTxId: refundEntity.payment_id } });
+      if (payment) {
+        // Sync refund amount from Razorpay
+        const isFullRefund = (payment.refundAmount + refundEntity.amount) >= payment.amount;
+        await prisma.payment.update({
+          where: { id: payment.id },
+          data: {
+            refundAmount: { increment: refundEntity.amount },
+            status: isFullRefund ? "refunded" : "partially_refunded"
+          }
+        });
+      }
+    }
+    return Response.json({ ok: true, handled: "refund.processed" });
   }
 
   const entity = payload.payload?.subscription?.entity;
