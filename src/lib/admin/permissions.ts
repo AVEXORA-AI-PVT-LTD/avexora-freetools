@@ -80,7 +80,16 @@ export type Permission =
   | "analytics.view"
   | "audit_logs.view"
   | "content.view"
-  | "content.edit";
+  | "content.edit"
+
+  | "ads.view"
+  | "ads.create"
+  | "ads.edit"
+  | "ads.activate"
+  | "ads.deactivate"
+  | "ads.delete"
+  | "ads.preview"
+  | "ads.manage_code";
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   superadmin: [
@@ -92,7 +101,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "users.edit", "users.delete", "users.change_role", "users.manage_roles", "users.revoke_sessions", "users.view_activity", "users.view_usage", "users.view_subscription", "users.change_plan", "roles.view", "roles.manage", 
     "brand_studio.view", "brand_studio.edit", "brand_studio.toggle", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
-    "settings.view", "settings.edit", "analytics.view", "audit_logs.view", "content.view", "content.edit"
+    "settings.view", "settings.edit", "analytics.view", "audit_logs.view", "content.view", "content.edit",
+    "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview", "ads.manage_code"
   ],
   admin: [
     "dashboard.view", "categories.view", "categories.edit", "categories.toggle", 
@@ -101,11 +111,13 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "users.view", 
     "users.edit", "brand_studio.view", "brand_studio.edit", "homepage.view", 
     "homepage.edit", "navigation.view", "navigation.edit", "seo.view", "seo.edit", 
-    "analytics.view", "content.view", "content.edit"
+    "analytics.view", "content.view", "content.edit",
+    "ads.view", "ads.create", "ads.edit", "ads.activate", "ads.deactivate", "ads.delete", "ads.preview"
   ],
   editor: [
     "dashboard.view", "categories.view", "categories.edit", "tools.view", 
-    "tools.edit", "tools.reorder", "homepage.view", "seo.view", "seo.edit", "content.view", "content.edit"
+    "tools.edit", "tools.reorder", "homepage.view", "seo.view", "seo.edit", "content.view", "content.edit",
+    "ads.view"
   ],
   user: []
 };

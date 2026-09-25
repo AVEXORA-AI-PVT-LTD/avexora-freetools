@@ -20,6 +20,7 @@ import {
   toolPageKeywords,
   toolPageTitle,
 } from "@/lib/tool-page-seo";
+import { AdSlot } from "@/components/ads/ad-slot";
 
 export const dynamicParams = true;
 
@@ -146,6 +147,8 @@ export default async function ToolPage({
           <ToolRunner category={toolData.category} slug={toolData.slug} aiEnabled={aiEnabled} />
         </div>
       )}
+
+      <AdSlot placement="tool_page" categorySlug={category} toolSlug={slug} />
 
       <div className="mt-10 space-y-10 print:hidden">
         <CtaBlock

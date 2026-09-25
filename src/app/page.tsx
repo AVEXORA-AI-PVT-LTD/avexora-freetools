@@ -24,6 +24,7 @@ const homepageJsonLd = [
 
 import { getEffectiveToolsByCategory } from "@/server/tools";
 import { getHomepageSections } from "@/server/homepage-service";
+import { AdSlot } from "@/components/ads/ad-slot";
 
 export default async function HomePage() {
   const effectiveCategories = await getEffectiveCategories();
@@ -58,6 +59,8 @@ export default async function HomePage() {
           <ToolSearch items={searchItems} displayCount={DISPLAYED_TOOL_COUNT} />
         </div>
       </section>)}
+
+      <AdSlot placement="homepage" />
 
       {brandStudioConfig?.enabled && (<section id="brand-studio" className="pb-16">
         <div className="rounded-2xl border border-orange-200 bg-orange-50/60 p-8 sm:p-10">

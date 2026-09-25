@@ -625,3 +625,32 @@ model DigitalCard {
 
   @@index([userId, updatedAt])
 }
+
+model AdSlot {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String?
+  placement      String    // "header" | "homepage" | "tool_page" | "sidebar" | "footer"
+  device         String    @default("all") // "all" | "desktop" | "mobile" | "tablet"
+  adProvider     String    // "adsense" | "admanager" | "custom" | "internal"
+  adReference    String?   // Ad unit ID / slot ID / promo asset ID
+  customHtml     String?   // Sanitized custom markup for internal or custom ads
+  destinationUrl String?   // For internal promo ads
+  imageUrl       String?   // For internal promo image ads
+  priority       Int       @default(1) // Priority order (1 = highest)
+  active         Boolean   @default(true)
+  startDate      DateTime?
+  endDate        DateTime?
+  categorySlug   String?   // Target specific category (e.g., "business-legal")
+  toolSlug       String?   // Target specific tool (e.g., "digital-business-card-generator")
+  createdBy      String?
+  updatedBy      String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([placement, active, priority])
+  @@index([device])
+  @@index([startDate, endDate])
+  @@index([categorySlug])
+  @@index([toolSlug])
+}

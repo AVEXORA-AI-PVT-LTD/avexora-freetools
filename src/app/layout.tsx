@@ -7,6 +7,7 @@ import AccountProviders from "@/components/account/providers";
 import { NavAccount } from "@/components/account/nav-account";
 import { getEffectiveNavigation } from "@/server/navigation";
 import { getGlobalSeoOverride } from "@/server/seo-manager";
+import { AdSlot } from "@/components/ads/ad-slot";
 
 import "./globals.css";
 
@@ -113,8 +114,10 @@ export default async function RootLayout({
               </a>
             </nav>
           </div>
+          <AdSlot placement="header" />
         </header>
         <main className="flex-1">{children}</main>
+        <AdSlot placement="footer" />
         <footer className="border-t border-slate-200 bg-slate-50 print:hidden">
           <div className="mx-auto max-w-6xl px-4 py-10">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
