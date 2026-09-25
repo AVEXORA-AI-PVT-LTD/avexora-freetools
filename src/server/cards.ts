@@ -7,6 +7,7 @@ import { getAllPlans } from "@/server/studio/plans";
 import {
   buildCardHtml,
   buildVCard,
+  MAX_EXTRA_WEBSITES,
   normalizeUrl,
   SOCIAL_NETWORKS,
   validateBusinessCard,
@@ -54,6 +55,10 @@ const cardSchema = z.object({
   whatsapp: text(40),
   email: text(254),
   website: text(300),
+  moreWebsites: z
+    .array(z.object({ label: z.string().max(40).default(""), url: z.string().max(300).default("") }))
+    .max(MAX_EXTRA_WEBSITES)
+    .optional(),
   address: text(400),
   socials: z.partialRecord(z.enum(SOCIAL_NETWORKS), z.string().max(300)).default({}),
   primaryColor: z.string().max(7),

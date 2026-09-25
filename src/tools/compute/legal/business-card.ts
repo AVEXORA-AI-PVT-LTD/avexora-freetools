@@ -34,6 +34,8 @@ export interface BusinessCardInput {
   whatsapp: string;
   email: string;
   website: string;
+  /** More websites (other products or businesses), each shown as its own row. */
+  moreWebsites?: ExtraWebsite[];
   address: string;
   socials: Partial<Record<SocialNetwork, string>>;
   primaryColor: string;
@@ -49,6 +51,24 @@ export interface BusinessCardInput {
   morePhotos?: string[];
   /** Animate the header: crossfade the photos with a slow zoom. */
   photoMotion?: boolean;
+}
+
+export interface ExtraWebsite {
+  /** Shown above the link, e.g. "WhatsApp API"; defaults to "Website". */
+  label: string;
+  url: string;
+}
+
+/** Websites beyond the main one. */
+export const MAX_EXTRA_WEBSITES = 5;
+const WEBSITE_LABEL_MAX = 40;
+
+/** The extra websites that have a link, trimmed; blank rows in the form are ignored. */
+export function extraWebsites(input: BusinessCardInput): { label: string; url: string }[] {
+  return (input.moreWebsites ?? []).flatMap((w) => {
+    const url = normalizeUrl(w.url);
+    return url ? [{ label: w.label.trim() || "Website", url }] : [];
+  });
 }
 
 export const DEFAULT_CARD_COLORS = { primaryColor: "#EA580C", accentColor: "#7C3AED" } as const;
@@ -134,7 +154,9 @@ export function validateBusinessCard(input: BusinessCardInput): string | null {
   for (const key of ["name", "title", "company", "tagline", "address"] as const) {
     if (input[key].length > LIMITS[key]) return `Keep the ${key} under ${LIMITS[key]} characters.`;
   }
-  const hasContact = [input.phone, input.whatsapp, input.email, input.website].some((v) => v.trim());
+  const hasContact =
+    [input.phone, input.whatsapp, input.email, input.website].some((v) => v.trim()) ||
+    (input.moreWebsites ?? []).some((w) => w.url.trim());
   if (!hasContact) return "Add at least one way to reach you: phone, WhatsApp, email or website.";
   if (input.phone.trim()) {
     const n = digits(input.phone).length;
@@ -146,6 +168,18 @@ export function validateBusinessCard(input: BusinessCardInput): string | null {
   }
   if (input.email.trim() && !EMAIL_RE.test(input.email.trim())) return "That email address doesn't look right.";
   if (input.website.trim() && !normalizeUrl(input.website)) return "That website address doesn't look right.";
+  if (input.moreWebsites?.length) {
+    if (input.moreWebsites.length > MAX_EXTRA_WEBSITES) return `You can add up to ${MAX_EXTRA_WEBSITES} more websites.`;
+    for (const w of input.moreWebsites) {
+      const label = w.label.trim();
+      if (label.length > WEBSITE_LABEL_MAX) return `Keep each website label under ${WEBSITE_LABEL_MAX} characters.`;
+      if (!w.url.trim()) {
+        if (label) return `Add the link for "${label}", or remove that website.`;
+        continue;
+      }
+      if (!normalizeUrl(w.url)) return `The website address "${w.url.trim()}" doesn't look right.`;
+    }
+  }
   for (const network of SOCIAL_NETWORKS) {
     const value = input.socials[network];
     if (value?.trim() && !normalizeSocial(network, value)) {
@@ -197,6 +231,9 @@ export function contactRows(input: BusinessCardInput): ContactRow[] {
   if (email) rows.push({ kind: "email", label: "Email", value: email, href: `mailto:${email}`, external: false });
   const site = normalizeUrl(input.website);
   if (site) rows.push({ kind: "website", label: "Website", value: prettyUrl(site), href: site, external: true });
+  for (const extra of extraWebsites(input)) {
+    rows.push({ kind: "website", label: extra.label, value: prettyUrl(extra.url), href: extra.url, external: true });
+  }
   const address = input.address.trim();
   if (address) rows.push({ kind: "address", label: "Address", value: address, href: mapsHref(address), external: true });
   return rows;
@@ -242,6 +279,9 @@ export function buildVCard(input: BusinessCardInput, opts: { includePhoto?: bool
   if (input.email.trim()) lines.push(`EMAIL;TYPE=INTERNET,WORK:${input.email.trim()}`);
   const site = normalizeUrl(input.website);
   if (site) lines.push(`URL:${site}`);
+  for (const extra of extraWebsites(input)) {
+    if (extra.url !== site) lines.push(`URL:${extra.url}`);
+  }
   if (input.address.trim()) lines.push(`ADR;TYPE=WORK:;;${vEscape(input.address.trim())};;;;`);
   for (const { network, url } of socialLinks(input)) lines.push(`X-SOCIALPROFILE;TYPE=${network}:${url}`);
   if (input.tagline.trim()) lines.push(`NOTE:${vEscape(input.tagline.trim())}`);
@@ -422,7 +462,7 @@ export function buildCardHtml(input: BusinessCardInput, opts: CardHtmlOptions = 
     .map((r, i) => {
       const d = 1250 + i * 120;
       const ext = r.external ? ' target="_blank" rel="noopener noreferrer"' : "";
-      return `<li class="rise-x" style="--d:${d}ms"><a class="row" href="${esc(r.href)}"${ext} style="--c:${ROW_COLOR[r.kind]}"><span class="ic">${icon(r.kind)}</span><span class="tx"><small>${r.label}</small><span>${esc(r.value)}</span></span></a></li>`;
+      return `<li class="rise-x" style="--d:${d}ms"><a class="row" href="${esc(r.href)}"${ext} style="--c:${ROW_COLOR[r.kind]}"><span class="ic">${icon(r.kind)}</span><span class="tx"><small>${esc(r.label)}</small><span>${esc(r.value)}</span></span></a></li>`;
     })
     .join("");
   let t = 1250 + rows.length * 120 + 60;

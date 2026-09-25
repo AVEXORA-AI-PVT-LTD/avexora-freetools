@@ -11,12 +11,14 @@ import {
   DEFAULT_CARD_COLORS,
   LIMITS,
   normalizeUrl,
+  MAX_EXTRA_WEBSITES,
   MAX_PHOTOS,
   SOCIAL_META,
   SOCIAL_NETWORKS,
   validateBusinessCard,
   type BusinessCardInput,
   type CardTheme,
+  type ExtraWebsite,
   type QrTarget,
   type SocialNetwork,
 } from "@/tools/compute/legal/business-card";
@@ -178,6 +180,16 @@ export default function DigitalBusinessCard() {
     setInput((prev) => ({ ...prev, [key]: value }));
   const setSocial = (network: SocialNetwork, value: string) =>
     setInput((prev) => ({ ...prev, socials: { ...prev.socials, [network]: value } }));
+  const moreWebsites = input.moreWebsites ?? [];
+  const setWebsite = (index: number, patch: Partial<ExtraWebsite>) =>
+    setInput((prev) => ({
+      ...prev,
+      moreWebsites: (prev.moreWebsites ?? []).map((w, i) => (i === index ? { ...w, ...patch } : w)),
+    }));
+  const addWebsite = () =>
+    setInput((prev) => ({ ...prev, moreWebsites: [...(prev.moreWebsites ?? []), { label: "", url: "" }] }));
+  const removeWebsite = (index: number) =>
+    setInput((prev) => ({ ...prev, moreWebsites: (prev.moreWebsites ?? []).filter((_, i) => i !== index) }));
 
   useEffect(() => {
     saveDraft({ input, qrTarget, whatsappSame, saved });
@@ -523,6 +535,56 @@ export default function DigitalBusinessCard() {
               </div>
               {field("email", "Email", "priya@northwind.in", { type: "email", autoComplete: "email" })}
               {field("website", "Website", "northwind.in", { type: "url", autoComplete: "url" })}
+            </div>
+            <div className="space-y-3">
+              {moreWebsites.map((w, i) => (
+                <div key={i} className="rounded-lg border border-slate-200 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium text-slate-800">Website {i + 2}</p>
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-slate-500 hover:text-red-700"
+                      onClick={() => removeWebsite(i)}
+                      aria-label={`Remove website ${i + 2}`}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className={labelCls} htmlFor={`${id}-site-label-${i}`}>Label</label>
+                      <input
+                        id={`${id}-site-label-${i}`}
+                        className={inputCls}
+                        value={w.label}
+                        maxLength={40}
+                        placeholder="e.g. WhatsApp API"
+                        onChange={(e) => setWebsite(i, { label: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls} htmlFor={`${id}-site-url-${i}`}>Link</label>
+                      <input
+                        id={`${id}-site-url-${i}`}
+                        type="url"
+                        className={inputCls}
+                        value={w.url}
+                        placeholder="avexwa.com"
+                        onChange={(e) => setWebsite(i, { url: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {moreWebsites.length < MAX_EXTRA_WEBSITES && (
+                <button type="button" className={secondaryBtn} onClick={addWebsite}>
+                  + Add another website
+                </button>
+              )}
+              <p className={hintCls}>
+                Optional. Add up to {MAX_EXTRA_WEBSITES} more sites, such as your other products or businesses. Each gets
+                its own row on the card, with the label you give it.
+              </p>
             </div>
             <div>
               <label className={labelCls} htmlFor={`${id}-address`}>Address</label>

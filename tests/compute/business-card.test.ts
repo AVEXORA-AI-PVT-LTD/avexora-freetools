@@ -5,7 +5,9 @@ import {
   cardFilename,
   contactRows,
   DEFAULT_CARD_COLORS,
+  extraWebsites,
   initials,
+  MAX_EXTRA_WEBSITES,
   normalizeSocial,
   cardPhotos,
   MAX_PHOTOS,
@@ -276,5 +278,52 @@ describe("buildCardHtml", () => {
     expect(buildCardHtml(card())).toContain(">PS</span>");
     expect(buildCardHtml(card(), { entrance: false })).toContain('class="no-entrance"');
     expect(buildCardHtml(card({ theme: "dark" }))).toContain('data-theme="dark"');
+  });
+});
+
+describe("more websites", () => {
+  const sites = [
+    { label: "AI CRM", url: "avexcrm.com" },
+    { label: "", url: "https://avexwa.com/" },
+    { label: "", url: "  " },
+  ];
+
+  it("adds a row per site with its label, skipping blank rows", () => {
+    const rows = contactRows(card({ moreWebsites: sites })).filter((r) => r.kind === "website");
+    expect(rows.map((r) => [r.label, r.value, r.href])).toEqual([
+      ["Website", "northwind.in", "https://northwind.in/"],
+      ["AI CRM", "avexcrm.com", "https://avexcrm.com/"],
+      ["Website", "avexwa.com", "https://avexwa.com/"],
+    ]);
+    expect(extraWebsites(card({ moreWebsites: sites }))).toHaveLength(2);
+  });
+
+  it("writes every site to the vCard once", () => {
+    const vcard = buildVCard(card({ moreWebsites: [...sites, { label: "Same", url: "northwind.in" }] }));
+    expect(vcard.match(/^URL:.*$/gm)).toEqual(["URL:https://northwind.in/", "URL:https://avexcrm.com/", "URL:https://avexwa.com/"]);
+  });
+
+  it("validates each site", () => {
+    expect(validateBusinessCard(card({ moreWebsites: sites }))).toBeNull();
+    expect(validateBusinessCard(card({ moreWebsites: [{ label: "Bad", url: "javascript:alert(1)" }] }))).toMatch(/doesn't look right/);
+    expect(validateBusinessCard(card({ moreWebsites: [{ label: "WhatsApp API", url: "" }] }))).toMatch(/Add the link for "WhatsApp API"/);
+    expect(validateBusinessCard(card({ moreWebsites: [{ label: "x".repeat(41), url: "a.com" }] }))).toMatch(/label/);
+    const tooMany = Array.from({ length: MAX_EXTRA_WEBSITES + 1 }, (_, i) => ({ label: "", url: `site${i}.com` }));
+    expect(validateBusinessCard(card({ moreWebsites: tooMany }))).toMatch(/up to/);
+  });
+
+  it("counts as a way to reach you", () => {
+    const only = card({ phone: "", email: "", website: "", moreWebsites: [{ label: "", url: "avexwa.com" }] });
+    expect(validateBusinessCard(only)).toBeNull();
+  });
+
+  it("escapes labels in the card page", () => {
+    const html = buildCardHtml(card({ moreWebsites: [{ label: "<img src=x onerror=alert(1)>", url: "a.com" }] }), {
+      qrSvg: "<svg></svg>",
+      qrTarget: "contact",
+    });
+    expect(html).not.toContain("<img src=x");
+    expect(html).toContain("&lt;img src=x onerror=alert(1)&gt;");
+    expect(html).toContain('href="https://a.com/"');
   });
 });
