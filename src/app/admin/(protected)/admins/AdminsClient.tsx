@@ -16,7 +16,6 @@ import {
   Key,
   Shield,
   Clock,
-  Sparkles,
   Lock,
 } from "lucide-react";
 

@@ -15,7 +15,6 @@ import {
   Edit,
   Eye,
   Lock,
-  Sparkles,
   Check,
   X,
   ExternalLink,
@@ -136,7 +135,7 @@ export function RolesClient({ initialData }: Props) {
               : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
-          <Sparkles className="w-4 h-4" />
+          <ShieldCheck className="w-4 h-4" />
           Custom Roles ({data.customRoles.length})
         </button>
       </div>
@@ -228,7 +227,7 @@ export function RolesClient({ initialData }: Props) {
                   <tr>
                     <td colSpan={6} className="p-8 text-center text-slate-500">
                       <div className="flex flex-col items-center justify-center space-y-2">
-                        <Sparkles className="w-8 h-8 text-slate-300" />
+                        <ShieldCheck className="w-8 h-8 text-slate-300" />
                         <div className="font-medium text-slate-700">No Custom Roles Found</div>
                         <p className="text-xs text-slate-400 max-w-sm">
                           Create custom roles with specific permission sets to grant granular access to your team.

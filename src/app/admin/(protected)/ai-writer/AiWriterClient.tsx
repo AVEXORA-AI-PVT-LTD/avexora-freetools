@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { 
   Bot, 
-  Sparkles, 
   Zap, 
   Activity, 
   DollarSign, 
@@ -101,7 +100,7 @@ export function AiWriterClient({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-orange-600" />
+            <Bot className="h-6 w-6 text-orange-600" />
             AI Writer Management
           </h1>
           <p className="mt-1 text-sm text-slate-500">

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Info, ChevronDown, ChevronUp, BookOpen, Layers, Sparkles, HelpCircle } from "lucide-react";
+import { Info, ChevronDown, ChevronUp, BookOpen, Layers, HelpCircle } from "lucide-react";
 
 interface SectionGuide {
   title: string;
@@ -582,7 +582,7 @@ export function AdminAboutPanel() {
           {/* Section Purpose */}
           <div className="mb-5 bg-zinc-50/80 p-4 rounded-lg border border-zinc-200/70">
             <h5 className="font-semibold text-xs uppercase tracking-wider text-zinc-700 mb-1 flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-orange-600" /> Purpose & Overview
+              <Info className="h-3.5 w-3.5 text-orange-600" /> Purpose & Overview
             </h5>
             <p className="text-sm text-zinc-700 leading-relaxed">
               {guide.purpose}

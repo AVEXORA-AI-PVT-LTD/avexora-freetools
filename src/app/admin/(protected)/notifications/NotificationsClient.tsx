@@ -28,7 +28,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Sparkles,
+  BellOff,
   ChevronLeft,
   ChevronRight,
   X,
@@ -235,7 +235,7 @@ export function NotificationsClient({ initialData }: Props) {
         {data.items.length === 0 ? (
           <div className="p-12 text-center text-slate-500">
             <div className="flex flex-col items-center justify-center space-y-2">
-              <Sparkles className="w-8 h-8 text-slate-300" />
+              <BellOff className="w-8 h-8 text-slate-300" />
               <div className="font-medium text-slate-700">No Notifications</div>
               <p className="text-xs text-slate-400 max-w-sm">
                 No notifications match your current tab or filter selection.

@@ -13,7 +13,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Sparkles,
+  BellOff,
   RefreshCw,
 } from "lucide-react";
 import {
@@ -137,7 +137,7 @@ export function NotificationBell() {
                 </div>
               ) : recentNotifications.length === 0 ? (
                 <div className="p-8 text-center text-xs text-slate-400 space-y-1">
-                  <Sparkles className="w-6 h-6 mx-auto text-slate-300" />
+                  <BellOff className="w-6 h-6 mx-auto text-slate-300" />
                   <div className="font-semibold text-slate-600">No Notifications</div>
                   <p>You're all caught up!</p>
                 </div>

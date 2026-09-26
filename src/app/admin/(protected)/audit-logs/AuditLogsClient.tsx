@@ -25,7 +25,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  Sparkles,
+  FileText,
 } from "lucide-react";
 
 interface Props {
@@ -640,7 +640,7 @@ export function AuditLogsClient({ initialData }: Props) {
                       : "border-transparent text-slate-500 hover:text-slate-800"
                   }`}
                 >
-                  <Sparkles className="w-4 h-4" /> Change Summary & Metadata
+                  <FileText className="w-4 h-4" /> Change Summary & Metadata
                 </button>
                 <button
                   onClick={() => setModalTab("json")}

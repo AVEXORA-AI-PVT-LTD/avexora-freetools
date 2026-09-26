@@ -7,7 +7,7 @@ import {
   Save, 
   RotateCcw, 
   Play, 
-  Sparkles, 
+  Wand2, 
   History, 
   Sliders, 
   FileCode, 
@@ -316,7 +316,7 @@ export function AiToolEditor({
             }`}
           >
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" />
+              <Wand2 className="h-4 w-4" />
               <span>Basic Settings</span>
             </div>
           </button>

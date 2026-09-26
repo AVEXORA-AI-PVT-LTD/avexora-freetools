@@ -23,7 +23,6 @@ import {
   MoreHorizontal,
   User,
   Wrench,
-  Sparkles,
   Inbox,
   AlertTriangle
 } from "lucide-react";

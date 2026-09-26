@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Sparkles,
+  CreditCard,
   Users,
   LineChart,
 } from "lucide-react";
@@ -111,7 +111,7 @@ export default async function ToolAnalyticsDrilldownPage({ params }: PageProps) 
 
         <div className="p-6 bg-slate-900 text-white rounded-2xl shadow-sm space-y-2">
           <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-400" /> Subscriptions Generated
+            <CreditCard className="w-4 h-4 text-emerald-400" /> Subscriptions Generated
           </div>
           <div className="text-3xl font-extrabold text-emerald-400">+{stats.subsAttributed}</div>
           <p className="text-xs text-slate-400 leading-relaxed">

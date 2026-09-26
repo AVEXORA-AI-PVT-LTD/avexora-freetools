@@ -11,7 +11,7 @@ import {
   Database,
   HardDrive,
   Zap,
-  Sparkles,
+  Bot,
   CreditCard,
   Mail,
 } from "lucide-react";
@@ -163,7 +163,7 @@ export function SystemHealthClient({ initialHealth }: { initialHealth: any }) {
           {/* AI */}
           <div className="p-4 rounded-xl border border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-purple-600" />
+              <Bot className="h-5 w-5 text-purple-600" />
               <div>
                 <h5 className="font-bold text-slate-900">AI Providers</h5>
                 <span className="text-slate-400 text-[11px]">OpenAI / Gemini / Claude</span>

@@ -16,7 +16,7 @@ import {
   ShieldAlert,
   History,
   Settings,
-  Sparkles,
+  Bot,
   LucideIcon
 } from "lucide-react";
 
@@ -116,7 +116,7 @@ export const adminNavigation: AdminNavItem[] = [
   {
     label: "AI Writer",
     href: "/admin/ai-writer",
-    icon: Sparkles,
+    icon: Bot,
     permission: "ai.view",
   },
   {

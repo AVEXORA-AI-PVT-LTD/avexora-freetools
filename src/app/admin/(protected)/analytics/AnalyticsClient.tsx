@@ -16,7 +16,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Sparkles,
+  CreditCard,
   RefreshCw,
   Globe,
   Smartphone,
@@ -149,7 +149,7 @@ export function AnalyticsClient({ initialData, activeTab = "overview" }: Props) 
     revenue: {
       title: "Revenue & Subscriptions",
       description: "Gross revenue breakdown, paid subscription conversions, ARPU, and plan performance.",
-      icon: Sparkles,
+      icon: CreditCard,
       color: "text-amber-500",
     },
   };
@@ -768,7 +768,7 @@ export function AnalyticsClient({ initialData, activeTab = "overview" }: Props) 
             <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-2">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 <span>Paid Subscriber Conversion</span>
-                <Sparkles className="w-4 h-4 text-orange-500" />
+                <CreditCard className="w-4 h-4 text-orange-500" />
               </div>
               <div className="flex items-baseline justify-between">
                 <div className="text-2xl font-extrabold text-orange-600">{kpis.subConvRate.current}%</div>
@@ -861,7 +861,7 @@ export function AnalyticsClient({ initialData, activeTab = "overview" }: Props) 
             <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-2">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
                 <span>Paid Subscriptions</span>
-                <Sparkles className="w-4 h-4 text-orange-500" />
+                <CreditCard className="w-4 h-4 text-orange-500" />
               </div>
               <div className="flex items-baseline justify-between">
                 <div className="text-2xl font-extrabold text-orange-600">{kpis.subscriptions.current.toLocaleString()}</div>
@@ -903,7 +903,7 @@ export function AnalyticsClient({ initialData, activeTab = "overview" }: Props) 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-4">
               <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-orange-500" /> Subscription Plan Breakdown
+                <CreditCard className="w-4 h-4 text-orange-500" /> Subscription Plan Breakdown
               </h2>
               <div className="space-y-3">
                 <div className="space-y-1">
