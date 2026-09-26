@@ -1,15 +1,13 @@
 import { requireAdminAuth } from "@/server/admin-auth";
+import { getAnalyticsOverviewAction } from "../analytics-actions";
+import { AnalyticsClient } from "../AnalyticsClient";
 
 export const metadata = {
-  title: "Analytics | Avex Tools Admin",
+  title: "Revenue Analytics | Avex Tools Admin",
 };
 
-export default async function AnalyticsSubPage() {
+export default async function RevenueAnalyticsPage() {
   await requireAdminAuth("analytics.view");
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-slate-900 mb-4 capitalize">revenue Analytics</h1>
-      <p className="text-slate-600">This module is under development.</p>
-    </div>
-  );
+  const initialData = await getAnalyticsOverviewAction({ range: "30days" });
+  return <AnalyticsClient initialData={initialData} activeTab="revenue" />;
 }

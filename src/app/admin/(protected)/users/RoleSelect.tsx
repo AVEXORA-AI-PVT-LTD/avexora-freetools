@@ -72,7 +72,7 @@ export function RoleSelect({
           disabled ? "bg-slate-50 opacity-70 cursor-not-allowed" : "bg-white"
         }`}
       >
-        {!ALLOWED_ROLES.includes(currentRole as Role) && (
+        {!ALLOWED_ROLES.includes(currentRole as any) && (
            <option value={currentRole}>{currentRole || "user"}</option>
         )}
         {ALLOWED_ROLES.map((role) => (

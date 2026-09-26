@@ -1,15 +1,14 @@
 import { requireAdminAuth } from "@/server/admin-auth";
+import { getReportDashboardOverviewAction } from "./reports-actions";
+import { ReportsDashboardClient } from "./ReportsDashboardClient";
 
 export const metadata = {
-  title: "Reports | Avex Tools Admin",
+  title: "Reports & Export Management | Avex Tools Admin",
+  description: "Generate, schedule, preview, and download custom CSV, XLSX, and PDF exports.",
 };
 
 export default async function ReportsPage() {
   await requireAdminAuth("analytics.view");
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-slate-900 mb-4">Reports</h1>
-      <p className="text-slate-600">This module is under development.</p>
-    </div>
-  );
+  const overview = await getReportDashboardOverviewAction();
+  return <ReportsDashboardClient overview={overview} />;
 }

@@ -16,6 +16,7 @@ import {
   ShieldAlert,
   History,
   Settings,
+  Bot,
   LucideIcon
 } from "lucide-react";
 
@@ -88,8 +89,9 @@ export const adminNavigation: AdminNavItem[] = [
     label: "Analytics",
     icon: LineChart,
     children: [
+      { label: "Overview", href: "/admin/analytics", permission: "analytics.view" },
       { label: "Website", href: "/admin/analytics/website", permission: "analytics.view" },
-      { label: "Tools", href: "/admin/analytics", permission: "analytics.view" }, // Re-using existing /admin/analytics
+      { label: "Tools", href: "/admin/analytics/tools", permission: "analytics.view" },
       { label: "Users", href: "/admin/analytics/users", permission: "analytics.view" },
       { label: "Revenue", href: "/admin/analytics/revenue", permission: "analytics.view" },
     ],
@@ -98,29 +100,42 @@ export const adminNavigation: AdminNavItem[] = [
     label: "Monetization",
     icon: BadgeDollarSign,
     children: [
+      { label: "Revenue Dashboard", href: "/admin/monetization/revenue", permission: "settings.view" },
+      { label: "Payments", href: "/admin/monetization/payments", permission: "settings.view" },
       { label: "Pricing", href: "/admin/monetization/pricing", permission: "settings.view" },
       { label: "Subscriptions", href: "/admin/monetization/subscriptions", permission: "settings.view" },
-      { label: "Payments", href: "/admin/monetization/payments", permission: "settings.view" },
-      { label: "Ads", href: "/admin/monetization/ads", permission: "settings.view" },
+      { label: "Ads", href: "/admin/monetization/ads", permission: "ads.view" },
     ],
   },
   {
     label: "Media Library",
     href: "/admin/media",
     icon: ImageIcon,
-    permission: "content.view",
+    permission: "media.view",
+  },
+  {
+    label: "AI Writer",
+    href: "/admin/ai-writer",
+    icon: Bot,
+    permission: "ai.view",
   },
   {
     label: "Contact & Feedback",
     href: "/admin/feedback",
     icon: MessageSquare,
-    permission: "content.view",
+    permission: "feedback.view",
   },
   {
-    label: "Error Logs",
-    href: "/admin/error-logs",
+    label: "Error Monitoring",
     icon: AlertTriangle,
-    permission: "audit_logs.view",
+    permission: "errors.view",
+    children: [
+      { label: "All Errors", href: "/admin/error-monitoring", permission: "errors.view" },
+      { label: "Open", href: "/admin/error-monitoring?status=Open", permission: "errors.view" },
+      { label: "Investigating", href: "/admin/error-monitoring?status=Investigating", permission: "errors.view" },
+      { label: "Resolved", href: "/admin/error-monitoring?status=Resolved", permission: "errors.view" },
+      { label: "Ignored", href: "/admin/error-monitoring?status=Ignored", permission: "errors.view" },
+    ],
   },
   {
     label: "Notifications",
@@ -130,34 +145,38 @@ export const adminNavigation: AdminNavItem[] = [
   },
   {
     label: "Reports",
-    href: "/admin/reports",
     icon: FileSpreadsheet,
     permission: "analytics.view",
+    children: [
+      { label: "Dashboard", href: "/admin/reports", permission: "analytics.view" },
+      { label: "Generator", href: "/admin/reports/generate", permission: "analytics.view" },
+      { label: "History", href: "/admin/reports/history", permission: "analytics.view" },
+    ],
   },
   {
     label: "Admin & Roles",
     icon: ShieldAlert,
     children: [
-      { label: "Administrators", href: "/admin/admins", permission: "roles.view" },
-      { label: "Roles", href: "/admin/roles", permission: "roles.view" },
-      { label: "Permissions", href: "/admin/permissions", permission: "roles.view" },
+      { label: "Administrators", href: "/admin/admins", permission: "admins.view" },
+      { label: "Roles & Permissions", href: "/admin/roles", permission: "roles.view" },
     ],
   },
   {
     label: "Audit Logs",
     href: "/admin/audit-logs",
     icon: History,
-    permission: "audit_logs.view",
+    permission: "audit.view",
   },
   {
     label: "Settings",
     icon: Settings,
     children: [
-      { label: "General", href: "/admin/settings/general", permission: "settings.view" },
-      { label: "Email", href: "/admin/settings/email", permission: "settings.view" },
-      { label: "API", href: "/admin/settings/api", permission: "settings.edit" },
-      { label: "Security", href: "/admin/settings/security", permission: "settings.edit" },
-      { label: "Backup & Maintenance", href: "/admin/settings/backup", permission: "settings.edit" },
+      { label: "General", href: "/admin/settings/general", permission: "settings.general.view" },
+      { label: "Website", href: "/admin/settings/website", permission: "settings.website.view" },
+      { label: "Email", href: "/admin/settings/email", permission: "settings.email.view" },
+      { label: "Security", href: "/admin/settings/security", permission: "settings.security.view" },
+      { label: "Integrations", href: "/admin/settings/integrations", permission: "settings.integrations.view" },
+      { label: "Backup & Maintenance", href: "/admin/settings/maintenance", permission: "maintenance.view" },
     ],
   },
 ];

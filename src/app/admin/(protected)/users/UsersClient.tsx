@@ -6,6 +6,7 @@ import { Search, Filter, Shield, MoreVertical, Ban, Trash2, Power, Eye, External
 import Link from "next/link";
 import { bulkUpdateUserStatus } from "./user-actions";
 import Image from "next/image";
+import { format } from "date-fns";
 import type { Prisma } from "@prisma/client";
 
 /** A user row as selected by the users admin page (page.tsx). */
@@ -182,7 +183,7 @@ export function UsersClient({ users, total, page, limit, initialFilters, adminRo
                   {u.subscription?.plan || "Free"}
                 </td>
                 <td className="px-4 py-4 text-sm text-slate-500">
-                  {new Date(u.createdAt).toLocaleDateString()}
+                  {format(new Date(u.createdAt), "dd/MM/yyyy")}
                 </td>
                 <td className="px-4 py-4 text-right">
                   <Link href={`/admin/users/${u.id}`} className="inline-flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-md transition-colors">

@@ -4,6 +4,7 @@ import { useDialog } from "@/components/admin/DialogProvider";
 import { updateUserStatus, updateUserRole, deleteUser, revokeUserSessions, changeUserPlan } from "../user-actions";
 import { ShieldAlert, Trash2, Shield, Activity, CreditCard, Power, Lock, Key } from "lucide-react";
 import Image from "next/image";
+import { format } from "date-fns";
 import type { Prisma } from "@prisma/client";
 
 type UserDetail = Prisma.UserGetPayload<{
@@ -150,7 +151,7 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: UserDet
               </div>
               <div>
                 <h4 className="text-sm font-medium text-slate-500 mb-1">Joined Date</h4>
-                <p className="text-sm text-slate-900">{new Date(user.createdAt).toLocaleString()}</p>
+                <p className="text-sm text-slate-900">{format(new Date(user.createdAt), "dd/MM/yyyy HH:mm")}</p>
               </div>
               <div>
                 <h4 className="text-sm font-medium text-slate-500 mb-1">Job Role</h4>
@@ -240,7 +241,7 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: UserDet
                   {user.subscription.currentPeriodEnd && (
                     <div>
                       <span className="block text-xs font-medium text-slate-500">Current Period Ends</span>
-                      <span className="block text-sm text-slate-800 mt-1">{new Date(user.subscription.currentPeriodEnd).toLocaleDateString()}</span>
+                      <span className="block text-sm text-slate-800 mt-1">{format(new Date(user.subscription.currentPeriodEnd), "dd/MM/yyyy")}</span>
                     </div>
                   )}
                   <div>
@@ -279,7 +280,7 @@ export function UserDetailClient({ user, topTools, adminRole, adminId }: UserDet
                     <div className="mt-1"><Activity className="w-4 h-4 text-slate-400" /></div>
                     <div>
                       <p className="text-sm font-medium text-slate-900">{log.action}</p>
-                      <p className="text-xs text-slate-500 mt-1">By {log.actorRole} ({log.actorId}) on {new Date(log.createdAt).toLocaleString()}</p>
+                      <p className="text-xs text-slate-500 mt-1">By {log.actorRole} ({log.actorId}) on {format(new Date(log.createdAt), "dd/MM/yyyy HH:mm")}</p>
                       {!!log.metadata && <pre className="mt-2 text-[10px] bg-slate-100 p-2 rounded text-slate-600 font-mono">{JSON.stringify(log.metadata, null, 2)}</pre>}
                     </div>
                   </div>

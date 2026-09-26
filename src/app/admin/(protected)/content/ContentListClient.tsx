@@ -5,6 +5,7 @@ import { useDialog } from "@/components/admin/DialogProvider";
 import { deleteContent, changeContentStatus } from "./content-actions";
 import { Edit, Trash2, Plus, Search, Filter } from "lucide-react";
 import { ContentItem, ContentType, ContentStatus } from "@prisma/client";
+import { format } from "date-fns";
 
 export function ContentListClient({ initialItems, fixedType }: { initialItems: ContentItem[], fixedType?: ContentType }) {
   const [items, setItems] = useState(initialItems);
@@ -110,7 +111,7 @@ export function ContentListClient({ initialItems, fixedType }: { initialItems: C
                     {(item as ContentItem & { views?: number }).views || 0}
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-500">
-                    {new Date(item.updatedAt).toLocaleDateString()}
+                    {format(new Date(item.updatedAt), "dd/MM/yyyy")}
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
                     <Link href={`/admin/content/${item.id}`} className="inline-flex p-1.5 text-slate-400 hover:text-orange-600" title="Edit">

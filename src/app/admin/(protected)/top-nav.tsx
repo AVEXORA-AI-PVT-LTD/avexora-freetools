@@ -1,28 +1,33 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { adminNavigation } from "@/config/admin-navigation";
 import { hasPermission } from "@/lib/admin/permissions";
 
 export function AdminTopNav({ userRole }: { userRole: string | undefined | null }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  // Find the active parent navigation item using exact match / longest prefix logic
+  const queryString = searchParams.toString();
+  const fullPath = queryString ? `${pathname}?${queryString}` : pathname;
+
+  // Find the active parent navigation item
   let activeParentIndex = -1;
   let longestMatchLength = -1;
 
   adminNavigation.forEach((item, index) => {
     if (item.children) {
-      item.children.forEach(child => {
-        if (child.href === pathname) {
+      item.children.forEach((child) => {
+        const childBase = child.href?.split("?")[0];
+        if (child.href && fullPath && child.href.toLowerCase() === fullPath.toLowerCase()) {
           if (1000 > longestMatchLength) {
             longestMatchLength = 1000;
             activeParentIndex = index;
           }
-        } else if (child.href && child.href !== "/admin" && pathname?.startsWith(child.href)) {
-          if (child.href.length > longestMatchLength) {
-            longestMatchLength = child.href.length;
+        } else if (childBase && childBase !== "/admin" && pathname?.startsWith(childBase)) {
+          if (childBase.length > longestMatchLength) {
+            longestMatchLength = childBase.length;
             activeParentIndex = index;
           }
         }
@@ -43,14 +48,18 @@ export function AdminTopNav({ userRole }: { userRole: string | undefined | null 
 
   if (permittedChildren.length === 0) return null;
 
-  let activeIndex = permittedChildren.findIndex(child => child.href === pathname);
-  
+  // Find exact active tab index matching full path or path prefix
+  let activeIndex = permittedChildren.findIndex(
+    (child) => child.href && child.href.toLowerCase() === fullPath.toLowerCase()
+  );
+
   if (activeIndex === -1 && pathname) {
     let longestMatchLength = -1;
     permittedChildren.forEach((child, index) => {
-      if (child.href && child.href !== "/admin" && pathname.startsWith(child.href)) {
-        if (child.href.length > longestMatchLength) {
-          longestMatchLength = child.href.length;
+      const childBase = child.href?.split("?")[0];
+      if (childBase && childBase !== "/admin" && pathname.startsWith(childBase)) {
+        if (childBase.length > longestMatchLength) {
+          longestMatchLength = childBase.length;
           activeIndex = index;
         }
       }
@@ -63,7 +72,7 @@ export function AdminTopNav({ userRole }: { userRole: string | undefined | null 
         {activeParent.icon && <activeParent.icon className="w-8 h-8 text-orange-600" />}
         <h1 className="text-3xl font-extrabold text-zinc-900">{activeParent.label}</h1>
       </div>
-      
+
       <div className="flex overflow-x-auto scrollbar-hide">
         <div className="flex space-x-1 border-b border-zinc-200 min-w-full">
           {permittedChildren.map((child, index) => {
@@ -74,7 +83,7 @@ export function AdminTopNav({ userRole }: { userRole: string | undefined | null 
                 href={child.href!}
                 className={`whitespace-nowrap py-3 px-4 text-sm font-medium transition-colors border-b-2 ${
                   isActive
-                    ? "border-orange-600 text-orange-600"
+                    ? "border-orange-600 text-orange-600 font-semibold"
                     : "border-transparent text-zinc-500 hover:text-zinc-700 hover:border-zinc-300"
                 }`}
               >

@@ -92,11 +92,11 @@ export async function getRecentActivity(limit = 20): Promise<ActivityItem[]> {
         title,
         description,
         timestamp: log.createdAt,
-        actor: log.actor?.name || log.actor?.email || "Unknown Admin",
-        target: log.targetId || undefined,
+        actor: log.actor?.name || log.actorName || log.actorEmail || "System Admin",
+        target: log.targetName || log.targetId || undefined,
         severity,
         metadata: log.metadata,
-        href: log.targetId && type === "TOOL_UPDATED" ? `/admin/tools/${log.targetId}` : undefined
+        href: `/admin/audit-logs/${log.eventId || log.id}`,
       });
     });
   } catch (e) {

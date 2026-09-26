@@ -51,6 +51,7 @@ model User {
   lockedUntil      DateTime?
   
   status           String    @default("ACTIVE") // ACTIVE, DISABLED, BLOCKED
+  customRoles      String[]  @default([])
   lastActiveAt     DateTime?
   disabledAt       DateTime?
   blockedAt        DateTime?
@@ -425,23 +426,36 @@ model NavigationLink {
 // ---------------------------------------------------------------------------
 
 model AuditLog {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  actorId    String   @db.ObjectId
-  actorRole  String
-  action     String   // e.g., "TOOL_UPDATED", "CATEGORY_CREATED", "USER_BLOCKED"
-  targetType String   // e.g., "TOOL", "CATEGORY", "USER", "SEO"
-  targetId   String?  // ID or slug of the affected resource
-  metadata   Json?    // Stores what changed, reason, etc.
-  ip         String?
-  userAgent  String?
-  createdAt  DateTime @default(now())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventId     String?  @unique // e.g., "AUD-20260926-000124"
+  actorId     String?  @db.ObjectId
+  actorName   String?
+  actorEmail  String?
+  actorRole   String   @default("user")
+  action      String   // Machine readable action name (e.g. "UPDATE_TOOL", "CREATE_ROLE")
+  targetType  String   // Entity type (e.g. "Tool", "User", "Category", "Role")
+  targetId    String?  // ID or slug of the affected resource
+  targetName  String?  // Human readable title/name of the target resource
+  status      String   @default("SUCCESS") // "SUCCESS" | "FAILED" | "DENIED"
+  severity    String   @default("INFO") // "INFO" | "WARNING" | "CRITICAL"
+  environment String   @default("production")
+  ip          String?
+  userAgent   String?
+  requestId   String?
+  metadata    Json?
+  before      Json?
+  after       Json?
+  changes     Json?
+  createdAt   DateTime @default(now())
 
-  actor      User     @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actor       User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([createdAt(sort: Desc)])
   @@index([actorId])
   @@index([action])
   @@index([targetType, targetId])
+  @@index([status])
+  @@index([requestId])
 }
 
 model ToolRevision {
@@ -597,8 +611,10 @@ model Payment {
   userId         String   @db.ObjectId
   amount         Int      
   currency       String   @default("INR")
-  status         String   // "successful", "failed", "refunded"
+  status         String   // "successful", "failed", "refunded", "partially_refunded"
   providerTxId   String?  // Razorpay Payment ID
+  refundAmount   Int      @default(0) // Tracks refunded amount in paise
+  taxAmount      Int      @default(0)
   paymentDate    DateTime @default(now())
   createdAt      DateTime @default(now())
 
@@ -623,3 +639,460 @@ model DigitalCard {
 
   @@index([userId, updatedAt])
 }
+
+model AdSlot {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  description    String?
+  placement      String    // "header" | "homepage" | "tool_page" | "sidebar" | "footer"
+  device         String    @default("all") // "all" | "desktop" | "mobile" | "tablet"
+  adProvider     String    // "adsense" | "admanager" | "custom" | "internal"
+  adReference    String?   // Ad unit ID / slot ID / promo asset ID
+  customHtml     String?   // Sanitized custom markup for internal or custom ads
+  destinationUrl String?   // For internal promo ads
+  imageUrl       String?   // For internal promo image ads
+  priority       Int       @default(1) // Priority order (1 = highest)
+  active         Boolean   @default(true)
+  startDate      DateTime?
+  endDate        DateTime?
+  categorySlug   String?   // Target specific category (e.g., "business-legal")
+  toolSlug       String?   // Target specific tool (e.g., "digital-business-card-generator")
+  createdBy      String?
+  updatedBy      String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([placement, active, priority])
+  @@index([device])
+  @@index([startDate, endDate])
+  @@index([categorySlug])
+  @@index([toolSlug])
+}
+
+model MediaFolder {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String   @unique
+  parentId  String?  @db.ObjectId
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent   MediaFolder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children MediaFolder[] @relation("FolderHierarchy")
+  assets   MediaAsset[]
+
+  @@index([parentId])
+}
+
+model MediaAsset {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  filename         String   // Display filename (e.g. "logo-2026.png")
+  originalFilename String   // Original file name on upload
+  storageKey       String   // Relative storage path or key (e.g. "uploads/2026/09/uuid.png")
+  storageProvider  String   @default("local") // "local" | "s3" | "vercel-blob"
+  storageUrl       String   // Full storage URL
+  cdnUrl           String   // Public CDN / relative URL for web rendering
+  mimeType         String   // e.g. "image/png"
+  extension        String   // e.g. "png"
+  size             Int      // File size in bytes
+  width            Int?     // Image width in px if applicable
+  height           Int?     // Image height in px if applicable
+  altText          String?
+  title            String?
+  description      String?
+  folderId         String?  @db.ObjectId
+  tags             String[] @default([])
+  assetType        String   @default("image") // "image" | "document" | "icon" | "thumbnail" | "brand"
+  uploadedBy       String?  // Admin User ID or name
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  folder MediaFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([folderId])
+  @@index([assetType])
+  @@index([mimeType])
+  @@index([createdAt])
+}
+
+model AiToolConfig {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug            String   @unique
+  enabled             Boolean  @default(true)
+  provider            String   @default("anthropic") // "anthropic" | "openai" | "gemini"
+  model               String   @default("claude-opus-4-8")
+  temperature         Float    @default(0.7)
+  maxTokens           Int      @default(2048)
+  inputLimitChars     Int      @default(5000)
+  dailyLimitPerUser   Int      @default(50)
+  monthlyLimitPerUser Int      @default(500)
+  maintenanceMessage String?
+  activePromptVersion Int      @default(1)
+  updatedBy           String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model AiPromptRevision {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug           String
+  version            Int
+  systemPrompt       String
+  userPromptTemplate String
+  variables          String[] @default([])
+  status             String   @default("active") // "active" | "draft" | "archived"
+  changeReason       String   @default("Initial release")
+  createdBy          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([toolSlug, version])
+  @@index([toolSlug, status])
+}
+
+model AiUsageLog {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  toolSlug         String
+  userId           String?  @db.ObjectId
+  provider         String   @default("anthropic")
+  model            String   @default("claude-opus-4-8")
+  promptTokens     Int      @default(0)
+  completionTokens Int      @default(0)
+  totalTokens      Int      @default(0)
+  estimatedCost    Float    @default(0)
+  success          Boolean  @default(true)
+  errorMessage     String?
+  createdAt        DateTime @default(now())
+
+  @@index([toolSlug, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model ContactSubmission {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  referenceId     String    @unique
+  type            String    @default("Contact") // "Contact" | "Bug Report" | "Feature Request" | "Tool Feedback" | "Review"
+  userId          String?   @db.ObjectId
+  name            String
+  email           String
+  subject         String
+  message         String
+  toolSlug        String?
+  priority        String    @default("Medium") // "Low" | "Medium" | "High" | "Urgent"
+  status          String    @default("New") // "New" | "In Progress" | "Resolved" | "Closed" | "Spam"
+  assignedAdminId String?   @db.ObjectId
+  internalNotes   Json?
+  attachments     String[]  @default([])
+  browser         String?
+  device          String?
+  ipHash          String?
+  userAgent       String?
+  source          String?   @default("website")
+  resolvedAt      DateTime?
+  resolvedBy      String?   @db.ObjectId
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([type])
+  @@index([priority])
+  @@index([assignedAdminId])
+  @@index([toolSlug])
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model ErrorLog {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  errorId         String    @unique // e.g. "ERR-20260925-000124"
+  fingerprint     String?   // e.g. "fp_ai_timeout_resume_writer" for deduplication
+  occurrences     Int       @default(1)
+  firstSeenAt     DateTime  @default(now())
+  lastSeenAt      DateTime  @default(now())
+  errorType       String    @default("Server Error") // "Tool Failure" | "API Failure" | "Server Error" | "404 Error" | "Upload Failure" | "AI Failure" | "Payment Failure" | "Authentication Failure" | "Database Failure" | "External Service Failure"
+  toolSlug        String?
+  userId          String?   @db.ObjectId
+  errorCode       String?   // e.g. "AI_PROVIDER_TIMEOUT", "HTTP_404"
+  message         String
+  requestId       String?   // e.g. "req_8f92a71c"
+  severity        String    @default("Medium") // "Low" | "Medium" | "High" | "Critical"
+  status          String    @default("Open") // "Open" | "Investigating" | "Resolved" | "Ignored"
+  environment     String    @default("Production") // "Development" | "Staging" | "Production"
+  stackTrace      String?
+  endpoint        String?
+  method          String?
+  metadata        Json?     // Sanitized params, headers, device info
+  assignedAdminId String?   @db.ObjectId
+  resolutionNote  String?
+  resolvedAt      DateTime?
+  resolvedBy      String?   @db.ObjectId
+  internalNotes   Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([status, severity, createdAt(sort: Desc)])
+  @@index([errorType])
+  @@index([toolSlug])
+  @@index([userId])
+  @@index([requestId])
+  @@index([fingerprint])
+  @@index([createdAt(sort: Desc)])
+}
+
+model Role {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  slug         String   @unique // e.g. "super_admin", "admin", "content_manager", "support", "finance", "seo_lead"
+  description  String?
+  permissions  String[] @default([]) // Array of permission keys e.g. ["tools.view", "content.create"]
+  isSystemRole Boolean  @default(false)
+  status       Boolean  @default(true)
+  createdBy    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isSystemRole])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 26 — Admin Notifications & Webhooks
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  type            String    // "NEW_USER" | "NEW_PAYMENT" | "FAILED_PAYMENT" | "TOOL_ERROR" | "SERVER_ERROR" | "NEW_FEEDBACK" | "NEW_CONTACT_REQUEST" | "SUBSCRIPTION_CANCELLED" | "BACKUP_FAILURE"
+  title           String
+  message         String
+  severity        String    @default("INFO") // "INFO" | "SUCCESS" | "WARNING" | "ERROR" | "CRITICAL"
+  status          String    @default("UNREAD") // "UNREAD" | "READ" | "ARCHIVED"
+  recipientId     String?   @db.ObjectId // Specific target user ID or null for role-based broadcast
+  eligibleRoles   String[]  @default([]) // Eligible role slugs or permissions
+  targetType      String?   // "User", "Payment", "Tool", "Error", "Feedback", etc.
+  targetId        String?
+  targetName      String?
+  actionUrl       String?   // Deep-link redirect URL
+  groupKey        String?   // For deduplication & event aggregation
+  occurrenceCount Int       @default(1)
+  metadata        Json?
+  readAt          DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([recipientId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@index([type])
+  @@index([targetId])
+  @@index([groupKey])
+}
+
+model NotificationPreference {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String   @db.ObjectId
+  eventType        String   // e.g. "NEW_USER", "NEW_PAYMENT"
+  dashboardEnabled Boolean  @default(true)
+  emailEnabled     Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([userId, eventType])
+  @@index([userId])
+}
+
+model WebhookConfig {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  url       String
+  secret    String?
+  events    String[] @default([])
+  status    String   @default("ACTIVE") // "ACTIVE" | "INACTIVE"
+  createdBy String?  @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deliveries WebhookDeliveryLog[]
+
+  @@index([status])
+}
+
+model WebhookDeliveryLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  webhookId    String   @db.ObjectId
+  eventType    String
+  payload      Json
+  status       String   @default("PENDING") // "PENDING" | "SENT" | "FAILED" | "RETRYING"
+  responseCode Int?
+  errorMessage String?
+  attempts     Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  webhook WebhookConfig @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 27 — Analytics Events
+// ---------------------------------------------------------------------------
+
+model AnalyticsEvent {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  eventType     String   // "pageview" | "tool_execution" | "tool_view" | "signup" | "subscription"
+  userId        String?  @db.ObjectId
+  sessionId     String?
+  toolSlug      String?
+  path          String?
+  referrer      String?
+  source        String?  @default("Direct") // utm_source or referrer
+  medium        String?  // utm_medium
+  campaign      String?  // utm_campaign
+  country       String?  @default("India")
+  device        String?  @default("desktop") // "desktop" | "mobile" | "tablet"
+  browser       String?  @default("Chrome")
+  os            String?  @default("macOS")
+  success       Boolean  @default(true)
+  executionTime Int?     // Duration in ms
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([eventType])
+  @@index([toolSlug])
+  @@index([userId])
+  @@index([sessionId])
+  @@index([source])
+  @@index([country])
+  @@index([device])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 28 — Reports & Export Management
+// ---------------------------------------------------------------------------
+
+model ReportJob {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  reportType       String    // "tool_usage" | "user_activity" | "revenue" | "subscription" | "website_traffic" | "seo" | "error" | "feedback"
+  format           String    // "csv" | "xlsx" | "pdf"
+  requestedBy      String    @db.ObjectId
+  requestedByEmail String?
+  status           String    @default("QUEUED") // "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED"
+  filters          String?   // JSON serialized parameters
+  dateFrom         DateTime?
+  dateTo           DateTime?
+  fileReference    String?   // Relative file path e.g. "storage/reports/rpt_12345.pdf"
+  fileSize         Int?      // Size in bytes
+  progress         Int       @default(0) // 0 to 100
+  errorMessage     String?
+  downloadCount    Int       @default(0)
+
+  createdAt        DateTime  @default(now())
+  startedAt        DateTime?
+  completedAt      DateTime?
+  expiresAt        DateTime?
+
+  @@index([requestedBy])
+  @@index([status])
+  @@index([reportType])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 29 — Backup & Maintenance Management
+// ---------------------------------------------------------------------------
+
+model Backup {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  type               String    @default("MANUAL") // "MANUAL" | "SCHEDULED" | "SAFETY"
+  status             String    @default("Queued") // "Queued" | "Processing" | "Completed" | "Failed" | "Expired" | "Deleted"
+  storageReference   String?   // e.g. "storage/backups/backup_20260926_12345.json.gz"
+  storageProvider    String    @default("local") // "local" | "s3" | "gcs"
+  fileSize           Int?      // Size in bytes
+  checksum           String?   // SHA-256 hash string
+  encrypted          Boolean   @default(false)
+  createdBy          String?   @db.ObjectId
+  createdByEmail     String?
+  createdAt          DateTime  @default(now())
+  completedAt        DateTime?
+  expiresAt          DateTime?
+  verifiedAt         DateTime?
+  verificationStatus String?   @default("UNVERIFIED") // "VERIFIED" | "FAILED" | "UNVERIFIED"
+  errorMessage       String?
+  metadata           Json?     // Collections backed up, document counts, environment info
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt(sort: Desc)])
+}
+
+model RestoreJob {
+  id               String    @id @default(auto()) @map("_id") @db.ObjectId
+  backupId         String    @db.ObjectId
+  requestedBy      String    @db.ObjectId
+  requestedByEmail String?
+  status           String    @default("Queued") // "Queued" | "Preparing" | "Processing" | "Verifying" | "Completed" | "Failed" | "Cancelled"
+  progress         Int       @default(0) // 0 to 100
+  safetyBackupId   String?   // Reference to pre-restore safety backup
+  startedAt        DateTime?
+  completedAt      DateTime?
+  errorMessage     String?
+  requestId        String?
+  metadata         Json?
+  createdAt        DateTime  @default(now())
+
+  @@index([backupId])
+  @@index([requestedBy])
+  @@index([status])
+}
+
+model MaintenanceConfig {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  key               String    @unique @default("system_maintenance")
+  enabled           Boolean   @default(false)
+  message           String?   @default("Avex Tools is currently undergoing scheduled maintenance. Please check back shortly.")
+  estimatedDuration String?   @default("30 minutes")
+  startedAt         DateTime?
+  expectedEndTime   DateTime?
+  enabledBy         String?   @db.ObjectId
+  enabledByEmail    String?
+  allowedIps        String[]  @default([])
+  bypassRoles       String[]  @default(["super_admin", "admin"])
+  updatedAt         DateTime  @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Phase 30 — Global Settings Management
+// ---------------------------------------------------------------------------
+
+model GlobalSetting {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  key       String   @unique // e.g. "website_config", "email_config", "security_config", "integrations_config"
+  category  String   // "website" | "general" | "email" | "security" | "integrations"
+  value     Json     // Setting payload/value
+  type      String   @default("json") // "string" | "number" | "boolean" | "json" | "secret"
+  isPublic  Boolean  @default(false)
+  updatedBy String?  @db.ObjectId
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@index([isPublic])
+}
+
+model EmailTemplate {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String   @unique // e.g. "welcome_email", "password_reset", "payment_success"
+  name      String
+  subject   String
+  htmlBody  String
+  textBody  String?
+  status    Boolean  @default(true)
+  updatedBy String?  @db.ObjectId
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([status])
+}
+

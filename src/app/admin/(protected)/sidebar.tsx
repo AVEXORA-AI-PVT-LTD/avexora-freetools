@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { hasPermission } from "@/lib/admin/permissions";
 import { adminNavigation, AdminNavItem } from "@/config/admin-navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, HelpCircle } from "lucide-react";
 import { LogoutButton } from "@/components/admin/auth/LogoutButton";
 
 import type { requireAdminAuth } from "@/server/admin-auth";
@@ -105,6 +105,23 @@ export function AdminSidebar({ user }: { user: Awaited<ReturnType<typeof require
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-orange-200">
         {adminNavigation.map((item, index) => renderNavItem(item, index))}
+
+        <div className="pt-3 mt-3 border-t border-orange-200/50">
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.querySelector('button[title*="section documentation"]');
+              if (el) (el as HTMLElement).click();
+            }}
+            className={`w-full flex items-center rounded-md px-3 py-2 text-xs font-medium text-orange-800/70 hover:bg-orange-100/60 hover:text-orange-950 transition-colors cursor-pointer ${
+              collapsed ? "justify-center" : "gap-2.5"
+            }`}
+            title={collapsed ? "About Section Guide" : undefined}
+          >
+            <HelpCircle className="h-4 w-4 shrink-0 text-orange-600" />
+            {!collapsed && <span>About Section Guide</span>}
+          </button>
+        </div>
       </nav>
 
       <div className="shrink-0 border-t border-orange-200/60 p-4 bg-orange-50/80">
