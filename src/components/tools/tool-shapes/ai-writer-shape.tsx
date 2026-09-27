@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { AiWriterTool, FieldValues } from "@/types/tools";
 import { FieldInput, initialValues } from "./field-input";
 import { OutputBlock } from "./output-block";
+import { trackToolExecution } from "@/lib/track-tool-execution";
 
 export function AiWriterShape({
   tool,
@@ -60,6 +61,7 @@ export function AiWriterShape({
         setError(data?.error ?? "Something went wrong. Please try again.");
         return;
       }
+      const start = performance.now();
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       for (;;) {
@@ -67,9 +69,11 @@ export function AiWriterShape({
         if (done) break;
         setOutput((prev) => prev + decoder.decode(value, { stream: true }));
       }
+      trackToolExecution(tool.slug, Math.round(performance.now() - start), true);
     } catch {
       if (!controller.signal.aborted) {
         setError("Something went wrong. Please try again.");
+        trackToolExecution(tool.slug, 0, false);
       }
     } finally {
       setBusy(false);

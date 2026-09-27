@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useFileDrop } from "../use-file-drop";
+import { trackToolExecution } from "@/lib/track-tool-execution";
 
 interface PickedFile {
   file: File;
@@ -39,6 +40,7 @@ export default function MergePdf() {
   const merge = async () => {
     setBusy(true);
     setError(null);
+    const startTime = performance.now();
     try {
       const { PDFDocument } = await import("pdf-lib");
       const out = await PDFDocument.create();
@@ -55,8 +57,10 @@ export default function MergePdf() {
       a.download = "merged.pdf";
       a.click();
       URL.revokeObjectURL(url);
+      trackToolExecution("merge-pdf", Math.round(performance.now() - startTime), true);
     } catch {
       setError("One of the files could not be read. Password-protected PDFs are not supported.");
+      trackToolExecution("merge-pdf", Math.round(performance.now() - startTime), false);
     } finally {
       setBusy(false);
     }
