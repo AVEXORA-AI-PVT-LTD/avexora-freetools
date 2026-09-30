@@ -42,16 +42,16 @@ export function NavAccount() {
     return (
       <Link
         href={`${SIGN_IN}?next=${encodeURIComponent(pathname)}`}
-        className="text-slate-600 hover:text-slate-900"
+        className="text-slate-600 hover:text-orange-600 font-medium transition-colors"
       >
-        Sign in
+        Sign In
       </Link>
     );
   }
 
   return (
     <span className="inline-flex items-center gap-4 text-sm">
-      <Link href="/studio" className="text-slate-600 hover:text-slate-900">
+      <Link href="/studio" className="text-slate-600 hover:text-orange-600 font-medium transition-colors">
         <span className="sm:hidden">Studio</span>
         <span className="hidden sm:inline">Brand Studio</span>
       </Link>
@@ -61,76 +61,89 @@ export function NavAccount() {
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-label="Account menu"
-          className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-slate-900 text-white shadow-sm transition-colors hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1 sm:h-8 sm:w-8"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-600 text-white font-bold shadow-xs hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500/30 ring-2 ring-orange-200/80 transition-all"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-4 w-4"
-            aria-hidden="true"
-          >
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
+          {data?.user?.name ? data.user.name.charAt(0).toUpperCase() : (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          )}
         </button>
 
         {open && (
           <div
             role="dialog"
             aria-label="Account"
-            className="absolute right-0 z-50 mt-1 w-56 overflow-hidden rounded-md border border-slate-200 bg-white text-sm shadow-lg"
+            className="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-2 text-sm shadow-2xl shadow-orange-950/10 animate-in fade-in slide-in-from-top-2 duration-150"
           >
             {data?.user?.name && (
-              <div className="border-b px-3 py-2">
-                <p className="truncate text-sm font-medium text-slate-800">
-                  {data.user.name}
-                </p>
-                {data.user.email && (
-                  <p className="mt-0.5 truncate text-xs text-slate-500">
-                    {data.user.email}
-                  </p>
-                )}
+              <div className="rounded-xl bg-orange-50/80 border border-orange-200/60 p-3 mb-1">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-600 text-white font-bold text-sm shrink-0 shadow-xs">
+                    {data.user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-bold text-slate-900">
+                      {data.user.name}
+                    </p>
+                    {data.user.email && (
+                      <p className="truncate text-[11px] font-medium text-slate-500">
+                        {data.user.email}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
-            <div className="p-1">
+            <div className="space-y-0.5 font-medium text-slate-700">
               <Link
                 href="/studio/app"
-                className="block w-full rounded px-3 py-1.5 text-left text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                className="flex items-center gap-2.5 w-full rounded-xl px-3 py-2 text-xs hover:bg-orange-50 hover:text-orange-900 transition-colors"
                 onClick={() => setOpen(false)}
               >
-                Dashboard
+                <span>📊</span>
+                <span>Studio Dashboard</span>
               </Link>
               <Link
                 href="/studio/pricing"
-                className="block w-full rounded px-3 py-1.5 text-left text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                className="flex items-center gap-2.5 w-full rounded-xl px-3 py-2 text-xs hover:bg-orange-50 hover:text-orange-900 transition-colors"
                 onClick={() => setOpen(false)}
               >
-                Pricing
+                <span>🏷️</span>
+                <span>Plans & Pricing</span>
               </Link>
               <Link
                 href="/studio/account"
-                className="block w-full rounded px-3 py-1.5 text-left text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                className="flex items-center gap-2.5 w-full rounded-xl px-3 py-2 text-xs hover:bg-orange-50 hover:text-orange-900 transition-colors"
                 onClick={() => setOpen(false)}
               >
-                Account
+                <span>⚙️</span>
+                <span>Account Settings</span>
               </Link>
             </div>
 
-            <div className="border-t p-1">
+            <div className="border-t border-slate-100 mt-1 pt-1">
               <button
                 type="button"
                 onClick={() => {
                   setOpen(false);
                   signOut({ callbackUrl: pathname });
                 }}
-                className="w-full rounded px-3 py-1.5 text-left text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                className="flex items-center gap-2.5 w-full rounded-xl px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-semibold transition-colors text-left"
               >
-                Sign out
+                <span>🚪</span>
+                <span>Sign out</span>
               </button>
             </div>
           </div>

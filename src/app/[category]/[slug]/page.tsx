@@ -99,49 +99,70 @@ export default async function ToolPage({
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="mx-auto max-w-4xl px-4 py-8 space-y-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <nav className="text-sm text-slate-500 print:hidden">
-        <Link href="/" className="hover:text-orange-800">
-          {SITE_NAME}
-        </Link>{" "}
-        /{" "}
-        <Link href={`/${cat.slug}`} className="hover:text-orange-800">
-          {cat.shortName}
-        </Link>{" "}
-        / <span className="text-slate-700">{toolData.name}</span>
-      </nav>
+      {/* Header & Breadcrumbs */}
+      <div className="space-y-3 print:hidden">
+        <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <Link href="/" className="hover:text-orange-600 transition-colors">
+            {SITE_NAME}
+          </Link>
+          <span>/</span>
+          <Link href={`/${cat.slug}`} className="hover:text-orange-600 transition-colors">
+            {cat.shortName}
+          </Link>
+          <span>/</span>
+          <span className="text-orange-700 font-bold">{toolData.name}</span>
+        </nav>
 
-      {isPreview && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-400 text-yellow-800 rounded-lg flex items-center justify-between print:hidden">
-          <span className="font-medium">Admin Preview Mode</span>
-          <span>Status: {toolData.status}</span>
+        {isPreview && (
+          <div className="p-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl flex items-center justify-between text-xs font-semibold">
+            <span>⚡ Admin Preview Mode</span>
+            <span>Status: {toolData.status}</span>
+          </div>
+        )}
+
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pt-1">
+          <div className="space-y-1.5 max-w-2xl">
+            <div className="inline-flex items-center gap-2">
+              <span className="rounded-md bg-orange-100/80 px-2.5 py-0.5 text-xs font-bold text-orange-800 uppercase tracking-wider">
+                {cat.shortName}
+              </span>
+              <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                🔒 100% Private (Runs in Browser)
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              {toolData.pageHeading || toolData.name}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {toolData.shortDescription || toolData.description}
+            </p>
+          </div>
         </div>
-      )}
-
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 print:hidden">
-        {toolData.pageHeading || toolData.name}
-      </h1>
-      <p className="mt-2 text-slate-600 print:hidden">{toolData.shortDescription || toolData.description}</p>
+      </div>
 
       {toolData.maintenanceMode && (
-         <div className="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+         <div className="p-6 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl">
            <h3 className="font-bold">Maintenance Mode</h3>
-           <p>This tool is currently unavailable. Please check back later.</p>
+           <p className="text-sm mt-1">This tool is currently undergoing maintenance. Please check back shortly.</p>
          </div>
       )}
 
+      {/* WORKSPACE TOOL RUNNER CONTAINER */}
       {!toolData.maintenanceMode && (
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm print:border-none print:p-0 print:shadow-none relative">
+        <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-lg shadow-orange-500/5 print:border-none print:p-0 print:shadow-none relative">
           {toolData.loginRequired && (
-            <div className="absolute inset-0 z-10 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-xl">
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Login Required</h3>
-              <p className="text-slate-600 mb-4">You must be logged in to use this tool.</p>
-              <Link href="/login" className="px-6 py-2 bg-orange-600 text-white rounded-md font-medium hover:bg-orange-700">Login Now</Link>
+            <div className="absolute inset-0 z-10 bg-white/90 backdrop-blur-xs flex flex-col items-center justify-center rounded-3xl p-6 text-center">
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Sign In Required</h3>
+              <p className="text-sm text-slate-600 mb-4 max-w-md">You must be signed in to use {toolData.name}. Accounts are free.</p>
+              <Link href="/login" className="px-6 py-2.5 bg-orange-600 text-white rounded-xl font-semibold text-sm hover:bg-orange-700 shadow-sm transition-colors">
+                Sign In Now
+              </Link>
             </div>
           )}
           <ToolRunner category={toolData.category} slug={toolData.slug} aiEnabled={aiEnabled} />
@@ -150,7 +171,7 @@ export default async function ToolPage({
 
       <AdSlot placement="tool_page" categorySlug={category} toolSlug={slug} />
 
-      <div className="mt-10 space-y-10 print:hidden">
+      <div className="space-y-10 print:hidden pt-4">
         <CtaBlock
           headline={cat.ctaHeadline}
           body={cat.ctaBody}
@@ -160,74 +181,83 @@ export default async function ToolPage({
           category={toolData.category}
         />
 
-        <section>
-          <h2 className="text-xl font-semibold text-slate-900">
-            About the {toolData.name}
+        {/* ABOUT TOOL SECTION */}
+        <section className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 space-y-6 shadow-2xs">
+          <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">
+            About {toolData.name}
           </h2>
-          <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-slate-700">
+          <div className="space-y-4 text-sm leading-relaxed text-slate-700">
             {toolData.introduction && (
-              <p className="font-medium text-slate-900 mb-4">{toolData.introduction}</p>
+              <p className="font-semibold text-slate-900 text-base">{toolData.introduction}</p>
             )}
             
             {toolData.description && toolData.description.split('\n').map((p, i) => {
               const text = p.trim();
-              return text ? <p key={i}><ToolAboutText text={text} /></p> : null;
+              return text ? <p key={i} className="text-slate-600"><ToolAboutText text={text} /></p> : null;
             })}
             
             {toolData.steps.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold text-slate-800">How to use the {toolData.name}</h3>
-                <ol className="mt-2 list-decimal space-y-1.5 pl-5">
+              <div className="pt-2">
+                <h3 className="text-base font-bold text-slate-900 mb-3">How to use {toolData.name}</h3>
+                <ol className="space-y-2 pl-2">
                   {toolData.steps.map((step, i) => (
-                    <li key={i}>{step}</li>
+                    <li key={i} className="flex gap-3 text-slate-700">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-700 font-bold text-xs">
+                        {i + 1}
+                      </span>
+                      <span>{step}</span>
+                    </li>
                   ))}
                 </ol>
               </div>
             )}
 
             {toolData.examples.filter(Boolean).length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold text-slate-800">Worked example</h3>
+              <div className="pt-2">
+                <h3 className="text-base font-bold text-slate-900 mb-2">Worked example</h3>
                 {toolData.examples.filter(Boolean).map((example, i) => (
-                  <p key={i} className="mt-2">{example.replace(/^Example:\s*/, "")}</p>
+                  <div key={i} className="rounded-xl bg-slate-50 p-4 border border-slate-200/80 text-xs sm:text-sm font-mono text-slate-800">
+                    {example.replace(/^Example:\s*/, "")}
+                  </div>
                 ))}
               </div>
             )}
 
             {toolData.howToUse && (
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold text-slate-800">How to Use</h3>
+              <div className="pt-2">
+                <h3 className="text-base font-bold text-slate-900 mb-2">Instructions</h3>
                 <div
-                  className="mt-2"
+                  className="prose prose-slate max-w-none text-sm"
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(toolData.howToUse) }}
                 />
               </div>
             )}
             
             {toolData.formula && (
-              <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                <h3 className="text-sm font-semibold text-slate-800 uppercase tracking-wider mb-2">Formula</h3>
-                <code className="text-orange-700">{toolData.formula}</code>
+              <div className="rounded-xl bg-orange-50/80 border border-orange-200/80 p-4 space-y-1.5">
+                <h3 className="text-xs font-bold text-orange-900 uppercase tracking-wider">Formula</h3>
+                <code className="block font-mono text-xs sm:text-sm font-bold text-orange-800">{toolData.formula}</code>
               </div>
             )}
           </div>
         </section>
 
+        {/* FAQS SECTION */}
         {toolData.faqs.filter(f => f.active).length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold text-slate-900">
-              Frequently asked questions
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-slate-900">
+              Frequently Asked Questions
             </h2>
-            <dl className="mt-4 space-y-4">
+            <div className="grid gap-3">
               {toolData.faqs.filter(f => f.active).sort((a,b) => a.order - b.order).map((f) => (
-                <div key={f.id}>
-                  <dt className="font-medium text-slate-900">{f.question}</dt>
-                  <dd className="mt-1 text-[15px] leading-relaxed text-slate-700">
+                <div key={f.id} className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-2 shadow-2xs">
+                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">{f.question}</h3>
+                  <p className="text-xs sm:text-sm leading-relaxed text-slate-600">
                     {f.answer}
-                  </dd>
+                  </p>
                 </div>
               ))}
-            </dl>
+            </div>
           </section>
         )}
 
@@ -235,36 +265,41 @@ export default async function ToolPage({
 
         <NewsletterBlock toolSlug={toolData.slug} category={toolData.category} />
 
+        {/* RELATED TOOLS */}
         {related.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold text-slate-900">Related tools</h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-slate-900">Related Tools</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
               {related.map((r) => (
                 <Link
                   key={r.slug}
                   href={`/${r.category}/${r.slug}`}
-                  className="rounded-lg border border-slate-200 p-4 transition hover:border-orange-300"
+                  className="group rounded-2xl border border-slate-200/80 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-md space-y-1"
                 >
-                  <span className="font-medium text-slate-900">{r.name}</span>
-                  <p className="mt-0.5 text-sm text-slate-600">{r.shortDescription || r.description}</p>
+                  <span className="font-bold text-slate-900 text-sm group-hover:text-orange-700 transition-colors flex items-center justify-between">
+                    <span>{r.name}</span>
+                    <span className="text-slate-300 group-hover:text-orange-500 transition-colors text-xs">→</span>
+                  </span>
+                  <p className="text-xs text-slate-600 line-clamp-2">{r.shortDescription || r.description}</p>
                 </Link>
               ))}
             </div>
           </section>
         )}
 
-        <section className="border-t border-slate-100 pt-6">
-          <h2 className="text-sm font-semibold text-slate-500">
-            More {cat.name.toLowerCase()}
+        {/* MORE IN CATEGORY */}
+        <section className="border-t border-slate-200/80 pt-6 space-y-3">
+          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            More {cat.name}
           </h2>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {toolsByCategory[cat.slug as keyof typeof toolsByCategory]
               ?.filter((t) => t.slug !== toolData.slug)
               .map((t) => (
                 <Link
                   key={t.slug}
                   href={`/${t.category}/${t.slug}`}
-                  className="rounded-full border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:border-orange-300 hover:text-orange-800"
+                  className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-900"
                 >
                   {t.name}
                 </Link>

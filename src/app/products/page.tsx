@@ -48,65 +48,86 @@ const jsonLd = [
 
 export default function ProductsPage() {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <nav className="text-sm text-slate-500">
-        <Link href="/" className="hover:text-orange-800">
-          {SITE_NAME}
-        </Link>{" "}
-        / <span className="text-slate-700">Products</span>
-      </nav>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-3xl border border-orange-200/80 bg-gradient-to-r from-orange-50/90 via-orange-50/30 to-white p-8 sm:p-10 shadow-xs space-y-4">
+        <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <Link href="/" className="hover:text-orange-600 transition-colors">
+            {SITE_NAME}
+          </Link>
+          <span>/</span>
+          <span className="text-orange-700 font-bold">Products</span>
+        </nav>
 
-      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">Avexora products</h1>
-      <p className="mt-2 text-slate-600">
-        {SITE_NAME} is built by Avexora. Beyond these free tools, Avexora makes business software for
-        sales, customer messaging, AI automation, phone calls and exams. Here is what each product does and who
-        it is for.
-      </p>
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Avexora Products</h1>
+          <p className="mt-2 max-w-2xl text-xs sm:text-sm text-slate-600 leading-relaxed">
+            {SITE_NAME} is built by Avexora. Beyond these free tools, Avexora makes enterprise business software for
+            sales, customer messaging, AI automation, phone calls and exams.
+          </p>
+        </div>
 
-      <nav aria-label="Products on this page" className="mt-6 flex flex-wrap gap-2">
-        {AVEXORA_PRODUCTS.map((p) => (
-          <a
-            key={p.id}
-            href={`#${p.id}`}
-            className="rounded-full border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:border-orange-300 hover:text-orange-800"
-          >
-            {p.name}
-          </a>
-        ))}
-      </nav>
+        <nav aria-label="Products on this page" className="pt-2 flex flex-wrap gap-2">
+          {AVEXORA_PRODUCTS.map((p) => (
+            <a
+              key={p.id}
+              href={`#${p.id}`}
+              className="rounded-full border border-orange-200/80 bg-orange-50/80 px-3.5 py-1 text-xs font-medium text-orange-900 transition hover:bg-orange-100 hover:border-orange-300"
+            >
+              {p.name}
+            </a>
+          ))}
+        </nav>
+      </div>
 
-      <div className="mt-8 space-y-6">
+      <div className="space-y-6">
         {AVEXORA_PRODUCTS.map((p) => (
           <section
             key={p.id}
             id={p.id}
             aria-labelledby={`${p.id}-heading`}
-            className="scroll-mt-20 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+            className="scroll-mt-20 rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs space-y-3"
           >
-            <span className="text-xs font-medium uppercase tracking-wide text-orange-700">{p.kind}</span>
-            <h2 id={`${p.id}-heading`} className="mt-1 text-xl font-semibold text-slate-900">
+            <div className="flex items-center justify-between">
+              <span className="rounded-lg bg-orange-100/80 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-orange-800">
+                {p.kind}
+              </span>
+            </div>
+
+            <h2 id={`${p.id}-heading`} className="text-xl font-extrabold text-slate-900 pt-1">
               {p.name}
             </h2>
-            <p className="mt-1 font-medium text-slate-800">{p.tagline}</p>
-            <p className="mt-2 text-[15px] leading-relaxed text-slate-700">{p.description}</p>
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-[15px] text-slate-700">
-              {p.features.map((f) => (
-                <li key={f}>{f}</li>
-              ))}
-            </ul>
-            <p className="mt-3 text-sm text-slate-600">
-              <span className="font-medium text-slate-800">Best for:</span> {p.audience}
-            </p>
-            <a
-              href={productUrl(p, "products-page")}
-              target="_blank"
-              rel="noopener"
-              className="mt-4 inline-block rounded-md bg-orange-600 px-4 py-2 text-sm font-medium text-white hover:bg-orange-700"
-            >
-              Visit {p.name} <span aria-hidden="true">↗</span>
-            </a>
+            <p className="text-sm font-semibold text-slate-800">{p.tagline}</p>
+            <p className="text-xs sm:text-sm leading-relaxed text-slate-600">{p.description}</p>
+            
+            <div className="pt-2">
+              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider block mb-2">Key Features:</span>
+              <ul className="space-y-1.5 text-xs sm:text-sm text-slate-700">
+                {p.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <span className="text-orange-600 font-bold">✓</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <p className="text-xs text-slate-500">
+                <span className="font-bold text-slate-800">Best for:</span> {p.audience}
+              </p>
+              <a
+                href={productUrl(p, "products-page")}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-orange-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-orange-700 transition-colors self-start sm:self-auto"
+              >
+                <span>Visit {p.name}</span>
+                <span>↗</span>
+              </a>
+            </div>
           </section>
         ))}
       </div>

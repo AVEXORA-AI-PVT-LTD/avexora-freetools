@@ -112,7 +112,7 @@ export async function createAdminSession(user: Pick<User, "id">, rememberMe: boo
     secure: isProd,
     sameSite: "lax",
     path: "/",
-    domain: isProd ? ".avexora.in" : ".localhost",
+    domain: process.env.COOKIE_DOMAIN || (isProd ? ".avexora.in" : undefined),
   });
 
   await logAdminAction({
