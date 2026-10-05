@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { categories, EBOS_URL, SITE_NAME, SITE_URL } from "@/tools/categories";
 import AccountProviders from "@/components/account/providers";
-import { NavAccount } from "@/components/account/nav-account";
 import { getEffectiveNavigation } from "@/server/navigation";
 import { getGlobalSeoOverride } from "@/server/seo-manager";
 import { AdSlot } from "@/components/ads/ad-slot";

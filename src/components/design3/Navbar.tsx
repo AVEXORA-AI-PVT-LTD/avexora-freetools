@@ -1,20 +1,38 @@
-"use client";
-
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Search, ExternalLink, User, LogOut, Palette, LayoutGrid, ChevronDown } from 'lucide-react';
+import { Search, ExternalLink, User, LogOut, Palette, LayoutGrid, ChevronDown, LayoutDashboard, Settings, Tag } from 'lucide-react';
+import { SearchModal } from './SearchModal';
 
 interface NavbarProps {
-  onSearchClick: () => void;
+  onSearchClick?: () => void;
   onNavigateSection?: (sectionId: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isInternalSearchOpen, setIsInternalSearchOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle Cmd+K / Ctrl+K when onSearchClick is not provided
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        if (onSearchClick) {
+          onSearchClick();
+        } else {
+          setIsInternalSearchOpen(true);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onSearchClick]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -66,7 +84,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
           {/* Enhanced Command Search Input Box */}
           <button
             type="button"
-            onClick={onSearchClick}
+            onClick={() => {
+              if (onSearchClick) {
+                onSearchClick();
+              } else {
+                setIsInternalSearchOpen(true);
+              }
+            }}
             className="flex items-center justify-between gap-3 w-44 sm:w-60 md:w-72 px-3.5 py-2 rounded-xl border border-stone-200/90 bg-stone-50/90 hover:bg-white hover:border-orange-400/90 text-stone-500 hover:text-stone-800 text-xs sm:text-sm transition-all cursor-pointer group shadow-2xs hover:shadow-xs"
             title="Search across all 130+ tools"
           >
@@ -127,12 +151,39 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
 
                     <div className="space-y-1">
                       <Link
+                        href="/studio/app"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <LayoutDashboard className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Studio Dashboard</span>
+                      </Link>
+
+                      <Link
+                        href="/studio/pricing"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <Tag className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Plans &amp; Pricing</span>
+                      </Link>
+
+                      <Link
+                        href="/studio/account"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <Settings className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Account Settings</span>
+                      </Link>
+
+                      <Link
                         href="/studio"
                         onClick={() => setProfileOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
                       >
                         <Palette className="w-3.5 h-3.5 text-stone-500" />
-                        <span>Avexora Brand Studio</span>
+                        <span>Brand Studio Overview</span>
                       </Link>
 
                       <Link
@@ -173,6 +224,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
           </div>
         </div>
       </div>
+
+      {/* Internal Search Modal for global pages outside home */}
+      {!onSearchClick && (
+        <SearchModal
+          isOpen={isInternalSearchOpen}
+          onClose={() => setIsInternalSearchOpen(false)}
+          onSelectTool={(tool) => {
+            setIsInternalSearchOpen(false);
+            router.push(`/${tool.category}/${tool.id}`);
+          }}
+        />
+      )}
     </header>
   );
 };

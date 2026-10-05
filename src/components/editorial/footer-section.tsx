@@ -86,10 +86,11 @@ export function FooterSection({ onOpenSearch, onOpenAuth }: FooterSectionProps) 
                 <a href="/#categories-showcase" className="text-sm text-stone-400 hover:text-white transition-colors">All tools</a>
                 <a href="/#categories-showcase" className="text-sm text-stone-400 hover:text-white transition-colors">Categories</a>
                 <a href="/#matrix-terminal" className="text-sm text-stone-400 hover:text-white transition-colors">Product tour</a>
+                <a href="/studio/pricing" className="text-sm text-stone-400 hover:text-white transition-colors">Pricing</a>
               </div>
               <div className="flex flex-col gap-2.5 items-start">
                 <span className="eyebrow-mono text-stone-500 text-xs font-mono uppercase tracking-wider mb-1">Company</span>
-                <a href="/#feature-matrix" className="text-sm text-stone-400 hover:text-white transition-colors">About</a>
+                <a href="/about" className="text-sm text-stone-400 hover:text-white transition-colors">About</a>
                 <a href="/privacy-policy" className="text-sm text-stone-400 hover:text-white transition-colors">Privacy</a>
                 <a href="/terms" className="text-sm text-stone-400 hover:text-white transition-colors">Terms</a>
                 <a href={EBOS_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-stone-400 hover:text-white transition-colors">Avexora EBOS</a>

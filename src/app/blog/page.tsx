@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getPublishedList } from "@/server/content-service";
 import { ContentType, type ContentItem } from "@prisma/client";
+import { HeaderNav } from "@/components/editorial/header-nav";
+import { FooterSection } from "@/components/editorial/footer-section";
+import { ArrowLeft, BookOpen } from "lucide-react";
 
 export const metadata = {
   title: "Blog",
@@ -14,42 +17,65 @@ export default async function BlogIndexPage() {
   const latest = posts.filter(p => !p.featured);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <header className="mb-12 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">Our Blog</h1>
-        <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-          Insights, tutorials, and news to help you grow your digital presence.
-        </p>
-      </header>
-      
-      {featured.length > 0 && (
-        <section className="mb-16">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Featured Posts</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featured.map(post => (
-              <BlogCard key={post.id} post={post} />
-            ))}
-          </div>
-        </section>
-      )}
+    <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-orange-500 selection:text-white flex flex-col justify-between relative">
+      <div className="absolute inset-0 bg-matrix-grid opacity-35 pointer-events-none" />
+      <HeaderNav />
 
-      <section>
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">Latest Articles</h2>
-        {latest.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {latest.map(post => (
-              <BlogCard key={post.id} post={post} />
-            ))}
+      <div className="flex-1 pt-24 sm:pt-28 pb-16 relative z-10">
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+          {/* Back Navigation */}
+          <div className="flex items-center justify-between pb-2">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-xs font-mono font-semibold text-stone-600 hover:text-orange-600 bg-white border border-stone-200 hover:border-orange-300 px-3.5 py-2 rounded-xl shadow-2xs transition group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Back to Avexora Free Tools Website</span>
+            </Link>
+            <div className="flex items-center gap-2 text-xs font-mono text-stone-500 bg-stone-50 border border-stone-200/80 px-3 py-1.5 rounded-full">
+              <BookOpen className="w-3.5 h-3.5 text-orange-600" />
+              <span>Engineering &amp; Business Blog</span>
+            </div>
           </div>
-        ) : (
-          <p className="text-slate-500">No articles available at the moment.</p>
-        )}
-      </section>
+
+          <header className="text-center max-w-3xl mx-auto space-y-4">
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-stone-900">Avexora Blog &amp; Insights</h1>
+            <p className="text-base sm:text-lg text-stone-600 leading-relaxed">
+              Deep dives, technical tutorials, compliance breakdowns and insights to help you scale your business.
+            </p>
+          </header>
+          
+          {featured.length > 0 && (
+            <section className="space-y-6">
+              <h2 className="text-2xl font-bold text-stone-900">Featured Posts</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {featured.map(post => (
+                  <BlogCard key={post.id} post={post} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section className="space-y-6">
+            <h2 className="text-2xl font-bold text-stone-900">Latest Articles</h2>
+            {latest.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {latest.map(post => (
+                  <BlogCard key={post.id} post={post} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-stone-500">No articles available at the moment.</p>
+            )}
+          </section>
+        </main>
+      </div>
+
+      <FooterSection />
     </div>
   );
 }
 
-/** Same estimate as the post page: 200 words a minute, rounded up. */
 function readingMinutes(content: string): number {
   return Math.ceil(content.trim().split(/\s+/).filter(Boolean).length / 200);
 }
@@ -57,25 +83,25 @@ function readingMinutes(content: string): number {
 function BlogCard({ post }: { post: ContentItem }) {
   const readingTime = readingMinutes(post.content);
   return (
-    <Link href={`/blog/${post.slug}`} className="group flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+    <Link href={`/blog/${post.slug}`} className="group flex flex-col bg-white rounded-3xl border border-stone-200/90 overflow-hidden shadow-2xs hover:shadow-md hover:border-orange-300 transition-all">
       {post.featuredImage ? (
         <img src={post.featuredImage} alt={post.title} className="w-full h-48 object-cover" />
       ) : (
-        <div className="w-full h-48 bg-slate-100 flex items-center justify-center">
-          <span className="text-slate-400 text-sm">No Image</span>
+        <div className="w-full h-48 bg-stone-100 flex items-center justify-center">
+          <span className="text-stone-400 text-sm">No Image</span>
         </div>
       )}
       <div className="p-6 flex-1 flex flex-col">
         {post.category && (
-          <span className="text-xs font-semibold text-orange-600 uppercase tracking-wider mb-2">{post.category}</span>
+          <span className="text-xs font-mono font-semibold text-orange-600 uppercase tracking-wider mb-2">{post.category}</span>
         )}
-        <h3 className="text-xl font-bold text-slate-900 group-hover:text-orange-600 transition-colors mb-2 line-clamp-2">
+        <h3 className="text-lg font-bold text-stone-900 group-hover:text-orange-600 transition-colors mb-2 line-clamp-2">
           {post.title}
         </h3>
-        <p className="text-slate-600 text-sm mb-4 line-clamp-3 flex-1">
+        <p className="text-stone-600 text-xs sm:text-sm mb-4 line-clamp-3 flex-1 leading-relaxed">
           {post.excerpt || post.content.substring(0, 150) + "..."}
         </p>
-        <div className="flex items-center text-xs text-slate-500 justify-between mt-auto">
+        <div className="flex items-center text-xs font-mono text-stone-400 justify-between mt-auto pt-3 border-t border-stone-100">
           <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
           {readingTime > 0 && <span>{readingTime} min read</span>}
         </div>
