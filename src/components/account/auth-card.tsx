@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import React, { useState, useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
+import Image from "next/image";
+import { ShieldCheck, Mail, ArrowRight, Lock, KeyRound } from "lucide-react";
 import { GoogleIcon, FacebookIcon } from "@/components/account/provider-icons";
+import { Auth3DCanvas } from "./Auth3DCanvas";
 import type { MagicLinkStatusArg } from "@/server/auth-actions";
 
 const EMAIL_ERROR_MESSAGE: Record<string, string> = {
@@ -14,9 +18,6 @@ const EMAIL_ERROR_MESSAGE: Record<string, string> = {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const PROVIDER_BUTTON_CLS =
-  "flex h-11 w-full items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600";
-
 type ProviderAction = (formData: FormData) => Promise<void>;
 
 type SendMagicLinkAction = (
@@ -25,7 +26,7 @@ type SendMagicLinkAction = (
 ) => Promise<MagicLinkStatusArg>;
 
 interface AuthCardProps {
-  mode: "signin" | "signup"; // Kept to avoid breaking existing page imports, but ignored for unified UI
+  mode: "signin" | "signup";
   next: string;
   emailEnabled: boolean;
   googleEnabled: boolean;
@@ -50,8 +51,23 @@ export function AuthCard({
     error: undefined,
   });
   const [clientError, setClientError] = useState<string | null>(null);
-  
-  const inlineEmailError = clientError ?? (state.error ? EMAIL_ERROR_MESSAGE[state.error] : null);
+
+  // 3D Card Interactive Tilt
+  const [cardTilt, setCardTilt] = useState({ x: 0, y: 0 });
+
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+    setCardTilt({ x, y });
+  };
+
+  const handleCardMouseLeave = () => {
+    setCardTilt({ x: 0, y: 0 });
+  };
+
+  const inlineEmailError =
+    clientError ?? (state.error ? EMAIL_ERROR_MESSAGE[state.error] : null);
 
   function handleEmailSubmit(e: React.FormEvent<HTMLFormElement>) {
     const email = String(new FormData(e.currentTarget).get("email") ?? "");
@@ -69,72 +85,136 @@ export function AuthCard({
   }
 
   return (
-    <div className="mx-auto w-full max-w-md px-4 py-16 sm:py-24">
-      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Sign in to Avexora
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden bg-stone-950 text-stone-100 font-sans selection:bg-orange-500 selection:text-white">
+      {/* 1. Interactive 3D WebGL Canvas Layer */}
+      <Auth3DCanvas />
+
+      {/* 2. Cyber Matrix Grid Background Overlay */}
+      <div className="absolute inset-0 bg-matrix-grid-dark opacity-45 pointer-events-none" />
+
+      {/* 3. Ambient Orange & Amber Glow Orbs */}
+      <div 
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[550px] bg-gradient-to-br from-orange-600/25 via-amber-500/10 to-transparent rounded-full blur-3xl pointer-events-none" 
+        aria-hidden="true"
+      />
+      <div 
+        className="absolute bottom-6 right-10 w-[350px] h-[350px] bg-orange-600/10 rounded-full blur-3xl pointer-events-none" 
+        aria-hidden="true"
+      />
+
+      {/* 4. Top Branding Logo */}
+      <div className="mb-4 z-10 flex flex-col items-center w-full max-w-sm">
+        <Link 
+          href="/" 
+          className="inline-flex items-center justify-center group transition-transform hover:scale-105 duration-200"
+        >
+          <Image
+            src="/logo.png"
+            alt="Avexora Tools"
+            width={300}
+            height={73}
+            priority
+            unoptimized
+            className="h-12 sm:h-14 w-auto max-w-[270px] sm:max-w-[310px] object-contain drop-shadow-2xl"
+          />
+        </Link>
+      </div>
+
+      {/* 5. Main 3D Interactive Auth Card */}
+      <div
+        onMouseMove={handleCardMouseMove}
+        onMouseLeave={handleCardMouseLeave}
+        style={{
+          transform: `perspective(1000px) rotateX(${cardTilt.y}deg) rotateY(${cardTilt.x}deg)`,
+          transition: "transform 0.15s ease-out",
+        }}
+        className="w-full max-w-md rounded-3xl border border-stone-800 bg-stone-900/90 backdrop-blur-2xl p-7 sm:p-9 shadow-2xl shadow-stone-950/80 relative z-10 transition-colors hover:border-orange-500/40"
+      >
+        {/* Subtle orange accent glow inside card */}
+        <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
+
+        {/* Identity Node Pill */}
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-950/80 border border-orange-500/30 text-orange-400 font-mono text-xs font-semibold mb-4">
+          <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+          <span>AVEXORA TOOLS // IDENTITY NODE</span>
+        </div>
+
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+          Sign in to Avexora Tools
         </h1>
-        <p className="mt-2 text-sm text-slate-600">
-          One account for Avexora Tools and Brand Studio.
+        <p className="mt-2 text-xs sm:text-sm text-stone-400 leading-relaxed">
+          One unified account for Avexora Tools, Brand Studio & Enterprise Business OS.
         </p>
 
+        {/* Server Error Alert */}
         {serverError && (
           <div
             role="alert"
-            className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="mt-5 rounded-xl border border-red-500/40 bg-red-950/50 px-4 py-3 text-xs sm:text-sm text-red-300 font-mono flex items-center gap-2"
           >
-            {serverError}
+            <span>⚠️</span>
+            <span>{serverError}</span>
           </div>
         )}
 
+        {/* Form Container */}
         <div className="mt-6">
           <form action={formAction} onSubmit={handleEmailSubmit} noValidate className="space-y-4">
             <input type="hidden" name="next" value={next} />
-            
+
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                Email
+              <label
+                htmlFor="email"
+                className="block text-xs font-mono uppercase tracking-wider text-stone-300 font-semibold mb-1.5"
+              >
+                Work Email Address
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="you@company.in"
-                aria-invalid={inlineEmailError ? true : undefined}
-                aria-describedby={inlineEmailError ? "email-error" : undefined}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20 disabled:bg-slate-50 sm:py-2.5"
-              />
+              <div className="relative">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="you@company.in"
+                  aria-invalid={inlineEmailError ? true : undefined}
+                  aria-describedby={inlineEmailError ? "email-error" : undefined}
+                  className="w-full rounded-xl border border-stone-700 bg-stone-950/70 px-4 py-3 text-sm text-white placeholder-stone-500 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/30 transition shadow-inner font-sans"
+                />
+              </div>
               {inlineEmailError && (
-                <p id="email-error" role="alert" className="mt-1.5 text-sm text-red-600">
+                <p id="email-error" role="alert" className="mt-1.5 text-xs text-red-400 font-mono">
                   {inlineEmailError}
                 </p>
               )}
               {!emailEnabled && (
-                <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                <p className="mt-2 rounded-xl border border-amber-500/30 bg-amber-950/40 px-3 py-2 text-xs text-amber-300 font-mono">
                   Email sign-in isn&apos;t configured on this site yet.
                 </p>
               )}
             </div>
 
-            <div>
+            <div className="pt-1">
               <EmailSubmitButton pending={pending} />
-              <p className="mt-2 text-center text-xs text-slate-500">
-                We&apos;ll email you a secure sign-in link.
+              <p className="mt-2 text-center text-[11px] font-mono text-stone-400">
+                🔒 Passwordless: We&apos;ll send you a single-use magic login link.
               </p>
             </div>
           </form>
         </div>
 
+        {/* Social SSO Divider */}
         {(googleEnabled || facebookEnabled) && (
           <div className="my-6 flex items-center gap-3">
-            <span className="h-px flex-1 bg-slate-200" />
-            <span className="text-xs uppercase tracking-wide text-slate-400">or continue with</span>
-            <span className="h-px flex-1 bg-slate-200" />
+            <span className="h-px flex-1 bg-stone-800" />
+            <span className="text-[11px] uppercase font-mono tracking-wider text-stone-400">
+              or continue with
+            </span>
+            <span className="h-px flex-1 bg-stone-800" />
           </div>
         )}
 
+        {/* Social SSO Buttons */}
         {(googleEnabled || facebookEnabled) && (
           <div className="grid grid-cols-2 gap-3">
             {googleEnabled && (
@@ -143,7 +223,7 @@ export function AuthCard({
                 <ProviderSubmitButton
                   label="Google"
                   pendingLabel="..."
-                  icon={<GoogleIcon className="h-5 w-5 shrink-0" />}
+                  icon={<GoogleIcon className="h-4 w-4 shrink-0" />}
                 />
               </form>
             )}
@@ -154,7 +234,7 @@ export function AuthCard({
                 <ProviderSubmitButton
                   label="Facebook"
                   pendingLabel="..."
-                  icon={<FacebookIcon className="h-5 w-5 shrink-0" />}
+                  icon={<FacebookIcon className="h-4 w-4 shrink-0" />}
                 />
               </form>
             ) : (
@@ -163,16 +243,39 @@ export function AuthCard({
                   type="button"
                   disabled
                   aria-disabled="true"
-                  title="Facebook sign-in requires AUTH_FACEBOOK_ID and AUTH_FACEBOOK_SECRET to be configured."
-                  className={`${PROVIDER_BUTTON_CLS} cursor-not-allowed`}
+                  title="Facebook sign-in requires configuration."
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-stone-800 bg-stone-900/50 px-4 text-xs font-semibold text-stone-500 cursor-not-allowed opacity-50"
                 >
-                  <FacebookIcon className="h-5 w-5 shrink-0 grayscale opacity-50" />
-                  Facebook
+                  <FacebookIcon className="h-4 w-4 shrink-0 grayscale" />
+                  <span>Facebook</span>
                 </button>
               </div>
             )}
           </div>
         )}
+
+        {/* Card Security Guarantee Footer */}
+        <div className="mt-6 pt-5 border-t border-stone-800 flex items-center justify-between text-[11px] font-mono text-stone-400">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>256-Bit TLS</span>
+          </span>
+          <span>•</span>
+          <span>No Password Storage</span>
+          <span>•</span>
+          <span className="text-orange-400">Browser WASM</span>
+        </div>
+      </div>
+
+      {/* 6. Bottom Navigation Back Link */}
+      <div className="mt-6 text-center text-xs text-stone-400 z-10">
+        <Link 
+          href="/" 
+          className="hover:text-white transition flex items-center justify-center gap-1.5 font-mono group"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span>
+          <span>Return to Avexora Tools Directory</span>
+        </Link>
       </div>
     </div>
   );
@@ -192,11 +295,11 @@ function ProviderSubmitButton({
     <button
       type="submit"
       disabled={pending}
-      className={PROVIDER_BUTTON_CLS}
       aria-busy={pending}
+      className="flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-stone-700 bg-stone-800/80 hover:bg-stone-800 text-xs font-semibold text-stone-200 transition hover:border-stone-600 disabled:opacity-50 cursor-pointer shadow-xs"
     >
       {icon}
-      {pending ? pendingLabel : label}
+      <span>{pending ? pendingLabel : label}</span>
     </button>
   );
 }
@@ -207,9 +310,10 @@ function EmailSubmitButton({ pending }: { pending: boolean }) {
       type="submit"
       disabled={pending}
       aria-busy={pending}
-      className="mt-2 flex h-11 w-full items-center justify-center rounded-md bg-orange-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+      className="btn-orange-glow !text-white w-full h-11 sm:h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-600/30 hover:shadow-orange-600/50 transition cursor-pointer disabled:opacity-60"
     >
-      {pending ? "Sending…" : "Continue with Email"}
+      <span>{pending ? "Sending Secure Link…" : "Continue with Email"}</span>
+      {!pending && <ArrowRight className="w-4 h-4 text-white" />}
     </button>
   );
 }

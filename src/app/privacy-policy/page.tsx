@@ -28,11 +28,27 @@ export const metadata: Metadata = {
   },
 };
 
+import { HeaderNav } from "@/components/editorial/header-nav";
+import { FooterSection } from "@/components/editorial/footer-section";
+
 export default function PrivacyPolicyPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900">Privacy Policy</h1>
-      <p className="mt-2 text-sm text-slate-500">Last updated: {LAST_UPDATED}</p>
+    <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-orange-500 selection:text-white">
+      <HeaderNav />
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-16" style={{ paddingTop: "calc(var(--nav-h) + 32px)" }}>
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-2 text-xs font-mono text-stone-500 mb-6">
+          <Link href="/" className="hover:text-stone-900 transition">
+            Home
+          </Link>
+          <span>/</span>
+          <span className="text-orange-600 font-semibold">Privacy Policy</span>
+        </nav>
+
+        <div className="border-b border-stone-200 pb-6 mb-8">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-950">Privacy Policy</h1>
+          <p className="mt-2 text-xs sm:text-sm text-stone-500 font-mono">Last updated: {LAST_UPDATED}</p>
+        </div>
 
       <P>
         Avexora Tools (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) is
@@ -174,17 +190,19 @@ export default function PrivacyPolicyPage() {
         </a>
       </P>
 
-      <p className="mt-10 text-sm text-slate-500">
+      <p className="mt-10 text-sm text-stone-500 border-t border-stone-200 pt-6">
         See also our{" "}
-        <Link href="/terms" className="text-orange-700 hover:underline">
+        <Link href="/terms" className="text-orange-600 font-semibold hover:underline">
           Terms &amp; Conditions
         </Link>{" "}
         and{" "}
-        <Link href="/refund-policy" className="text-orange-700 hover:underline">
+        <Link href="/refund-policy" className="text-orange-600 font-semibold hover:underline">
           Refund Policy
         </Link>
         .
       </p>
     </main>
+    <FooterSection />
+  </div>
   );
 }

@@ -21,6 +21,8 @@ import {
   toolPageTitle,
 } from "@/lib/tool-page-seo";
 import { AdSlot } from "@/components/ads/ad-slot";
+import { HeaderNav } from "@/components/editorial/header-nav";
+import { FooterSection } from "@/components/editorial/footer-section";
 
 export const dynamicParams = true;
 
@@ -99,47 +101,55 @@ export default async function ToolPage({
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 space-y-8">
+    <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-orange-500 selection:text-white">
+      <HeaderNav />
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-16 space-y-8" style={{ paddingTop: "calc(var(--nav-h) + 28px)" }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       {/* Header & Breadcrumbs */}
-      <div className="space-y-3 print:hidden">
-        <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-          <Link href="/" className="hover:text-orange-600 transition-colors">
-            {SITE_NAME}
+      <div className="space-y-4 print:hidden">
+        <nav className="flex items-center gap-2 text-xs font-mono text-stone-500">
+          <Link href="/" className="hover:text-stone-900 transition">
+            Home
           </Link>
           <span>/</span>
-          <Link href={`/${cat.slug}`} className="hover:text-orange-600 transition-colors">
-            {cat.shortName}
+          <Link href={`/${cat.slug}`} className="hover:text-stone-900 transition">
+            {cat.name}
           </Link>
           <span>/</span>
-          <span className="text-orange-700 font-bold">{toolData.name}</span>
+          <span className="text-orange-600 font-semibold">{toolData.name}</span>
         </nav>
 
         {isPreview && (
           <div className="p-3 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl flex items-center justify-between text-xs font-semibold">
-            <span>⚡ Admin Preview Mode</span>
+            <span className="inline-flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+              Admin Preview Mode
+            </span>
             <span>Status: {toolData.status}</span>
           </div>
         )}
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pt-1">
-          <div className="space-y-1.5 max-w-2xl">
+          <div className="space-y-2 max-w-3xl">
             <div className="inline-flex items-center gap-2">
-              <span className="rounded-md bg-orange-100/80 px-2.5 py-0.5 text-xs font-bold text-orange-800 uppercase tracking-wider">
+              <span className="rounded-md bg-orange-100/80 px-2.5 py-0.5 text-xs font-mono font-bold text-orange-800 uppercase tracking-wider border border-orange-200">
                 {cat.shortName}
               </span>
-              <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-                🔒 100% Private (Runs in Browser)
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-stone-100 px-2.5 py-0.5 text-xs font-mono font-medium text-stone-700 border border-stone-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                100% In-Browser · Zero Data Upload
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-stone-950">
               {toolData.pageHeading || toolData.name}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm sm:text-base text-stone-600 leading-relaxed max-w-2xl">
               {toolData.shortDescription || toolData.description}
             </p>
           </div>
@@ -308,6 +318,8 @@ export default async function ToolPage({
         </section>
 
       </div>
+      </div>
+      <FooterSection />
     </div>
   );
 }

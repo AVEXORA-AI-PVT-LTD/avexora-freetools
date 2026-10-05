@@ -8,6 +8,10 @@ export const metadata = {
   description: `Answers to common questions about ${SITE_NAME} tools and services.`,
 };
 
+import Link from "next/link";
+import { HeaderNav } from "@/components/editorial/header-nav";
+import { FooterSection } from "@/components/editorial/footer-section";
+
 export default async function FAQPage() {
   const faqs = await getPublishedList(ContentType.FAQ);
 
@@ -25,16 +29,28 @@ export default async function FAQPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <header className="mb-12 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          Frequently Asked Questions
-        </h1>
-        <p className="mt-4 text-lg text-slate-600">
-          Everything you need to know about the product and billing.
-        </p>
-      </header>
+    <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-orange-500 selection:text-white">
+      <HeaderNav />
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pb-16" style={{ paddingTop: "calc(var(--nav-h) + 32px)" }}>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-2 text-xs font-mono text-stone-500 mb-6">
+          <Link href="/" className="hover:text-stone-900 transition">
+            Home
+          </Link>
+          <span>/</span>
+          <span className="text-orange-600 font-semibold">FAQ</span>
+        </nav>
+
+        <header className="mb-10 text-center">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-stone-950">
+            Frequently Asked Questions
+          </h1>
+          <p className="mt-3 text-sm sm:text-base text-stone-600 max-w-xl mx-auto">
+            Everything you need to know about our tools, privacy architecture, and capabilities.
+          </p>
+        </header>
       
       <div className="space-y-8">
         {faqs.map(faq => (
@@ -46,9 +62,11 @@ export default async function FAQPage() {
           </div>
         ))}
         {faqs.length === 0 && (
-          <p className="text-center text-slate-500 py-10">No FAQs available at the moment.</p>
+          <p className="text-center text-stone-500 py-10 font-mono text-sm">No FAQs available at the moment.</p>
         )}
       </div>
     </div>
+    <FooterSection />
+  </div>
   );
 }

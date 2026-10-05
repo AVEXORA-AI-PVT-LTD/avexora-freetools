@@ -66,7 +66,12 @@ export default async function StudioLandingPage() {
       {/* HERO SECTION */}
       <section className="relative overflow-hidden rounded-3xl border border-orange-200/80 bg-gradient-to-r from-orange-50/90 via-orange-50/30 to-white p-8 sm:p-12 shadow-xs space-y-6">
         <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/80 bg-orange-50 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-orange-800 shadow-2xs">
-          <span>🏢 Avexora Brand Studio</span>
+          <svg className="w-3.5 h-3.5 text-orange-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+            <path d="M9 22v-4h6v4" />
+            <path d="M8 6h.01M16 6h.01M8 10h.01M16 10h.01M8 14h.01M16 14h.01" />
+          </svg>
+          <span>Avexora Brand Studio</span>
         </div>
 
         <h1 className="max-w-4xl text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl leading-[1.15]">
@@ -98,7 +103,12 @@ export default async function StudioLandingPage() {
       {/* COMPLIANCE STATUTORY RULE */}
       <section className="rounded-2xl border border-amber-200/80 bg-amber-50/70 p-6 sm:p-8 space-y-3 shadow-2xs">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-900">
-          <span>⚠️ Important Legal Rule</span>
+          <svg className="w-3.5 h-3.5 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          <span>Important Legal Rule</span>
         </div>
         <h2 className="text-xl font-bold text-slate-900">
           The Companies Act rule almost every founder misses

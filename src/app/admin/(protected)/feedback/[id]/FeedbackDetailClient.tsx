@@ -434,24 +434,36 @@ export function FeedbackDetailClient({
               {status !== "Spam" ? (
                 <button
                   onClick={() => markAsSpamAction(submission.id).then(() => setStatus("Spam"))}
-                  className="w-full text-left text-xs font-semibold text-slate-700 hover:text-rose-700 py-1"
+                  className="w-full inline-flex items-center gap-1.5 text-left text-xs font-semibold text-slate-700 hover:text-rose-700 py-1"
                 >
-                  🚫 Mark Submission as Spam
+                  <svg className="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                  </svg>
+                  Mark Submission as Spam
                 </button>
               ) : (
                 <button
                   onClick={() => restoreFromSpamAction(submission.id).then(() => setStatus("New"))}
-                  className="w-full text-left text-xs font-semibold text-emerald-700 hover:underline py-1"
+                  className="w-full inline-flex items-center gap-1.5 text-left text-xs font-semibold text-emerald-700 hover:underline py-1"
                 >
-                  ✅ Restore from Spam to New
+                  <svg className="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  Restore from Spam to New
                 </button>
               )}
 
               <button
                 onClick={handleDelete}
-                className="w-full text-left text-xs font-semibold text-rose-600 hover:underline py-1"
+                className="w-full inline-flex items-center gap-1.5 text-left text-xs font-semibold text-rose-600 hover:underline py-1"
               >
-                🗑️ Delete Submission Permanently
+                <svg className="w-3.5 h-3.5 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                Delete Submission Permanently
               </button>
             </div>
           </div>
