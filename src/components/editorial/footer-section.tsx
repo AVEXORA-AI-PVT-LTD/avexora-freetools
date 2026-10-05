@@ -5,12 +5,21 @@ import Link from "next/link";
 import Image from "next/image";
 import { EBOS_URL } from "@/tools/categories";
 
+export interface NavigationLinkItem {
+  id: string;
+  label: string;
+  href: string;
+  location?: "HEADER" | "FOOTER";
+  openInNewTab?: boolean;
+}
+
 interface FooterSectionProps {
   onOpenSearch?: () => void;
   onOpenAuth?: (type: "login" | "signup") => void;
+  footerLinks?: NavigationLinkItem[];
 }
 
-export function FooterSection({ onOpenSearch, onOpenAuth }: FooterSectionProps) {
+export function FooterSection({ onOpenSearch, onOpenAuth, footerLinks }: FooterSectionProps) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
@@ -72,10 +81,10 @@ export function FooterSection({ onOpenSearch, onOpenAuth }: FooterSectionProps) 
                 <Image
                   src="/logo.png"
                   alt="AvexTools"
-                  width={240}
-                  height={58}
+                  width={200}
+                  height={48}
                   unoptimized
-                  className="h-10 sm:h-11 w-auto max-w-[230px] object-contain object-left transition-transform group-hover:scale-105"
+                  className="h-7.5 sm:h-8.5 w-auto max-w-[175px] object-contain object-left transition-transform group-hover:scale-105"
                 />
               </Link>
               <p className="mt-3 text-sm text-stone-400 max-w-sm">Tools that get out of your way.</p>
@@ -95,6 +104,22 @@ export function FooterSection({ onOpenSearch, onOpenAuth }: FooterSectionProps) 
                 <a href="/terms" className="text-sm text-stone-400 hover:text-white transition-colors">Terms</a>
                 <a href={EBOS_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-stone-400 hover:text-white transition-colors">Avexora EBOS</a>
               </div>
+              {footerLinks && footerLinks.length > 0 && (
+                <div className="flex flex-col gap-2.5 items-start">
+                  <span className="eyebrow-mono text-stone-500 text-xs font-mono uppercase tracking-wider mb-1">Quick Links</span>
+                  {footerLinks.map((link) => (
+                    <a
+                      key={link.id}
+                      href={link.href}
+                      target={link.openInNewTab ? "_blank" : undefined}
+                      rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                      className="text-sm text-stone-400 hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              )}
             </nav>
           </div>
 

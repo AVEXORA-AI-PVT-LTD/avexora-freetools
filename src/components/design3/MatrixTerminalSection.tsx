@@ -141,7 +141,7 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
       newItems.push({
         id: inputId + '-out',
         type: 'tool-launcher',
-        text: 'Launching In-Browser PDF Compressor...',
+        text: 'Launching PDF Compressor...',
         toolId: 'pdf-compressor',
         toolName: 'PDF Compressor',
       });
@@ -177,7 +177,7 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
       newItems.push({
         id: inputId + '-out',
         type: 'success',
-        text: 'TELEMETRY: Latency: 0.04ms | Remote Uploads: 0 | Execution: 100% In-Browser WASM',
+        text: 'STATUS: All engines online | 100% Client Privacy Guaranteed',
       });
     } else {
       newItems.push({

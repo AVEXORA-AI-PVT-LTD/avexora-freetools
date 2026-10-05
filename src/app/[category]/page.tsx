@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { AVEXORA_ORGANIZATION } from "@/config/avexora-products";
 import { notFound } from "next/navigation";
-import { categories, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
-import { toolsByCategory } from "@/tools/registry";
+import { categories, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { getEffectiveCategory, getEffectiveCategories } from "@/server/categories";
+import { getEffectiveToolsByCategory } from "@/server/tools";
+import type { CategorySlug } from "@/types/tools";
 import { resolveCategorySeo } from "@/server/seo-manager";
 import { CategoryPageClient } from "@/components/design3/CategoryPageClient";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return categories.map((c) => ({ category: c.slug }));
@@ -18,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category } = await params;
-  const cat = getCategory(category);
+  const cat = await getEffectiveCategory(category);
   if (!cat) return {};
 
   const defaultTitle = `Free Online ${cat.name}`;
@@ -41,9 +43,14 @@ export default async function CategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  const cat = getCategory(category);
+  const [cat, toolsByCategoryMap, allEffectiveCategories] = await Promise.all([
+    getEffectiveCategory(category),
+    getEffectiveToolsByCategory(),
+    getEffectiveCategories(),
+  ]);
+
   if (!cat) notFound();
-  const tools = toolsByCategory[cat.slug] || [];
+  const tools = toolsByCategoryMap[cat.slug as CategorySlug] || [];
   const canonical = `${SITE_URL}/${cat.slug}`;
 
   const jsonLd = [
@@ -90,7 +97,11 @@ export default async function CategoryPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <CategoryPageClient category={cat} tools={serializedTools} />
+      <CategoryPageClient 
+        category={cat} 
+        tools={serializedTools} 
+        availableCategories={allEffectiveCategories} 
+      />
     </>
   );
 }

@@ -36,7 +36,7 @@ export function EditorialHomePage() {
               alt="Avexora"
               width={220}
               height={52}
-              className="h-10 sm:h-11 md:h-12 w-auto object-contain dark:brightness-110"
+              className="h-7.5 sm:h-8.5 w-auto max-w-[175px] object-contain dark:brightness-110"
               priority
             />
           </Link>

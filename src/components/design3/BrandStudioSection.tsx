@@ -7,7 +7,17 @@ import {
 } from 'lucide-react';
 import { useScrollProgress } from '@/hooks/useScrollProgress';
 
-export const BrandStudioSection: React.FC = () => {
+interface BrandStudioSectionProps {
+  config?: {
+    heading?: string;
+    description?: string;
+    ctaText?: string;
+    ctaUrl?: string;
+    pricingText?: string;
+  };
+}
+
+export const BrandStudioSection: React.FC<BrandStudioSectionProps> = ({ config }) => {
   const [activeAsset, setActiveAsset] = useState<'letterhead' | 'card' | 'id'>('letterhead');
   const [cinInput, setCinInput] = useState('U72900DL2024PTC123456');
   const [companyName, setCompanyName] = useState('AVEXORA TECHNOLOGIES PRIVATE LIMITED');
@@ -44,13 +54,21 @@ export const BrandStudioSection: React.FC = () => {
             >
               
               <h2 className="text-3xl sm:text-5xl font-extrabold text-stone-900 tracking-tight leading-tight">
-                Business stationery that is <br />
-                <span className="text-orange-600 underline decoration-orange-300">legally correct</span>, not just pretty.
+                {config?.heading || (
+                  <>
+                    Business stationery that is <br />
+                    <span className="text-orange-600 underline decoration-orange-300">legally correct</span>, not just pretty.
+                  </>
+                )}
               </h2>
 
               <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
-                From corporate logo to employee ID cards in minutes. Built around the exact registered office,
-                Corporate Identity Number (CIN), phone, and email particulars required under Indian law.
+                {config?.description || (
+                  <>
+                    From corporate logo to employee ID cards in minutes. Built around the exact registered office,
+                    Corporate Identity Number (CIN), phone, and email particulars required under Indian law.
+                  </>
+                )}
               </p>
 
               {/* Checklist Grid */}

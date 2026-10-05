@@ -11,11 +11,48 @@ import { FAQSection } from './FAQSection';
 import { FooterSection } from '@/components/editorial/footer-section';
 import { ToolModal } from './ToolModal';
 import { SearchModal } from './SearchModal';
-import { ALL_TOOLS, ToolItem } from '@/data/toolsData';
+import { ALL_TOOLS, CATEGORIES, ToolItem, CategoryInfo } from '@/data/toolsData';
+import type { HomepageSection } from "@/server/homepage-service";
+import type { NavigationLinkItem } from "@/components/editorial/footer-section";
 
-export function Design3Page() {
+export interface Design3PageProps {
+  homepageSections?: HomepageSection[];
+  effectiveCategories?: CategoryInfo[];
+  effectiveTools?: ToolItem[];
+  headerNav?: NavigationLinkItem[];
+  footerNav?: NavigationLinkItem[];
+}
+
+export function Design3Page({
+  homepageSections,
+  effectiveCategories,
+  effectiveTools,
+  headerNav,
+  footerNav,
+}: Design3PageProps = {}) {
   const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
+
+  const toolsList = effectiveTools && effectiveTools.length > 0 ? effectiveTools : ALL_TOOLS;
+  const categoriesList = effectiveCategories && effectiveCategories.length > 0 ? effectiveCategories : CATEGORIES;
+
+  const heroSection = homepageSections?.find((s) => s.sectionKey === "hero");
+  const brandStudioSection = homepageSections?.find((s) => s.sectionKey === "brand_studio");
+
+  const heroConfig = heroSection ? {
+    heading: heroSection.heading,
+    description: heroSection.description,
+    ctaText: heroSection.config?.ctaText,
+    ctaUrl: heroSection.config?.ctaUrl,
+  } : undefined;
+
+  const brandStudioConfig = brandStudioSection ? {
+    heading: brandStudioSection.heading,
+    description: brandStudioSection.description,
+    ctaText: brandStudioSection.config?.ctaText,
+    ctaUrl: brandStudioSection.config?.ctaUrl,
+    pricingText: brandStudioSection.config?.pricingText,
+  } : undefined;
 
   // Handle Cmd+K / Ctrl+K
   useEffect(() => {
@@ -31,7 +68,7 @@ export function Design3Page() {
   }, []);
 
   const handleOpenToolById = (toolId: string) => {
-    const tool = ALL_TOOLS.find((t) => t.id === toolId);
+    const tool = toolsList.find((t) => t.id === toolId);
     if (tool) {
       setSelectedTool(tool);
     }
@@ -50,12 +87,14 @@ export function Design3Page() {
       <Navbar 
         onSearchClick={() => setIsSearchOpen(true)}
         onNavigateSection={scrollToSection}
+        headerLinks={headerNav}
       />
 
       {/* Hero Section with 3D Canvas, Tilted 3D Screen & Live Simulator */}
       <HeroSection 
         onExploreClick={() => scrollToSection('categories-showcase')}
         onOpenTool={handleOpenToolById}
+        heroConfig={heroConfig}
       />
 
       {/* Bento Grid Feature Matrix with 3D Hover Tilt & Scroll Reveals */}
@@ -65,10 +104,14 @@ export function Design3Page() {
       <CategoriesShowcase 
         onSelectTool={(tool) => setSelectedTool(tool)}
         onOpenSearch={() => setIsSearchOpen(true)}
+        categories={categoriesList}
+        tools={toolsList}
       />
 
       {/* Avexora Brand Studio Showcase (Corporate Stationery) */}
-      <BrandStudioSection />
+      {brandStudioSection?.enabled !== false && (
+        <BrandStudioSection config={brandStudioConfig} />
+      )}
 
       {/* Cyber Black Matrix Terminal & Telemetry */}
       <MatrixTerminalSection 
@@ -84,6 +127,7 @@ export function Design3Page() {
         onOpenSearch={() => {
           setIsSearchOpen(true);
         }}
+        footerLinks={footerNav}
       />
 
       {/* Interactive Tool Modal */}
@@ -97,6 +141,8 @@ export function Design3Page() {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
         onSelectTool={(tool) => setSelectedTool(tool)}
+        tools={toolsList}
+        categories={categoriesList}
       />
     </div>
   );

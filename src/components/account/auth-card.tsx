@@ -263,7 +263,7 @@ export function AuthCard({
           <span>•</span>
           <span>No Password Storage</span>
           <span>•</span>
-          <span className="text-orange-400">Browser WASM</span>
+          <span className="text-stone-300">Private & Secure</span>
         </div>
       </div>
 

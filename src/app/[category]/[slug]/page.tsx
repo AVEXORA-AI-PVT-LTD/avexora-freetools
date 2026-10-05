@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ebosCtaUrl, getCategory, SITE_NAME, SITE_URL } from "@/tools/categories";
-import { allTools, getTool, toolsByCategory } from "@/tools/registry";
+import { getCategory, ebosCtaUrl, SITE_NAME, SITE_URL } from "@/tools/categories";
+import { allTools, getTool } from "@/tools/registry";
+import { getEffectiveCategory } from "@/server/categories";
+import { getEffectiveToolsByCategory } from "@/server/tools";
+import type { CategorySlug } from "@/types/tools";
 import { resolveToolSeo } from "@/server/seo-manager";
 import { getToolFormData } from "@/server/admin-tools";
 import { ToolRunner } from "@/components/tools/tool-shapes/tool-runner";
@@ -62,14 +65,16 @@ export default async function ToolPage({
 }) {
   const { category, slug } = await params;
   const query = await searchParams;
-  // ?preview=true only lets logged-in staff see unpublished tools — never the public.
   const isPreview = query.preview === "true" && (await checkAdminPermission("tools.edit"));
   
-  const toolData = await getToolFormData(slug);
+  const [toolData, effectiveCat] = await Promise.all([
+    getToolFormData(slug),
+    getEffectiveCategory(category),
+  ]);
   const cat = getCategory(category);
   
   if (!toolData || !cat || toolData.category !== cat.slug) notFound();
-  if (toolData.status !== "Published" && !isPreview) notFound();
+  if ((!effectiveCat || toolData.status !== "Published") && !isPreview) notFound();
 
   const defaultCanonical = toolCanonical(toolData);
   const fallback = {
@@ -94,6 +99,10 @@ export default async function ToolPage({
       related.push(rData);
     }
   }
+
+  const effectiveByCategory = await getEffectiveToolsByCategory();
+  const moreTools = (effectiveByCategory[cat.slug as CategorySlug] || [])
+    .filter((t) => t.slug !== toolData.slug);
 
   const jsonLd = toolPageJsonLd(toolData, cat, {
     canonical,
@@ -141,10 +150,6 @@ export default async function ToolPage({
               <span className="rounded-md bg-orange-100/80 px-2.5 py-0.5 text-xs font-mono font-bold text-orange-800 uppercase tracking-wider border border-orange-200">
                 {cat.shortName}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-md bg-stone-100 px-2.5 py-0.5 text-xs font-mono font-medium text-stone-700 border border-stone-200">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                100% In-Browser · Zero Data Upload
-              </span>
             </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-stone-950">
               {toolData.pageHeading || toolData.name}
@@ -170,7 +175,7 @@ export default async function ToolPage({
             <div className="absolute inset-0 z-10 bg-white/90 backdrop-blur-xs flex flex-col items-center justify-center rounded-3xl p-6 text-center">
               <h3 className="text-xl font-bold text-slate-900 mb-2">Sign In Required</h3>
               <p className="text-sm text-slate-600 mb-4 max-w-md">You must be signed in to use {toolData.name}. Accounts are free.</p>
-              <Link href="/login" className="px-6 py-2.5 bg-orange-600 text-white rounded-xl font-semibold text-sm hover:bg-orange-700 shadow-sm transition-colors">
+              <Link href={`/studio/signin?next=/${toolData.category}/${toolData.slug}`} className="px-6 py-2.5 bg-orange-600 text-white rounded-xl font-semibold text-sm hover:bg-orange-700 shadow-sm transition-colors">
                 Sign In Now
               </Link>
             </div>
@@ -303,17 +308,15 @@ export default async function ToolPage({
             More {cat.name}
           </h2>
           <div className="flex flex-wrap gap-2">
-            {toolsByCategory[cat.slug as keyof typeof toolsByCategory]
-              ?.filter((t) => t.slug !== toolData.slug)
-              .map((t) => (
-                <Link
-                  key={t.slug}
-                  href={`/${t.category}/${t.slug}`}
-                  className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-900"
-                >
-                  {t.name}
-                </Link>
-              ))}
+            {moreTools.map((t) => (
+              <Link
+                key={t.slug}
+                href={`/${t.category}/${t.slug}`}
+                className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-900"
+              >
+                {t.name}
+              </Link>
+            ))}
           </div>
         </section>
 

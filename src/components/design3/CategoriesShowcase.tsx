@@ -26,6 +26,8 @@ import { CATEGORIES, ALL_TOOLS, ToolItem } from '@/data/toolsData';
 interface CategoriesShowcaseProps {
   onSelectTool: (tool: ToolItem) => void;
   onOpenSearch: () => void;
+  categories?: typeof CATEGORIES;
+  tools?: ToolItem[];
 }
 
 // Category Icon Map
@@ -45,8 +47,13 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
   onSelectTool,
   onOpenSearch,
+  categories,
+  tools,
 }) => {
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
+  
+  const categoriesList = categories && categories.length > 0 ? categories : CATEGORIES;
+  const toolsList = tools && tools.length > 0 ? tools : ALL_TOOLS;
   
   // Interactive micro-calculator inside the showcase
   const [calcInput, setCalcInput] = useState<number>(50000);
@@ -84,8 +91,8 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
     });
   };
 
-  const currentCategory = CATEGORIES[activeCategoryIndex];
-  const categoryTools = ALL_TOOLS.filter((tool) => tool.category === currentCategory.id);
+  const currentCategory = categoriesList[activeCategoryIndex] || categoriesList[0];
+  const categoryTools = toolsList.filter((tool) => tool.category === currentCategory.id);
 
   const simulatedTax = (calcInput * sliderRate) / 100;
   const simulatedTotal = calcInput + simulatedTax;
@@ -151,7 +158,7 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
           
           {/* 1. LEFT SIDE: COMPACT CATEGORY LIST (NO HUGE GAPS) */}
           <div className="lg:col-span-4 flex flex-col gap-2">
-            {CATEGORIES.map((category, index) => {
+            {categoriesList.map((category, index) => {
               const isActive = activeCategoryIndex === index;
               const currentPadded = String(index + 1).padStart(2, '0');
 
@@ -321,7 +328,7 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
                       <span className="w-1 bg-emerald-400 rounded-full animate-eq-bar-4" />
                       <span className="w-1 bg-orange-500 rounded-full animate-eq-bar-5" />
                     </div>
-                    <span className="text-emerald-400 font-mono font-medium">WASM ENGINE: ACTIVE</span>
+                    <span className="text-emerald-400 font-mono font-medium">ENGINE: ACTIVE</span>
                   </div>
                 </div>
 
@@ -435,14 +442,14 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setActiveCategoryIndex(activeCategoryIndex > 0 ? activeCategoryIndex - 1 : CATEGORIES.length - 1)}
+                    onClick={() => setActiveCategoryIndex(activeCategoryIndex > 0 ? activeCategoryIndex - 1 : categoriesList.length - 1)}
                     className="px-3 py-1.5 rounded-lg border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-mono font-semibold transition cursor-pointer"
                   >
                     ← Previous Domain
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActiveCategoryIndex(activeCategoryIndex < CATEGORIES.length - 1 ? activeCategoryIndex + 1 : 0)}
+                    onClick={() => setActiveCategoryIndex(activeCategoryIndex < categoriesList.length - 1 ? activeCategoryIndex + 1 : 0)}
                     className="px-3 py-1.5 rounded-lg border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-mono font-semibold transition cursor-pointer"
                   >
                     Next Domain →

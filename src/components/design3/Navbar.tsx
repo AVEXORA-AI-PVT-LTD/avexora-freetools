@@ -3,18 +3,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Search, ExternalLink, User, LogOut, Palette, LayoutGrid, ChevronDown, LayoutDashboard, Settings, Tag } from 'lucide-react';
+import { Search, ExternalLink, User, LogOut, Palette, LayoutGrid, ChevronDown, LayoutDashboard, Settings, Tag, Menu, X, Sparkles, BookOpen } from 'lucide-react';
 import { SearchModal } from './SearchModal';
+
+import type { NavigationLinkItem } from '@/components/editorial/footer-section';
 
 interface NavbarProps {
   onSearchClick?: () => void;
   onNavigateSection?: (sectionId: string) => void;
+  headerLinks?: NavigationLinkItem[];
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onSearchClick, headerLinks }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isInternalSearchOpen, setIsInternalSearchOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -70,11 +74,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
             <Image
               src="/logo.png"
               alt="AvexTools"
-              width={220}
-              height={53}
+              width={200}
+              height={48}
               priority
               unoptimized
-              className="h-9 sm:h-10 w-auto max-w-[210px] object-contain transition-transform group-hover:scale-105"
+              className="h-7.5 sm:h-8 w-auto max-w-[170px] object-contain transition-transform group-hover:scale-105"
             />
           </Link>
         </div>
@@ -109,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: '#ffffff' }}
-            className="btn-orange-glow !text-white px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow-orange-500/25 transition shrink-0"
+            className="btn-orange-glow !text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold hidden sm:flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow-orange-500/25 transition shrink-0"
           >
             <span className="!text-white text-white">Try EBOS</span>
             <ExternalLink className="w-3.5 h-3.5 text-white/90" />
@@ -222,8 +226,106 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearchClick }) => {
               </Link>
             )}
           </div>
+
+          {/* Mobile Hamburger Menu Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="md:hidden p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-900 transition cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5 text-stone-800" /> : <Menu className="w-5 h-5 text-stone-800" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Drawer Navigation Panel */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-stone-200 bg-white/95 backdrop-blur-md px-4 py-4 space-y-3 animate-in slide-in-from-top-2 duration-150 shadow-xl">
+          <div className="grid grid-cols-2 gap-2 text-xs font-medium">
+            <Link
+              href="/#categories-showcase"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <LayoutGrid className="w-4 h-4 text-orange-600" />
+              <span>130+ Tools</span>
+            </Link>
+            <Link
+              href="/studio"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <Palette className="w-4 h-4 text-orange-600" />
+              <span>Brand Studio</span>
+            </Link>
+            <Link
+              href="/products"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <Sparkles className="w-4 h-4 text-orange-600" />
+              <span>Products</span>
+            </Link>
+            <Link
+              href="/studio/pricing"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <Tag className="w-4 h-4 text-orange-600" />
+              <span>Pricing</span>
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <BookOpen className="w-4 h-4 text-orange-600" />
+              <span>About Us</span>
+            </Link>
+            <a
+              href="https://ebos.avexora.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 font-semibold transition"
+            >
+              <ExternalLink className="w-4 h-4 text-orange-600" />
+              <span>Try EBOS</span>
+            </a>
+            {headerLinks && headerLinks.length > 0 && headerLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                target={link.openInNewTab ? "_blank" : undefined}
+                rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+              >
+                <span>{link.label}</span>
+              </a>
+            ))}
+          </div>
+
+          {status === 'authenticated' && (
+            <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
+              <Link
+                href="/studio/app"
+                onClick={() => setMobileMenuOpen(false)}
+                className="font-medium text-stone-800 hover:text-orange-600"
+              >
+                Studio Dashboard →
+              </Link>
+              <Link
+                href="/studio/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className="font-medium text-stone-800 hover:text-orange-600"
+              >
+                Account Settings
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Internal Search Modal for global pages outside home */}
       {!onSearchClick && (

@@ -58,6 +58,9 @@ export async function saveCategory(data: SaveCategoryInput) {
   });
 
   revalidatePath("/");
+  revalidatePath(`/${data.slug}`);
+  revalidatePath("/(public)", "layout");
+  revalidatePath("/sitemap.xml");
   revalidatePath("/admin/categories");
   
   return { success: true };

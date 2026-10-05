@@ -23,9 +23,15 @@ import {
 interface HeroSectionProps {
   onExploreClick: () => void;
   onOpenTool: (toolId: string) => void;
+  heroConfig?: {
+    heading?: string;
+    description?: string;
+    ctaText?: string;
+    ctaUrl?: string;
+  };
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpenTool }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpenTool, heroConfig }) => {
   // Interactive Hero Screen state
   const [activeTab, setActiveTab] = useState<'gst' | 'json' | 'qr'>('gst');
   
@@ -108,16 +114,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
         
         {/* Hero Main Headline */}
         <h1 className="max-w-4xl text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-stone-900 leading-[1.08]">
-          High-performance tools for <br className="hidden sm:inline" />
-          <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-stone-900 via-orange-600 to-amber-600">
-            modern business & builders
-          </span>
+          {heroConfig?.heading || (
+            <>
+              High-performance tools for <br className="hidden sm:inline" />
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-stone-900 via-orange-600 to-amber-600">
+                modern business & builders
+              </span>
+            </>
+          )}
         </h1>
 
         {/* Hero Subtitle */}
         <p className="mt-5 max-w-2xl text-base sm:text-lg text-stone-600 leading-relaxed font-normal">
-          Free online calculators, GST billing, PDF manipulation, and corporate brand 
-          stationery. <strong className="text-stone-900 font-semibold">100% private, browser-sandboxed</strong>, with zero cloud delays.
+          {heroConfig?.description || (
+            <>
+              Free online calculators, GST billing, PDF manipulation, and corporate brand 
+              stationery. <strong className="text-stone-900 font-semibold">100% private, browser-sandboxed</strong>, with zero cloud delays.
+            </>
+          )}
         </p>
 
         {/* Action Button Row */}
@@ -127,7 +141,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
             style={{ color: '#ffffff' }}
             className="btn-orange-glow !text-white px-8 py-3.5 rounded-xl font-semibold text-sm sm:text-base flex items-center justify-center gap-2.5 transition cursor-pointer group shadow-lg shadow-orange-500/25"
           >
-            <span className="!text-white text-white">Explore 130+ Tools</span>
+            <span className="!text-white text-white">{heroConfig?.ctaText || "Explore 130+ Tools"}</span>
             <ArrowRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-1" />
           </button>
 
@@ -143,18 +157,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
           </a>
         </div>
 
-        {/* Matrix Coordinate Tag Line */}
-        <div className="mt-6 flex items-center justify-center gap-4 font-mono text-[11px] text-stone-400">
-          <span className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            SYS: NOMINAL
-          </span>
-          <span>·</span>
-          <span>LATENCY: 0.00ms (CLIENT-SIDE)</span>
-          <span>·</span>
-          <span className="hidden sm:inline">PRIVACY: 100% IN-BROWSER</span>
-        </div>
-
         {/* 3D HERO PERSPECTIVE SCREEN (Lunora AI signature presentation) */}
         <div className="mt-10 w-full max-w-4xl perspective-1200 relative">
           
@@ -166,7 +168,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
               </div>
               <div className="text-left font-mono">
                 <div className="text-[10px] text-stone-400 uppercase tracking-wider">Engine</div>
-                <div className="text-xs font-bold text-white">Instant WebAssembly Calc</div>
+                <div className="text-xs font-bold text-white">High-Speed Precision Calc</div>
               </div>
             </div>
             

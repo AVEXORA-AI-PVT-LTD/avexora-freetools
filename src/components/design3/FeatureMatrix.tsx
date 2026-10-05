@@ -87,11 +87,11 @@ export const FeatureMatrix: React.FC = () => {
             <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
               <div>
                 <h3 className="text-2xl font-bold text-white tracking-tight">
-                  Zero Server Latency Matrix
+                  High-Performance Computation Engine
                 </h3>
                 <p className="mt-2 text-stone-400 text-sm leading-relaxed">
-                  Every calculation—from multi-tier income tax breakdowns to 4K image compression—executes 
-                  using client-side WebAssembly and modern Web Workers. No spinning network wheels.
+                  Every calculation—from multi-tier income tax breakdowns to image compression—executes 
+                  instantly on your device with maximum privacy and zero latency delays.
                 </p>
               </div>
 
