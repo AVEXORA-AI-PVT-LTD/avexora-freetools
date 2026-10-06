@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { SearchItem } from "./search-items";
+import { usePlatformShortcut } from "@/hooks/use-platform-shortcut";
 
 export function ToolSearch({
   items,
@@ -13,6 +14,7 @@ export function ToolSearch({
   displayCount: number;
 }) {
   const router = useRouter();
+  const { shortcutSymbol } = usePlatformShortcut();
   const containerRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -130,8 +132,11 @@ export function ToolSearch({
           className="w-full bg-transparent px-4 py-3.5 text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
         />
         <div className="mr-3 hidden sm:flex items-center gap-1">
-          <kbd className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-xs text-slate-500 font-semibold shadow-2xs">
-            ⌘K
+          <kbd 
+            suppressHydrationWarning
+            className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-xs text-slate-500 font-semibold shadow-2xs"
+          >
+            {shortcutSymbol}
           </kbd>
         </div>
       </div>

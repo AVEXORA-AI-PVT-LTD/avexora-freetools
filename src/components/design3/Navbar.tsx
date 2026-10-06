@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { Search, ExternalLink, User, LogOut, Palette, LayoutGrid, ChevronDown, LayoutDashboard, Settings, Tag, Menu, X, Sparkles, BookOpen } from 'lucide-react';
 import { SearchModal } from './SearchModal';
+import { usePlatformShortcut } from '@/hooks/use-platform-shortcut';
 
 import type { NavigationLinkItem } from '@/components/editorial/footer-section';
 
@@ -17,6 +18,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onSearchClick, headerLinks }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { shortcutSymbol } = usePlatformShortcut();
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isInternalSearchOpen, setIsInternalSearchOpen] = useState(false);
@@ -102,8 +104,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onSearchClick, headerLinks }) =>
               <Search className="w-4 h-4 text-stone-400 group-hover:text-orange-600 transition-colors shrink-0" />
               <span className="font-normal text-stone-500 group-hover:text-stone-700">Search 130+ tools...</span>
             </div>
-            <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-white border border-stone-200/90 text-[10px] font-mono text-stone-400 group-hover:text-stone-600 shadow-2xs">
-              ⌘K
+            <kbd 
+              suppressHydrationWarning
+              className="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-white border border-stone-200/90 text-[10px] font-mono text-stone-400 group-hover:text-stone-600 shadow-2xs"
+            >
+              {shortcutSymbol}
             </kbd>
           </button>
 

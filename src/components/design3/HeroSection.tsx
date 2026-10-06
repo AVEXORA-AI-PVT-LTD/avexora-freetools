@@ -6,6 +6,7 @@ import dynamic from 'next/dynamic';
 const Hero3DCanvas = dynamic(() => import('./Hero3DCanvas').then((mod) => mod.Hero3DCanvas), {
   ssr: false,
 });
+import { usePlatformShortcut } from '@/hooks/use-platform-shortcut';
 import { 
   ArrowRight, 
   Building2, 
@@ -34,6 +35,7 @@ interface HeroSectionProps {
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpenTool, onSearchClick, heroConfig }) => {
+  const { shortcutSymbol } = usePlatformShortcut();
   // Interactive Hero Screen state
   const [activeTab, setActiveTab] = useState<'gst' | 'json' | 'qr'>('gst');
   
@@ -178,8 +180,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
             <span className="flex-1 text-left text-xs sm:text-sm text-stone-400 font-sans truncate">
               Search all 130+ tools (e.g. GST, Salary, PDF, QR, Invoice)...
             </span>
-            <kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-semibold text-stone-500 bg-stone-100 rounded-lg border border-stone-200">
-              Ctrl K
+            <kbd 
+              suppressHydrationWarning
+              className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-semibold text-stone-500 bg-stone-100 rounded-lg border border-stone-200"
+            >
+              {shortcutSymbol}
             </kbd>
           </div>
 

@@ -22,6 +22,7 @@ import {
   Activity
 } from 'lucide-react';
 import { CATEGORIES, ALL_TOOLS, ToolItem } from '@/data/toolsData';
+import { usePlatformShortcut } from '@/hooks/use-platform-shortcut';
 
 interface CategoriesShowcaseProps {
   onSelectTool: (tool: ToolItem) => void;
@@ -50,6 +51,7 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
   categories,
   tools,
 }) => {
+  const { shortcutSymbol } = usePlatformShortcut();
   const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0);
   
   const categoriesList = categories && categories.length > 0 ? categories : CATEGORIES;
@@ -162,8 +164,11 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
             >
               <Search className="w-4 h-4 text-stone-400 group-hover:text-orange-600 transition" />
               <span>Search across all 130+ tools...</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-white border border-stone-200 text-[10px] font-mono text-stone-500">
-                ⌘K
+              <kbd 
+                suppressHydrationWarning
+                className="px-1.5 py-0.5 rounded bg-white border border-stone-200 text-[10px] font-mono text-stone-500"
+              >
+                {shortcutSymbol}
               </kbd>
             </button>
           </div>

@@ -3,10 +3,16 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { ExternalLink } from "lucide-react";
+import { EBOS_URL } from "@/tools/categories";
 import { NavAccount } from "@/components/account/nav-account";
 import { initEditorialRuntime } from "./editorial-runtime";
 
 export function EditorialHomePage() {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
   useEffect(() => {
     const cleanup = initEditorialRuntime();
     return () => {
@@ -754,12 +760,26 @@ export function EditorialHomePage() {
             </h2>
             <p className="cta-lede">Free while in beta. No card, no sales call, no onboarding call you didn&apos;t ask for.</p>
             <div className="cta-actions">
-              <button className="btn btn-primary btn-lg" type="button" data-auth="login">
-                Sign in with Email
-              </button>
-              <button className="btn btn-secondary btn-lg" type="button" data-focus-search>
-                Browse all tools
-              </button>
+              {isAuthenticated ? (
+                <a
+                  href={EBOS_URL || "https://ebos.avexora.in"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary btn-lg inline-flex items-center gap-2"
+                >
+                  <span>Enterprise Business OS</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              ) : (
+                <>
+                  <button className="btn btn-primary btn-lg" type="button" data-auth="login">
+                    Sign in with Email
+                  </button>
+                  <button className="btn btn-secondary btn-lg" type="button" data-focus-search>
+                    Browse all tools
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </section>
