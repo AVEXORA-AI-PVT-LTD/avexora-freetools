@@ -303,22 +303,24 @@ export default async function ToolPage({
         )}
 
         {/* MORE IN CATEGORY */}
-        <section className="border-t border-slate-200/80 pt-6 space-y-3">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            More {cat.name}
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {moreTools.map((t) => (
-              <Link
-                key={t.slug}
-                href={`/${t.category}/${t.slug}`}
-                className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-900"
-              >
-                {t.name}
-              </Link>
-            ))}
-          </div>
-        </section>
+        {moreTools.length > 0 && (
+          <section className="border-t border-slate-200/80 pt-6 space-y-3">
+            <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              More {cat.name}
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {moreTools.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/${t.category}/${t.slug}`}
+                  className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-900"
+                >
+                  {t.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
       </div>
       </div>

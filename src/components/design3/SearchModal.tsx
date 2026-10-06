@@ -124,6 +124,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             placeholder="Search all 130+ tools by name, topic, or keyword (e.g. GST, Salary, PDF, QR)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="flex-1 bg-transparent text-stone-900 text-sm sm:text-base focus:outline-none placeholder:text-stone-400 font-sans"
             aria-label="Search tools"
           />

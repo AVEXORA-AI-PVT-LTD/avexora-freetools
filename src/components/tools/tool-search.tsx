@@ -47,6 +47,16 @@ export function ToolSearch({
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setDismissed(true);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") {
       e.preventDefault();
@@ -116,7 +126,7 @@ export function ToolSearch({
           aria-controls="search-listbox"
           aria-autocomplete="list"
           aria-activedescendant={activeId}
-          placeholder={`Search ${displayCount}+ free online tools…`}
+          placeholder={`Search ${displayCount}+ Avex tools…`}
           className="w-full bg-transparent px-4 py-3.5 text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
         />
         <div className="mr-3 hidden sm:flex items-center gap-1">
@@ -149,7 +159,7 @@ export function ToolSearch({
         <ul
           id="search-listbox"
           role="listbox"
-          className="absolute left-0 right-0 z-30 mt-1 max-h-80 w-full overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-orange-950/10"
+          className="absolute left-0 right-0 z-30 mt-1 max-h-72 sm:max-h-80 w-full overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-orange-950/10"
         >
           {matches.map((t, i) => (
             <li

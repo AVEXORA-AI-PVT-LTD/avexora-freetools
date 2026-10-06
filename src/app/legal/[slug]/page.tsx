@@ -8,7 +8,8 @@ import { HeaderNav } from "@/components/editorial/header-nav";
 import { FooterSection } from "@/components/editorial/footer-section";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const post = await getPublishedContent(params.slug);
   if (!post || !( [ContentType.PRIVACY, ContentType.TERMS, ContentType.DISCLAIMER, ContentType.PAGE] as ContentType[] ).includes(post.contentType as ContentType)) return {};
   
@@ -25,7 +26,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function LegalPage({ params }: { params: { slug: string } }) {
+export default async function LegalPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const post = await getPublishedContent(params.slug);
   
   if (!post || !( [ContentType.PRIVACY, ContentType.TERMS, ContentType.DISCLAIMER, ContentType.PAGE] as ContentType[] ).includes(post.contentType as ContentType)) {

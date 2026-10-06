@@ -15,10 +15,20 @@ export async function getAllCategoriesWithConfig() {
   return staticCategories
     .map((cat) => {
       const override = configMap.get(cat.slug);
+      const hasCustomName = Boolean(
+        override?.name && 
+        override.name.trim() !== "" && 
+        override.name !== "Unnamed Category"
+      );
+      const hasCustomDesc = Boolean(
+        override?.description && 
+        override.description.trim() !== ""
+      );
+
       return {
         ...cat,
-        name: override?.name || cat.name,
-        description: override?.description || cat.description,
+        name: hasCustomName ? override!.name : cat.name,
+        description: (hasCustomDesc && override?.description) ? override.description : cat.description,
         icon: override?.icon || null,
         status: override ? override.status : true,
         featured: override?.featured ?? false,

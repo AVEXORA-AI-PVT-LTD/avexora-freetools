@@ -74,7 +74,7 @@ export function FooterSection({ onOpenSearch, onOpenAuth, footerLinks }: FooterS
            FOOTER
            ============================================================ */}
       <footer className="footer bg-stone-950 text-stone-300 border-t border-stone-800" role="contentinfo">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-14 pb-4 sm:pb-5">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             <div className="lg:col-span-5 flex flex-col items-start text-left">
               <Link href="/" className="inline-flex items-center group">
@@ -123,7 +123,7 @@ export function FooterSection({ onOpenSearch, onOpenAuth, footerLinks }: FooterS
             </nav>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-stone-500">
+          <div className="mt-10 sm:mt-12 pt-6 sm:pt-7 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-stone-500">
             <span>© {new Date().getFullYear()} Avexora Tools</span>
             <span>Runs entirely in your browser</span>
           </div>

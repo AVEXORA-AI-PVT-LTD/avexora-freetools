@@ -17,12 +17,14 @@ import {
   Zap, 
   Copy, 
   Check, 
-  ExternalLink 
+  ExternalLink,
+  Search
 } from 'lucide-react';
 
 interface HeroSectionProps {
   onExploreClick: () => void;
   onOpenTool: (toolId: string) => void;
+  onSearchClick?: () => void;
   heroConfig?: {
     heading?: string;
     description?: string;
@@ -31,7 +33,7 @@ interface HeroSectionProps {
   };
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpenTool, heroConfig }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpenTool, onSearchClick, heroConfig }) => {
   // Interactive Hero Screen state
   const [activeTab, setActiveTab] = useState<'gst' | 'json' | 'qr'>('gst');
   
@@ -155,6 +157,52 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
             <span>Enterprise Business OS (EBOS)</span>
             <ExternalLink className="w-3.5 h-3.5 text-stone-400 ml-0.5" />
           </a>
+        </div>
+
+        {/* Hero Quick Search Bar & Popular Shortcuts */}
+        <div className="mt-7 w-full max-w-xl mx-auto">
+          <div 
+            onClick={onSearchClick}
+            className="group flex items-center gap-3 px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl bg-white/95 border border-stone-200/90 shadow-md shadow-stone-200/40 hover:border-orange-400 hover:shadow-orange-500/10 cursor-pointer transition-all backdrop-blur-md"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSearchClick?.();
+              }
+            }}
+            aria-label="Search all 130+ tools"
+          >
+            <Search className="w-4 sm:w-5 h-4 sm:h-5 text-stone-400 group-hover:text-orange-500 transition-colors shrink-0" />
+            <span className="flex-1 text-left text-xs sm:text-sm text-stone-400 font-sans truncate">
+              Search all 130+ tools (e.g. GST, Salary, PDF, QR, Invoice)...
+            </span>
+            <kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-semibold text-stone-500 bg-stone-100 rounded-lg border border-stone-200">
+              Ctrl K
+            </kbd>
+          </div>
+
+          {/* Quick Filter Tag Pills */}
+          <div className="mt-3 flex items-center justify-center flex-wrap gap-1.5 text-xs">
+            <span className="text-[11px] font-mono text-stone-400 mr-1 hidden sm:inline">Popular:</span>
+            {[
+              { label: "GST Calculator", id: "gst-calculator" },
+              { label: "Salary & CTC", id: "salary-calculator" },
+              { label: "PDF Merge", id: "pdf-merger" },
+              { label: "QR Code", id: "qr-code-generator" },
+              { label: "Invoice Generator", id: "invoice-generator" },
+            ].map((tag) => (
+              <button
+                key={tag.id}
+                type="button"
+                onClick={() => onOpenTool(tag.id)}
+                className="px-2.5 py-1 rounded-lg bg-stone-100/90 hover:bg-orange-50 hover:text-orange-700 text-stone-600 transition-colors cursor-pointer text-[11px] font-medium"
+              >
+                {tag.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 3D HERO PERSPECTIVE SCREEN (Lunora AI signature presentation) */}

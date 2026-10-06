@@ -10,7 +10,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onCategoryClick }) => {
   return (
-    <footer className="bg-stone-950 text-stone-300 border-t border-stone-800 pt-16 pb-12 font-sans">
+    <footer className="bg-stone-950 text-stone-300 border-t border-stone-800 pt-12 sm:pt-14 pb-4 sm:pb-5 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Brand Banner */}
@@ -93,7 +93,7 @@ export const Footer: React.FC<FooterProps> = ({ onCategoryClick }) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-stone-400">
+        <div className="mt-8 pt-6 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-stone-400">
           <div>
             © 2026 Avexora · <a href="https://tools.avexora.in" className="text-stone-400 hover:text-white underline">tools.avexora.in</a>. By the makers of <a href="https://ebos.avexora.in" className="text-orange-400 hover:underline">Enterprise Business OS</a>.
           </div>

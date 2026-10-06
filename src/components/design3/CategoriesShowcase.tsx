@@ -91,8 +91,26 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
     });
   };
 
+  const getCategoryName = (c: { id: string; name: string }) => {
+    if (c.name && c.name !== 'Unnamed Category' && c.name.trim() !== '') {
+      return c.name;
+    }
+    const fallback = CATEGORIES.find((item) => item.id === c.id);
+    return fallback?.name || c.id;
+  };
+
+  const getCategoryDescription = (c: { id: string; description: string }) => {
+    if (c.description && c.description.trim() !== '') {
+      return c.description;
+    }
+    const fallback = CATEGORIES.find((item) => item.id === c.id);
+    return fallback?.description || '';
+  };
+
   const currentCategory = categoriesList[activeCategoryIndex] || categoriesList[0];
-  const categoryTools = toolsList.filter((tool) => tool.category === currentCategory.id);
+  const currentCategoryName = currentCategory ? getCategoryName(currentCategory) : '';
+  const currentCategoryDesc = currentCategory ? getCategoryDescription(currentCategory) : '';
+  const categoryTools = toolsList.filter((tool) => tool.category === currentCategory?.id);
 
   const simulatedTax = (calcInput * sliderRate) / 100;
   const simulatedTotal = calcInput + simulatedTax;
@@ -205,7 +223,7 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
                           isActive ? '!text-white' : 'text-stone-800 group-hover:text-stone-950'
                         }`}
                       >
-                        {category.name}
+                        {getCategoryName(category)}
                       </span>
                     </div>
                   </div>
@@ -264,7 +282,7 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
                       <span>DOMAIN [{indexPadded}] // CLIENT RUNTIME</span>
                     </div>
                     <h3 className="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
-                      {currentCategory.name}
+                      {currentCategoryName}
                     </h3>
                   </div>
                 </div>
@@ -275,14 +293,14 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
                     <span>Zero Cloud Transit</span>
                   </span>
                   <span className="px-2.5 py-1 rounded-full bg-stone-900 text-white font-medium shadow-2xs">
-                    {currentCategory.count} Verified Tools
+                    {currentCategory?.count} Verified Tools
                   </span>
                 </div>
               </div>
 
               {/* Description */}
               <p className="text-stone-700 text-sm sm:text-base leading-relaxed">
-                {currentCategory.description}
+                {currentCategoryDesc}
               </p>
 
               {/* Available Tools Grid (Clearly visible black text, scoped hover) */}

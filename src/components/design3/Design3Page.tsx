@@ -94,6 +94,7 @@ export function Design3Page({
       <HeroSection 
         onExploreClick={() => scrollToSection('categories-showcase')}
         onOpenTool={handleOpenToolById}
+        onSearchClick={() => setIsSearchOpen(true)}
         heroConfig={heroConfig}
       />
 

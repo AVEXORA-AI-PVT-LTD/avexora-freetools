@@ -65,7 +65,23 @@ export default async function BlogIndexPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-stone-500">No articles available at the moment.</p>
+              <div className="rounded-3xl border border-stone-200/90 bg-stone-50/60 p-8 sm:p-12 text-center space-y-4 max-w-2xl mx-auto">
+                <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mx-auto">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-stone-900">Articles Coming Soon</h3>
+                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                  Our engineering and finance editorial teams are preparing deep dives on Indian tax optimization, statutory compliance, and developer productivity. In the meantime, all 130+ tools are fully active.
+                </p>
+                <div className="pt-2">
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-600 text-white font-semibold text-xs hover:bg-orange-700 shadow-sm transition"
+                  >
+                    <span>Browse 130+ Free Tools</span>
+                  </Link>
+                </div>
+              </div>
             )}
           </section>
         </main>

@@ -171,55 +171,75 @@ export const CategoryPageClient: React.FC<CategoryPageClientProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-5">
-            {tools.map((tool, idx) => {
-              const toolNumber = String(idx + 1).padStart(2, '0');
-              return (
+          {tools.length === 0 ? (
+            <div className="py-16 text-center space-y-3 bg-white rounded-3xl border border-stone-200 p-8 my-6">
+              <div className="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mx-auto">
+                <Layers className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-bold text-stone-900">No active tools in this category</h3>
+              <p className="text-xs text-stone-500 max-w-sm mx-auto">
+                Tools in this section are currently being updated. Browse other categories or return to the main directory.
+              </p>
+              <div className="pt-2">
                 <Link
-                  key={tool.slug}
-                  href={`/${category.slug}/${tool.slug}`}
-                  className="bg-white rounded-2xl border border-stone-200 hover:border-orange-500/80 p-6 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group relative overflow-hidden cursor-pointer"
+                  href="/"
+                  className="px-5 py-2.5 rounded-xl bg-orange-600 text-white font-semibold text-xs hover:bg-orange-700 shadow-sm transition inline-block"
                 >
-                  {/* Subtle hover gradient accent */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 group-hover:bg-orange-500/10 rounded-full blur-2xl pointer-events-none transition-colors" />
+                  Explore All Categories
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-5">
+              {tools.map((tool, idx) => {
+                const toolNumber = String(idx + 1).padStart(2, '0');
+                return (
+                  <Link
+                    key={tool.slug}
+                    href={`/${category.slug}/${tool.slug}`}
+                    className="bg-white rounded-2xl border border-stone-200 hover:border-orange-500/80 p-6 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group relative overflow-hidden cursor-pointer"
+                  >
+                    {/* Subtle hover gradient accent */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 group-hover:bg-orange-500/10 rounded-full blur-2xl pointer-events-none transition-colors" />
 
-                  <div>
-                    {/* Top Row: Icon & Number Index */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-10 h-10 rounded-xl bg-orange-100/70 text-orange-600 flex items-center justify-center border border-orange-200/50 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                        {CATEGORY_ICONS[category.slug] || <Calculator className="w-5 h-5" />}
+                    <div>
+                      {/* Top Row: Icon & Number Index */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-orange-100/70 text-orange-600 flex items-center justify-center border border-orange-200/50 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                          {CATEGORY_ICONS[category.slug] || <Calculator className="w-5 h-5" />}
+                        </div>
+                        <span className="font-mono text-xs font-bold text-stone-400 group-hover:text-orange-500 transition-colors">
+                          {toolNumber}
+                        </span>
                       </div>
-                      <span className="font-mono text-xs font-bold text-stone-400 group-hover:text-orange-500 transition-colors">
-                        {toolNumber}
-                      </span>
+
+                      {/* Tool Name */}
+                      <h3 className="text-lg font-bold text-stone-900 group-hover:text-orange-600 transition-colors leading-snug">
+                        {tool.name}
+                      </h3>
+
+                      {/* Tagline / Description */}
+                      <p className="mt-2 text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
+                        {tool.tagline || tool.seoDescription}
+                      </p>
                     </div>
 
-                    {/* Tool Name */}
-                    <h3 className="text-lg font-bold text-stone-900 group-hover:text-orange-600 transition-colors leading-snug">
-                      {tool.name}
-                    </h3>
+                    {/* Card Bottom Bar */}
+                    <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs">
+                      <span className="text-xs text-stone-400 font-medium group-hover:text-stone-600 transition-colors">
+                        Free Online Utility
+                      </span>
 
-                    {/* Tagline / Description */}
-                    <p className="mt-2 text-stone-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
-                      {tool.tagline || tool.seoDescription}
-                    </p>
-                  </div>
-
-                  {/* Card Bottom Bar */}
-                  <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs">
-                    <span className="text-xs text-stone-400 font-medium group-hover:text-stone-600 transition-colors">
-                      Free Online Utility
-                    </span>
-
-                    <span className="font-bold text-orange-600 group-hover:text-orange-700 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                      <span>Open Tool</span>
-                      <ArrowUpRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                      <span className="font-bold text-orange-600 group-hover:text-orange-700 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                        <span>Open Tool</span>
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </section>
 
       </main>
