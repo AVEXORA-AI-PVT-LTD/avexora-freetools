@@ -86,31 +86,6 @@ export const Categories3DCanvas: React.FC<Categories3DCanvasProps> = ({ activeCa
     ring3.rotation.x = -Math.PI / 5;
     group.add(ring3);
 
-    // 3. Floating Cyber Hologram Constellation Points
-    const particleCount = 70;
-    const particleGeo = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-
-    for (let i = 0; i < particleCount; i++) {
-      const radius = 5.5 + Math.random() * 5.0;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-    }
-
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const particleMat = new THREE.PointsMaterial({
-      color: 0xf97316,
-      size: 0.18,
-      transparent: true,
-      opacity: 0.75,
-    });
-    const particles = new THREE.Points(particleGeo, particleMat);
-    group.add(particles);
-
     // Mouse Tracking Parallax Handler
     const handleMouseMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
@@ -138,8 +113,6 @@ export const Categories3DCanvas: React.FC<Categories3DCanvasProps> = ({ activeCa
       ring1.rotation.z += delta * 0.3;
       ring2.rotation.x += delta * 0.25;
       ring3.rotation.y -= delta * 0.2;
-
-      particles.rotation.y += delta * 0.08;
 
       // Smooth interpolation toward mouse target
       group.rotation.x += (targetRotationRef.current.x - group.rotation.x) * 0.05;

@@ -72,31 +72,6 @@ export const Auth3DCanvas: React.FC = () => {
     ring2.rotation.x = Math.PI / 6;
     group.add(ring2);
 
-    // 3. Floating Constellation Particle Field
-    const particleCount = 200;
-    const particlePositions = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      particlePositions[i] = (Math.random() - 0.5) * 45;
-      particlePositions[i + 1] = (Math.random() - 0.5) * 35;
-      particlePositions[i + 2] = (Math.random() - 0.5) * 35;
-    }
-
-    const particleGeo = new THREE.BufferGeometry();
-    particleGeo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(particlePositions, 3)
-    );
-
-    const particleMat = new THREE.PointsMaterial({
-      color: 0xff7b22,
-      size: 0.22,
-      transparent: true,
-      opacity: 0.65,
-    });
-
-    const particles = new THREE.Points(particleGeo, particleMat);
-    group.add(particles);
-
     // Mouse Tracking for Interactive Depth
     let targetX = 0;
     let targetY = 0;
@@ -136,7 +111,6 @@ export const Auth3DCanvas: React.FC = () => {
 
       ring1.rotation.z += 0.15 * delta;
       ring2.rotation.z -= 0.12 * delta;
-      particles.rotation.y += 0.04 * delta;
 
       // Smooth camera interpolation towards mouse target
       group.rotation.y += (targetX - group.rotation.y) * 0.05;
@@ -165,8 +139,6 @@ export const Auth3DCanvas: React.FC = () => {
       ringMat1.dispose();
       ringGeo2.dispose();
       ringMat2.dispose();
-      particleGeo.dispose();
-      particleMat.dispose();
       renderer.dispose();
     };
   }, []);

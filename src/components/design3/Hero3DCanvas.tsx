@@ -77,40 +77,6 @@ export const Hero3DCanvas: React.FC = () => {
     ring2.rotation.x = -Math.PI / 6;
     mainGroup.add(ring2);
 
-    // 3. Floating Matrix Nodes / Particle Field
-    const particlesCount = 200;
-    const posArray = new Float32Array(particlesCount * 3);
-    const colorsArray = new Float32Array(particlesCount * 3);
-
-    const colorOrange = new THREE.Color(0xff6a00);
-    const colorWhite = new THREE.Color(0xffffff);
-    const colorBlack = new THREE.Color(0x222222);
-
-    for (let i = 0; i < particlesCount * 3; i += 3) {
-      posArray[i] = (Math.random() - 0.5) * 22;
-      posArray[i + 1] = (Math.random() - 0.5) * 18;
-      posArray[i + 2] = (Math.random() - 0.5) * 16;
-
-      const pickColor = Math.random() > 0.4 ? colorOrange : (Math.random() > 0.5 ? colorWhite : colorBlack);
-      colorsArray[i] = pickColor.r;
-      colorsArray[i + 1] = pickColor.g;
-      colorsArray[i + 2] = pickColor.b;
-    }
-
-    const particlesGeo = new THREE.BufferGeometry();
-    particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    particlesGeo.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
-
-    const particlesMat = new THREE.PointsMaterial({
-      size: 0.16,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85,
-    });
-
-    const particlesMesh = new THREE.Points(particlesGeo, particlesMat);
-    mainGroup.add(particlesMesh);
-
     // Mouse Tracking for Parallax
     let targetX = 0;
     let targetY = 0;
@@ -153,8 +119,6 @@ export const Hero3DCanvas: React.FC = () => {
       ring1.rotation.z += 0.008;
       ring2.rotation.y += 0.005;
 
-      particlesMesh.rotation.y += 0.001;
-
       // Mouse Parallax interpolation
       mainGroup.rotation.y += (targetX - mainGroup.rotation.y) * 0.05;
       mainGroup.rotation.x += (targetY - mainGroup.rotation.x) * 0.05;
@@ -179,8 +143,6 @@ export const Hero3DCanvas: React.FC = () => {
       ringMat1.dispose();
       ringGeo2.dispose();
       ringMat2.dispose();
-      particlesGeo.dispose();
-      particlesMat.dispose();
       renderer.dispose();
     };
   }, []);
