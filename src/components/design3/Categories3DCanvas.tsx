@@ -55,36 +55,7 @@ export const Categories3DCanvas: React.FC<Categories3DCanvasProps> = ({ activeCa
     const innerMesh = new THREE.Mesh(innerGeometry, innerMaterial);
     group.add(innerMesh);
 
-    // 2. Multi-Axis Futuristic Quantum Rings
-    const ring1Geo = new THREE.TorusGeometry(6.4, 0.035, 16, 90);
-    const ring1Mat = new THREE.MeshBasicMaterial({
-      color: 0xf97316,
-      transparent: true,
-      opacity: 0.4,
-    });
-    const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
-    ring1.rotation.x = Math.PI / 3;
-    group.add(ring1);
 
-    const ring2Geo = new THREE.TorusGeometry(7.2, 0.03, 16, 90);
-    const ring2Mat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
-      transparent: true,
-      opacity: 0.3,
-    });
-    const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
-    ring2.rotation.y = Math.PI / 4;
-    group.add(ring2);
-
-    const ring3Geo = new THREE.TorusGeometry(8.0, 0.025, 16, 90);
-    const ring3Mat = new THREE.MeshBasicMaterial({
-      color: 0xea580c,
-      transparent: true,
-      opacity: 0.2,
-    });
-    const ring3 = new THREE.Mesh(ring3Geo, ring3Mat);
-    ring3.rotation.x = -Math.PI / 5;
-    group.add(ring3);
 
     // Mouse Tracking Parallax Handler
     const handleMouseMove = (e: MouseEvent) => {
@@ -109,10 +80,6 @@ export const Categories3DCanvas: React.FC<Categories3DCanvasProps> = ({ activeCa
       coreMesh.rotation.x += delta * 0.15;
       innerMesh.rotation.y -= delta * 0.4;
       innerMesh.rotation.z += delta * 0.2;
-
-      ring1.rotation.z += delta * 0.3;
-      ring2.rotation.x += delta * 0.25;
-      ring3.rotation.y -= delta * 0.2;
 
       // Smooth interpolation toward mouse target
       group.rotation.x += (targetRotationRef.current.x - group.rotation.x) * 0.05;

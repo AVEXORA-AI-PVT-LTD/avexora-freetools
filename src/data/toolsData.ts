@@ -526,6 +526,15 @@ export const ALL_TOOLS: ToolItem[] = [
     tags: ['banking', 'neft', 'rtgs'],
   },
   {
+    id: 'mca-company-search',
+    name: 'MCA Company Search & CIN Decoder',
+    category: 'business-legal',
+    categoryName: 'Business & Legal',
+    description: 'Decode 21-digit CIN, LLPIN & DIN, identify RoC office jurisdiction, industry NIC code, and statutory compliance due dates.',
+    popular: true,
+    tags: ['mca', 'cin', 'llpin', 'din', 'roc', 'compliance', 'legal'],
+  },
+  {
     id: 'nda-generator',
     name: 'Non-Disclosure Agreement (NDA)',
     category: 'business-legal',

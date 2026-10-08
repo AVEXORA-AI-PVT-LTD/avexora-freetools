@@ -55,28 +55,6 @@ export const Hero3DCanvas: React.FC = () => {
     const innerMesh = new THREE.Mesh(innerGeo, innerMat);
     mainGroup.add(innerMesh);
 
-    // 2. Orbital Rings
-    const ringGeo1 = new THREE.TorusGeometry(6.2, 0.04, 16, 100);
-    const ringMat1 = new THREE.MeshBasicMaterial({
-      color: 0xff6a00,
-      transparent: true,
-      opacity: 0.6,
-    });
-    const ring1 = new THREE.Mesh(ringGeo1, ringMat1);
-    ring1.rotation.x = Math.PI / 3;
-    mainGroup.add(ring1);
-
-    const ringGeo2 = new THREE.TorusGeometry(7.5, 0.03, 16, 100);
-    const ringMat2 = new THREE.MeshBasicMaterial({
-      color: 0x111318,
-      transparent: true,
-      opacity: 0.3,
-    });
-    const ring2 = new THREE.Mesh(ringGeo2, ringMat2);
-    ring2.rotation.y = Math.PI / 4;
-    ring2.rotation.x = -Math.PI / 6;
-    mainGroup.add(ring2);
-
     // Mouse Tracking for Parallax
     let targetX = 0;
     let targetY = 0;
@@ -116,9 +94,6 @@ export const Hero3DCanvas: React.FC = () => {
       innerMesh.rotation.y -= 0.004;
       innerMesh.rotation.z += 0.002;
 
-      ring1.rotation.z += 0.008;
-      ring2.rotation.y += 0.005;
-
       // Mouse Parallax interpolation
       mainGroup.rotation.y += (targetX - mainGroup.rotation.y) * 0.05;
       mainGroup.rotation.x += (targetY - mainGroup.rotation.x) * 0.05;
@@ -139,10 +114,6 @@ export const Hero3DCanvas: React.FC = () => {
       wireframeMat.dispose();
       innerGeo.dispose();
       innerMat.dispose();
-      ringGeo1.dispose();
-      ringMat1.dispose();
-      ringGeo2.dispose();
-      ringMat2.dispose();
       renderer.dispose();
     };
   }, []);

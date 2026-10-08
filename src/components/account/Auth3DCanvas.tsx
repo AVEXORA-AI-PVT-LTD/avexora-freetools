@@ -50,28 +50,6 @@ export const Auth3DCanvas: React.FC = () => {
     const innerMesh = new THREE.Mesh(innerGeo, innerMat);
     group.add(innerMesh);
 
-    // 2. Orbital Rings
-    const ringGeo1 = new THREE.TorusGeometry(9.5, 0.05, 16, 120);
-    const ringMat1 = new THREE.MeshBasicMaterial({
-      color: 0xffaa00,
-      transparent: true,
-      opacity: 0.35,
-    });
-    const ring1 = new THREE.Mesh(ringGeo1, ringMat1);
-    ring1.rotation.x = Math.PI / 3;
-    group.add(ring1);
-
-    const ringGeo2 = new THREE.TorusGeometry(11.2, 0.04, 16, 120);
-    const ringMat2 = new THREE.MeshBasicMaterial({
-      color: 0xff5500,
-      transparent: true,
-      opacity: 0.25,
-    });
-    const ring2 = new THREE.Mesh(ringGeo2, ringMat2);
-    ring2.rotation.y = Math.PI / 4;
-    ring2.rotation.x = Math.PI / 6;
-    group.add(ring2);
-
     // Mouse Tracking for Interactive Depth
     let targetX = 0;
     let targetY = 0;
@@ -109,9 +87,6 @@ export const Auth3DCanvas: React.FC = () => {
       innerMesh.rotation.x -= 0.3 * delta;
       innerMesh.rotation.y -= 0.2 * delta;
 
-      ring1.rotation.z += 0.15 * delta;
-      ring2.rotation.z -= 0.12 * delta;
-
       // Smooth camera interpolation towards mouse target
       group.rotation.y += (targetX - group.rotation.y) * 0.05;
       group.rotation.x += (-targetY - group.rotation.x) * 0.05;
@@ -135,10 +110,6 @@ export const Auth3DCanvas: React.FC = () => {
       outerMat.dispose();
       innerGeo.dispose();
       innerMat.dispose();
-      ringGeo1.dispose();
-      ringMat1.dispose();
-      ringGeo2.dispose();
-      ringMat2.dispose();
       renderer.dispose();
     };
   }, []);
