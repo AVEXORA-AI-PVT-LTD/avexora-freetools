@@ -16,10 +16,12 @@ import {
   QrCode, 
   ShieldCheck, 
   Zap, 
+  Layers,
   Copy, 
   Check, 
   ExternalLink,
-  Search
+  Search,
+  CheckCircle2
 } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -114,7 +116,98 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
       <Hero3DCanvas />
 
       {/* Container */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex-1 flex flex-col items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex-1 flex flex-col items-center w-full">
+        
+        {/* Left Architectural Blueprint Accents (Linear / Dev-Tool Style) */}
+        <div 
+          className="hidden xl:flex absolute left-2 lg:left-4 xl:left-6 top-36 2xl:top-40 flex-col justify-between pointer-events-none select-none z-10 w-52 text-left"
+          aria-hidden="true"
+        >
+          {/* Top Marker & Tech Badge */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] text-stone-400">
+              <span className="text-orange-500 font-bold animate-pulse">+</span>
+              <span className="tracking-widest uppercase">RUNTIME: CLIENT_CORE</span>
+            </div>
+
+            <div className="animate-float-slow p-3.5 rounded-xl border border-stone-200/80 bg-white/80 backdrop-blur-md space-y-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-orange-300 transition-all">
+              <div className="flex items-center justify-between text-[10px] font-mono text-stone-400">
+                <span className="flex items-center gap-1.5 text-stone-700 font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-orange-600" />
+                  <span>SANDBOX</span>
+                </span>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+              </div>
+              <div className="text-xs font-semibold text-stone-800 tracking-tight">Zero Cloud Latency</div>
+              <p className="text-[11px] text-stone-500 font-normal leading-snug">
+                100% in-browser sandboxed processing. Files never leave device.
+              </p>
+            </div>
+
+            {/* Faint vertical dashed blueprint guide */}
+            <div className="h-20 border-l border-dashed border-stone-300/70 ml-2.5" />
+          </div>
+
+          {/* Lower Tech Stamp */}
+          <div className="pt-1 space-y-1">
+            <div className="flex items-center gap-1.5 font-mono text-[10px] text-stone-400">
+              <span className="text-stone-400 font-bold">+</span>
+              <span className="tracking-widest uppercase">AIRGAP_STATUS</span>
+            </div>
+            <div className="pl-2 border-l border-stone-200/90 font-mono text-[10px] text-stone-400 leading-tight">
+              ISOLATION: SECURE<br />
+              SERVER_LOGS: NONE
+            </div>
+          </div>
+        </div>
+
+        {/* Right Architectural Blueprint Accents (Linear / Dev-Tool Style) */}
+        <div 
+          className="hidden xl:flex absolute right-2 lg:right-4 xl:right-6 top-36 2xl:top-40 flex-col justify-between items-end pointer-events-none select-none z-10 w-52 text-right"
+          aria-hidden="true"
+        >
+          {/* Top Marker & Tech Badge */}
+          <div className="space-y-3 flex flex-col items-end w-full">
+            <div className="flex items-center justify-end gap-1.5 font-mono text-[10px] text-stone-400">
+              <span className="tracking-widest uppercase">SUITE // FY 2026-27</span>
+              <span className="text-orange-500 font-bold animate-pulse">+</span>
+            </div>
+
+            <div className="animate-float-reverse p-3.5 rounded-xl border border-stone-200/80 bg-white/80 backdrop-blur-md space-y-1.5 text-left shadow-[0_2px_8px_rgba(0,0,0,0.03)] w-full hover:border-amber-300 transition-all">
+              <div className="flex items-center justify-between text-[10px] font-mono text-stone-400">
+                <span className="flex items-center gap-1.5 text-stone-700 font-semibold">
+                  <Layers className="w-3.5 h-3.5 text-amber-600" />
+                  <span>CAPACITY</span>
+                </span>
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200/70">
+                  130+
+                </span>
+              </div>
+              <div className="text-xs font-semibold text-stone-800 tracking-tight">Enterprise Suite</div>
+              <p className="text-[11px] text-stone-500 font-normal leading-snug">
+                GST billing, MCA statutory registry, PDF, QR &amp; dev utilities.
+              </p>
+            </div>
+
+            {/* Faint vertical dashed blueprint guide */}
+            <div className="h-20 border-r border-dashed border-stone-300/70 mr-2.5" />
+          </div>
+
+          {/* Lower Tech Stamp */}
+          <div className="pt-1 space-y-1 flex flex-col items-end">
+            <div className="flex items-center justify-end gap-1.5 font-mono text-[10px] text-stone-400">
+              <span className="tracking-widest uppercase">PRECISION</span>
+              <span className="text-stone-400 font-bold">+</span>
+            </div>
+            <div className="pr-2 border-r border-stone-200/90 font-mono text-[10px] text-stone-400 leading-tight text-right">
+              EXEC_TIME: &lt;1MS<br />
+              COMPLIANCE: VERIFIED
+            </div>
+          </div>
+        </div>
         
         {/* Hero Main Headline */}
         <h1 className="max-w-4xl text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-stone-900 leading-[1.08]">
@@ -254,14 +347,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick, onOpen
             onMouseLeave={handleHeroMouseLeave}
             style={{
               transform: heroTilt.isHovered
-                ? `perspective(1200px) rotateX(${4 + heroTilt.y}deg) rotateY(${-1 + heroTilt.x}deg) rotateZ(0deg) scale(0.99)`
-                : `perspective(1200px) rotateX(12deg) rotateY(-4deg) rotateZ(1deg) scale(0.96)`,
+                ? `perspective(1200px) rotateX(${heroTilt.y}deg) rotateY(${heroTilt.x}deg) rotateZ(0deg) scale(1.01)`
+                : `perspective(1200px) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1)`,
               boxShadow: heroTilt.isHovered
-                ? '0 35px 80px -15px rgba(0, 0, 0, 0.45), 0 0 60px -10px rgba(255, 106, 0, 0.45)'
-                : '0 25px 60px -15px rgba(0, 0, 0, 0.25), 0 0 40px -10px rgba(255, 106, 0, 0.25)',
+                ? '0 35px 80px -15px rgba(0, 0, 0, 0.45), 0 0 60px -10px rgba(255, 106, 0, 0.35)'
+                : '0 20px 50px -10px rgba(0, 0, 0, 0.25), 0 0 30px -10px rgba(255, 106, 0, 0.15)',
               transition: heroTilt.isHovered
                 ? 'transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease'
-                : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease',
+                : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease',
               transformStyle: 'preserve-3d',
               willChange: 'transform, box-shadow',
             }}

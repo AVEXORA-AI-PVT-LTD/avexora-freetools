@@ -18,8 +18,7 @@ import {
   ExternalLink,
   ChevronRight,
   Layers,
-  Terminal,
-  Activity
+  Terminal
 } from 'lucide-react';
 import { CATEGORIES, ALL_TOOLS, ToolItem } from '@/data/toolsData';
 import { usePlatformShortcut } from '@/hooks/use-platform-shortcut';
@@ -139,11 +138,6 @@ export const CategoriesShowcase: React.FC<CategoriesShowcaseProps> = ({
             ======================================================== */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/80 text-orange-700 font-mono text-xs font-semibold mb-3">
-              <Activity className="w-3.5 h-3.5 text-orange-600 animate-pulse" />
-              <span>3D MODULAR CATEGORY DECK</span>
-            </div>
-
             <h2 className="text-3xl sm:text-4xl font-extrabold text-stone-950 tracking-tight leading-tight">
               Modular Category Deck. <br />
               <span className="text-orange-600 font-extrabold">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Send, Terminal, Sparkles, ExternalLink, Search, Calculator, FileText, Receipt, ArrowRight } from 'lucide-react';
+import { Send, Terminal, Sparkles, ExternalLink, Search, Calculator, FileText, Receipt, ArrowRight, Percent, TrendingUp, IndianRupee, Wrench } from 'lucide-react';
 import { useScrollProgress } from '@/hooks/useScrollProgress';
 
 interface MatrixTerminalSectionProps {
@@ -195,7 +195,7 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
     <section 
       ref={ref}
       id="matrix-terminal" 
-      className="pt-12 pb-14 sm:pt-14 sm:pb-16 bg-stone-950 text-white border-t border-stone-800 relative overflow-hidden"
+      className="pt-6 pb-12 sm:pt-8 sm:pb-14 bg-stone-950 text-white border-t border-stone-800 relative overflow-hidden"
     >
       {/* Background Matrix Grid */}
       <div className="absolute inset-0 bg-matrix-grid-dark opacity-35 pointer-events-none" />
@@ -216,11 +216,6 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
             }}
             className="lg:col-span-5 space-y-6"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-950/80 border border-orange-500/40 text-orange-400 font-mono text-xs font-semibold">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>INTERACTIVE WORKSPACE LAUNCHPAD</span>
-            </div>
-
             <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
               Instant tool launcher. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">
@@ -242,9 +237,9 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => quickLaunch('gst-calculator', 'GST Calculator')}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
+                  className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
                 >
-                  <Calculator className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform" />
+                  <Calculator className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform mt-0.5 shrink-0" />
                   <div>
                     <div className="text-xs font-bold text-white group-hover:text-orange-400 transition-colors">
                       GST Calculator
@@ -256,9 +251,9 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => quickLaunch('emi-calculator', 'EMI Calculator')}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
+                  className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
                 >
-                  <Calculator className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                  <Calculator className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform mt-0.5 shrink-0" />
                   <div>
                     <div className="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">
                       EMI Calculator
@@ -270,9 +265,9 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => quickLaunch('invoice-generator', 'Invoice Generator')}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
+                  className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
                 >
-                  <Receipt className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform" />
+                  <Receipt className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform mt-0.5 shrink-0" />
                   <div>
                     <div className="text-xs font-bold text-white group-hover:text-orange-400 transition-colors">
                       Invoice Generator
@@ -284,9 +279,9 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => quickLaunch('pdf-compressor', 'PDF Compressor')}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
+                  className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-stone-900 border border-stone-800 hover:border-orange-500/60 hover:bg-stone-800/80 text-left transition group cursor-pointer"
                 >
-                  <FileText className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+                  <FileText className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform mt-0.5 shrink-0" />
                   <div>
                     <div className="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">
                       PDF Compressor
@@ -357,41 +352,46 @@ export const MatrixTerminalSection: React.FC<MatrixTerminalSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => quickLaunch('gst-calculator', 'GST Calculator')}
-                  className="px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0 font-mono"
                 >
-                  ⚡ gst
+                  <Percent className="w-3 h-3 text-amber-400" />
+                  <span>gst</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => quickLaunch('emi-calculator', 'EMI Calculator')}
-                  className="px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0 font-mono"
                 >
-                  📊 emi
+                  <TrendingUp className="w-3 h-3 text-blue-400" />
+                  <span>emi</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => quickLaunch('invoice-generator', 'Invoice Generator')}
-                  className="px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0 font-mono"
                 >
-                  💼 invoice
+                  <Receipt className="w-3 h-3 text-orange-400" />
+                  <span>invoice</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     setCommandInput('tax 50000');
                   }}
-                  className="px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0 font-mono"
                 >
-                  ₹ tax 50000
+                  <IndianRupee className="w-3 h-3 text-emerald-400" />
+                  <span>tax 50000</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => {
                     setCommandInput('tools');
                   }}
-                  className="px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-800/80 hover:bg-orange-600/30 text-stone-300 hover:text-orange-300 border border-stone-700/60 transition cursor-pointer shrink-0 font-mono"
                 >
-                  📋 tools
+                  <Wrench className="w-3 h-3 text-stone-400" />
+                  <span>tools</span>
                 </button>
               </div>
 
