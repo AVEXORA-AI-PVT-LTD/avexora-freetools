@@ -39,7 +39,16 @@ export async function toggleToolStatus(slug: string, status: boolean) {
   });
 
   revalidatePath("/");
+  revalidatePath("/(public)", "layout");
+  revalidatePath("/sitemap.xml");
   revalidatePath("/admin/tools");
+  try {
+    const existing = await prisma.toolConfig.findUnique({ where: { toolSlug: slug } });
+    if (existing?.categorySlug) {
+      revalidatePath(`/${existing.categorySlug}`);
+      revalidatePath(`/${existing.categorySlug}/${slug}`);
+    }
+  } catch {}
   return { success: true };
 }
 
@@ -120,6 +129,8 @@ export async function bulkUpdateTools(
   });
 
   revalidatePath("/");
+  revalidatePath("/(public)", "layout");
+  revalidatePath("/sitemap.xml");
   revalidatePath("/admin/tools");
   
   return results;

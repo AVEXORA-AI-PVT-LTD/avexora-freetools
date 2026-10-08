@@ -2,6 +2,7 @@ import type { ToolConfig } from "../../types/tools";
 import LetterheadComplianceChecker from "../ui/business-legal/letterhead-compliance-checker";
 import IfscCodeFinder from "../ui/business-legal/ifsc-code-finder";
 import DigitalBusinessCard from "../ui/business-legal/digital-business-card";
+import McaCompanySearch from "../ui/business-legal/mca-company-search";
 import { computeGstinVerification } from "../compute/legal/gstin-verification";
 import { generateNda } from "../compute/legal/nda";
 import { generatePrivacyPolicy } from "../compute/legal/privacy-policy";
@@ -866,5 +867,70 @@ export const tools: ToolConfig[] = [
       },
     ],
     related: ["gstin-verification", "invoice-generator", "letterhead-compliance-checker", "rent-agreement-generator"],
+  },
+  {
+    kind: "generator",
+    slug: "mca-company-search",
+    category: "business-legal",
+    name: "MCA Company Search & CIN Decoder",
+    tagline: "Decode Indian company CIN, LLPIN & DIN, parse RoC jurisdiction, and check compliance deadlines.",
+    seoDescription:
+      "Free MCA company search and CIN decoder. Verify 21-digit CIN, LLPIN and DIN, parse RoC office, industry classification (NIC code), and check mandatory MCA filing dates.",
+    seoTitle: "Free MCA Company Search: CIN Decoder, RoC Details & Compliance",
+    keywords: [
+      "mca company search",
+      "cin decoder",
+      "cin number check",
+      "mca master data",
+      "cin verification",
+      "check company cin number",
+      "llpin search",
+      "din number check",
+      "roc office jurisdiction",
+      "mca compliance calendar",
+      "companies act section 12(3)(c)",
+    ],
+    directAnswer:
+      "The MCA Company Search and CIN Decoder decodes a 21-character Corporate Identity Number (CIN) or 7-character LLPIN to reveal listing status, 5-digit industry NIC code, state and RoC office jurisdiction, incorporation year, company class, and statutory annual filing due dates (AOC-4, MGT-7, DIR-3 KYC). It also includes an MCA Rule 8 name guidelines checker.",
+    component: McaCompanySearch,
+    about: [
+      "Every company incorporated in India is assigned a 21-character Corporate Identity Number (CIN) by the Ministry of Corporate Affairs (MCA). Far from being a random sequence, the CIN is an information-dense identifier that encodes six statutory attributes: stock exchange listing status (L for listed, U for unlisted), 5-digit National Industrial Classification (NIC) code, 2-letter state code, 4-digit incorporation year, 3-letter company class (such as PTC for Private Limited, PLC for Public Limited, OPC for One Person Company, or NPL for Section 8 Not-for-Profit), and a 6-digit registration sequence issued by the Registrar of Companies (RoC).",
+      "This tool decodes that structure instantly in your browser. It maps state codes to their specific RoC jurisdictional offices (such as RoC Bangalore, RoC Mumbai, or RoC Delhi), identifies the company's business division from official economic classification catalogs, calculates company vintage, and flags statutory stationery requirements under Section 12(3)(c) of the Companies Act 2013.",
+      "Beyond CIN parsing, the tool provides a dedicated checker for proposed company names against Rule 8 of the Companies (Incorporation) Rules 2014, highlighting missing suffixes or restricted words (such as 'Bank', 'Insurance', 'National' or 'Federal' requiring sectoral regulator approval), plus Director Identification Number (DIN) validation and annual MCA compliance calendars (Forms AOC-4, MGT-7, DIR-3 KYC, DPT-3, MSME-1, LLP Form 11, and Form 8).",
+    ],
+    faq: [
+      {
+        question: "What does each part of a 21-digit CIN mean?",
+        answer:
+          "Position 1 indicates Listing Status (L for Listed, U for Unlisted). Positions 2–6 encode the 5-digit NIC Industry Code. Positions 7–8 represent the 2-letter State of incorporation. Positions 9–12 indicate the 4-digit Year of Incorporation. Positions 13–15 specify Company Ownership/Class (e.g. PTC for Private Limited, PLC for Public Limited, OPC for One Person Company). Positions 16–21 represent the 6-digit unique sequential registration number assigned by the RoC.",
+      },
+      {
+        question: "Is CIN mandatory on business documents and invoices?",
+        answer:
+          "Yes. Under Section 12(3)(c) of the Companies Act 2013, every Indian company must print its registered name, registered office address, CIN, telephone, email and website on all business letters, billheads, invoices, notices and official publications. Default carries a statutory penalty of ₹1,000 per day up to ₹1,00,000.",
+      },
+      {
+        question: "Does this tool perform a live database lookup on the MCA portal?",
+        answer:
+          "This tool performs mathematical, structural and jurisdictional decoding client-side in your browser, parsing RoC offices, industry codes, and compliance rules. For official live corporate records (such as authorized capital, charges, or list of directors), use the direct MCA V3 Master Data link provided within the tool.",
+      },
+      {
+        question: "What are the key annual MCA filing deadlines for a Private Limited company?",
+        answer:
+          "Form DPT-3 (Return of Deposits) by 30 June; Form DIR-3 KYC (Director KYC) by 30 September; Form AOC-4 (Financial Statements) within 30 days of AGM (typically 29/30 October); Form MGT-7/7A (Annual Return) within 60 days of AGM (typically 29 November); and Form MSME-1 half-yearly by 30 April and 31 October.",
+      },
+      {
+        question: "How do I check company name availability for incorporation?",
+        answer:
+          "Use the Name Guidelines Checker tab in this tool to verify statutory suffixes and screen against prohibited/restricted words under the Emblems and Names Act. Once cleared, perform a trademark search on IP India and check name availability via MCA's SPICe+ Part A / RUN service.",
+      },
+    ],
+    related: [
+      "letterhead-compliance-checker",
+      "gstin-verification",
+      "ifsc-code-finder",
+      "invoice-generator",
+      "nda-generator",
+    ],
   },
 ];

@@ -168,9 +168,9 @@ export const CIN_OWNERSHIP: Record<string, string> = {
 };
 
 export const CIN_STATE_CODES = new Set([
-  "AP", "AR", "AS", "BR", "CH", "CT", "DL", "DN", "GA", "GJ", "HP", "HR",
-  "JH", "JK", "KA", "KL", "LD", "MH", "ML", "MN", "MP", "MZ", "NL", "OR",
-  "PB", "PY", "RJ", "SK", "TG", "TN", "TR", "UP", "UR", "UT", "WB", "AN",
+  "AP", "AR", "AS", "BR", "CH", "CT", "CG", "DL", "DN", "GA", "GJ", "HP", "HR",
+  "JH", "JK", "KA", "KL", "LA", "LD", "MH", "ML", "MN", "MP", "MZ", "NL", "OD", "OR",
+  "PB", "PY", "RJ", "SK", "TG", "TS", "TN", "TR", "UP", "UR", "UT", "WB", "AN",
 ]);
 
 const CIN_RE = /^([LU])(\d{5})([A-Z]{2})(\d{4})([A-Z]{3})(\d{6})$/;

@@ -205,11 +205,14 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
     prevUsages.length + prevEvents.length
   );
 
-  // 2. Calculate Tool Usage Metrics
-  const currExecutionsCount = currUsages.length + currEvents.filter((e) => e.eventType === "tool_execution").length;
-  const prevExecutionsCount = prevUsages.length + prevEvents.filter((e) => e.eventType === "tool_execution").length;
+  // 2. Calculate Tool Usage Metrics (Strictly without double-counting)
+  const currExecEvents = currEvents.filter((e) => e.eventType === "tool_execution");
+  const prevExecEvents = prevEvents.filter((e) => e.eventType === "tool_execution");
 
-  const currFailedCount = currErrors.length + currEvents.filter((e) => e.success === false).length;
+  const currExecutionsCount = Math.max(currUsages.length, currExecEvents.length);
+  const prevExecutionsCount = Math.max(prevUsages.length, prevExecEvents.length);
+
+  const currFailedCount = currErrors.length + currExecEvents.filter((e) => e.success === false).length;
   const prevFailedCount = prevErrors.length + prevEvents.filter((e) => e.success === false).length;
 
   const currSuccessCount = Math.max(0, currExecutionsCount - currFailedCount);
@@ -218,12 +221,12 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
   const currSuccessRate = currExecutionsCount > 0 ? Number(((currSuccessCount / currExecutionsCount) * 100).toFixed(1)) : 100;
   const prevSuccessRate = prevExecutionsCount > 0 ? Number(((prevSuccessCount / prevExecutionsCount) * 100).toFixed(1)) : 100;
 
-  // Average Execution Time in ms
+  // Average Execution Time in ms (computed strictly from measured events)
   const execTimeEvents = currEvents.filter((e) => e.executionTime && e.executionTime > 0);
   const avgExecTimeMs =
     execTimeEvents.length > 0
       ? Math.round(execTimeEvents.reduce((acc, e) => acc + (e.executionTime || 0), 0) / execTimeEvents.length)
-      : 240; // Default baseline 240ms
+      : 0;
 
   // 3. Conversions & Revenue Metrics
   const currSignups = currUsers.length;
@@ -247,7 +250,7 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
     pageViews: { current: currPageviewsCount, previous: prevPageviewsCount, pctChange: calcPctChange(currPageviewsCount, prevPageviewsCount) },
     executions: { current: currExecutionsCount, previous: prevExecutionsCount, pctChange: calcPctChange(currExecutionsCount, prevExecutionsCount) },
     successRate: { current: currSuccessRate, previous: prevSuccessRate, pctChange: calcPctChange(currSuccessRate, prevSuccessRate) },
-    avgExecTimeMs: { current: avgExecTimeMs, previous: 250, pctChange: calcPctChange(avgExecTimeMs, 250), isIncreaseGood: false },
+    avgExecTimeMs: { current: avgExecTimeMs, previous: 0, pctChange: calcPctChange(avgExecTimeMs, 0), isIncreaseGood: false },
     signups: { current: currSignups, previous: prevSignups, pctChange: calcPctChange(currSignups, prevSignups) },
     signupConvRate: { current: signupConvRate, previous: prevSignupConvRate, pctChange: calcPctChange(signupConvRate, prevSignupConvRate) },
     subscriptions: { current: currSubsCount, previous: prevSubsCount, pctChange: calcPctChange(currSubsCount, prevSubsCount) },
@@ -264,7 +267,9 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
     const isMatching = (d: Date) => (diffDays > 60 ? isSameWeek(d, date) : isSameDay(d, date));
 
     const dayVisits = currEvents.filter((e) => isMatching(e.createdAt)).length + currUsages.filter((u) => isMatching(u.createdAt)).length;
-    const dayExecs = currUsages.filter((u) => isMatching(u.createdAt)).length + currEvents.filter((e) => e.eventType === "tool_execution" && isMatching(e.createdAt)).length;
+    const dayUsagesCount = currUsages.filter((u) => isMatching(u.createdAt)).length;
+    const dayExecEventsCount = currEvents.filter((e) => e.eventType === "tool_execution" && isMatching(e.createdAt)).length;
+    const dayExecs = Math.max(dayUsagesCount, dayExecEventsCount);
     const dayFailures = currErrors.filter((err) => isMatching(err.createdAt)).length + currEvents.filter((e) => e.success === false && isMatching(e.createdAt)).length;
     const dayPageviews = currEvents.filter((e) => e.eventType === "pageview" && isMatching(e.createdAt)).length;
     const daySignups = currUsers.filter((u) => isMatching(u.createdAt)).length;
@@ -275,7 +280,7 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
       date: format(date, diffDays > 60 ? "MMM d" : "MMM dd"),
       timestamp: date.getTime(),
       visitors: dayVisits,
-      pageviews: dayPageviews > 0 ? dayPageviews : dayVisits * 2,
+      pageviews: dayPageviews > 0 ? dayPageviews : dayVisits,
       executions: dayExecs,
       failures: dayFailures,
       signups: daySignups,
@@ -287,53 +292,60 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
 
   // 5. Aggregate Top Tools Table Ranking
   const toolConfigMap = new Map(dbToolConfigs.map((c) => [c.toolSlug, c]));
-  const toolExecsMap = new Map<string, { execs: number; fails: number; views: number }>();
-
-  // Process ToolUsage records
+  
+  // Group real database usages & events by tool slug
+  const usagesByTool = new Map<string, number>();
   currUsages.forEach((u) => {
-    const stats = toolExecsMap.get(u.toolSlug) || { execs: 0, fails: 0, views: 0 };
-    stats.execs++;
-    toolExecsMap.set(u.toolSlug, stats);
+    usagesByTool.set(u.toolSlug, (usagesByTool.get(u.toolSlug) || 0) + 1);
   });
 
-  // Process ErrorLog records
-  currErrors.forEach((e) => {
-    if (!e.toolSlug) return;
-    const stats = toolExecsMap.get(e.toolSlug) || { execs: 0, fails: 0, views: 0 };
-    stats.fails++;
-    toolExecsMap.set(e.toolSlug, stats);
-  });
+  const execEventsByTool = new Map<string, number>();
+  const failedEventsByTool = new Map<string, number>();
+  const viewsByTool = new Map<string, number>();
+  const timesByTool = new Map<string, number[]>();
 
-  // Process AnalyticsEvents
   currEvents.forEach((e) => {
     if (!e.toolSlug) return;
-    const stats = toolExecsMap.get(e.toolSlug) || { execs: 0, fails: 0, views: 0 };
-    if (e.eventType === "tool_view") stats.views++;
-    if (e.eventType === "tool_execution") {
-      stats.execs++;
-      if (e.success === false) stats.fails++;
+    if (e.eventType === "tool_view") {
+      viewsByTool.set(e.toolSlug, (viewsByTool.get(e.toolSlug) || 0) + 1);
     }
-    toolExecsMap.set(e.toolSlug, stats);
+    if (e.eventType === "tool_execution") {
+      execEventsByTool.set(e.toolSlug, (execEventsByTool.get(e.toolSlug) || 0) + 1);
+      if (e.success === false) {
+        failedEventsByTool.set(e.toolSlug, (failedEventsByTool.get(e.toolSlug) || 0) + 1);
+      }
+      if (e.executionTime && e.executionTime > 0) {
+        const list = timesByTool.get(e.toolSlug) || [];
+        list.push(e.executionTime);
+        timesByTool.set(e.toolSlug, list);
+      }
+    }
+  });
+
+  const errorsByTool = new Map<string, number>();
+  currErrors.forEach((e) => {
+    if (!e.toolSlug) return;
+    errorsByTool.set(e.toolSlug, (errorsByTool.get(e.toolSlug) || 0) + 1);
   });
 
   // Merge static registry tools & DB configs into ranking table
-  const topToolsList = allTools.map((t, index) => {
+  const topToolsList = allTools.map((t) => {
     const dbConf = toolConfigMap.get(t.slug);
-    const stats = toolExecsMap.get(t.slug) || { execs: 0, fails: 0, views: 0 };
+    const usagesCount = usagesByTool.get(t.slug) || 0;
+    const execEventsCount = execEventsByTool.get(t.slug) || 0;
 
-    const views = Math.max(stats.views, dbConf?.views || 0, stats.execs * 2);
-    const execs = stats.execs;
-    const fails = stats.fails;
+    const execs = Math.max(usagesCount, execEventsCount);
+    const fails = (errorsByTool.get(t.slug) || 0) + (failedEventsByTool.get(t.slug) || 0);
+    const views = Math.max(viewsByTool.get(t.slug) || 0, dbConf?.views || 0, execs);
+
     const successCount = Math.max(0, execs - fails);
     const successRate = execs > 0 ? Number(((successCount / execs) * 100).toFixed(1)) : 100;
-    const avgExecMs = 180 + (t.slug.length % 7) * 45;
-
-    // Attributed conversions
-    const signupsGenerated = Math.floor(execs * 0.08);
-    const subsGenerated = Math.floor(execs * 0.02);
+    
+    const times = timesByTool.get(t.slug) || [];
+    const avgExecMs = times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
 
     return {
-      rank: index + 1,
+      rank: 0,
       slug: t.slug,
       name: dbConf?.nameOverride || t.name,
       category: dbConf?.categorySlug || t.category,
@@ -343,32 +355,29 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
       failed: fails,
       successRate,
       avgExecutionTimeMs: avgExecMs,
-      signupsGenerated,
-      subsGenerated,
+      signupsGenerated: 0,
+      subsGenerated: 0,
     };
   });
 
-  // Sort by executions descending
-  topToolsList.sort((a, b) => b.executions - a.executions);
+  // Sort by executions descending, then views descending, then name
+  topToolsList.sort((a, b) => {
+    if (b.executions !== a.executions) return b.executions - a.executions;
+    if (b.views !== a.views) return b.views - a.views;
+    return a.name.localeCompare(b.name);
+  });
 
-  // Re-assign ranks
+  // Re-assign ranks dynamically
   topToolsList.forEach((t, i) => {
     t.rank = i + 1;
   });
 
-  // 6. Traffic Source Breakdown
+  // 6. Traffic Source Breakdown (strictly real data)
   const sourceMap = new Map<string, number>();
   currEvents.forEach((e) => {
     const src = e.source || "Direct";
     sourceMap.set(src, (sourceMap.get(src) || 0) + 1);
   });
-
-  if (sourceMap.size === 0) {
-    sourceMap.set("Direct", Math.floor(currVisitorsCount * 0.5));
-    sourceMap.set("Organic Search", Math.floor(currVisitorsCount * 0.3));
-    sourceMap.set("Social", Math.floor(currVisitorsCount * 0.12));
-    sourceMap.set("Referral", Math.floor(currVisitorsCount * 0.08));
-  }
 
   const trafficSources = Array.from(sourceMap.entries()).map(([source, visits]) => ({
     source,
@@ -376,34 +385,14 @@ export async function getAnalyticsOverview(params: AnalyticsDateRangeParams) {
     pct: currVisitorsCount > 0 ? Number(((visits / currVisitorsCount) * 100).toFixed(1)) : 0,
   }));
 
-  // 7. Device & Country Breakdown
+  // 7. Device & Country Breakdown (strictly real data)
   const deviceMap = new Map<string, number>();
   const countryMap = new Map<string, number>();
-  const browserMap = new Map<string, number>();
 
   currEvents.forEach((e) => {
-    const dev = e.device || "desktop";
-    const cntry = e.country || "India";
-    const brw = e.browser || "Chrome";
-
-    deviceMap.set(dev, (deviceMap.get(dev) || 0) + 1);
-    countryMap.set(cntry, (countryMap.get(cntry) || 0) + 1);
-    browserMap.set(brw, (browserMap.get(brw) || 0) + 1);
+    if (e.device) deviceMap.set(e.device, (deviceMap.get(e.device) || 0) + 1);
+    if (e.country) countryMap.set(e.country, (countryMap.get(e.country) || 0) + 1);
   });
-
-  if (deviceMap.size === 0) {
-    deviceMap.set("desktop", Math.floor(currVisitorsCount * 0.65));
-    deviceMap.set("mobile", Math.floor(currVisitorsCount * 0.30));
-    deviceMap.set("tablet", Math.floor(currVisitorsCount * 0.05));
-  }
-
-  if (countryMap.size === 0) {
-    countryMap.set("India", Math.floor(currVisitorsCount * 0.70));
-    countryMap.set("United States", Math.floor(currVisitorsCount * 0.15));
-    countryMap.set("United Kingdom", Math.floor(currVisitorsCount * 0.08));
-    countryMap.set("Germany", Math.floor(currVisitorsCount * 0.04));
-    countryMap.set("Canada", Math.floor(currVisitorsCount * 0.03));
-  }
 
   const devices = Array.from(deviceMap.entries()).map(([device, count]) => ({
     device,
@@ -461,16 +450,18 @@ export async function getSingleToolAnalytics(slug: string, params: AnalyticsDate
     }),
   ]);
 
-  const totalExecs = toolUsages.length + events.filter((e) => e.eventType === "tool_execution").length;
+  const execEvents = events.filter((e) => e.eventType === "tool_execution");
+  const totalExecs = Math.max(toolUsages.length, execEvents.length);
   const prevExecs = prevUsages.length;
-  const totalFails = errors.length + events.filter((e) => e.success === false).length;
+  const totalFails = errors.length + execEvents.filter((e) => e.success === false).length;
   const successfulCount = Math.max(0, totalExecs - totalFails);
 
   const successRate = totalExecs > 0 ? Number(((successfulCount / totalExecs) * 100).toFixed(1)) : 100;
-  const totalViews = Math.max(dbConfig?.views || 0, totalExecs * 2);
+  const viewEvents = events.filter((e) => e.eventType === "tool_view").length;
+  const totalViews = Math.max(viewEvents, dbConfig?.views || 0, totalExecs);
 
   const times = events.map((e) => e.executionTime).filter(Boolean) as number[];
-  const avgExecMs = times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 210;
+  const avgExecMs = times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
 
   return {
     tool: {
@@ -486,8 +477,8 @@ export async function getSingleToolAnalytics(slug: string, params: AnalyticsDate
       failed: totalFails,
       successRate,
       avgExecutionTimeMs: avgExecMs,
-      signupsAttributed: Math.floor(totalExecs * 0.08),
-      subsAttributed: Math.floor(totalExecs * 0.02),
+      signupsAttributed: 0,
+      subsAttributed: 0,
     },
   };
 }

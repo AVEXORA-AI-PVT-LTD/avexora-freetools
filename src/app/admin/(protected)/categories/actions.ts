@@ -23,10 +23,19 @@ export async function updateCategoryStatus(slug: string, status: boolean) {
       return { success: false, error: "Invalid status value." };
     }
 
+    const catMeta = categories.find((c) => c.slug === slug);
     await prisma.categoryConfig.upsert({
       where: { slug },
-      update: { status },
-      create: { slug, status },
+      update: { 
+        status,
+        ...(catMeta?.name ? { name: catMeta.name } : {}),
+      },
+      create: { 
+        slug, 
+        name: catMeta?.name || slug,
+        description: catMeta?.description || null,
+        status 
+      },
     });
 
     const { logAdminAction } = await import("@/server/audit");

@@ -83,8 +83,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         sameSite: "lax",
         path: "/",
         secure: useSecureCookies,
-        // Share cookies across subdomains (e.g. admin.localhost or admin.tools.avexora.in)
-        domain: process.env.NODE_ENV === "production" ? ".avexora.in" : ".localhost",
+        // Share cookies across subdomains in production or when COOKIE_DOMAIN is explicitly set
+        domain: process.env.COOKIE_DOMAIN || (process.env.NODE_ENV === "production" ? ".avexora.in" : undefined),
       },
     },
   },

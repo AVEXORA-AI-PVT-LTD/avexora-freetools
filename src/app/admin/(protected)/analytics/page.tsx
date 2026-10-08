@@ -2,6 +2,9 @@ import { requireAdminAuth } from "@/server/admin-auth";
 import { getAnalyticsOverviewAction } from "./analytics-actions";
 import { AnalyticsClient } from "./AnalyticsClient";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Analytics | Avex Tools Admin",
   description: "View real-time production analytics for website traffic, tool usage, conversions, and revenue.",

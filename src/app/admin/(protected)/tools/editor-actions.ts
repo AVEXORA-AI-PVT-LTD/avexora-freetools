@@ -226,7 +226,10 @@ export async function saveToolData(data: ToolFormData) {
   });
 
   revalidatePath("/");
+  revalidatePath("/(public)", "layout");
+  revalidatePath("/sitemap.xml");
   revalidatePath("/admin/tools");
+  revalidatePath(`/${data.category}`);
   revalidatePath(`/${data.category}/${data.slug}`);
   
   return { success: true, slug: data.slug };
