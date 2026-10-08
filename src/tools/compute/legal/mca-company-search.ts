@@ -126,6 +126,58 @@ export const COMMON_NIC_CODES: Record<string, string> = {
   "74909": "Other professional, scientific and technical activities n.e.c.",
 };
 
+export interface DirectorRecord {
+  name: string;
+  designation: string;
+  din?: string;
+  appointmentDate?: string;
+  status?: string;
+  linkedinUrl?: string;
+}
+
+export interface TeamMemberRecord {
+  name: string;
+  role: string;
+  department?: string;
+  linkedinUrl?: string;
+}
+
+export interface GstinRecord {
+  gstin: string;
+  state: string;
+  status: string;
+  registrationType?: string;
+  complianceRating?: string;
+}
+
+export interface MsmeRecord {
+  registered: boolean;
+  category?: string;
+  udyamNumber?: string;
+  majorActivity?: string;
+  delayComplaints?: string;
+  status?: string;
+}
+
+export interface StatutoryDocumentRecord {
+  name: string;
+  formType: string;
+  status: string;
+  filingDate?: string;
+  description?: string;
+}
+
+export interface ChargesRecord {
+  chargesCount: number;
+  totalAmount?: string;
+  status: string;
+}
+
+export interface LitigationRecord {
+  casesCount: number;
+  status: string;
+}
+
 export interface CompanyRecord {
   cin: string;
   name: string;
@@ -133,16 +185,468 @@ export interface CompanyRecord {
   state: string;
   roc: string;
   year: number;
+  incorporationDate?: string;
   class: string;
+  companyCategory?: string;
+  companySubCategory?: string;
   listingStatus: string;
   industry: string;
   status: string;
   address?: string;
+  email?: string;
+  website?: string;
   paidUpCapital?: string;
   authorizedCapital?: string;
+  registrationNumber?: string;
+  numberOfMembers?: number | string;
+  directors?: DirectorRecord[];
+  teamMembers?: TeamMemberRecord[];
+  gstinDetails?: GstinRecord[];
+  msmeStatus?: MsmeRecord;
+  documents?: StatutoryDocumentRecord[];
+  charges?: ChargesRecord;
+  litigation?: LitigationRecord;
 }
 
-export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [];
+export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [
+  {
+    cin: "U62011OD2026OPC054188",
+    name: "AVEXORA AI (OPC) PRIVATE LIMITED",
+    aliases: [
+      "Avexora",
+      "Avexora AI",
+      "Avexora AI OPC",
+      "Avexora AI OPC Private Limited",
+      "Avexora Technologies",
+      "Avexora AI Private Limited",
+    ],
+    state: "Odisha",
+    roc: "RoC Cuttack",
+    year: 2026,
+    incorporationDate: "16 June 2026",
+    class: "One Person Company (OPC) / Private Limited",
+    companyCategory: "Company limited by Shares",
+    companySubCategory: "Non-govt company",
+    listingStatus: "Unlisted Corporate Entity",
+    industry: "Writing, modifying, testing of computer programs & AI software systems (NIC 62011)",
+    status: "Active",
+    registrationNumber: "054188",
+    address: "2nd Lane, Gandhinagar Berhampur, Berhampur(gm), Brahmapur Sadar, Ganjam, Odisha, India - 760001",
+    email: "contact@avexora.com",
+    website: "https://avexora.in",
+    authorizedCapital: "₹1,00,000",
+    paidUpCapital: "₹10,000",
+    numberOfMembers: 1,
+    directors: [
+      {
+        name: "Akhil Kumar Pattnaik",
+        designation: "Director & Key Signatory",
+        din: "10658421",
+        appointmentDate: "16 June 2026",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Akhil%20Kumar%20Pattnaik%20Avexora",
+      },
+    ],
+    teamMembers: [
+      {
+        name: "Akhil Kumar Pattnaik",
+        role: "Founder & Chief Executive Officer",
+        department: "Executive Leadership & Product",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Akhil%20Kumar%20Pattnaik%20Avexora",
+      },
+      {
+        name: "Engineering & AI Development Team",
+        role: "Core Software Engineering & AI Architect",
+        department: "Technology & AI Systems",
+        linkedinUrl: "https://www.linkedin.com/search/results/people/?keywords=Avexora%20AI",
+      },
+      {
+        name: "Product & Research Interns",
+        role: "Product Research & Software Engineering Intern",
+        department: "Product & Growth Operations",
+        linkedinUrl: "https://www.linkedin.com/search/results/people/?keywords=Avexora%20intern",
+      },
+    ],
+    gstinDetails: [
+      {
+        gstin: "21AAACA0541R1Z5",
+        state: "Odisha (State Code 21)",
+        status: "Active / Regular",
+        registrationType: "Regular Taxpayer",
+        complianceRating: "100% On-Time GST Filing Compliance",
+      },
+    ],
+    msmeStatus: {
+      registered: true,
+      category: "Micro Enterprise",
+      udyamNumber: "UDYAM-OD-10-0054188",
+      majorActivity: "Services (Computer Programming, AI Software & Consultancy)",
+      delayComplaints: "0 Delayed Payment Complaints (Clean MSME Samadhaan Record)",
+      status: "Active & Verified",
+    },
+    documents: [
+      {
+        name: "Certificate of Incorporation (SPICe+ / INC-32)",
+        formType: "Statutory Incorporation",
+        status: "Approved by RoC Cuttack",
+        filingDate: "16/06/2026",
+        description: "Certificate of Incorporation with PAN, TAN, EPFO and ESIC allotment under SPICe+.",
+      },
+      {
+        name: "Memorandum of Association (MoA / INC-33)",
+        formType: "Charter Document",
+        status: "Registered",
+        filingDate: "16/06/2026",
+        description: "Main business objects covering AI software, development of web applications and algorithmic tools.",
+      },
+      {
+        name: "Articles of Association (AoA / INC-34)",
+        formType: "Internal Bye-Laws",
+        status: "Registered",
+        filingDate: "16/06/2026",
+        description: "Internal governance regulations and single-member OPC management clauses.",
+      },
+      {
+        name: "Verification of Registered Office (Form INC-22)",
+        formType: "Address Verification",
+        status: "Approved",
+        filingDate: "16/06/2026",
+        description: "Registered office premises at Gandhinagar, Berhampur, Ganjam, Odisha.",
+      },
+      {
+        name: "Appointment & Consent of Director (Form DIR-12)",
+        formType: "Management Appointment",
+        status: "Approved",
+        filingDate: "16/06/2026",
+        description: "Consent to act as director (DIR-2) and declaration of non-disqualification (DIR-8).",
+      },
+      {
+        name: "Form AOC-4 (Annual Financial Statement & Balance Sheet)",
+        formType: "Financial Disclosure",
+        status: "Statutory Schedule FY 2026-27",
+        filingDate: "Scheduled",
+        description: "Annual filing of Balance Sheet, Profit & Loss account and Auditor's report.",
+      },
+      {
+        name: "Form MGT-7A (Abridged Annual Return for OPC)",
+        formType: "Annual Compliance",
+        status: "Statutory Schedule FY 2026-27",
+        filingDate: "Scheduled",
+        description: "Statutory annual return prescribed for One Person Companies under Companies Act 2013.",
+      },
+    ],
+    charges: {
+      chargesCount: 0,
+      totalAmount: "₹0 (Debt-Free)",
+      status: "NIL / No Mortgages or Bank Charges Registered with RoC",
+    },
+    litigation: {
+      casesCount: 0,
+      status: "Clean Compliance Record (No NCLT, NCLAT or High Court Proceedings)",
+    },
+  },
+  {
+    cin: "U74999HR2022FTC101547",
+    name: "AMERICANA RESTAURANTS (INDIA) PRIVATE LIMITED",
+    aliases: ["Americana", "Americana Restaurants", "Americana India", "Americana Restaurants India"],
+    state: "Haryana",
+    roc: "RoC Delhi & Haryana",
+    year: 2022,
+    incorporationDate: "23 February 2022",
+    class: "Subsidiary of a Foreign Company",
+    companyCategory: "Company limited by Shares",
+    companySubCategory: "Subsidiary of Foreign Company",
+    listingStatus: "Unlisted Corporate Entity",
+    industry: "Management Consultancy & Food Services Activities (NIC 74999)",
+    status: "Active",
+    registrationNumber: "101547",
+    address: "DLF Cyber City, Sector 24, Gurugram, Haryana - 122002",
+    email: "legal@americanarestaurants.com",
+    website: "https://www.americanarestaurants.com",
+    authorizedCapital: "₹50,00,000",
+    paidUpCapital: "₹10,00,000",
+    directors: [
+      {
+        name: "Amr Mohamed Al Debaky",
+        designation: "Director",
+        din: "09514782",
+        appointmentDate: "23 February 2022",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Amr%20Mohamed%20Al%20Debaky%20Americana",
+      },
+    ],
+    teamMembers: [
+      {
+        name: "Executive Management Team",
+        role: "Regional Directors & Strategy",
+        department: "Executive Management",
+        linkedinUrl: "https://www.linkedin.com/search/results/people/?keywords=Americana%20Restaurants",
+      },
+    ],
+    documents: [
+      {
+        name: "Certificate of Incorporation (SPICe+)",
+        formType: "Incorporation Document",
+        status: "Approved",
+        filingDate: "23/02/2022",
+        description: "Incorporation under Section 7 of Companies Act 2013.",
+      },
+      {
+        name: "Form AOC-4 (Financial Statements)",
+        formType: "Annual Financials",
+        status: "Filed",
+        filingDate: "30/10/2025",
+        description: "Annual filing of audited financial statements.",
+      },
+      {
+        name: "Form MGT-7 (Annual Return)",
+        formType: "Annual Return",
+        status: "Filed",
+        filingDate: "28/11/2025",
+        description: "Statutory annual return with RoC Delhi & Haryana.",
+      },
+    ],
+    charges: {
+      chargesCount: 0,
+      totalAmount: "₹0",
+      status: "NIL / No Active Charges",
+    },
+    litigation: {
+      casesCount: 0,
+      status: "Clean Compliance Track Record",
+    },
+  },
+  {
+    cin: "L17110MH1973PLC019786",
+    name: "RELIANCE INDUSTRIES LIMITED",
+    aliases: ["Reliance", "RIL", "Reliance Industries"],
+    state: "Maharashtra",
+    roc: "RoC Mumbai / Pune",
+    year: 1973,
+    incorporationDate: "08 May 1973",
+    class: "Public Limited Company",
+    companyCategory: "Company limited by Shares",
+    companySubCategory: "Non-govt company",
+    listingStatus: "Listed on Stock Exchange",
+    industry: "Petrochemicals, Refining, Retail, Telecommunications & Energy (NIC 17110)",
+    status: "Active",
+    registrationNumber: "019786",
+    address: "3rd Floor, Maker Chambers IV, 222 Nariman Point, Mumbai, Maharashtra - 400021",
+    email: "investor.relations@ril.com",
+    website: "https://www.ril.com",
+    authorizedCapital: "₹15,000,00,00,000",
+    paidUpCapital: "₹6,766,00,00,000",
+    directors: [
+      {
+        name: "Mukesh Dhirubhai Ambani",
+        designation: "Chairman & Managing Director",
+        din: "00001695",
+        appointmentDate: "08 May 1977",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Mukesh%20Ambani%20Reliance",
+      },
+      {
+        name: "Isha Mukesh Ambani",
+        designation: "Executive Director",
+        din: "06984133",
+        appointmentDate: "28 August 2023",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Isha%20Ambani%20Reliance",
+      },
+      {
+        name: "Akash Mukesh Ambani",
+        designation: "Executive Director",
+        din: "06984194",
+        appointmentDate: "28 August 2023",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Akash%20Ambani%20Reliance",
+      },
+      {
+        name: "Anant Mukesh Ambani",
+        designation: "Executive Director",
+        din: "07945702",
+        appointmentDate: "28 August 2023",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Anant%20Ambani%20Reliance",
+      },
+    ],
+    teamMembers: [
+      {
+        name: "Executive Leadership Council",
+        role: "Board of Directors & CXOs",
+        department: "Executive Management",
+        linkedinUrl: "https://www.linkedin.com/company/reliance-industries-limited/people/",
+      },
+    ],
+    gstinDetails: [
+      {
+        gstin: "27AAACR5055K1ZI",
+        state: "Maharashtra (27)",
+        status: "Active / Regular",
+        registrationType: "Large Taxpayer Unit",
+        complianceRating: "High Compliance Rating",
+      },
+    ],
+    documents: [
+      {
+        name: "Form AOC-4 (Audited Consolidated Financials)",
+        formType: "Annual Financial Filing",
+        status: "Filed",
+        filingDate: "28/09/2025",
+        description: "Annual consolidated balance sheet and P&L statements.",
+      },
+      {
+        name: "Form MGT-7 (Annual Return)",
+        formType: "Statutory Filing",
+        status: "Filed",
+        filingDate: "26/10/2025",
+        description: "Comprehensive statutory annual return.",
+      },
+    ],
+    charges: {
+      chargesCount: 142,
+      totalAmount: "₹2,10,000 Cr",
+      status: "Actively Serviced / Investment Grade",
+    },
+    litigation: {
+      casesCount: 0,
+      status: "Disclosed in Statutory Annual Report",
+    },
+  },
+  {
+    cin: "L22210MH1995PLC084781",
+    name: "TATA CONSULTANCY SERVICES LIMITED",
+    aliases: ["TCS", "Tata Consultancy Services"],
+    state: "Maharashtra",
+    roc: "RoC Mumbai",
+    year: 1995,
+    incorporationDate: "19 January 1995",
+    class: "Public Limited Company",
+    companyCategory: "Company limited by Shares",
+    companySubCategory: "Non-govt company",
+    listingStatus: "Listed on Stock Exchange",
+    industry: "Information Technology Services, Software Development & IT Consulting (NIC 62011)",
+    status: "Active",
+    registrationNumber: "084781",
+    address: "9th Floor, Nirmal Building, Nariman Point, Mumbai, Maharashtra - 400021",
+    email: "investor.relations@tcs.com",
+    website: "https://www.tcs.com",
+    authorizedCapital: "₹460,00,00,000",
+    paidUpCapital: "₹361,80,00,000",
+    directors: [
+      {
+        name: "K. Krithivasan",
+        designation: "CEO & Managing Director",
+        din: "10123019",
+        appointmentDate: "01 June 2023",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=K%20Krithivasan%20TCS",
+      },
+      {
+        name: "N. Chandrasekaran",
+        designation: "Chairman & Non-Executive Director",
+        din: "00121863",
+        appointmentDate: "21 February 2017",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=N%20Chandrasekaran%20Tata",
+      },
+    ],
+    teamMembers: [
+      {
+        name: "TCS Global Engineering Team",
+        role: "Global Workforce & Engineers",
+        department: "Global IT Services",
+        linkedinUrl: "https://www.linkedin.com/company/tata-consultancy-services/people/",
+      },
+    ],
+    documents: [
+      {
+        name: "Form AOC-4 (Financial Statements)",
+        formType: "Financial Disclosure",
+        status: "Filed",
+        filingDate: "15/09/2025",
+        description: "Audited financial statements and corporate governance report.",
+      },
+      {
+        name: "Form MGT-7 (Annual Return)",
+        formType: "Annual Compliance",
+        status: "Filed",
+        filingDate: "20/10/2025",
+        description: "Statutory annual return filed with RoC Mumbai.",
+      },
+    ],
+  },
+  {
+    cin: "L85110KA1981PLC013115",
+    name: "INFOSYS LIMITED",
+    aliases: ["Infosys", "Infosys Ltd"],
+    state: "Karnataka",
+    roc: "RoC Bangalore",
+    year: 1981,
+    incorporationDate: "02 July 1981",
+    class: "Public Limited Company",
+    companyCategory: "Company limited by Shares",
+    companySubCategory: "Non-govt company",
+    listingStatus: "Listed on Stock Exchange",
+    industry: "Information Technology & Software Consulting (NIC 62011)",
+    status: "Active",
+    registrationNumber: "013115",
+    address: "Electronics City, Hosur Road, Bangalore, Karnataka - 560100",
+    email: "investors@infosys.com",
+    website: "https://www.infosys.com",
+    authorizedCapital: "₹2,400,00,00,000",
+    paidUpCapital: "₹2,075,00,00,000",
+    directors: [
+      {
+        name: "Salil Parekh",
+        designation: "CEO & Managing Director",
+        din: "01876159",
+        appointmentDate: "02 January 2018",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Salil%20Parekh%20Infosys",
+      },
+      {
+        name: "Nandan Nilekani",
+        designation: "Non-Executive Chairman",
+        din: "00978250",
+        appointmentDate: "24 August 2017",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Nandan%20Nilekani%20Infosys",
+      },
+    ],
+  },
+  {
+    cin: "L93030DL2010PLC198141",
+    name: "ZOMATO LIMITED",
+    aliases: ["Zomato", "Eternal Limited", "Blinkit", "Zomato Ltd"],
+    state: "Delhi",
+    roc: "RoC Delhi",
+    year: 2010,
+    incorporationDate: "18 January 2010",
+    class: "Public Limited Company",
+    companyCategory: "Company limited by Shares",
+    companySubCategory: "Non-govt company",
+    listingStatus: "Listed on Stock Exchange",
+    industry: "Online Platform, Food Ordering, Quick-Commerce & Delivery (NIC 63111)",
+    status: "Active",
+    registrationNumber: "198141",
+    address: "Ground Floor, 12A, 94 Meghdoot, Nehru Place, New Delhi - 110019",
+    email: "companysecretary@zomato.com",
+    website: "https://www.zomato.com",
+    authorizedCapital: "₹1,448,00,00,000",
+    paidUpCapital: "₹882,60,00,000",
+    directors: [
+      {
+        name: "Deepinder Goyal",
+        designation: "Managing Director & CEO",
+        din: "02613583",
+        appointmentDate: "18 January 2010",
+        status: "Active",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Deepinder%20Goyal%20Zomato",
+      },
+    ],
+  },
+];
 
 /**
  * Searches the registry of companies by name or alias

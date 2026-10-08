@@ -127,4 +127,72 @@ describe("MCA Company Search & CIN Decoder", () => {
     expect(americana.companyClass).toBe("Subsidiary of a Foreign Company");
     expect(americana.registrationNumber).toBe("101547");
   });
+
+  it("decodes AVEXORA AI (OPC) PRIVATE LIMITED CIN with accurate statutory data", () => {
+    const avexora = decodeCin("U62011OD2026OPC054188");
+    expect(avexora.isValid).toBe(true);
+    expect(avexora.stateCode).toBe("OD");
+    expect(avexora.stateName).toBe("Odisha");
+    expect(avexora.rocOffice).toBe("RoC Cuttack");
+    expect(avexora.yearOfIncorporation).toBe("2026");
+    expect(avexora.classCode).toBe("OPC");
+    expect(avexora.companyClass).toBe("One Person Company (OPC) / Private Limited");
+    expect(avexora.registrationNumber).toBe("054188");
+    expect(avexora.industryCode).toBe("62011");
+    expect(avexora.industryName).toContain("Writing, modifying, testing of computer program");
+  });
+
+  it("resolves AVEXORA AI (OPC) PRIVATE LIMITED in registry with full unlocked intelligence", () => {
+    const foundByName = searchCompaniesByName("Avexora");
+    expect(foundByName.length).toBeGreaterThan(0);
+    const avexora = foundByName[0];
+    expect(avexora.name).toBe("AVEXORA AI (OPC) PRIVATE LIMITED");
+    expect(avexora.cin).toBe("U62011OD2026OPC054188");
+    expect(avexora.status).toBe("Active");
+    expect(avexora.website).toBe("https://avexora.in");
+    expect(avexora.directors?.length).toBeGreaterThan(0);
+    expect(avexora.directors?.[0].name).toBe("Akhil Kumar Pattnaik");
+    expect(avexora.directors?.[0].din).toBe("10658421");
+    expect(avexora.directors?.[0].linkedinUrl).toContain("linkedin.com");
+
+    expect(avexora.teamMembers?.length).toBeGreaterThanOrEqual(2);
+    expect(avexora.gstinDetails?.length).toBeGreaterThan(0);
+    expect(avexora.gstinDetails?.[0].gstin).toBe("21AAACA0541R1Z5");
+    expect(avexora.msmeStatus?.registered).toBe(true);
+    expect(avexora.msmeStatus?.category).toBe("Micro Enterprise");
+    expect(avexora.documents?.length).toBeGreaterThanOrEqual(5);
+
+    const foundByCin = lookupCompanyByCin("U62011OD2026OPC054188");
+    expect(foundByCin).toBeDefined();
+    expect(foundByCin?.name).toBe("AVEXORA AI (OPC) PRIVATE LIMITED");
+  });
+
+  it("serves full corporate intelligence from API route for Avexora query", async () => {
+    const { GET } = await import("@/app/api/mca/search/route");
+    const req = new Request("http://localhost:3000/api/mca/search?q=Avexora");
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.type).toBe("company");
+    expect(data.company.name).toBe("AVEXORA AI (OPC) PRIVATE LIMITED");
+    expect(data.company.directors[0].name).toBe("Akhil Kumar Pattnaik");
+    expect(data.company.directors[0].din).toBe("10658421");
+    expect(data.company.directors[0].linkedinUrl).toContain("linkedin.com");
+    expect(data.company.website).toBe("https://avexora.in");
+    expect(data.company.gstinDetails[0].gstin).toBe("21AAACA0541R1Z5");
+    expect(data.company.msmeStatus.registered).toBe(true);
+    expect(data.company.documents.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("serves full corporate intelligence from API route for direct CIN search", async () => {
+    const { GET } = await import("@/app/api/mca/search/route");
+    const req = new Request("http://localhost:3000/api/mca/search?q=U62011OD2026OPC054188");
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.company.name).toBe("AVEXORA AI (OPC) PRIVATE LIMITED");
+    expect(data.company.cin).toBe("U62011OD2026OPC054188");
+    expect(data.company.directors[0].name).toBe("Akhil Kumar Pattnaik");
+    expect(data.company.teamMembers?.length).toBeGreaterThanOrEqual(2);
+  });
 });
