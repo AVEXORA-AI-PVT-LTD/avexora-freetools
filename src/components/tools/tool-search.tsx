@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { SearchItem } from "./search-items";
+import { usePlatformShortcut } from "@/hooks/use-platform-shortcut";
 
 export function ToolSearch({
   items,
@@ -13,6 +14,7 @@ export function ToolSearch({
   displayCount: number;
 }) {
   const router = useRouter();
+  const { shortcutSymbol } = usePlatformShortcut();
   const containerRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -34,21 +36,27 @@ export function ToolSearch({
       ?.scrollIntoView({ block: "nearest" });
   }, [activeIndex, matches.length]);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
-    const onPointerDown = (e: MouseEvent | TouchEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
+    const handleGlobalKeyDown = (e: globalThis.KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setDismissed(true);
       }
     };
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("touchstart", onPointerDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("touchstart", onPointerDown);
-    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -80,31 +88,83 @@ export function ToolSearch({
     }
   };
 
+  const quickPills = [
+    { label: "Background Remover", query: "background" },
+    { label: "Merge PDF", query: "pdf" },
+    { label: "GST Calculator", query: "gst" },
+    { label: "Invoice Generator", query: "invoice" },
+    { label: "QR Code", query: "qr" },
+  ];
+
   return (
-    <div ref={containerRef} className="relative mx-auto w-full max-w-xl">
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => {
-          setQuery(e.target.value);
-          setActiveIndex(-1);
-          setDismissed(false);
-        }}
-        onKeyDown={onKeyDown}
-        role="combobox"
-        aria-label="Search tools"
-        aria-expanded={open}
-        aria-controls="search-listbox"
-        aria-autocomplete="list"
-        aria-activedescendant={activeId}
-        placeholder={`Search ${displayCount}+ Avex tools…`}
-        className="w-full rounded-full border border-slate-300 bg-white px-5 py-3 text-sm shadow-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200"
-      />
+    <div ref={containerRef} className="relative mx-auto w-full max-w-2xl space-y-3">
+      <div className="relative flex items-center rounded-2xl border border-slate-200 bg-white shadow-lg shadow-orange-500/5 transition-all focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-500/10">
+        <svg
+          className="ml-4 h-5 w-5 text-slate-400 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <input
+          ref={inputRef}
+          type="search"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setActiveIndex(-1);
+            setDismissed(false);
+          }}
+          onKeyDown={onKeyDown}
+          role="combobox"
+          aria-label="Search tools"
+          aria-expanded={open}
+          aria-controls="search-listbox"
+          aria-autocomplete="list"
+          aria-activedescendant={activeId}
+          placeholder={`Search ${displayCount}+ Avex tools…`}
+          className="w-full bg-transparent px-4 py-3.5 text-base font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none"
+        />
+        <div className="mr-3 hidden sm:flex items-center gap-1">
+          <kbd 
+            suppressHydrationWarning
+            className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-mono text-xs text-slate-500 font-semibold shadow-2xs"
+          >
+            {shortcutSymbol}
+          </kbd>
+        </div>
+      </div>
+
+      {/* Quick Access Tags */}
+      <div className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-slate-500">
+        <span className="font-semibold text-slate-400 mr-1">Popular:</span>
+        {quickPills.map((pill) => (
+          <button
+            key={pill.label}
+            type="button"
+            onClick={() => {
+              setQuery(pill.query);
+              setDismissed(false);
+              inputRef.current?.focus();
+            }}
+            className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 font-medium text-slate-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-900"
+          >
+            {pill.label}
+          </button>
+        ))}
+      </div>
+
       {open && (
         <ul
           id="search-listbox"
           role="listbox"
-          className="absolute z-10 mt-2 max-h-72 w-full overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white shadow-lg"
+          className="absolute left-0 right-0 z-30 mt-1 max-h-72 sm:max-h-80 w-full overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-orange-950/10"
         >
           {matches.map((t, i) => (
             <li
@@ -116,18 +176,29 @@ export function ToolSearch({
               <Link
                 href={`/${t.category}/${t.slug}`}
                 onMouseEnter={() => setActiveIndex(i)}
-                className={`flex items-center justify-between px-4 py-2.5 text-sm hover:bg-orange-50 ${i === activeIndex ? "bg-orange-50 font-semibold" : ""}`}
+                className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm transition ${
+                  i === activeIndex ? "bg-orange-50/80 text-orange-900 font-semibold" : "text-slate-700 hover:bg-slate-50"
+                }`}
               >
-                <span className="font-medium text-slate-900">{t.name}</span>
-                <span className="text-xs text-slate-400">{t.categoryName}</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100/60 text-orange-600 font-bold text-xs">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-900">{t.name}</span>
+                  </div>
+                </div>
+                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-500 capitalize">
+                  {t.categoryName}
+                </span>
               </Link>
             </li>
           ))}
         </ul>
       )}
       {q && matches.length === 0 && (
-        <p className="absolute z-10 mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-lg">
-          No tools match “{query}” yet.
+        <p className="absolute left-0 right-0 z-30 mt-1 w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center text-sm text-slate-500 shadow-xl">
+          No tools match “{query}” yet. Try searching for <span className="font-semibold text-orange-600">PDF</span>, <span className="font-semibold text-orange-600">GST</span>, or <span className="font-semibold text-orange-600">Image</span>.
         </p>
       )}
     </div>

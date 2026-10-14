@@ -20,6 +20,7 @@ import {
 } from "@/tools/compute/image/background-removal";
 import { releaseBgSegmentationSession, predictBgMask } from "@/tools/compute/image/bg-removal-engine";
 import { useAuthDownload, useRestoredDownload } from "@/components/account/use-auth-download";
+import { trackToolExecution } from "@/lib/track-tool-execution";
 import { RestoredDownload } from "@/components/account/restored-download";
 
 /** Checkerboard shown behind the transparent result — preview only, never baked in. */
@@ -144,6 +145,8 @@ export default function ImageBackgroundRemover() {
           transparentPixels: transparentCount,
         };
       });
+
+      trackToolExecution("background-remover", undefined, true);
 
       if (transparentCount < Math.max(4, Math.round(dims.width * dims.height * 0.001))) {
         setNotice(

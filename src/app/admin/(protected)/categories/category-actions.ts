@@ -26,10 +26,15 @@ export async function saveCategory(data: SaveCategoryInput) {
     throw new Error("Unauthorized");
   }
 
+  const staticCat = staticCategories.find(c => c.slug === data.slug);
+  const resolvedName = (data.name && data.name !== "Unnamed Category" && data.name.trim() !== "")
+    ? data.name
+    : (staticCat?.name || data.slug);
+
   const upsertData = {
-    name: data.name,
+    name: resolvedName,
     slug: data.slug,
-    description: data.description,
+    description: data.description || staticCat?.description || null,
     icon: data.icon,
     image: data.image,
     status: data.status,
@@ -58,6 +63,9 @@ export async function saveCategory(data: SaveCategoryInput) {
   });
 
   revalidatePath("/");
+  revalidatePath(`/${data.slug}`);
+  revalidatePath("/(public)", "layout");
+  revalidatePath("/sitemap.xml");
   revalidatePath("/admin/categories");
   
   return { success: true };

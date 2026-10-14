@@ -45,10 +45,20 @@ export async function getActiveCategories() {
   // Merge static with DB, prioritizing DB config if it exists
   const merged: ActiveCategory[] = staticCategories.map(staticCat => {
     const override = dbConfigMap.get(staticCat.slug);
+    const hasCustomName = Boolean(
+      override?.name && 
+      override.name.trim() !== "" && 
+      override.name !== "Unnamed Category"
+    );
+    const hasCustomDesc = Boolean(
+      override?.description && 
+      override.description.trim() !== ""
+    );
+
     return {
       ...staticCat,
-      name: override?.name || staticCat.name,
-      description: override?.description || staticCat.description,
+      name: hasCustomName ? override!.name : staticCat.name,
+      description: (hasCustomDesc && override?.description) ? override.description : staticCat.description,
       status: override ? override.status : true,
       featured: override?.featured ?? false,
       displayOrder: override?.displayOrder ?? 0,
@@ -106,11 +116,21 @@ export async function getAllCategoriesAdmin() {
 
   const merged: AdminCategory[] = staticCategories.map(staticCat => {
     const override = dbConfigMap.get(staticCat.slug);
+    const hasCustomName = Boolean(
+      override?.name && 
+      override.name.trim() !== "" && 
+      override.name !== "Unnamed Category"
+    );
+    const hasCustomDesc = Boolean(
+      override?.description && 
+      override.description.trim() !== ""
+    );
+
     return {
       id: override?.id || `static-${staticCat.slug}`,
       slug: staticCat.slug,
-      name: override?.name || staticCat.name,
-      description: override?.description || staticCat.description,
+      name: hasCustomName ? override!.name : staticCat.name,
+      description: (hasCustomDesc && override?.description) ? override.description : staticCat.description,
       status: override ? override.status : true,
       featured: override?.featured ?? false,
       displayOrder: override?.displayOrder ?? 0,

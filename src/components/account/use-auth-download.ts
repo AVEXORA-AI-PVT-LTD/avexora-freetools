@@ -8,6 +8,7 @@ import {
   consumeBlobDownloadResume,
   saveBlobDownloadResume,
 } from "./account-resume";
+import { trackToolExecution } from "@/lib/track-tool-execution";
 
 /**
  * Shared authentication gate for binary-file downloads (spec §20–§21).
@@ -73,6 +74,13 @@ export function useAuthDownload() {
 
   const download = useCallback(
     async (files: DownloadFile[]) => {
+      // Track execution in real-time
+      const parts = (pathname || "").split("/").filter(Boolean);
+      const toolSlug = parts.length > 0 ? parts[parts.length - 1] : "";
+      if (toolSlug) {
+        trackToolExecution(toolSlug);
+      }
+
       if (status === "loading") {
         if (!pendingRef.current) pendingRef.current = files;
         return;

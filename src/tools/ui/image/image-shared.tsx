@@ -240,7 +240,13 @@ export function ImagePicker({
             : "border-slate-300 text-slate-600 hover:border-orange-400 hover:bg-orange-50/40 hover:text-orange-800"
         }`}
       >
-        <span aria-hidden="true" className="text-xl leading-none">🖼️</span>
+        <span aria-hidden="true" className="flex justify-center text-slate-400">
+          <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+        </span>
         {file && image ? (
           <>
             <span className="truncate font-medium text-slate-800">{file.name}</span>

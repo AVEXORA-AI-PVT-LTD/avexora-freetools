@@ -79,7 +79,13 @@ function ImagesToPdf({ format }: { format: "jpg" | "png" }) {
             : "border-slate-300 text-slate-600 hover:border-orange-400 hover:text-orange-700"
         }`}
       >
-        <span className="block text-2xl">🖼️</span>
+        <span className="flex justify-center text-slate-400 mb-1">
+          <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+        </span>
         {isDragging ? `Drop your ${label} here` : `Click or drag ${label} here (or add more)`}
         <span className="mt-1 block text-xs text-slate-400">
           Each image becomes one PDF page, in the order listed. Nothing is uploaded.

@@ -1,0 +1,348 @@
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+import { Search, ExternalLink, User, LogOut, Palette, LayoutGrid, ChevronDown, LayoutDashboard, Settings, Tag, Menu, X, Sparkles, BookOpen } from 'lucide-react';
+import { SearchModal } from './SearchModal';
+import { usePlatformShortcut } from '@/hooks/use-platform-shortcut';
+
+import type { NavigationLinkItem } from '@/components/editorial/footer-section';
+
+interface NavbarProps {
+  onSearchClick?: () => void;
+  onNavigateSection?: (sectionId: string) => void;
+  headerLinks?: NavigationLinkItem[];
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onSearchClick, headerLinks }) => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const { shortcutSymbol } = usePlatformShortcut();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isInternalSearchOpen, setIsInternalSearchOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle Cmd+K / Ctrl+K when onSearchClick is not provided
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        if (onSearchClick) {
+          onSearchClick();
+        } else {
+          setIsInternalSearchOpen(true);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onSearchClick]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, []);
+
+  const userInitial = session?.user?.name
+    ? session.user.name.charAt(0).toUpperCase()
+    : session?.user?.email
+    ? session.user.email.charAt(0).toUpperCase()
+    : 'U';
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-stone-200/80 transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-22 flex items-center justify-between">
+        
+        {/* Brand / Logo */}
+        <div className="flex items-center gap-6">
+          <Link 
+            href="/"
+            onClick={() => {
+              if (window.location.pathname === "/") {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+            className="flex items-center gap-2.5 group cursor-pointer"
+            aria-label="AvexTools Home"
+          >
+            <Image
+              src="/logo.png"
+              alt="AvexTools"
+              width={200}
+              height={48}
+              priority
+              unoptimized
+              className="h-7.5 sm:h-8 w-auto max-w-[170px] object-contain transition-transform group-hover:scale-105"
+            />
+          </Link>
+        </div>
+
+        {/* Right Action Items */}
+        <div className="flex items-center gap-3">
+          {/* Enhanced Command Search Input Box */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onSearchClick) {
+                onSearchClick();
+              } else {
+                setIsInternalSearchOpen(true);
+              }
+            }}
+            className="flex items-center justify-between gap-3 w-44 sm:w-60 md:w-72 px-3.5 py-2 rounded-xl border border-stone-200/90 bg-stone-50/90 hover:bg-white hover:border-orange-400/90 text-stone-500 hover:text-stone-800 text-xs sm:text-sm transition-all cursor-pointer group shadow-2xs hover:shadow-xs"
+            title="Search across all 130+ tools"
+          >
+            <div className="flex items-center gap-2.5">
+              <Search className="w-4 h-4 text-stone-400 group-hover:text-orange-600 transition-colors shrink-0" />
+              <span className="font-normal text-stone-500 group-hover:text-stone-700">Search 130+ tools...</span>
+            </div>
+            <kbd 
+              suppressHydrationWarning
+              className="hidden sm:inline-block px-1.5 py-0.5 rounded-md bg-white border border-stone-200/90 text-[10px] font-mono text-stone-400 group-hover:text-stone-600 shadow-2xs"
+            >
+              {shortcutSymbol}
+            </kbd>
+          </button>
+
+          {/* Try EBOS CTA Button (Orange Glow) */}
+          <a
+            href="https://ebos.avexora.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#ffffff' }}
+            className="btn-orange-glow !text-white px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold hidden sm:flex items-center gap-1.5 cursor-pointer shadow-sm hover:shadow-orange-500/25 transition shrink-0"
+          >
+            <span className="!text-white text-white">Try EBOS</span>
+            <ExternalLink className="w-3.5 h-3.5 text-white/90" />
+          </a>
+
+          {/* Sign In / User Profile */}
+          <div className="relative" ref={dropdownRef}>
+            {status === 'loading' ? (
+              <div className="w-8 h-8 rounded-full bg-stone-200 animate-pulse" />
+            ) : status === 'authenticated' && session?.user ? (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((prev) => !prev)}
+                  className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-stone-100 transition cursor-pointer border border-stone-200/80 shadow-2xs"
+                  aria-label="User Profile"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-stone-900 border border-stone-800 text-orange-400 flex items-center justify-center font-bold text-xs shadow-xs">
+                    {userInitial}
+                  </div>
+                  <ChevronDown className="w-3 h-3 text-stone-500" />
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {profileOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-stone-200 shadow-xl p-3 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-200/70 mb-2">
+                      <div className="font-bold text-stone-900 text-sm truncate">
+                        {session.user.name || 'Avexora User'}
+                      </div>
+                      <div className="text-stone-500 text-[11px] truncate">
+                        {session.user.email}
+                      </div>
+                      <div className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-mono text-[10px] font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                        <span>PRO WORKSPACE</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Link
+                        href="/studio/app"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <LayoutDashboard className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Studio Dashboard</span>
+                      </Link>
+
+                      <Link
+                        href="/studio/pricing"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <Tag className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Plans &amp; Pricing</span>
+                      </Link>
+
+                      <Link
+                        href="/studio/account"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <Settings className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Account Settings</span>
+                      </Link>
+
+                      <Link
+                        href="/studio"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <Palette className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Brand Studio Overview</span>
+                      </Link>
+
+                      <Link
+                        href="/#categories-showcase"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-medium transition"
+                      >
+                        <LayoutGrid className="w-3.5 h-3.5 text-stone-500" />
+                        <span>Explore All Tools</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-stone-100 my-1 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          signOut();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-medium transition text-left cursor-pointer"
+                      >
+                        <LogOut className="w-3.5 h-3.5" />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/studio/signin"
+                className="px-3.5 py-2 rounded-xl border border-stone-200 hover:border-orange-500 bg-white hover:bg-stone-50 text-xs font-semibold text-stone-800 hover:text-orange-600 transition flex items-center gap-1.5 shadow-2xs shrink-0"
+              >
+                <User className="w-3.5 h-3.5 text-stone-500 group-hover:text-orange-600" />
+                <span>Sign In</span>
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Hamburger Menu Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="md:hidden p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-900 transition cursor-pointer"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5 text-stone-800" /> : <Menu className="w-5 h-5 text-stone-800" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer Navigation Panel */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-stone-200 bg-white/95 backdrop-blur-md px-4 py-4 space-y-3 animate-in slide-in-from-top-2 duration-150 shadow-xl">
+          <div className="grid grid-cols-2 gap-2 text-xs font-medium">
+            <Link
+              href="/#categories-showcase"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <LayoutGrid className="w-4 h-4 text-orange-600" />
+              <span>130+ Tools</span>
+            </Link>
+            <Link
+              href="/studio"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <Palette className="w-4 h-4 text-orange-600" />
+              <span>Brand Studio</span>
+            </Link>
+            <Link
+              href="/products"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <Sparkles className="w-4 h-4 text-orange-600" />
+              <span>Products</span>
+            </Link>
+            <Link
+              href="/studio/pricing"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <Tag className="w-4 h-4 text-orange-600" />
+              <span>Pricing</span>
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+            >
+              <BookOpen className="w-4 h-4 text-orange-600" />
+              <span>About Us</span>
+            </Link>
+            <a
+              href="https://ebos.avexora.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 p-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 font-semibold transition"
+            >
+              <ExternalLink className="w-4 h-4 text-orange-600" />
+              <span>Try EBOS</span>
+            </a>
+            {headerLinks && headerLinks.length > 0 && headerLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                target={link.openInNewTab ? "_blank" : undefined}
+                rel={link.openInNewTab ? "noopener noreferrer" : undefined}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-800 transition"
+              >
+                <span>{link.label}</span>
+              </a>
+            ))}
+          </div>
+
+          {status === 'authenticated' && (
+            <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
+              <Link
+                href="/studio/app"
+                onClick={() => setMobileMenuOpen(false)}
+                className="font-medium text-stone-800 hover:text-orange-600"
+              >
+                Studio Dashboard →
+              </Link>
+              <Link
+                href="/studio/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className="font-medium text-stone-800 hover:text-orange-600"
+              >
+                Account Settings
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Internal Search Modal for global pages outside home */}
+      {!onSearchClick && (
+        <SearchModal
+          isOpen={isInternalSearchOpen}
+          onClose={() => setIsInternalSearchOpen(false)}
+          onSelectTool={(tool) => {
+            setIsInternalSearchOpen(false);
+            router.push(`/${tool.category}/${tool.id}`);
+          }}
+        />
+      )}
+    </header>
+  );
+};
