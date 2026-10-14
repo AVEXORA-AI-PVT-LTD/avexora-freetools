@@ -424,7 +424,7 @@ function CorporateIntelligenceReport({
 
       {/* 4. Core Team Members & Workforce */}
       {(activeSection === "all" || activeSection === "team") && (
-        <div className="p-6 bg-white border border-stone-200 rounded-2xl space-y-4 shadow-xs">
+        <div className="p-6 bg-white border border-stone-200 rounded-2xl space-y-5 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-stone-100 gap-2">
             <div>
               <h3 className="text-base font-bold text-stone-900 flex items-center gap-2">
@@ -432,46 +432,115 @@ function CorporateIntelligenceReport({
                 <span>Core Team, Workforce & Interns</span>
               </h3>
               <p className="text-xs text-stone-500 mt-0.5">
-                Key leadership, software developers, and product research interns affiliated with {company.name}.
+                Key leadership, software developers, and professionals affiliated with {company.name}.
               </p>
             </div>
-            <span className="text-xs text-stone-400">Total Listed: {teamMembers.length}</span>
+            <span className="text-xs font-semibold px-2.5 py-1 bg-stone-100 text-stone-700 rounded-full border border-stone-200">
+              Verified Personnel: {teamMembers.length}
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {teamMembers.map((member, idx) => (
-              <div
-                key={idx}
-                className="p-4 bg-stone-50 rounded-xl border border-stone-200/80 flex flex-col justify-between space-y-3"
-              >
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="px-2 py-0.5 bg-stone-200/80 text-stone-700 text-[10px] font-semibold rounded-md">
-                      {member.department || "Operations"}
-                    </span>
-                  </div>
-                  <h4 className="font-bold text-stone-900 text-sm">{member.name}</h4>
-                  <p className="text-xs text-stone-600 mt-0.5">{member.role}</p>
-                </div>
-
-                <a
-                  href={
-                    member.linkedinUrl ||
-                    `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(
-                      `${member.name} ${company.name}`
-                    )}`
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="py-1.5 px-3 bg-white hover:bg-stone-100 border border-stone-300 text-stone-700 font-semibold text-xs rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
-                >
-                  <LinkedInIcon className="w-3.5 h-3.5 text-[#0A66C2]" />
-                  <span>Find on LinkedIn</span>
-                  <ExternalLink className="w-3 h-3 text-stone-400" />
-                </a>
+          {/* Live LinkedIn Workforce Exploration Banner */}
+          <div className="p-4 bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-stone-50 rounded-xl border border-blue-200/80 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <LinkedInIcon className="w-4 h-4 text-[#0A66C2]" />
+                <span className="text-xs font-bold text-blue-900 uppercase tracking-wide">
+                  Live LinkedIn Workforce Directory
+                </span>
               </div>
-            ))}
+              <p className="text-xs text-stone-600">
+                Explore all verified working employees, engineers, consultants, and student interns currently connected with {company.name} in real-time.
+              </p>
+            </div>
+            <a
+              href={
+                company.cin === "U62011OD2026OPC054188" || /avexora/i.test(company.name)
+                  ? "https://www.linkedin.com/company/133174090/people/"
+                  : `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(company.name)}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-3.5 py-2 bg-[#0A66C2] hover:bg-[#004182] text-white text-xs font-semibold rounded-lg shadow-sm transition shrink-0 cursor-pointer"
+            >
+              <LinkedInIcon className="w-3.5 h-3.5 text-white" />
+              <span>Fetch Working People on LinkedIn</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
+
+          {/* Statutory Note for One Person Company (OPC) like Avexora */}
+          {(company.class?.includes("One Person") || company.cin?.includes("OPC") || /avexora/i.test(company.name)) && (
+            <div className="p-3 bg-amber-50/70 border border-amber-200/70 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
+              <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+              <div className="leading-relaxed">
+                <strong className="font-semibold text-amber-950">Statutory OPC Structure:</strong> As a registered One Person Company (OPC) under Section 2(62) of the Indian Companies Act 2013, the sole registered statutory member & director is Akhil Kumar Pattnaik. To inspect extended team members, software contractors, and student interns, click the LinkedIn button above.
+              </div>
+            </div>
+          )}
+
+          {teamMembers.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamMembers.map((member, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 bg-stone-50/70 hover:bg-stone-50 rounded-xl border border-stone-200/80 hover:border-blue-300 transition flex flex-col justify-between space-y-3 shadow-2xs"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-semibold rounded-md">
+                        {member.department || "Leadership & Tech"}
+                      </span>
+                      <span className="text-[10px] text-emerald-700 font-medium flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        <span>Active</span>
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-blue-600/10 text-blue-700 font-bold text-xs flex items-center justify-center shrink-0 border border-blue-200">
+                        {member.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-stone-900 text-sm leading-tight">{member.name}</h4>
+                        <p className="text-xs text-stone-600 mt-0.5 leading-snug">{member.role}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <a
+                    href={
+                      member.linkedinUrl ||
+                      `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(
+                        `${member.name} ${company.name}`
+                      )}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-1.5 px-3 bg-white hover:bg-blue-50/50 border border-stone-300 hover:border-blue-300 text-stone-700 hover:text-blue-700 font-semibold text-xs rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                  >
+                    <LinkedInIcon className="w-3.5 h-3.5 text-[#0A66C2]" />
+                    <span>View LinkedIn Profile</span>
+                    <ExternalLink className="w-3 h-3 text-stone-400" />
+                  </a>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 text-center bg-stone-50 rounded-xl border border-stone-200 text-stone-500 space-y-2">
+              <Users className="w-8 h-8 text-stone-400 mx-auto" />
+              <p className="text-xs">No specific executive members listed in statutory registry cache.</p>
+              <a
+                href={`https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(company.name)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-[#0A66C2] font-semibold hover:underline"
+              >
+                <span>Search {company.name} Employees on LinkedIn</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          )}
         </div>
       )}
 

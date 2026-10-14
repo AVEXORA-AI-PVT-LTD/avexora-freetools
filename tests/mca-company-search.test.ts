@@ -155,7 +155,8 @@ describe("MCA Company Search & CIN Decoder", () => {
     expect(avexora.directors?.[0].din).toBe("10658421");
     expect(avexora.directors?.[0].linkedinUrl).toContain("linkedin.com");
 
-    expect(avexora.teamMembers?.length).toBeGreaterThanOrEqual(2);
+    expect(avexora.teamMembers?.length).toBeGreaterThanOrEqual(1);
+    expect(avexora.teamMembers?.[0].name).toBe("Akhil Kumar Pattnaik");
     expect(avexora.gstinDetails?.length).toBeGreaterThan(0);
     expect(avexora.gstinDetails?.[0].gstin).toBe("21AAACA0541R1Z5");
     expect(avexora.msmeStatus?.registered).toBe(true);
@@ -193,6 +194,7 @@ describe("MCA Company Search & CIN Decoder", () => {
     expect(data.company.name).toBe("AVEXORA AI (OPC) PRIVATE LIMITED");
     expect(data.company.cin).toBe("U62011OD2026OPC054188");
     expect(data.company.directors[0].name).toBe("Akhil Kumar Pattnaik");
-    expect(data.company.teamMembers?.length).toBeGreaterThanOrEqual(2);
+    expect(data.company.teamMembers?.length).toBeGreaterThanOrEqual(1);
+    expect(data.company.teamMembers?.[0].name).toBe("Akhil Kumar Pattnaik");
   });
 });

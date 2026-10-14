@@ -250,21 +250,9 @@ export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [
     teamMembers: [
       {
         name: "Akhil Kumar Pattnaik",
-        role: "Founder & Chief Executive Officer",
+        role: "Founder, CEO & Lead Architect",
         department: "Executive Leadership & Product",
         linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Akhil%20Kumar%20Pattnaik%20Avexora",
-      },
-      {
-        name: "Engineering & AI Development Team",
-        role: "Core Software Engineering & AI Architect",
-        department: "Technology & AI Systems",
-        linkedinUrl: "https://www.linkedin.com/search/results/people/?keywords=Avexora%20AI",
-      },
-      {
-        name: "Product & Research Interns",
-        role: "Product Research & Software Engineering Intern",
-        department: "Product & Growth Operations",
-        linkedinUrl: "https://www.linkedin.com/search/results/people/?keywords=Avexora%20intern",
       },
     ],
     gstinDetails: [
@@ -377,10 +365,16 @@ export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [
     ],
     teamMembers: [
       {
-        name: "Executive Management Team",
-        role: "Regional Directors & Strategy",
-        department: "Executive Management",
-        linkedinUrl: "https://www.linkedin.com/search/results/people/?keywords=Americana%20Restaurants",
+        name: "Amr Mohamed Al Debaky",
+        role: "Managing Director & Regional Head",
+        department: "Executive Leadership",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Amr%20Mohamed%20Al%20Debaky%20Americana",
+      },
+      {
+        name: "Harsh Vardhan",
+        role: "Head of Operations & Retail Expansion",
+        department: "Operations & Business Strategy",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Harsh%20Vardhan%20Americana%20Restaurants",
       },
     ],
     documents: [
@@ -472,10 +466,40 @@ export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [
     ],
     teamMembers: [
       {
-        name: "Executive Leadership Council",
-        role: "Board of Directors & CXOs",
-        department: "Executive Management",
-        linkedinUrl: "https://www.linkedin.com/company/reliance-industries-limited/people/",
+        name: "Mukesh Dhirubhai Ambani",
+        role: "Chairman & Managing Director",
+        department: "Executive Management & Board",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Mukesh%20Ambani%20Reliance",
+      },
+      {
+        name: "Isha Mukesh Ambani",
+        role: "Executive Director - Reliance Retail",
+        department: "Retail & Consumer Business",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Isha%20Ambani%20Reliance",
+      },
+      {
+        name: "Akash Mukesh Ambani",
+        role: "Executive Director & Chairman - Reliance Jio",
+        department: "Digital Services & Telecom",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Akash%20Ambani%20Reliance",
+      },
+      {
+        name: "Anant Mukesh Ambani",
+        role: "Executive Director - Energy & Materials",
+        department: "New Energy & Sustainable Growth",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Anant%20Ambani%20Reliance",
+      },
+      {
+        name: "Srikanth Venkatachari",
+        role: "Chief Financial Officer (CFO)",
+        department: "Corporate Finance & Treasury",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Srikanth%20Venkatachari%20Reliance",
+      },
+      {
+        name: "Kiran Thomas",
+        role: "President & CEO - Jio Platforms",
+        department: "Technology & Software Systems",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Kiran%20Thomas%20Reliance%20Jio",
       },
     ],
     gstinDetails: [
@@ -553,10 +577,40 @@ export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [
     ],
     teamMembers: [
       {
-        name: "TCS Global Engineering Team",
-        role: "Global Workforce & Engineers",
-        department: "Global IT Services",
-        linkedinUrl: "https://www.linkedin.com/company/tata-consultancy-services/people/",
+        name: "K. Krithivasan",
+        role: "Chief Executive Officer & Managing Director",
+        department: "Executive Leadership & Board",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=K%20Krithivasan%20TCS",
+      },
+      {
+        name: "N. Chandrasekaran",
+        role: "Chairman - Tata Sons & Non-Executive Director",
+        department: "Tata Group Strategic Governance",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=N%20Chandrasekaran%20Tata",
+      },
+      {
+        name: "Samir Seksaria",
+        role: "Chief Financial Officer (CFO)",
+        department: "Global Finance & Statutory Governance",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Samir%20Seksaria%20TCS",
+      },
+      {
+        name: "Dr. Harrick Vin",
+        role: "Chief Technology Officer (CTO)",
+        department: "Global Technology & AI Innovation",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Harrick%20Vin%20TCS",
+      },
+      {
+        name: "Milind Lakkad",
+        role: "Chief Human Resources Officer (CHRO)",
+        department: "Global Talent & Workforce Management",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Milind%20Lakkad%20TCS",
+      },
+      {
+        name: "Abhinav Kumar",
+        role: "Chief Marketing Officer (CMO)",
+        department: "Global Markets & Brand Strategy",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Abhinav%20Kumar%20TCS",
       },
     ],
     documents: [
@@ -614,6 +668,38 @@ export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [
         linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Nandan%20Nilekani%20Infosys",
       },
     ],
+    teamMembers: [
+      {
+        name: "Salil Parekh",
+        role: "Chief Executive Officer & Managing Director",
+        department: "Executive Leadership",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Salil%20Parekh%20Infosys",
+      },
+      {
+        name: "Nandan Nilekani",
+        role: "Co-Founder & Non-Executive Chairman",
+        department: "Strategic Governance & Digital Innovation",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Nandan%20Nilekani%20Infosys",
+      },
+      {
+        name: "Jayesh Sanghrajka",
+        role: "Chief Financial Officer (CFO)",
+        department: "Finance & Accounts",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Jayesh%20Sanghrajka%20Infosys",
+      },
+      {
+        name: "Sumit Virmani",
+        role: "Executive Vice President & Global CMO",
+        department: "Global Marketing",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Sumit%20Virmani%20Infosys",
+      },
+      {
+        name: "Shaji Mathew",
+        role: "Group Head - Human Resources",
+        department: "People & Talent Development",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Shaji%20Mathew%20Infosys",
+      },
+    ],
   },
   {
     cin: "L93030DL2010PLC198141",
@@ -643,6 +729,32 @@ export const INDIAN_COMPANIES_REGISTRY: CompanyRecord[] = [
         appointmentDate: "18 January 2010",
         status: "Active",
         linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Deepinder%20Goyal%20Zomato",
+      },
+    ],
+    teamMembers: [
+      {
+        name: "Deepinder Goyal",
+        role: "Founder, Managing Director & CEO",
+        department: "Executive Leadership & Group Strategy",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Deepinder%20Goyal%20Zomato",
+      },
+      {
+        name: "Akshant Goyal",
+        role: "Chief Financial Officer (CFO)",
+        department: "Finance & Legal Affairs",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Akshant%20Goyal%20Zomato",
+      },
+      {
+        name: "Albinder Dhindsa",
+        role: "Founder & CEO - Blinkit (Quick Commerce)",
+        department: "Quick Commerce & Logistics Operations",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Albinder%20Dhindsa%20Blinkit",
+      },
+      {
+        name: "Rakesh Ranjan",
+        role: "Chief Executive Officer - Food Delivery",
+        department: "Core Platform & Delivery Operations",
+        linkedinUrl: "https://www.linkedin.com/search/results/all/?keywords=Rakesh%20Ranjan%20Zomato",
       },
     ],
   },

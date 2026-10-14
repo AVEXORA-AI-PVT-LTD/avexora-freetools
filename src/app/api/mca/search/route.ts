@@ -136,8 +136,8 @@ async function searchWebForCompany(query: string): Promise<{ text: string; found
   try {
     const isCin = /^[UL]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}$/i.test(query.trim());
     const searchQuery = isCin
-      ? query.trim()
-      : `${query.trim()} CIN Zaubacorp Tracxn`;
+      ? `${query.trim()} Zaubacorp Tracxn linkedin`
+      : `${query.trim()} CIN Zaubacorp Tracxn linkedin employees leadership`;
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 6000);
@@ -239,9 +239,9 @@ Return ONLY a valid JSON object with these keys:
   ],
   "teamMembers": [
     {
-      "name": "Key Team Member / Founder / Intern / Engineer",
-      "role": "Role or Designation",
-      "department": "Engineering / Leadership / Operations"
+      "name": "Actual Real Human Full Name (e.g. Deepinder Goyal, Salil Parekh, K. Krithivasan)",
+      "role": "Specific Role or Designation",
+      "department": "Engineering / Leadership / Operations / Technology"
     }
   ],
   "gstinDetails": [
@@ -258,6 +258,11 @@ Return ONLY a valid JSON object with these keys:
     "majorActivity": "Services / Manufacturing"
   }
 }
+
+CRITICAL RULE FOR teamMembers:
+- NEVER return generic placeholder names like "Engineering Team", "Workforce", "Interns", "Core Team", "Leadership Council", "Developers", or "Employees".
+- Every item in "teamMembers" MUST be a real individual human person's full name with their role/title, department, and valid link.
+- If individual named human employees or leaders cannot be verified from the data, return an empty array [] for "teamMembers" instead of placeholders.
 
 If the name is NOT registered or does NOT correspond to an existing company/entity in India, return:
 {
@@ -314,18 +319,21 @@ Strictly output raw JSON only with no markdown backticks or commentary.`;
           }))
         : undefined;
 
-      // Enhance team members with LinkedIn search links
+      // Enhance team members with LinkedIn search links and filter out any generic placeholder labels
+      const GENERIC_PLACEHOLDER_REGEX = /\b(team|workforce|interns|employees|developers|council|staff|group|committee)\b/i;
       const enhancedTeam = Array.isArray(parsed.teamMembers)
-        ? parsed.teamMembers.map((m: any) => ({
-            name: m.name,
-            role: m.role || "Team Member",
-            department: m.department || "Operations",
-            linkedinUrl:
-              m.linkedinUrl ||
-              `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(
-                `${m.name} ${resolvedName}`
-              )}`,
-          }))
+        ? parsed.teamMembers
+            .filter((m: any) => m && m.name && !GENERIC_PLACEHOLDER_REGEX.test(m.name))
+            .map((m: any) => ({
+              name: m.name,
+              role: m.role || "Team Member",
+              department: m.department || "Operations",
+              linkedinUrl:
+                m.linkedinUrl ||
+                `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(
+                  `${m.name} ${resolvedName}`
+                )}`,
+            }))
         : undefined;
 
       // Synthesize standard statutory documents if not already provided
